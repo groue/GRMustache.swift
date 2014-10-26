@@ -33,11 +33,21 @@ class GRMustacheTests: XCTestCase {
 //        }
 //    }
 
-    func testBlah() {
+    func testSwift() {
         var error: NSError?
         let templateRepository = TemplateRepository()
         if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
-            let data: MustacheValue = .dictionary(["name": .string("Arthur")])
+            let data: MustacheValue = .DictionaryValue(["name": .StringValue("Arthur")])
+            let rendering = template.render(data, error: &error)
+            XCTAssertEqual(rendering!, "<Arthur>", "")
+        }
+    }
+    
+    func testObjC() {
+        var error: NSError?
+        let templateRepository = TemplateRepository()
+        if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
+            let data: MustacheValue = .ObjCValue(["name": "Arthur"])
             let rendering = template.render(data, error: &error)
             XCTAssertEqual(rendering!, "<Arthur>", "")
         }

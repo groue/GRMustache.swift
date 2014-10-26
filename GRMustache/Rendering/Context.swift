@@ -13,7 +13,7 @@ class Context {
     let parent: Context?
     
     init() {
-        self.value = .none
+        self.value = .None
     }
     
     init(value: MustacheValue, parent: Context) {
@@ -23,7 +23,7 @@ class Context {
     
     func contextByAddingValue(value: MustacheValue) -> Context {
         switch value {
-        case .none:
+        case .None:
             return self
         default:
             return Context(value: value, parent: self)
@@ -37,11 +37,11 @@ class Context {
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
         let innerValue = value.valueForMustacheIdentifier(identifier)
         switch innerValue {
-        case .none:
+        case .None:
             if let parent = parent {
                 return parent.valueForMustacheIdentifier(identifier)
             } else {
-                return .none
+                return .None
             }
         default:
             return innerValue

@@ -14,7 +14,7 @@ class ExpressionInvocation: ExpressionVisitor {
     private var context: Context?
     
     init (expression: Expression) {
-        self.value = .none
+        self.value = .None
         self.expression = expression
     }
     
