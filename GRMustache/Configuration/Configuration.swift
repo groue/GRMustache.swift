@@ -11,10 +11,14 @@ import UIKit
 class Configuration {
     var contentType: ContentType
     var baseContext: Context
+    var tagStartDelimiter: String
+    var tagEndDelimiter: String
     
     init() {
         contentType = .HTML
         baseContext = Context()
+        tagStartDelimiter = "{{"
+        tagEndDelimiter = "}}"
     }
     
     class var defaultConfiguration: Configuration {

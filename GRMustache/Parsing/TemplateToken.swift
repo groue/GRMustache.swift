@@ -14,7 +14,7 @@ struct TemplateToken {
         case Comment
         case Section(content: String)
         case InvertedSection(content: String)
-        case Closing(content: String)
+        case Close(content: String)
         case Partial(content: String)
         case SetDelimiter(content: String)
         case Pragma(content: String)

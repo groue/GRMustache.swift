@@ -79,7 +79,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         case .InheritablePartial(let content):
             break
             
-        case .Closing(let content):
+        case .Close(let content):
             break
             
         case .Partial(let content):
