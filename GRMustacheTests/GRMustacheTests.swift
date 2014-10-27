@@ -40,6 +40,8 @@ class GRMustacheTests: XCTestCase {
             let data: MustacheValue = .DictionaryValue(["name": .StringValue("Arthur")])
             let rendering = template.render(data, error: &error)
             XCTAssertEqual(rendering!, "<Arthur>", "")
+        } else {
+            XCTFail("\(error)")
         }
     }
     
@@ -50,6 +52,8 @@ class GRMustacheTests: XCTestCase {
             let data: MustacheValue = .ObjCValue(["name": "Arthur"])
             let rendering = template.render(data, error: &error)
             XCTAssertEqual(rendering!, "<Arthur>", "")
+        } else {
+            XCTFail("\(error)")
         }
     }
 }

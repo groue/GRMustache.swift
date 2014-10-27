@@ -42,7 +42,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         }
         
         switch(token.type) {
-        case .SetDelimiter:
+        case .SetDelimiters:
             break
             
         case .Comment:
@@ -65,25 +65,32 @@ class TemplateCompiler: TemplateTokenConsumer {
             break
             
         case .UnescapedVariable(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .Section(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .InvertedSection(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .InheritableSection(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .InheritablePartial(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .Close(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
             
         case .Partial(let content):
-            break
+            self.state = .error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"]))
+            return false
         }
         
         return true
