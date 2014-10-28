@@ -195,52 +195,42 @@ class TemplateCompiler: TemplateTokenConsumer {
                     let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
-                        let templateASTNodes = compilationState.currentScope.templateASTNodes
-                        let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let sectionTag = SectionTag(expression: closedExpression, inverted:false, templateAST: templateAST)
-                        compilationState.popCurrentScope()
-                        compilationState.currentScope.appendNode(sectionTag)
+                        break
                     case (nil, false):
                         self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                         return false
                     default:
-                        if expression == closedExpression {
-                            let templateASTNodes = compilationState.currentScope.templateASTNodes
-                            let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                            let sectionTag = SectionTag(expression: closedExpression, inverted:false, templateAST: templateAST)
-                            compilationState.popCurrentScope()
-                            compilationState.currentScope.appendNode(sectionTag)
-                        } else {
+                        if expression != closedExpression {
                             self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
+                    let templateASTNodes = compilationState.currentScope.templateASTNodes
+                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let sectionTag = SectionTag(expression: closedExpression, inverted:false, templateAST: templateAST)
+                    compilationState.popCurrentScope()
+                    compilationState.currentScope.appendNode(sectionTag)
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
                     let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
-                        let templateASTNodes = compilationState.currentScope.templateASTNodes
-                        let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let sectionTag = SectionTag(expression: closedExpression, inverted:true, templateAST: templateAST)
-                        compilationState.popCurrentScope()
-                        compilationState.currentScope.appendNode(sectionTag)
+                        break
                     case (nil, false):
                         self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                         return false
                     default:
-                        if expression == closedExpression {
-                            let templateASTNodes = compilationState.currentScope.templateASTNodes
-                            let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                            let sectionTag = SectionTag(expression: closedExpression, inverted:true, templateAST: templateAST)
-                            compilationState.popCurrentScope()
-                            compilationState.currentScope.appendNode(sectionTag)
-                        } else {
+                        if expression != closedExpression {
                             self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
+                    let templateASTNodes = compilationState.currentScope.templateASTNodes
+                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let sectionTag = SectionTag(expression: closedExpression, inverted:true, templateAST: templateAST)
+                    compilationState.popCurrentScope()
+                    compilationState.currentScope.appendNode(sectionTag)
                 case .InheritablePartial(openingToken: let openingToken, partialName: let closedPartialName):
                     self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
                     return false
