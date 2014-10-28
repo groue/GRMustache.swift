@@ -62,6 +62,8 @@
 		563AE20819FCEAB20028C6C1 /* MustacheValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20619FCEAB20028C6C1 /* MustacheValue.swift */; };
 		563AE20A19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
 		563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
+		566341F219FFD798009C33E5 /* GRMustacheSuite in Resources */ = {isa = PBXBuildFile; fileRef = 566341F119FFD798009C33E5 /* GRMustacheSuite */; };
+		566341F419FFD7A9009C33E5 /* GRMustacheSuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566341F319FFD7A9009C33E5 /* GRMustacheSuiteTests.swift */; };
 		56AD06F719FE704700406BB8 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD06F619FE704700406BB8 /* Error.swift */; };
 		56AD06F819FE71CD00406BB8 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD06F619FE704700406BB8 /* Error.swift */; };
 /* End PBXBuildFile section */
@@ -109,6 +111,8 @@
 		563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionInvocation.swift; sourceTree = "<group>"; };
 		563AE20619FCEAB20028C6C1 /* MustacheValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheValue.swift; sourceTree = "<group>"; };
 		563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionVisitor.swift; sourceTree = "<group>"; };
+		566341F119FFD798009C33E5 /* GRMustacheSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GRMustacheSuite; sourceTree = "<group>"; };
+		566341F319FFD7A9009C33E5 /* GRMustacheSuiteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRMustacheSuiteTests.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -176,6 +180,8 @@
 			isa = PBXGroup;
 			children = (
 				563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */,
+				566341F319FFD7A9009C33E5 /* GRMustacheSuiteTests.swift */,
+				566341F119FFD798009C33E5 /* GRMustacheSuite */,
 				563AE1A719FBE47A0028C6C1 /* Supporting Files */,
 			);
 			path = GRMustacheTests;
@@ -371,6 +377,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				566341F219FFD798009C33E5 /* GRMustacheSuite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -427,6 +434,7 @@
 				563AE1DD19FC4CFA0028C6C1 /* Template.swift in Sources */,
 				563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */,
 				563AE1DC19FC4CF10028C6C1 /* Context.swift in Sources */,
+				566341F419FFD7A9009C33E5 /* GRMustacheSuiteTests.swift in Sources */,
 				56AD06F819FE71CD00406BB8 /* Error.swift in Sources */,
 				563AE1FF19FC5DEC0028C6C1 /* TranslateCharacters.swift in Sources */,
 				563AE1E619FC52B30028C6C1 /* TextNode.swift in Sources */,

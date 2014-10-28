@@ -1,0 +1,28 @@
+{
+  "tests": [
+    {
+      "name": "Single line comment block should be removed from the template.",
+      "data": { },
+      "template": "<{{! Comment Block! }}>",
+      "expected": "<>"
+    },
+    {
+      "name": "Multiline comment block should be removed from the template.",
+      "data": { },
+      "template": "<{{!\nThis is a\nmulti-line comment...\n}}>",
+      "expected": "<>"
+    },
+    {
+      "name": "Single left outer whitespace should be honored.",
+      "data": { },
+      "template": "< {{! Comment block}}>",
+      "expected": "< >"
+    },
+    {
+      "name": "Single right outer whitespace should be honored.",
+      "data": { },
+      "template": "<{{! Comment block}} >",
+      "expected": "< >"
+    }
+  ]
+}

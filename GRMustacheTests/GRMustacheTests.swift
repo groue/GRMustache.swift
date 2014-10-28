@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import UIKit
+import Foundation
 import XCTest
 
 class GRMustacheTests: XCTestCase {
