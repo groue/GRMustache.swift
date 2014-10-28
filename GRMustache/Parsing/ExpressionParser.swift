@@ -25,7 +25,7 @@ class ExpressionParser {
                 break stringLoop
             case .Initial:
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     break
                 case ".":
                     state = .LeadingDot
@@ -43,7 +43,7 @@ class ExpressionParser {
                 }
             case .LeadingDot:
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     state = .IdentifierDone
                 case ".":
                     state = .Error
@@ -76,7 +76,7 @@ class ExpressionParser {
                 }
             case .Identifier(start: let identifierStart):
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     let identifier = string.substringWithRange(identifierStart..<i)
                     if currentExpression != nil {
                         currentExpression = ScopedExpression(baseExpression:currentExpression!, identifier: identifier)
@@ -137,7 +137,7 @@ class ExpressionParser {
                 }
             case .WaitingForIdentifier:
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     state = .Error
                 case ".":
                     state = .Error
@@ -154,7 +154,7 @@ class ExpressionParser {
                 }
             case .IdentifierDone:
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     break
                 case ".":
                     state = .Error
@@ -185,7 +185,7 @@ class ExpressionParser {
                 }
             case .FilterDone:
                 switch c {
-                case " ", "\r", "\n", "\t":
+                case " ", "\r", "\n", "\r\n", "\t":
                     break
                 case ".":
                     state = .WaitingForIdentifier

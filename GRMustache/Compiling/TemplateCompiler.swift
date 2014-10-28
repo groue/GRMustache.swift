@@ -69,11 +69,11 @@ class TemplateCompiler: TemplateTokenConsumer {
             switch(token.type) {
             case .SetDelimiters:
                 // noop
-                break
+                return true
                 
             case .Comment:
                 // noop
-                break
+                return true
                 
             case .Pragma(content: let content):
                 self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
@@ -81,27 +81,29 @@ class TemplateCompiler: TemplateTokenConsumer {
                 
             case .Text(text: let text):
                 compilationState.currentScope.appendNode(TextNode(text: text))
-                break
+                return true
                 
             case .EscapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true))
+                    return true
                 } else {
                     self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    return false
                 }
-                break
                 
             case .UnescapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false))
+                    return true
                 } else {
                     self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    return false
                 }
-                return false
                 
             case .Section(content: let content):
                 var error: NSError?
@@ -130,8 +132,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: extendedExpression)))
+                    return true
                 } else if let expression = expression {
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
+                    return true
                 } else {
                     self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
@@ -164,8 +168,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: extendedExpression)))
+                    return true
                 } else if let expression = expression {
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
+                    return true
                 } else {
                     self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
@@ -176,6 +182,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty: Bool = false
                 if let inheritableSectionName = inheritableSectionNameFromString(content, inToken: token, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .InheritableSection(openingToken: token, inheritableSectionName: inheritableSectionName)))
+                    return true
                 } else {
                     self.state = .Error(error!)
                     return false
@@ -186,6 +193,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty: Bool = false
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .InheritablePartial(openingToken: token, partialName: partialName)))
+                    return true
                 } else {
                     self.state = .Error(error!)
                     return false
@@ -219,6 +227,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
+                    return true
                     
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
@@ -242,6 +251,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
+                    return true
                     
                 case .InheritablePartial(openingToken: let openingToken, partialName: let closedPartialName):
                     var error: NSError?
@@ -267,8 +277,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                         let inheritablePartialNode = InheritablePartialNode(partialNode: partialNode, templateAST: templateAST)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritablePartialNode)
+                        return true
                     } else {
                         self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        return false
                     }
                     
                 case .InheritableSection(openingToken: let openingToken, inheritableSectionName: let closedInheritableSectionName):
@@ -293,8 +305,8 @@ class TemplateCompiler: TemplateTokenConsumer {
                     let inheritableSectionTag = InheritableSectionNode(name: closedInheritableSectionName, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(inheritableSectionTag)
+                    return true
                 }
-                return false
                 
             case .Partial(content: let content):
                 var error: NSError?
@@ -303,16 +315,16 @@ class TemplateCompiler: TemplateTokenConsumer {
                     if let partialTemplateAST = templateRepository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
                         let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
                         compilationState.currentScope.appendNode(partialNode)
+                        return true
                     } else {
                         self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        return false
                     }
                 } else {
                     self.state = .Error(error!)
                     return false
                 }
             }
-            
-            return true
         }
     }
     
