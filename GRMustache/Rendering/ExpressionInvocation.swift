@@ -26,8 +26,53 @@ class ExpressionInvocation: ExpressionVisitor {
     
     // MARK: - ExpressionVisitor
     
+    func visit(expression: FilteredExpression, error outError: NSErrorPointer) -> Bool {
+        if !expression.filterExpression.acceptExpressionVisitor(self, error: outError) {
+            return false
+        }
+        let filterValue = value
+        
+        if !expression.argumentExpression.acceptExpressionVisitor(self, error: outError) {
+            return false
+        }
+        let argumentValue = value
+        
+        switch filterValue {
+        case .FilterValue(let filter):
+            if expression.curried {
+                value = .FilterValue(filter.filterByCurryingArgument(argumentValue))
+            } else {
+                value = filter.transformedValue(argumentValue)
+            }
+            return true
+        case .None:
+            if outError != nil {
+                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
+            }
+            return false
+        default:
+            if outError != nil {
+                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+            }
+            return false
+        }
+    }
+    
     func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool {
         value = context!.valueForMustacheIdentifier(expression.identifier)
+        return true
+    }
+    
+    func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool {
+        value = context!.topMustacheValue
+        return true
+    }
+    
+    func visit(expression: ScopedExpression, error outError: NSErrorPointer) -> Bool {
+        if !expression.baseExpression.acceptExpressionVisitor(self, error: outError) {
+            return false
+        }
+        value = value.valueForMustacheIdentifier(expression.identifier)
         return true
     }
 }

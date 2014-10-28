@@ -19,8 +19,8 @@ public class Template {
         self.baseContext = baseContext
     }
     
-    func render(object: MustacheValue, error outError: NSErrorPointer) -> String? {
-        let context = baseContext.contextByAddingValue(object)
+    func render(value: MustacheValue, error outError: NSErrorPointer) -> String? {
+        let context = baseContext.contextByAddingValue(value)
         if let (rendering, _) = renderContentWithContext(context, error: outError) {
             return rendering
         } else {

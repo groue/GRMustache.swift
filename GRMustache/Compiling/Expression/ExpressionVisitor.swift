@@ -9,5 +9,8 @@
 import Foundation
 
 protocol ExpressionVisitor {
+    func visit(expression: FilteredExpression, error outError: NSErrorPointer) -> Bool
     func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool
+    func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool
+    func visit(expression: ScopedExpression, error outError: NSErrorPointer) -> Bool
 }

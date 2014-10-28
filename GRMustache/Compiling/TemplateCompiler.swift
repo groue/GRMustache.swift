@@ -368,39 +368,39 @@ class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error outError: NSErrorPointer) -> String? {
+    func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(inheritableSectionName) == 0 {
             if outError != nil {
                 outError.memory = parseErrorAtToken(token, description: "Missing inheritable section name")
             }
-            empty = true
+            outEmpty = true
             return nil
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
                 outError.memory = parseErrorAtToken(token, description: "Inheritable section name contains white space")
             }
-            empty = false
+            outEmpty = false
             return nil
         }
         return inheritableSectionName
     }
     
-    func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error outError: NSErrorPointer) -> String? {
+    func partialNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(partialName) == 0 {
             if outError != nil {
                 outError.memory = parseErrorAtToken(token, description: "Missing partial template name")
             }
-            empty = true
+            outEmpty = true
             return nil
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
                 outError.memory = parseErrorAtToken(token, description: "Partial template name contains white space")
             }
-            empty = false
+            outEmpty = false
             return nil
         }
         return partialName

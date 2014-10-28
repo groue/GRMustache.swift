@@ -11,6 +11,9 @@ import Foundation
 class Context {
     let value: MustacheValue
     let parent: Context?
+    var topMustacheValue: MustacheValue {
+        return value
+    }
     
     init() {
         self.value = .None

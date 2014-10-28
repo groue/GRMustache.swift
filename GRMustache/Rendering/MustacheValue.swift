@@ -21,7 +21,8 @@ enum MustacheValue {
     case StringValue(String)
     case DictionaryValue([String: MustacheValue])
     case ArrayValue([MustacheValue])
-    case ObjCValue(AnyObject?)
+    case ObjCValue(AnyObject)
+    case FilterValue(Filter)
     
     var mustacheBoolValue: Bool {
         switch self {
@@ -40,9 +41,7 @@ enum MustacheValue {
         case .ArrayValue(let array):
             return countElements(array) > 0
         case .ObjCValue(let object):
-            if object == nil {
-                return false
-            } else if let _ = object as? NSNull {
+            if let _ = object as? NSNull {
                 return false
             } else if let number = object as? NSNumber {
                 return number.boolValue
@@ -53,6 +52,8 @@ enum MustacheValue {
             } else {
                 return true
             }
+        case .FilterValue(_):
+            return true
         }
     }
     
@@ -156,10 +157,21 @@ enum MustacheValue {
                 }
             }
         case .ObjCValue(let object):
-            if let object: AnyObject = object {
-                return (rendering:"\(object)", contentType:.Text)
-            } else {
+            if let _ = object as? NSNull {
                 return (rendering:"", contentType:.Text)
+            } else {
+                return (rendering:"\(object)", contentType:.Text)
+            }
+        case .FilterValue(_):
+            switch tag.type {
+            case .Variable:
+                return (rendering:"[Filter]", contentType:.Text)
+                
+            case .Section, .InvertedSection:
+                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
+                
+            case .InvertedSection:
+                return tag.renderContentWithContext(options.context, error: outError)
             }
         }
     }
@@ -190,7 +202,13 @@ enum MustacheValue {
                 return .None
             }
         case .ObjCValue(let object):
-            return .ObjCValue(object?.valueForKey(identifier))
+            if let value: AnyObject = object.valueForKey(identifier) {
+                return .ObjCValue(value)
+            } else {
+                return .None
+            }
+        case .FilterValue(_):
+            return .None
         }
     }
 }
