@@ -62,14 +62,14 @@ enum MustacheValue {
         case .None:
             switch tag.type {
             case .Variable:
-                return (rendering: "", contentType: .HTML)
+                return (rendering: "", contentType: .Text)
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(options.context, error: outError)
             }
         case .BoolValue(let bool):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(bool)", contentType: .HTML)
+                return (rendering: "\(bool)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
@@ -80,7 +80,7 @@ enum MustacheValue {
         case .IntValue(let int):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(int)", contentType: .HTML)
+                return (rendering: "\(int)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
@@ -91,7 +91,7 @@ enum MustacheValue {
         case .DoubleValue(let double):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(double)", contentType: .HTML)
+                return (rendering: "\(double)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
@@ -150,7 +150,7 @@ enum MustacheValue {
                 if empty {
                     switch tag.type {
                     case .Variable:
-                        return (rendering: "", contentType: .HTML)
+                        return (rendering: "", contentType: .Text)
                     case .Section, .InvertedSection:
                         return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
                     }
