@@ -10,9 +10,13 @@ import Foundation
 
 class TemplateCompiler: TemplateTokenConsumer {
     private var state: CompilerState
+    let templateRepository: TemplateRepository
+    let templateID: TemplateID?
     
-    init(contentType: ContentType) {
+    init(contentType: ContentType, templateRepository: TemplateRepository, templateID: TemplateID?) {
         self.state = .Compiling(CompilationState(contentType: contentType))
+        self.templateRepository = templateRepository
+        self.templateID = templateID
     }
     
     func templateAST(error outError: NSErrorPointer) -> TemplateAST? {
@@ -64,13 +68,16 @@ class TemplateCompiler: TemplateTokenConsumer {
         case .Compiling(let compilationState):
             switch(token.type) {
             case .SetDelimiters:
+                // noop
                 break
                 
             case .Comment:
+                // noop
                 break
                 
             case .Pragma(content: let content):
-                break
+                self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
+                return false
                 
             case .Text(text: let text):
                 compilationState.currentScope.appendNode(TextNode(text: text))
@@ -119,7 +126,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 if let extendedExpression = extendedExpression {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted:true, templateAST: templateAST)
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: extendedExpression)))
@@ -153,7 +160,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 if let extendedExpression = extendedExpression {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted:false, templateAST: templateAST)
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: extendedExpression)))
@@ -189,6 +196,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 case .Root:
                     self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                     return false
+                    
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
@@ -205,11 +213,13 @@ class TemplateCompiler: TemplateTokenConsumer {
                             return false
                         }
                     }
+                    
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: closedExpression, inverted:false, templateAST: templateAST)
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
+                    
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
@@ -226,40 +236,80 @@ class TemplateCompiler: TemplateTokenConsumer {
                             return false
                         }
                     }
+                    
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: closedExpression, inverted:true, templateAST: templateAST)
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
+                    
                 case .InheritablePartial(openingToken: let openingToken, partialName: let closedPartialName):
-                    self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
-                    return false
-//                    var error: NSError?
-//                    var empty: Bool
-//                    let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error)
-//                    switch (partialName, empty) {
-//                    case (nil, true), (closedPartialName as String?, _):
-//                        let templateASTNodes = compilationState.currentScope.templateASTNodes
-//                        let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
-//                        let inheritablePartialNode = InheritablePartialNode(partialNode: partialNode, templateAST: templateAST)
-//                        compilationState.popCurrentScope()
-//                        compilationState.currentScope.appendNode(inheritablePartialNode)
-//                    case (nil, false):
-//                        self.state = .Error(error!)
-//                        return false
-//                    default:
-//                        self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
-//                        return false
-//                    }
+                    var error: NSError?
+                    var empty: Bool = false
+                    let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error)
+                    switch (partialName, empty) {
+                    case (nil, true):
+                        break
+                    case (nil, false):
+                        self.state = .Error(error!)
+                        return false
+                    default:
+                        if (partialName != closedPartialName) {
+                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    }
+                    
+                    if let partialTemplateAST = templateRepository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
+                        let partialNode = PartialNode(partialName: closedPartialName, templateAST: partialTemplateAST)
+                        let templateASTNodes = compilationState.currentScope.templateASTNodes
+                        let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                        let inheritablePartialNode = InheritablePartialNode(partialNode: partialNode, templateAST: templateAST)
+                        compilationState.popCurrentScope()
+                        compilationState.currentScope.appendNode(inheritablePartialNode)
+                    } else {
+                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    }
+                    
                 case .InheritableSection(openingToken: let openingToken, inheritableSectionName: let closedInheritableSectionName):
-                    self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
-                    return false
+                    var error: NSError?
+                    var empty: Bool = false
+                    let inheritableSectionName = inheritableSectionNameFromString(content, inToken: token, empty: &empty, error: &error)
+                    switch (inheritableSectionName, empty) {
+                    case (nil, true):
+                        break
+                    case (nil, false):
+                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        return false
+                    default:
+                        if inheritableSectionName != closedInheritableSectionName {
+                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    }
+                    
+                    let templateASTNodes = compilationState.currentScope.templateASTNodes
+                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let inheritableSectionTag = InheritableSectionNode(name: closedInheritableSectionName, templateAST: templateAST)
+                    compilationState.popCurrentScope()
+                    compilationState.currentScope.appendNode(inheritableSectionTag)
                 }
                 return false
                 
             case .Partial(content: let content):
-                self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
-                return false
+                var error: NSError?
+                var empty: Bool = false
+                if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
+                    if let partialTemplateAST = templateRepository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
+                        let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
+                        compilationState.currentScope.appendNode(partialNode)
+                    } else {
+                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    }
+                } else {
+                    self.state = .Error(error!)
+                    return false
+                }
             }
             
             return true
@@ -329,7 +379,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             return nil
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Inheritable section name can not contain any white space")
+                outError.memory = parseErrorAtToken(token, description: "Inheritable section name contains white space")
             }
             empty = false
             return nil
@@ -342,13 +392,13 @@ class TemplateCompiler: TemplateTokenConsumer {
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(partialName) == 0 {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Missing inheritable template name")
+                outError.memory = parseErrorAtToken(token, description: "Missing partial template name")
             }
             empty = true
             return nil
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Template name can not contain any white space")
+                outError.memory = parseErrorAtToken(token, description: "Partial template name contains white space")
             }
             empty = false
             return nil

@@ -33,7 +33,7 @@ class TemplateParser {
         var state: State = .Start
         var stateStart = i
         
-        var lineNumber = 0
+        var lineNumber = 1
         var startLineNumber = lineNumber
         
         var atString = { (string: String?) -> Bool in

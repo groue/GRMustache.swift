@@ -9,6 +9,13 @@
 import Foundation
 
 class PartialNode: TemplateASTNode {
+    let partialName: String
+    let templateAST: TemplateAST
+    
+    init(partialName: String, templateAST: TemplateAST) {
+        self.partialName = partialName
+        self.templateAST = templateAST
+    }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)

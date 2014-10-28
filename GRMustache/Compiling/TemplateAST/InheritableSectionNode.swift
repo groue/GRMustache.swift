@@ -9,6 +9,13 @@
 import Foundation
 
 class InheritableSectionNode: TemplateASTNode {
+    let name: String
+    let templateAST: TemplateAST
+    
+    init(name: String, templateAST: TemplateAST) {
+        self.name = name
+        self.templateAST = templateAST
+    }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)

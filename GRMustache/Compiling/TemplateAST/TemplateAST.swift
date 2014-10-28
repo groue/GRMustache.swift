@@ -30,7 +30,7 @@ enum TemplateAST {
         }
     }
     
-    mutating func realize(nodes: [TemplateASTNode], contentType: ContentType) {
-        self = Some(nodes: nodes, contentType: contentType)
+    mutating func updateFromTemplateAST(templateAST: TemplateAST) {
+        self = templateAST
     }
 }

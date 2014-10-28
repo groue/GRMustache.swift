@@ -51,23 +51,26 @@ class RenderingEngine: TemplateASTVisitor {
     }
     
     func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool {
-        return true
+        if outError != nil {
+            outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"])
+        }
+        return false
     }
     
     func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool {
-        return true
+        return visit(inheritableSectionNode.templateAST, error: outError)
     }
     
     func visit(partialNode: PartialNode, error outError: NSErrorPointer) -> Bool {
-        return true
+        return visit(partialNode.templateAST, error: outError)
     }
     
     func visit(variableTag: VariableTag, error outError: NSErrorPointer) -> Bool {
-        return visit(variableTag, escapesHTML:variableTag.escapesHTML, error: outError)
+        return visit(variableTag, escapesHTML: variableTag.escapesHTML, error: outError)
     }
     
     func visit(sectionTag: SectionTag, error outError: NSErrorPointer) -> Bool {
-        return visit(sectionTag, escapesHTML:true, error: outError)
+        return visit(sectionTag, escapesHTML: true, error: outError)
     }
     
     func visit(textNode: TextNode, error outError: NSErrorPointer) -> Bool {
