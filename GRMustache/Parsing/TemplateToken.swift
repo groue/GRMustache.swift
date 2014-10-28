@@ -22,5 +22,7 @@ struct TemplateToken {
         case InheritableSection(content: String)
     }
     
+    let lineNumber: Int
+    let templateSubstring: String
     let type: Type
 }

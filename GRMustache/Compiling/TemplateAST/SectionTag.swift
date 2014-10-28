@@ -11,10 +11,12 @@ import Foundation
 class SectionTag: Tag, TemplateASTNode {
     let expression: Expression
     let templateAST: TemplateAST
-    var type: TagType { return .Section }
+    let inverted: Bool
+    var type: TagType { return inverted ? .InvertedSection : .Section }
     
-    init(expression: Expression, templateAST: TemplateAST) {
+    init(expression: Expression, inverted: Bool, templateAST: TemplateAST) {
         self.expression = expression
+        self.inverted = inverted
         self.templateAST = templateAST
     }
     

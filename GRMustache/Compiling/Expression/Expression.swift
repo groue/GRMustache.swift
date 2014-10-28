@@ -8,6 +8,17 @@
 
 import Foundation
 
-protocol Expression {
-    func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool
+class Expression: Equatable {
+    func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
+        fatalError("Subclass must override")
+    }
+    
+    // Polymorphic support for Equatable
+    func isEqual(expression: Expression) -> Bool {
+        fatalError("Subclass must override")
+    }
+}
+
+func ==(lhs: Expression, rhs: Expression) -> Bool {
+    return lhs.isEqual(rhs)
 }

@@ -9,7 +9,14 @@
 import Foundation
 
 class InheritablePartialNode: TemplateASTNode {
+    let partialNode: PartialNode
+    let templateAST: TemplateAST
 
+    init(partialNode: PartialNode, templateAST: TemplateAST) {
+        self.partialNode = partialNode
+        self.templateAST = templateAST
+    }
+    
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)
     }

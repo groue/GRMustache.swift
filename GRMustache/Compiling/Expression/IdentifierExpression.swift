@@ -15,7 +15,14 @@ class IdentifierExpression: Expression {
         self.identifier = identifier
     }
     
-    func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
+    override func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)
+    }
+    
+    override func isEqual(expression: Expression) -> Bool {
+        if let expression = expression as? IdentifierExpression {
+            return expression.identifier == identifier
+        }
+        return false
     }
 }
