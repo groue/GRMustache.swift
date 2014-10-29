@@ -24,7 +24,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         case .Compiling(let compilationState):
             switch compilationState.currentScope.type {
             case .Root:
-                return TemplateAST.Some(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
+                return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
                 if outError != nil {
                     outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
@@ -127,7 +127,7 @@ class TemplateCompiler: TemplateTokenConsumer {
 
                 if let extendedExpression = extendedExpression {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                     let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -163,7 +163,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 
                 if let extendedExpression = extendedExpression {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                     let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -223,7 +223,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     }
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                     let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -247,7 +247,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     }
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                     let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -273,7 +273,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     if let partialTemplateAST = templateRepository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
                         let partialNode = PartialNode(partialName: closedPartialName, templateAST: partialTemplateAST)
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
-                        let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                        let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                         let inheritablePartialNode = InheritablePartialNode(partialNode: partialNode, templateAST: templateAST)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritablePartialNode)
@@ -301,7 +301,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     }
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST: TemplateAST = .Some(nodes: templateASTNodes, contentType: compilationState.contentType)
+                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                     let inheritableSectionTag = InheritableSectionNode(name: closedInheritableSectionName, templateAST: templateAST)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(inheritableSectionTag)

@@ -8,29 +8,44 @@
 
 import Foundation
 
-enum TemplateAST {
-    case None
-    case Some(nodes: [TemplateASTNode], contentType: ContentType)
+class TemplateAST {
+    enum Type {
+        case Undefined
+        case Defined(nodes: [TemplateASTNode], contentType: ContentType)
+    }
+    var type: Type
     
+    init(type: Type) {
+        self.type = type
+    }
+    
+    convenience init() {
+        self.init(type: Type.Undefined)
+    }
+    
+    convenience init(nodes: [TemplateASTNode], contentType: ContentType) {
+        self.init(type: Type.Defined(nodes: nodes, contentType: contentType))
+    }
+
     var nodes: [TemplateASTNode] {
-        switch self {
-        case None:
+        switch type {
+        case .Undefined:
             return []
-        case Some(let nodes, let _):
+        case .Defined(let nodes, let _):
             return nodes
         }
     }
-    
+
     var contentType: ContentType {
-        switch self {
-        case None:
+        switch type {
+        case .Undefined:
             return .HTML
-        case Some(let _, let contentType):
+        case .Defined(let _, let contentType):
             return contentType
         }
     }
-    
-    mutating func updateFromTemplateAST(templateAST: TemplateAST) {
-        self = templateAST
+
+    func updateFromTemplateAST(templateAST: TemplateAST) {
+        self.type = templateAST.type
     }
 }

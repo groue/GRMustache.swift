@@ -48,9 +48,9 @@ public class TemplateRepository {
             if let templateAST = templateASTForTemplateID[templateID] {
                 return templateAST
             } else {
-                var error: NSError? = nil
+                var error: NSError?
                 if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &error) {
-                    var templateAST = TemplateAST.None
+                    let templateAST = TemplateAST()
                     templateASTForTemplateID[templateID] = templateAST
                     if let compiledAST = templateASTFromString(templateString, contentType: configuration.contentType, templateID: templateID, error: outError) {
                         templateAST.updateFromTemplateAST(compiledAST)
@@ -61,7 +61,7 @@ public class TemplateRepository {
                     }
                 } else {
                     if error == nil {
-                       error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+                        error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
                     }
                     if outError != nil {
                         outError.memory = error
