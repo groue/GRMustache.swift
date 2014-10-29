@@ -134,8 +134,8 @@ class RenderingEngine: TemplateASTVisitor {
                 }
             }
             
-            switch (contentType, renderingContentType) {
-            case (.HTML, .Text):
+            switch (contentType, renderingContentType, escapesHTML) {
+            case (.HTML, .Text, true):
                 buffer = buffer! + TranslateHTMLCharacters(rendering)
             default:
                 buffer = buffer! + rendering

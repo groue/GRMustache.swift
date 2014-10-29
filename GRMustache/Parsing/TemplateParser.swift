@@ -160,12 +160,6 @@ class TemplateParser {
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
-                    case "{":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
-                        let token = TemplateToken(lineNumber: startLineNumber, templateSubstring: templateSubstring, type: .UnescapedVariable(content: content))
-                        if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
-                            return
-                        }
                     case "&":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(lineNumber: startLineNumber, templateSubstring: templateSubstring, type: .UnescapedVariable(content: content))
@@ -197,7 +191,7 @@ class TemplateParser {
                     let tagInitialIndex = advance(stateStart, delimiters.unescapedTagStartLength)
                     let templateSubstring = templateString.substringWithRange(stateStart..<advance(i, delimiters.unescapedTagEndLength))
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
-                    let token = TemplateToken(lineNumber: startLineNumber, templateSubstring: templateSubstring, type: .EscapedVariable(content: content))
+                    let token = TemplateToken(lineNumber: startLineNumber, templateSubstring: templateSubstring, type: .UnescapedVariable(content: content))
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
@@ -284,7 +278,7 @@ class TemplateParser {
             tagStartLength = distance(tagStart.startIndex, tagStart.endIndex)
             tagEndLength = distance(tagEnd.startIndex, tagEnd.endIndex)
             
-            let usesStandardDelimiters = (tagStart == "{{") && (tagEnd == "{{")
+            let usesStandardDelimiters = (tagStart == "{{") && (tagEnd == "}}")
             unescapedTagStart = usesStandardDelimiters ? "{{{" : nil
             unescapedTagStartLength = unescapedTagStart != nil ? distance(unescapedTagStart!.startIndex, unescapedTagStart!.endIndex) : 0
             unescapedTagEnd = usesStandardDelimiters ? "}}}" : nil

@@ -9,5 +9,22 @@
 import Foundation
 
 func TranslateHTMLCharacters(string: String) -> String {
-    return string
+    var escaped = ""
+    for c in string {
+        switch c {
+        case "<":
+            escaped = escaped + "&lt;"
+        case ">":
+            escaped = escaped + "&gt;"
+        case "&":
+            escaped = escaped + "&amp;"
+        case "\"":
+            escaped = escaped + "&quot;"
+        case "'":
+            escaped = escaped + "&apos;"
+        default:
+            escaped.append(c)
+       }
+    }
+    return escaped
 }
