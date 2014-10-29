@@ -15,7 +15,7 @@ class GRMustacheSuiteTests: XCTestCase {
         runTestsFromResource("comments.json", directory: "GRMustacheSuite")
         runTestsFromResource("compound_keys.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
+        runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
         runTestsFromResource("general.json", directory: "GRMustacheSuite")
         runTestsFromResource("implicit_iterator.json", directory: "GRMustacheSuite")
@@ -26,7 +26,7 @@ class GRMustacheSuiteTests: XCTestCase {
 //        runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
         runTestsFromResource("sections.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
+        runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
         runTestsFromResource("variables.json", directory: "GRMustacheSuite")
     }
@@ -88,7 +88,7 @@ class GRMustacheSuiteTests: XCTestCase {
                             let errorMessage = error!.localizedDescription
                             let matches = expectedErrorReg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
                             if countElements(matches) == 0 {
-                                XCTFail("Unexpected rendering error in test `\(testName)` in \(path)")
+                                XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in test `\(testName)` in \(path)")
                             }
                         } else {
                             XCTFail("Could not load expected_error from test `\(testName)` in \(path): \(error!)")
@@ -105,7 +105,7 @@ class GRMustacheSuiteTests: XCTestCase {
                         let errorMessage = error!.localizedDescription
                         let matches = expectedErrorReg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
                         if countElements(matches) == 0 {
-                            XCTFail("\(errorMessage) does not match \(expectedError) in test `\(testName)` in \(path)")
+                            XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in test `\(testName)` in \(path)")
                         }
                     } else {
                         XCTFail("Could not load expected_error from test `\(testName)` in \(path): \(error!)")

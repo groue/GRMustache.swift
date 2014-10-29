@@ -241,7 +241,7 @@ class TemplateParser {
                 return
             }
         case .Tag, .UnescapedTag, .SetDelimitersTag:
-            failWithParseError(lineNumber: lineNumber, description: "Unclosed Mustache tag")
+            failWithParseError(lineNumber: startLineNumber, description: "Unclosed Mustache tag")
             return
         }
     }

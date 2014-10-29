@@ -27,22 +27,22 @@ class TemplateCompiler: TemplateTokenConsumer {
                 return TemplateAST.Some(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
                 if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed \(openingToken.templateSubstring) tag")
+                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InvertedSection(openingToken: let openingToken, expression: _):
                 if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed \(openingToken.templateSubstring) tag")
+                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InheritablePartial(openingToken: let openingToken, partialName: _):
                 if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed \(openingToken.templateSubstring) tag")
+                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InheritableSection(openingToken: let openingToken, inheritableSectionName: _):
                 if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed \(openingToken.templateSubstring) tag")
+                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             }
@@ -391,7 +391,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             return nil
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Inheritable section name contains white space")
+                outError.memory = parseErrorAtToken(token, description: "Invalid inheritable section name")
             }
             outEmpty = false
             return nil
@@ -404,13 +404,13 @@ class TemplateCompiler: TemplateTokenConsumer {
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(partialName) == 0 {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Missing partial template name")
+                outError.memory = parseErrorAtToken(token, description: "Missing template name")
             }
             outEmpty = true
             return nil
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Partial template name contains white space")
+                outError.memory = parseErrorAtToken(token, description: "Invalid template name")
             }
             outEmpty = false
             return nil
