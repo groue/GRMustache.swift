@@ -19,7 +19,7 @@ class GRMustacheSuiteTests: XCTestCase {
 //        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
         runTestsFromResource("general.json", directory: "GRMustacheSuite")
         runTestsFromResource("implicit_iterator.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("inheritable_partials.json", directory: "GRMustacheSuite")
+        runTestsFromResource("inheritable_partials.json", directory: "GRMustacheSuite")
         runTestsFromResource("inheritable_sections.json", directory: "GRMustacheSuite")
         runTestsFromResource("inverted_sections.json", directory: "GRMustacheSuite")
         runTestsFromResource("partials.json", directory: "GRMustacheSuite")

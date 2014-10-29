@@ -20,4 +20,16 @@ class InheritableSectionNode: TemplateASTNode {
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)
     }
+    
+    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
+        if let node = node as? InheritableSectionNode {
+            if node.name == name {
+                return self
+            } else {
+                return node
+            }
+        } else {
+            return node
+        }
+    }
 }

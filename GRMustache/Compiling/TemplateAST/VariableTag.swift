@@ -27,4 +27,8 @@ class VariableTag: Tag, TemplateASTNode {
     func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
         return (rendering: "", contentType: contentType)
     }
+    
+    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
+        return node
+    }
 }

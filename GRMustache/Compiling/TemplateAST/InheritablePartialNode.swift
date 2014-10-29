@@ -20,4 +20,11 @@ class InheritablePartialNode: TemplateASTNode {
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)
     }
+    
+    func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
+        for innerNode in templateAST.nodes {
+            node = innerNode.resolveTemplateASTNode(node)
+        }
+        return node
+    }
 }

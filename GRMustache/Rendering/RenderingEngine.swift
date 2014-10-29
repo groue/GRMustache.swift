@@ -10,7 +10,7 @@ import Foundation
 
 class RenderingEngine: TemplateASTVisitor {
     let contentType: ContentType
-    let context: Context
+    var context: Context
     var buffer: String?
     
     init(contentType: ContentType, context: Context) {
@@ -51,10 +51,11 @@ class RenderingEngine: TemplateASTVisitor {
     }
     
     func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool {
-        if outError != nil {
-            outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not implemented yet"])
-        }
-        return false
+        let originalContext = context
+        context = context.contextByAddingInheritablePartialNode(inheritablePartialNode)
+        let success = visit(inheritablePartialNode.partialNode, error: outError)
+        context = originalContext
+        return success
     }
     
     func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool {

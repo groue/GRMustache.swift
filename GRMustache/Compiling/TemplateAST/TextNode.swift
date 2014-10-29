@@ -8,10 +8,18 @@
 
 import Foundation
 
-struct TextNode: TemplateASTNode {
+class TextNode: TemplateASTNode {
     let text: String
+    
+    init(text: String) {
+        self.text = text
+    }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
         return visitor.visit(self, error: outError)
+    }
+    
+    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
+        return node
     }
 }

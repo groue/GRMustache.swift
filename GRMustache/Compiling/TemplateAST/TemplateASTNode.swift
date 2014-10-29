@@ -8,6 +8,7 @@
 
 import Foundation
 
-protocol TemplateASTNode {
+protocol TemplateASTNode: class {
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool
+    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode
 }

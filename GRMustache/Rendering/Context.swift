@@ -9,19 +9,31 @@
 import Foundation
 
 class Context {
-    let value: MustacheValue
-    let parent: Context?
+    enum Type {
+        case Root
+        case Value(value: MustacheValue, parent: Context)
+        case InheritablePartial(inheritablePartialNode: InheritablePartialNode, parent: Context)
+    }
+    
+    let type: Type
+    
     var topMustacheValue: MustacheValue {
-        return value
+        switch type {
+        case .Root:
+            return .None
+        case .Value(value: let value, parent: _):
+            return value
+        case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
+            return parent.topMustacheValue
+        }
     }
     
-    init() {
-        self.value = .None
+    init(type: Type) {
+        self.type = type
     }
     
-    init(value: MustacheValue, parent: Context) {
-        self.value = value
-        self.parent = parent
+    convenience init() {
+        self.init(type: .Root)
     }
     
     func contextByAddingValue(value: MustacheValue) -> Context {
@@ -29,25 +41,58 @@ class Context {
         case .None:
             return self
         default:
-            return Context(value: value, parent: self)
+            return Context(type: .Value(value: value, parent: self))
         }
     }
     
-    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
-        return node
+    func contextByAddingInheritablePartialNode(inheritablePartialNode: InheritablePartialNode) -> Context {
+        return Context(type: .InheritablePartial(inheritablePartialNode: inheritablePartialNode, parent: self))
+    }
+    
+    func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
+        var usedTemplateASTs: [TemplateAST] = []
+        var context = self
+        while true {
+            switch context.type {
+            case .Root:
+                return node
+            case .Value(value: _, parent: let parent):
+                context = parent
+            case .InheritablePartial(inheritablePartialNode: let inheritablePartialNode, parent: let parent):
+                let templateAST = inheritablePartialNode.partialNode.templateAST
+                var used = false
+                for usedTemplateAST in usedTemplateASTs {
+                    if usedTemplateAST === templateAST {
+                        used = true
+                        break
+                    }
+                }
+                if !used {
+                    let resolvedNode = inheritablePartialNode.resolveTemplateASTNode(node)
+                    if resolvedNode !== node {
+                        usedTemplateASTs.append(templateAST)
+                    }
+                    node = resolvedNode
+                }
+                context = parent
+            }
+        }
     }
     
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
-        let innerValue = value.valueForMustacheIdentifier(identifier)
-        switch innerValue {
-        case .None:
-            if let parent = parent {
+        switch type {
+        case .Root:
+            return .None
+        case .Value(value: let value, parent: let parent):
+            let innerValue = value.valueForMustacheIdentifier(identifier)
+            switch innerValue {
+            case .None:
                 return parent.valueForMustacheIdentifier(identifier)
-            } else {
-                return .None
+            default:
+                return innerValue
             }
-        default:
-            return innerValue
+        case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
+            return parent.valueForMustacheIdentifier(identifier)
         }
     }
 }

@@ -28,4 +28,8 @@ class SectionTag: Tag, TemplateASTNode {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         return renderingEngine.renderTemplateAST(templateAST, error: outError)
     }
+    
+    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
+        return node
+    }
 }
