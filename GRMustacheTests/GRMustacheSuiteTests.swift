@@ -23,7 +23,7 @@ class GRMustacheSuiteTests: XCTestCase {
 //        runTestsFromResource("inheritable_sections.json", directory: "GRMustacheSuite")
         runTestsFromResource("inverted_sections.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("partials.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
+        runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
         runTestsFromResource("sections.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
         runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
@@ -106,6 +106,7 @@ class GRMustacheSuiteTests: XCTestCase {
                         let matches = expectedErrorReg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
                         if countElements(matches) == 0 {
                             XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in test `\(testName)` in \(path)")
+                            templateRepository.templateFromString(templateString, error: &error)
                         }
                     } else {
                         XCTFail("Could not load expected_error from test `\(testName)` in \(path): \(error!)")

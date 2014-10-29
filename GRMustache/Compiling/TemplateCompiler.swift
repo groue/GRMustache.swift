@@ -76,8 +76,8 @@ class TemplateCompiler: TemplateTokenConsumer {
                 return true
                 
             case .Pragma(content: let content):
-                self.state = .Error(parseErrorAtToken(token, description: "Not implemented yet"))
-                return false
+                // noop
+                return true
                 
             case .Text(text: let text):
                 compilationState.currentScope.appendNode(TextNode(text: text))
