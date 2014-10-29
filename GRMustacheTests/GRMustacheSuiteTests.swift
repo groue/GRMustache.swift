@@ -71,7 +71,7 @@ class GRMustacheSuiteTests: XCTestCase {
             let templateString = test["template"] as String
             if let template = templateRepository.templateFromString(templateString, error: &error) {
                 if let data: AnyObject = test["data"] {
-                    let value = MustacheValue.ObjCValue(data)
+                    let value = MustacheValue.ObjCValue(data).canonical()
                     if let rendering = template.render(value, error: &error) {
                         if let expectedRendering = test["expected"] as String! {
                             if expectedRendering != rendering {

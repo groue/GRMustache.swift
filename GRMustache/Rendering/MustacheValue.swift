@@ -152,7 +152,7 @@ enum MustacheValue {
                     case .Variable:
                         return (rendering: "", contentType: .Text)
                     case .Section, .InvertedSection:
-                        return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
+                        return tag.renderContentWithContext(options.context, error: outError)
                     }
                 } else {
                     return (rendering: buffer, contentType: contentType!)
