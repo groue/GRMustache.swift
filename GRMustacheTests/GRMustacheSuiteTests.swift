@@ -14,7 +14,7 @@ class GRMustacheSuiteTests: XCTestCase {
     func testSuite() {
         runTestsFromResource("comments.json", directory: "GRMustacheSuite")
         runTestsFromResource("compound_keys.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
+        runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
         runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
         runTestsFromResource("general.json", directory: "GRMustacheSuite")
@@ -112,6 +112,7 @@ class GRMustacheSuiteTests: XCTestCase {
                     }
                 } else {
                     XCTFail("Error loading template from test `\(testName)` in \(path): \(error!)")
+                    templateRepository.templateFromString(templateString, error: &error)
                 }
             }
         }

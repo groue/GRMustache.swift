@@ -114,7 +114,7 @@ class TemplateParser {
             case .Tag:
                 if c == "\n" {
                     ++lineNumber
-                } else if atString(tagEndDelimiter) {
+                } else if atString(delimiters.tagEnd) {
                     let tagInitialIndex = advance(stateStart, delimiters.tagStartLength)
                     let tagInitial = templateString[tagInitialIndex]
                     let templateSubstring = templateString.substringWithRange(stateStart..<advance(i, delimiters.tagEndLength))
@@ -204,7 +204,7 @@ class TemplateParser {
                     ++lineNumber
                 } else if atString(delimiters.setDelimitersEnd) {
                     let tagInitialIndex = advance(stateStart, delimiters.setDelimitersStartLength)
-                    let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                    let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { countElements($0) > 0 }
                     if (newDelimiters.count != 2) {
                         failWithParseError(lineNumber: lineNumber, description: "Invalid set delimiters tag")
