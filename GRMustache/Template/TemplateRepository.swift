@@ -10,14 +10,14 @@ import Foundation
 
 typealias TemplateID = String
 
-protocol TemplateRepositoryDataSource: class {
-    func templateIDForName(name: String, relativeToTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
+protocol TemplateRepositoryDataSource {
+    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
     func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String?
 }
 
 public class TemplateRepository {
     var configuration: Configuration
-    weak var dataSource: TemplateRepositoryDataSource?
+    var dataSource: TemplateRepositoryDataSource?
     var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init() {
@@ -27,8 +27,17 @@ public class TemplateRepository {
     
     convenience public init(templates: [String: String]) {
         self.init()
-        strongDataSource = DictionaryDataSource(templates: templates)
-        dataSource = strongDataSource
+        dataSource = DictionaryDataSource(templates: templates)
+    }
+    
+    convenience public init(directoryPath: String, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+        self.init()
+        dataSource = DirectoryDataSource(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
+    }
+    
+    convenience public init(baseURL: NSURL, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+        self.init()
+        dataSource = URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
     }
     
     public func templateFromString(string: String, error outError: NSErrorPointer) -> Template? {
@@ -88,8 +97,6 @@ public class TemplateRepository {
     
     // MARK: - Private
     
-    private var strongDataSource: TemplateRepositoryDataSource?
-    
     private func templateASTFromString(string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
         let compiler = TemplateCompiler(contentType: contentType, templateRepository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
@@ -104,12 +111,110 @@ public class TemplateRepository {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
             return name
         }
         
         func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
             return templates[templateID]
+        }
+    }
+    
+    class DirectoryDataSource: TemplateRepositoryDataSource {
+        let directoryPath: String
+        let templateExtension: String
+        let encoding: NSStringEncoding
+        
+        init(directoryPath: String, templateExtension: String, encoding: NSStringEncoding) {
+            self.directoryPath = directoryPath
+            self.templateExtension = templateExtension
+            self.encoding = encoding
+        }
+        
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+            let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
+                // Rebase template names starting with a /
+                if !name.isEmpty && name[name.startIndex] == "/" {
+                    return (name.substringFromIndex(name.startIndex.successor()), nil)
+                } else {
+                    return (name, baseTemplateID)
+                }
+                }()
+            
+            if normalizedName.isEmpty {
+                return normalizedBaseTemplateID
+            }
+            
+            let templateFilename: String = {
+                if self.templateExtension.isEmpty {
+                    return normalizedName
+                } else {
+                    return normalizedName.stringByAppendingPathExtension(self.templateExtension)!
+                }
+            }()
+            
+            let templateDirectoryPath: String = {
+                if let normalizedBaseTemplateID = normalizedBaseTemplateID {
+                    return normalizedBaseTemplateID.stringByDeletingLastPathComponent
+                } else {
+                    return self.directoryPath
+                }
+            }()
+            
+            return directoryPath.stringByAppendingPathComponent(templateFilename).stringByStandardizingPath
+        }
+        
+        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
+            return NSString(contentsOfFile: templateID, encoding: encoding, error: outError)
+        }
+    }
+    
+    class URLDataSource: TemplateRepositoryDataSource {
+        let baseURL: NSURL
+        let templateExtension: String
+        let encoding: NSStringEncoding
+        
+        init(baseURL: NSURL, templateExtension: String, encoding: NSStringEncoding) {
+            self.baseURL = baseURL
+            self.templateExtension = templateExtension
+            self.encoding = encoding
+        }
+        
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+            let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
+                // Rebase template names starting with a /
+                if !name.isEmpty && name[name.startIndex] == "/" {
+                    return (name.substringFromIndex(name.startIndex.successor()), nil)
+                } else {
+                    return (name, baseTemplateID)
+                }
+                }()
+            
+            if normalizedName.isEmpty {
+                return normalizedBaseTemplateID
+            }
+            
+            let templateFilename: String = {
+                if self.templateExtension.isEmpty {
+                    return normalizedName
+                } else {
+                    return normalizedName.stringByAppendingPathExtension(self.templateExtension)!
+                }
+                }()
+            
+            let templateBaseURL: NSURL = {
+                if let normalizedBaseTemplateID = normalizedBaseTemplateID {
+                    return NSURL(string: normalizedBaseTemplateID.stringByDeletingLastPathComponent)!
+                } else {
+                    return self.baseURL
+                }
+            }()
+            
+            return NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.absoluteString
+        }
+        
+        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
+            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: outError)
         }
     }
 }

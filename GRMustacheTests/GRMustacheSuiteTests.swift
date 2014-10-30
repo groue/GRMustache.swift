@@ -83,47 +83,68 @@ class GRMustacheSuiteTests: XCTestCase {
         
         var description: String { return "test `\(name)` at \(path)" }
         var name: String { return dictionary["name"] as String }
-        var partialsDictionary: NSDictionary? { return dictionary["partials"] as NSDictionary? }
+        var partialsDictionary: [String: String]? { return dictionary["partials"] as [String: String]? }
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
         var renderedValue: MustacheValue { return MustacheValue.ObjCValue(dictionary["data"]!).canonical() }
         var expectedRendering: String? { return dictionary["expected_rendering"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }
         
-        var templateRepositories: [TemplateRepository] {
-            if let partialsDictionary = partialsDictionary {
-                return [TemplateRepository(templates: partialsDictionary as [String: String])]
-            } else {
-                return [TemplateRepository()]
-            }
-        }
-        
         var templates: [Template] {
-            if let templateString = templateString {
-                var templates: [Template] = []
-                for templateRepository in templateRepositories {
-                    var error: NSError?
-                    if let template = templateRepository.templateFromString(templateString, error: &error) {
-                        templates.append(template)
-                    } else {
-                        testError(error!)
+            if let partialsDictionary = partialsDictionary {
+                if let templateName = templateName {
+                    var templates: [Template] = []
+                    let templateExtension = templateName.pathExtension
+                    for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
+                        var error: NSError?
+                        if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
+                            templates.append(template)
+                        } else {
+                            testError(error)
+                        }
+                        if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
+                            templates.append(template)
+                        } else {
+                            testError(error)
+                        }
                     }
-                }
-                return templates
-            }/* else if let templateName = templateName {
-                var templates: [Template] = []
-                for templateRepository in templateRepositories {
-                    var error: NSError?
-                    if let template = templateRepository.templateNamed(templateName, error: &error) {
-                        templates.append(template)
-                    } else {
-                        testError(error!)
+                    return templates
+                } else if let templateString = templateString {
+                    var templates: [Template] = []
+                    for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
+                        var error: NSError?
+                        if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
+                            templates.append(template)
+                        } else {
+                            testError(error)
+                        }
+                        if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
+                            templates.append(template)
+                        } else {
+                            testError(error)
+                        }
                     }
+                    return templates
+                } else {
+                    XCTFail("Missing `template` and `template_name` in \(description)")
+                    return []
                 }
-                return templates
-            }*/ else {
-                XCTFail("Missing `template` and `template_name` in \(description)")
-                return []
+            } else {
+                if let templateName = templateName {
+                    XCTFail("Missing `partials` in \(description)")
+                    return []
+                } else if let templateString = templateString {
+                    var error: NSError?
+                    if let template = TemplateRepository().templateFromString(templateString, error: &error) {
+                        return [template]
+                    } else {
+                        testError(error)
+                        return []
+                    }
+                } else {
+                    XCTFail("Missing `template` and `template_name` in \(description)")
+                    return []
+                }
             }
         }
         
@@ -164,8 +185,34 @@ class GRMustacheSuiteTests: XCTestCase {
             }
         }
         
-        deinit {
+        func pathsAndEncodingsToPartials(partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
+            var templatesPaths: [(String, NSStringEncoding)] = []
             
+            let fm = NSFileManager.defaultManager()
+            var error: NSError?
+            let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
+            for encoding in encodings {
+                let templatesPath = NSTemporaryDirectory().stringByAppendingPathComponent("GRMustacheTest").stringByAppendingPathComponent("encoding_\(encoding)")
+                if fm.fileExistsAtPath(templatesPath) && !fm.removeItemAtPath(templatesPath, error: &error) {
+                    XCTFail("Could not cleanup tests in \(description): \(error!)")
+                    return []
+                }
+                for (partialName, partialString) in partialsDictionary {
+                    let partialPath = templatesPath.stringByAppendingPathComponent(partialName)
+                    if !fm.createDirectoryAtPath(partialPath.stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil, error: &error) {
+                        XCTFail("Could not save template in \(description): \(error!)")
+                        return []
+                    }
+                    if !fm.createFileAtPath(partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
+                        XCTFail("Could not save template in \(description): \(error!)")
+                        return []
+                    }
+                }
+                
+                templatesPaths.append(templatesPath, encoding)
+            }
+            
+            return templatesPaths
         }
     }
 }
