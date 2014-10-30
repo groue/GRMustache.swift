@@ -100,12 +100,16 @@ class GRMustacheSuiteTests: XCTestCase {
                         if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error)
+                            testError(error, replayOnFailure: {
+                                let template = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
+                            })
                         }
                         if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error)
+                            testError(error, replayOnFailure: {
+                                let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
+                            })
                         }
                     }
                     return templates
@@ -116,12 +120,16 @@ class GRMustacheSuiteTests: XCTestCase {
                         if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error)
+                            testError(error, replayOnFailure: {
+                                let template = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
+                            })
                         }
                         if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error)
+                            testError(error, replayOnFailure: {
+                                let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
+                            })
                         }
                     }
                     return templates
@@ -138,7 +146,9 @@ class GRMustacheSuiteTests: XCTestCase {
                     if let template = TemplateRepository().templateFromString(templateString, error: &error) {
                         return [template]
                     } else {
-                        testError(error)
+                        testError(error, replayOnFailure: {
+                            let template = TemplateRepository().templateFromString(templateString, error: &error)
+                        })
                         return []
                     }
                 } else {
@@ -156,13 +166,17 @@ class GRMustacheSuiteTests: XCTestCase {
                         XCTAssertEqual(rendering, expectedRendering, "Unexpected rendering of \(description)")
                     }
                 }
-                testSuccess()
+                testSuccess(replayOnFailure: {
+                    let rendering = template.render(self.renderedValue, error: &error)
+                })
             } else {
-                testError(error)
+                testError(error, replayOnFailure: {
+                    let rendering = template.render(self.renderedValue, error: &error)
+                })
             }
         }
         
-        func testError(error: NSError!) {
+        func testError(error: NSError!, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 var regError: NSError?
                 if let reg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &regError) {
@@ -170,18 +184,22 @@ class GRMustacheSuiteTests: XCTestCase {
                     let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
                     if countElements(matches) == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
+                        replayBlock()
                     }
                 } else {
                     XCTFail("Invalid expected_error in \(description): \(regError!)")
+                    replayBlock()
                 }
             } else {
                 XCTFail("Unexpected error in \(description): \(error)")
+                replayBlock()
             }
         }
         
-        func testSuccess() {
+        func testSuccess(replayOnFailure replayBlock: ()->()) {
             if expectedError != nil {
                 XCTFail("Unexpected success in \(description)")
+                replayBlock()
             }
         }
         

@@ -161,7 +161,7 @@ public class TemplateRepository {
                 }
             }()
             
-            return directoryPath.stringByAppendingPathComponent(templateFilename).stringByStandardizingPath
+            return templateDirectoryPath.stringByAppendingPathComponent(templateFilename).stringByStandardizingPath
         }
         
         func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
@@ -204,13 +204,13 @@ public class TemplateRepository {
             
             let templateBaseURL: NSURL = {
                 if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                    return NSURL(string: normalizedBaseTemplateID.stringByDeletingLastPathComponent)!
+                    return NSURL(string: normalizedBaseTemplateID)!
                 } else {
                     return self.baseURL
                 }
             }()
             
-            return NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.absoluteString
+            return NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!.absoluteString
         }
         
         func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {

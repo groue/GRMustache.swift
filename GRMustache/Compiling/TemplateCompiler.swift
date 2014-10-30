@@ -279,7 +279,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(inheritablePartialNode)
                         return true
                     } else {
-                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        self.state = .Error(error!)
                         return false
                     }
                     
@@ -317,7 +317,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(partialNode)
                         return true
                     } else {
-                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        self.state = .Error(error!)
                         return false
                     }
                 } else {
