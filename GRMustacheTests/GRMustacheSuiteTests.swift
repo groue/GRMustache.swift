@@ -58,75 +58,114 @@ class GRMustacheSuiteTests: XCTestCase {
             return
         }
         
-        for test in tests {
-            let testName = test["name"] as String!
-            
-            var templateRepository: TemplateRepository!
-            if let partials = test["partials"] as? NSDictionary {
-                var templates: [String: String] = [:]
-                partials.enumerateKeysAndObjectsUsingBlock({ (key, value, _) -> Void in
-                    if let key = key as? String {
-                        if let value = value as? String {
-                            templates[key] = value
-                        }
-                    }
-                })
-                templateRepository = TemplateRepository(templates: templates)
-            } else {
-                templateRepository = TemplateRepository()
+        for testDictionary in tests {
+            let test = Test(path: path, dictionary: testDictionary as NSDictionary)
+            test.run()
+        }
+    }
+    
+    class Test {
+        let path: String
+        let dictionary: NSDictionary
+        
+        init(path: String, dictionary: NSDictionary) {
+            self.path = path
+            self.dictionary = dictionary
+        }
+        
+        func run() {
+            for template in templates {
+                testRendering(template)
             }
-            
-            if let templateString = test["template"] as? String {
-                if let template = templateRepository.templateFromString(templateString, error: &error) {
-                    if let data: AnyObject = test["data"] {
-                        let value = MustacheValue.ObjCValue(data).canonical()
-                        if let rendering = template.render(value, error: &error) {
-                            if let expectedRendering = test["expected"] as String! {
-                                if expectedRendering != rendering {
-                                    XCTAssertEqual(rendering, expectedRendering, "Unexpected rendering of test `\(testName)` in \(path)")
-                                    template.render(value, error: nil)
-                                }
-                            } else if let expectedError = test["expected_error"] as? String {
-                                XCTFail("Unexpected successful rendering in test `\(testName)` in \(path)")
-                            } else {
-                                XCTFail("Missing expectation in test `\(testName)` in \(path)")
-                            }
-                        } else if let expectedError = test["expected_error"] as? String {
-                            if let expectedErrorReg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &error) {
-                                let errorMessage = error!.localizedDescription
-                                let matches = expectedErrorReg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
-                                if countElements(matches) == 0 {
-                                    XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in test `\(testName)` in \(path)")
-                                }
-                            } else {
-                                XCTFail("Could not load expected_error from test `\(testName)` in \(path): \(error!)")
-                            }
-                        } else {
-                            XCTFail("Error rendering test `\(testName)` in \(path): \(error!)")
-                        }
+        }
+        
+        //
+        
+        var description: String { return "test `\(name)` at \(path)" }
+        var name: String { return dictionary["name"] as String }
+        var partialsDictionary: NSDictionary? { return dictionary["partials"] as NSDictionary? }
+        var templateString: String? { return dictionary["template"] as String? }
+        var templateName: String? { return dictionary["template_name"] as String? }
+        var renderedValue: MustacheValue { return MustacheValue.ObjCValue(dictionary["data"]!).canonical() }
+        var expectedRendering: String? { return dictionary["expected_rendering"] as String? }
+        var expectedError: String? { return dictionary["expected_error"] as String? }
+        
+        var templateRepositories: [TemplateRepository] {
+            if let partialsDictionary = partialsDictionary {
+                return [TemplateRepository(templates: partialsDictionary as [String: String])]
+            } else {
+                return [TemplateRepository()]
+            }
+        }
+        
+        var templates: [Template] {
+            if let templateString = templateString {
+                var templates: [Template] = []
+                for templateRepository in templateRepositories {
+                    var error: NSError?
+                    if let template = templateRepository.templateFromString(templateString, error: &error) {
+                        templates.append(template)
                     } else {
-                        XCTFail("Missing data in test `\(testName)` in \(path)")
-                    }
-                } else {
-                    if let expectedError = test["expected_error"] as? String {
-                        if let expectedErrorReg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &error) {
-                            let errorMessage = error!.localizedDescription
-                            let matches = expectedErrorReg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
-                            if countElements(matches) == 0 {
-                                XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in test `\(testName)` in \(path)")
-                                templateRepository.templateFromString(templateString, error: &error)
-                            }
-                        } else {
-                            XCTFail("Could not load expected_error from test `\(testName)` in \(path): \(error!)")
-                        }
-                    } else {
-                        XCTFail("Error loading template from test `\(testName)` in \(path): \(error!)")
-                        templateRepository.templateFromString(templateString, error: &error)
+                        testError(error!)
                     }
                 }
-            } else {
-                XCTFail("Missing template in test `\(testName)` in \(path)")
+                return templates
+            }/* else if let templateName = templateName {
+                var templates: [Template] = []
+                for templateRepository in templateRepositories {
+                    var error: NSError?
+                    if let template = templateRepository.templateNamed(templateName, error: &error) {
+                        templates.append(template)
+                    } else {
+                        testError(error!)
+                    }
+                }
+                return templates
+            }*/ else {
+                XCTFail("Missing `template` and `template_name` in \(description)")
+                return []
             }
+        }
+        
+        func testRendering(template: Template) {
+            var error: NSError?
+            if let rendering = template.render(renderedValue, error: &error) {
+                if let expectedRendering = expectedRendering as String! {
+                    if expectedRendering != rendering {
+                        XCTAssertEqual(rendering, expectedRendering, "Unexpected rendering of \(description)")
+                    }
+                }
+                testSuccess()
+            } else {
+                testError(error)
+            }
+        }
+        
+        func testError(error: NSError!) {
+            if let expectedError = expectedError {
+                var regError: NSError?
+                if let reg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &regError) {
+                    let errorMessage = error.localizedDescription
+                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
+                    if countElements(matches) == 0 {
+                        XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
+                    }
+                } else {
+                    XCTFail("Invalid expected_error in \(description): \(regError!)")
+                }
+            } else {
+                XCTFail("Unexpected error in \(description): \(error)")
+            }
+        }
+        
+        func testSuccess() {
+            if expectedError != nil {
+                XCTFail("Unexpected success in \(description)")
+            }
+        }
+        
+        deinit {
+            
         }
     }
 }

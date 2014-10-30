@@ -35,6 +35,14 @@ public class TemplateRepository {
         return self.templateFromString(string, contentType: configuration.contentType, error: outError)
     }
     
+    public func templateNamed(name: String, error outError: NSErrorPointer) -> Template? {
+        if let templateAST = templateASTNamed(name, relativeToTemplateID: nil, error: outError) {
+            return Template(templateRepository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+        } else {
+            return nil
+        }
+    }
+    
     func templateFromString(string: String, contentType: ContentType, error outError: NSErrorPointer) -> Template? {
         if let templateAST = self.templateASTFromString(string, contentType: contentType, templateID: nil, error: outError) {
             return Template(templateRepository: self, templateAST: templateAST, baseContext: configuration.baseContext)
