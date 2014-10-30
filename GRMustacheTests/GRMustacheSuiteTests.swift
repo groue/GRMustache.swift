@@ -27,7 +27,7 @@ class GRMustacheSuiteTests: XCTestCase {
         runTestsFromResource("sections.json", directory: "GRMustacheSuite")
 //        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
         runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
+        runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
         runTestsFromResource("variables.json", directory: "GRMustacheSuite")
     }
     
@@ -87,7 +87,7 @@ class GRMustacheSuiteTests: XCTestCase {
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
         var renderedValue: MustacheValue { return MustacheValue.ObjCValue(dictionary["data"]!).canonical() }
-        var expectedRendering: String? { return dictionary["expected_rendering"] as String? }
+        var expectedRendering: String? { return dictionary["expected"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }
         
         var templates: [Template] {
@@ -100,14 +100,16 @@ class GRMustacheSuiteTests: XCTestCase {
                         if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error, replayOnFailure: {
+                            XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                            testError(error!, replayOnFailure: {
                                 let template = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
                             })
                         }
                         if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error, replayOnFailure: {
+                            XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                            testError(error!, replayOnFailure: {
                                 let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
                             })
                         }
@@ -120,14 +122,16 @@ class GRMustacheSuiteTests: XCTestCase {
                         if let template = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error, replayOnFailure: {
+                            XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                            testError(error!, replayOnFailure: {
                                 let template = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
                             })
                         }
                         if let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
                             templates.append(template)
                         } else {
-                            testError(error, replayOnFailure: {
+                            XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                            testError(error!, replayOnFailure: {
                                 let template = TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
                             })
                         }
@@ -146,7 +150,8 @@ class GRMustacheSuiteTests: XCTestCase {
                     if let template = TemplateRepository().templateFromString(templateString, error: &error) {
                         return [template]
                     } else {
-                        testError(error, replayOnFailure: {
+                        XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                        testError(error!, replayOnFailure: {
                             let template = TemplateRepository().templateFromString(templateString, error: &error)
                         })
                         return []
@@ -170,13 +175,14 @@ class GRMustacheSuiteTests: XCTestCase {
                     let rendering = template.render(self.renderedValue, error: &error)
                 })
             } else {
-                testError(error, replayOnFailure: {
+                XCTAssertNotNil(error, "Expected rendering error in \(description)")
+                testError(error!, replayOnFailure: {
                     let rendering = template.render(self.renderedValue, error: &error)
                 })
             }
         }
         
-        func testError(error: NSError!, replayOnFailure replayBlock: ()->()) {
+        func testError(error: NSError, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 var regError: NSError?
                 if let reg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &regError) {
