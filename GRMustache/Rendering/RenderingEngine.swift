@@ -268,6 +268,8 @@ class RenderingEngine: TemplateASTVisitor {
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
             }
+        case .CustomValue(let object):
+            return object.renderForMustacheTag(tag, options: options, error: outError)
         }
     }
     

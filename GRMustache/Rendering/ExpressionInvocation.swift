@@ -40,7 +40,14 @@ class ExpressionInvocation: ExpressionVisitor {
         switch filterValue.type {
         case .FilterValue(let filter):
             if expression.curried {
-                value = MustacheValue(filter.filterByCurryingArgument(argumentValue))
+                if let curriedFilter = filter.filterByCurryingArgument(argumentValue) {
+                    value = MustacheValue(curriedFilter)
+                } else {
+                    if outError != nil {
+                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                    }
+                    return false
+                }
             } else {
                 value = filter.transformedValue(argumentValue)
             }

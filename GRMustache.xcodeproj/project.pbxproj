@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
+		5622F1F61A02F62300B5D3F8 /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
 		563AE19D19FBE47A0028C6C1 /* GRMustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* GRMustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		563AE1A319FBE47A0028C6C1 /* GRMustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563AE19719FBE47A0028C6C1 /* GRMustache.framework */; };
 		563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */; };
@@ -87,6 +89,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
 		563AE19719FBE47A0028C6C1 /* GRMustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GRMustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		563AE19C19FBE47A0028C6C1 /* GRMustache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GRMustache.h; sourceTree = "<group>"; };
@@ -147,6 +150,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5622F1F31A02E98F00B5D3F8 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
 		563AE18D19FBE4790028C6C1 = {
 			isa = PBXGroup;
 			children = (
@@ -173,6 +184,7 @@
 				563AE1B819FBE6E80028C6C1 /* Configuration */,
 				563AE1B319FBE4D90028C6C1 /* Parsing */,
 				563AE1D619FC4A360028C6C1 /* Rendering */,
+				5622F1F31A02E98F00B5D3F8 /* Services */,
 				563AE1C319FC2A2A0028C6C1 /* Shared */,
 				563AE1D119FC45350028C6C1 /* Template */,
 				563AE19A19FBE47A0028C6C1 /* Supporting Files */,
@@ -426,6 +438,7 @@
 				563AE1EF19FC5A2E0028C6C1 /* TemplateASTVisitor.swift in Sources */,
 				563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */,
 				563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */,
+				5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */,
 				563AE1F219FC5A940028C6C1 /* InheritablePartialNode.swift in Sources */,
 				563AE1EC19FC55920028C6C1 /* RenderingEngine.swift in Sources */,
 				563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */,
@@ -468,6 +481,7 @@
 				563AE1F319FC5A940028C6C1 /* InheritablePartialNode.swift in Sources */,
 				563AE1F619FC5ACD0028C6C1 /* InheritableSectionNode.swift in Sources */,
 				563AE20819FCEAB20028C6C1 /* MustacheValue.swift in Sources */,
+				5622F1F61A02F62300B5D3F8 /* StandardLibrary.swift in Sources */,
 				563AE1E219FC52560028C6C1 /* TemplateCompiler.swift in Sources */,
 				563AE20519FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */,
 				563AE1D919FC4CC80028C6C1 /* TemplateRepository.swift in Sources */,

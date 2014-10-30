@@ -28,12 +28,16 @@ class Context {
         }
     }
     
-    init(type: Type) {
+    private init(type: Type) {
         self.type = type
     }
     
     convenience init() {
         self.init(type: .Root)
+    }
+    
+    convenience init(_ value: MustacheValue) {
+        self.init(type: .Value(value: value, parent: Context()))
     }
     
     func contextByAddingValue(value: MustacheValue) -> Context {

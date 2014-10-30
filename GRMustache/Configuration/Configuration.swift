@@ -16,7 +16,7 @@ class Configuration {
     
     init() {
         contentType = .HTML
-        baseContext = Context()
+        baseContext = Context(MustacheValue(StandardLibrary()))
         tagStartDelimiter = "{{"
         tagEndDelimiter = "}}"
     }

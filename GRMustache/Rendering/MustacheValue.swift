@@ -13,6 +13,12 @@ struct RenderingOptions {
     let enumerationItem: Bool
 }
 
+protocol CustomMustacheValue {
+    var mustacheBoolValue: Bool { get }
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue?
+    func renderForMustacheTag(tag: Tag, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
+}
+
 struct MustacheValue {
     let type: Type
     
@@ -46,6 +52,10 @@ struct MustacheValue {
     
     init(_ filter: Filter) {
         type = .FilterValue(filter)
+    }
+    
+    init(_ object: CustomMustacheValue) {
+        type = .CustomValue(object)
     }
     
     init(_ object: AnyObject?) {
@@ -125,6 +135,12 @@ struct MustacheValue {
             } else {
                 return MustacheValue(object.valueForKey(identifier))
             }
+        case .CustomValue(let object):
+            if let value = object.valueForMustacheIdentifier(identifier) {
+                return value
+            } else {
+                return MustacheValue()
+            }
         }
     }
     
@@ -158,6 +174,8 @@ struct MustacheValue {
             } else {
                 return true
             }
+        case .CustomValue(let object):
+            return object.mustacheBoolValue
         }
     }
     
@@ -171,5 +189,6 @@ struct MustacheValue {
         case ArrayValue([MustacheValue])
         case FilterValue(Filter)
         case ObjCValue(AnyObject)
+        case CustomValue(CustomMustacheValue)
     }
 }

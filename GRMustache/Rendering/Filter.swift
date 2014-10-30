@@ -9,6 +9,28 @@
 import Foundation
 
 protocol Filter {
-    func filterByCurryingArgument(argument: MustacheValue) -> Filter
+    func filterByCurryingArgument(argument: MustacheValue) -> Filter?
     func transformedValue(value: MustacheValue) -> MustacheValue
+}
+
+typealias FilterClosure = (MustacheValue) -> (MustacheValue)
+
+private class BlockFilter: Filter {
+    let block: FilterClosure
+    
+    init(block: FilterClosure) {
+        self.block = block
+    }
+    
+    func filterByCurryingArgument(argument: MustacheValue) -> Filter? {
+        return nil
+    }
+    
+    func transformedValue(value: MustacheValue) -> MustacheValue {
+        return block(value)
+    }
+}
+
+func FilterWithBlock(block: FilterClosure) -> Filter {
+    return BlockFilter(block: block)
 }
