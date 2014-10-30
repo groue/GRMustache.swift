@@ -67,6 +67,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             return false
         case .Compiling(let compilationState):
             switch(token.type) {
+                
             case .SetDelimiters:
                 // noop
                 return true
@@ -76,7 +77,24 @@ class TemplateCompiler: TemplateTokenConsumer {
                 return true
                 
             case .Pragma(content: let content):
-                // noop
+                let pragma = content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                if NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(0), error: nil)!.firstMatchInString(pragma, options: NSMatchingOptions(0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                    switch compilationState.compilerContentType {
+                    case .Unlocked:
+                        compilationState.compilerContentType = .Unlocked(.Text)
+                    case .Locked(let contentType):
+                        state = .Error(parseErrorAtToken(token, description: "CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag."))
+                        return false
+                    }
+                } else if NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(0), error: nil)!.firstMatchInString(pragma, options: NSMatchingOptions(0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                    switch compilationState.compilerContentType {
+                    case .Unlocked:
+                        compilationState.compilerContentType = .Unlocked(.HTML)
+                    case .Locked(let contentType):
+                        state = .Error(parseErrorAtToken(token, description: "CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag."))
+                        return false
+                    }
+                }
                 return true
                 
             case .Text(text: let text):
@@ -88,9 +106,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -99,9 +118,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -111,7 +131,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -135,9 +155,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                     return true
                 } else if let expression = expression {
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -147,7 +168,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -171,9 +192,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                     return true
                 } else if let expression = expression {
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
                 
@@ -182,9 +204,10 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty: Bool = false
                 if let inheritableSectionName = inheritableSectionNameFromString(content, inToken: token, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .InheritableSection(openingToken: token, inheritableSectionName: inheritableSectionName)))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(error!)
+                    state = .Error(error!)
                     return false
                 }
                 
@@ -193,16 +216,17 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var empty: Bool = false
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .InheritablePartial(openingToken: token, partialName: partialName)))
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
-                    self.state = .Error(error!)
+                    state = .Error(error!)
                     return false
                 }
                 
             case .Close(content: let content):
                 switch compilationState.currentScope.type {
                 case .Root:
-                    self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                    state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                     return false
                     
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
@@ -213,11 +237,11 @@ class TemplateCompiler: TemplateTokenConsumer {
                     case (nil, true):
                         break
                     case (nil, false):
-                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                         return false
                     default:
                         if expression != closedExpression {
-                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
@@ -237,11 +261,11 @@ class TemplateCompiler: TemplateTokenConsumer {
                     case (nil, true):
                         break
                     case (nil, false):
-                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                         return false
                     default:
                         if expression != closedExpression {
-                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
@@ -261,16 +285,27 @@ class TemplateCompiler: TemplateTokenConsumer {
                     case (nil, true):
                         break
                     case (nil, false):
-                        self.state = .Error(error!)
+                        state = .Error(error!)
                         return false
                     default:
                         if (partialName != closedPartialName) {
-                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
                     
                     if let partialTemplateAST = templateRepository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
+                        
+                        switch partialTemplateAST.type {
+                        case .Undefined:
+                            break
+                        case .Defined(nodes: _, contentType: let partialContentType):
+                            if partialContentType != compilationState.contentType {
+                                state = .Error(parseErrorAtToken(token, description: "Content type mismatch"))
+                                return false
+                            }
+                        }
+                        
                         let partialNode = PartialNode(partialName: closedPartialName, templateAST: partialTemplateAST)
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
@@ -279,7 +314,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(inheritablePartialNode)
                         return true
                     } else {
-                        self.state = .Error(error!)
+                        state = .Error(error!)
                         return false
                     }
                     
@@ -291,11 +326,11 @@ class TemplateCompiler: TemplateTokenConsumer {
                     case (nil, true):
                         break
                     case (nil, false):
-                        self.state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                         return false
                     default:
                         if inheritableSectionName != closedInheritableSectionName {
-                            self.state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
@@ -315,13 +350,14 @@ class TemplateCompiler: TemplateTokenConsumer {
                     if let partialTemplateAST = templateRepository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
                         let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
                         compilationState.currentScope.appendNode(partialNode)
+                        compilationState.compilerContentType = .Locked(compilationState.contentType)
                         return true
                     } else {
-                        self.state = .Error(error!)
+                        state = .Error(error!)
                         return false
                     }
                 } else {
-                    self.state = .Error(error!)
+                    state = .Error(error!)
                     return false
                 }
             }
@@ -332,13 +368,20 @@ class TemplateCompiler: TemplateTokenConsumer {
     // MARK: - Private
     
     class CompilationState {
-        var contentType: ContentType
         var currentScope: Scope {
             return scopeStack[scopeStack.endIndex - 1]
         }
+        var contentType: ContentType {
+            switch compilerContentType {
+            case .Unlocked(let contentType):
+                return contentType
+            case .Locked(let contentType):
+                return contentType
+            }
+        }
         
         init(contentType: ContentType) {
-            self.contentType = contentType
+            self.compilerContentType = .Unlocked(contentType)
             self.scopeStack = [Scope(type: .Root)]
         }
         
@@ -350,6 +393,12 @@ class TemplateCompiler: TemplateTokenConsumer {
             scopeStack.append(scope)
         }
         
+        enum CompilerContentType {
+            case Unlocked(ContentType)
+            case Locked(ContentType)
+        }
+        
+        var compilerContentType: CompilerContentType
         private var scopeStack: [Scope]
     }
     

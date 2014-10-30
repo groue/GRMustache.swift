@@ -187,7 +187,7 @@ class GRMustacheSuiteTests: XCTestCase {
                 var regError: NSError?
                 if let reg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &regError) {
                     let errorMessage = error.localizedDescription
-                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, countElements(errorMessage)))
+                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, (errorMessage as NSString).length))
                     if countElements(matches) == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
