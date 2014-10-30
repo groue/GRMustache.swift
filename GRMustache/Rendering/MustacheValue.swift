@@ -13,19 +13,123 @@ struct RenderingOptions {
     let enumerationItem: Bool
 }
 
-enum MustacheValue {
-    case None
-    case BoolValue(Bool)
-    case IntValue(Int)
-    case DoubleValue(Double)
-    case StringValue(String)
-    case DictionaryValue([String: MustacheValue])
-    case ArrayValue([MustacheValue])
-    case FilterValue(Filter)
-    case ObjCValue(AnyObject)
+struct MustacheValue {
+    let type: Type
+    
+    init() {
+        type = .None
+    }
+    
+    init(_ bool: Bool) {
+        type = .BoolValue(bool)
+    }
+    
+    init(_ int: Int) {
+        type = .IntValue(int)
+    }
+    
+    init(_ double: Double) {
+        type = .DoubleValue(double)
+    }
+    
+    init(_ string: String) {
+        type = .StringValue(string)
+    }
+    
+    init(_ dictionary: [String: MustacheValue]) {
+        type = .DictionaryValue(dictionary)
+    }
+    
+    init(_ array: [MustacheValue]) {
+        type = .ArrayValue(array)
+    }
+    
+    init(_ filter: Filter) {
+        type = .FilterValue(filter)
+    }
+    
+    init(_ object: AnyObject?) {
+        if let object: AnyObject = object {
+            if object is NSNull {
+                type = .None
+            } else if let number = object as? NSNumber {
+                let objCType = number.objCType
+                let str = String.fromCString(objCType)
+                switch str! {
+                case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
+                    type = .IntValue(Int(number.longLongValue))
+                case "f", "d":
+                    type = .DoubleValue(number.doubleValue)
+                case "B":
+                    type = .BoolValue(number.boolValue)
+                default:
+                    fatalError("Not implemented yet")
+                }
+            } else if let string = object as? NSString {
+                type = .StringValue(string)
+            } else if let dictionary = object as? NSDictionary {
+                var canonicalDictionary: [String: MustacheValue] = [:]
+                dictionary.enumerateKeysAndObjectsUsingBlock({ (key, value, _) -> Void in
+                    canonicalDictionary["\(key)"] = MustacheValue(value)
+                })
+                type = .DictionaryValue(canonicalDictionary)
+            } else if let array = object as? NSArray {
+                var canonicalArray: [MustacheValue] = []
+                for item in array {
+                    canonicalArray.append(MustacheValue(item))
+                }
+                type = .ArrayValue(canonicalArray)
+            } else {
+                type = .ObjCValue(object)
+            }
+        } else {
+            type = .None
+        }
+    }
+    
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
+        switch type {
+        case .None:
+            return MustacheValue()
+        case .BoolValue:
+            return MustacheValue()
+        case .IntValue:
+            return MustacheValue()
+        case .DoubleValue:
+            return MustacheValue()
+        case .StringValue:
+            return MustacheValue()
+        case .DictionaryValue(let dictionary):
+            if let mustacheValue = dictionary[identifier] {
+                return mustacheValue
+            } else {
+                return MustacheValue()
+            }
+        case .ArrayValue(let array):
+            switch identifier {
+            case "count":
+                return MustacheValue(countElements(array))
+            default:
+                return MustacheValue()
+            }
+        case .FilterValue(_):
+            return MustacheValue()
+        case .ObjCValue(let object):
+            if let array = object as? NSArray {
+                switch identifier {
+                case "count":
+                    return MustacheValue(array.count)
+                default:
+                    return MustacheValue()
+                }
+            } else {
+                return MustacheValue(object.valueForKey(identifier))
+            }
+        }
+    }
     
     var mustacheBoolValue: Bool {
-        switch self {
+        switch type {
         case .None:
             return false
         case .BoolValue(let bool):
@@ -57,208 +161,15 @@ enum MustacheValue {
         }
     }
     
-    func renderMustacheTag(tag: Tag, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
-        switch self {
-        case .None:
-            switch tag.type {
-            case .Variable:
-                return (rendering: "", contentType: .Text)
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .BoolValue(let bool):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(bool)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .IntValue(let int):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(int)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .DoubleValue(let double):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(double)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .StringValue(let string):
-            switch tag.type {
-            case .Variable:
-                return (rendering:string, contentType:.Text)
-                
-            case .Section:
-                // TODO: why isn't it the same rendering code as Number?
-                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-                
-            case .InvertedSection:
-                // TODO: why isn't it the same rendering code as Number?
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .DictionaryValue(let dictionary):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"\(self)", contentType:.Text)
-                
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-            }
-        case .ArrayValue(let array):
-            if options.enumerationItem {
-                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                var empty = true
-                for item in array {
-                    empty = false
-                    let itemOptions = RenderingOptions(context: options.context, enumerationItem: true)
-                    if let (itemRendering, itemContentType) = item.renderMustacheTag(tag, options: itemOptions, error: outError) {
-                        if contentType == nil {
-                            contentType = itemContentType
-                            buffer = buffer + itemRendering
-                        } else if contentType == itemContentType {
-                            buffer = buffer + itemRendering
-                        } else {
-                            if outError != nil {
-                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if empty {
-                    switch tag.type {
-                    case .Variable:
-                        return (rendering: "", contentType: .Text)
-                    case .Section, .InvertedSection:
-                        return tag.renderContentWithContext(options.context, error: outError)
-                    }
-                } else {
-                    return (rendering: buffer, contentType: contentType!)
-                }
-            }
-        case .FilterValue(_):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"[Filter]", contentType:.Text)
-                
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-                
-            case .InvertedSection:
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .ObjCValue(let object):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"\(object)", contentType:.Text)
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(self), error: outError)
-            }
-        }
-    }
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
-        switch self {
-        case .None:
-            return .None
-        case .BoolValue:
-            return .None
-        case .IntValue:
-            return .None
-        case .DoubleValue:
-            return .None
-        case .StringValue:
-            return .None
-        case .DictionaryValue(let dictionary):
-            if let value = dictionary[identifier] {
-                return value
-            } else {
-                return .None
-            }
-        case .ArrayValue(let array):
-            switch identifier {
-            case "count":
-                return .IntValue(countElements(array))
-            default:
-                return .None
-            }
-        case .FilterValue(_):
-            return .None
-        case .ObjCValue(let object):
-            if let array = object as? NSArray {
-                switch identifier {
-                case "count":
-                    return .IntValue(array.count)
-                default:
-                    return .None
-                }
-            } else if let value: AnyObject = object.valueForKey(identifier) {
-                return MustacheValue.ObjCValue(value).canonical()
-            } else {
-                return .None
-            }
-        }
-    }
-    
-    func canonical() -> MustacheValue {
-        switch self {
-        case .None, .BoolValue, .IntValue, .DoubleValue, .StringValue, .DictionaryValue, .ArrayValue, .FilterValue:
-            return self
-        case .ObjCValue(let object):
-            if object is NSNull {
-                return .None
-            } else if let number = object as? NSNumber {
-                let objCType = number.objCType
-                let str = String.fromCString(objCType)
-                switch str! {
-                case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-                    return MustacheValue.IntValue(Int(number.longLongValue))
-                case "f", "d":
-                    return .DoubleValue(number.doubleValue)
-                case "B":
-                    return .BoolValue(number.boolValue)
-                default:
-                    fatalError("Not implemented yet")
-                }
-            } else if let string = object as? NSString {
-                return .StringValue(string)
-            } else if let dictionary = object as? NSDictionary {
-                var canonicalDictionary: [String: MustacheValue] = [:]
-                dictionary.enumerateKeysAndObjectsUsingBlock({ (key, value, _) -> Void in
-                    canonicalDictionary["\(key)"] = MustacheValue.ObjCValue(value).canonical()
-                })
-                return .DictionaryValue(canonicalDictionary)
-            } else if let array = object as? NSArray {
-                var canonicalArray: [MustacheValue] = []
-                for item in array {
-                    canonicalArray.append(MustacheValue.ObjCValue(item).canonical())
-                }
-                return .ArrayValue(canonicalArray)
-            } else {
-                return self
-            }
-        }
+    enum Type {
+        case None
+        case BoolValue(Bool)
+        case IntValue(Int)
+        case DoubleValue(Double)
+        case StringValue(String)
+        case DictionaryValue([String: MustacheValue])
+        case ArrayValue([MustacheValue])
+        case FilterValue(Filter)
+        case ObjCValue(AnyObject)
     }
 }

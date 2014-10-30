@@ -20,7 +20,7 @@ class Context {
     var topMustacheValue: MustacheValue {
         switch type {
         case .Root:
-            return .None
+            return MustacheValue()
         case .Value(value: let value, parent: _):
             return value
         case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
@@ -37,7 +37,7 @@ class Context {
     }
     
     func contextByAddingValue(value: MustacheValue) -> Context {
-        switch value {
+        switch value.type {
         case .None:
             return self
         default:
@@ -82,10 +82,10 @@ class Context {
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
         switch type {
         case .Root:
-            return .None
+            return MustacheValue()
         case .Value(value: let value, parent: let parent):
             let innerValue = value.valueForMustacheIdentifier(identifier)
-            switch innerValue {
+            switch innerValue.type {
             case .None:
                 return parent.valueForMustacheIdentifier(identifier)
             default:

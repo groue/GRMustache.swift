@@ -14,7 +14,7 @@ class ExpressionInvocation: ExpressionVisitor {
     private var context: Context?
     
     init (expression: Expression) {
-        self.value = .None
+        self.value = MustacheValue()
         self.expression = expression
     }
     
@@ -37,10 +37,10 @@ class ExpressionInvocation: ExpressionVisitor {
         }
         let argumentValue = value
         
-        switch filterValue {
+        switch filterValue.type {
         case .FilterValue(let filter):
             if expression.curried {
-                value = .FilterValue(filter.filterByCurryingArgument(argumentValue))
+                value = MustacheValue(filter.filterByCurryingArgument(argumentValue))
             } else {
                 value = filter.transformedValue(argumentValue)
             }

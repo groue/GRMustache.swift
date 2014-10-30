@@ -16,7 +16,7 @@ class GRMustacheSuiteTests: XCTestCase {
         runTestsFromResource("compound_keys.json", directory: "GRMustacheSuite")
         runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
         runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
+        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
         runTestsFromResource("general.json", directory: "GRMustacheSuite")
         runTestsFromResource("implicit_iterator.json", directory: "GRMustacheSuite")
         runTestsFromResource("inheritable_partials.json", directory: "GRMustacheSuite")
@@ -86,7 +86,7 @@ class GRMustacheSuiteTests: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as [String: String]? }
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
-        var renderedValue: MustacheValue { return MustacheValue.ObjCValue(dictionary["data"]!).canonical() }
+        var renderedValue: MustacheValue { return MustacheValue(dictionary["data"]) }
         var expectedRendering: String? { return dictionary["expected"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }
         
