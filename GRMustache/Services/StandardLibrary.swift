@@ -81,6 +81,7 @@ class StandardLibrary: CustomMustacheValue {
     ]
     
     let mustacheBoolValue = true
+    let mustacheFilter: Filter? = nil
     
     func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
         return nil

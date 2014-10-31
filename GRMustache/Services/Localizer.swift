@@ -17,16 +17,15 @@ class Localizer: CustomMustacheValue {
         self.table = table
     }
     
-    func asFilter() -> Filter? {
-        return FilterWithBlock({ (value: MustacheValue) -> (MustacheValue) in
-            return value
-        })
-    }
-    
     
     // MARK: - CustomMustacheValue
     
     let mustacheBoolValue = true
+    var mustacheFilter: Filter? {
+        return FilterWithBlock({ (value: MustacheValue) -> (MustacheValue) in
+            return value
+        })
+    }
     
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
         return nil

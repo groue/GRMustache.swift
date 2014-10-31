@@ -72,10 +72,9 @@ class EachFilter: Filter {
             self.key = key
             self.last = last
         }
-
-        var mustacheBoolValue: Bool {
-            return value.mustacheBoolValue
-        }
+        
+        let mustacheFilter: Filter? = nil
+        var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         
         func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
             var position: [String: MustacheValue] = [:]

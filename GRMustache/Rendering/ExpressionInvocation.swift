@@ -39,19 +39,16 @@ class ExpressionInvocation: ExpressionVisitor {
         
         switch filterValue.type {
         case .FilterValue(let filter):
-            if expression.curried {
-                if let curriedFilter = filter.filterByCurryingArgument(argumentValue) {
-                    value = MustacheValue(curriedFilter)
-                } else {
-                    if outError != nil {
-                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-                    }
-                    return false
-                }
+            return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
+        case .CustomValue(let object):
+            if let filter = object.mustacheFilter {
+                return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
             } else {
-                value = filter.transformedValue(argumentValue)
+                if outError != nil {
+                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+                }
+                return false
             }
-            return true
         case .None:
             if outError != nil {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
@@ -82,4 +79,24 @@ class ExpressionInvocation: ExpressionVisitor {
         value = value.valueForMustacheIdentifier(expression.identifier)
         return true
     }
+    
+    
+    // MARK: - Private
+    
+    func visit(# filter: Filter, argumentValue: MustacheValue, curried: Bool, error outError: NSErrorPointer) -> Bool {
+        if curried {
+            if let curriedFilter = filter.filterByCurryingArgument(argumentValue) {
+                value = MustacheValue(curriedFilter)
+            } else {
+                if outError != nil {
+                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                }
+                return false
+            }
+        } else {
+            value = filter.transformedValue(argumentValue)
+        }
+        return true
+    }
+    
 }

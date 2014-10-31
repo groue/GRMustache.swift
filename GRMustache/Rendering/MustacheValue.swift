@@ -14,6 +14,8 @@ struct RenderingOptions {
 
 protocol CustomMustacheValue {
     var mustacheBoolValue: Bool { get }
+    var mustacheFilter: Filter? { get }
+    
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue?
     func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
 }
