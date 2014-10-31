@@ -9,6 +9,10 @@
 /* Begin PBXBuildFile section */
 		5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
 		5622F1F61A02F62300B5D3F8 /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
+		5622F1F81A03535700B5D3F8 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F71A03535700B5D3F8 /* Localizer.swift */; };
+		5622F1F91A03546200B5D3F8 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F71A03535700B5D3F8 /* Localizer.swift */; };
+		5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
+		5622F1FC1A0355FC00B5D3F8 /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
 		563AE19D19FBE47A0028C6C1 /* GRMustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* GRMustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		563AE1A319FBE47A0028C6C1 /* GRMustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563AE19719FBE47A0028C6C1 /* GRMustache.framework */; };
 		563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */; };
@@ -90,6 +94,8 @@
 
 /* Begin PBXFileReference section */
 		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
+		5622F1F71A03535700B5D3F8 /* Localizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
+		5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
 		563AE19719FBE47A0028C6C1 /* GRMustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GRMustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		563AE19C19FBE47A0028C6C1 /* GRMustache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GRMustache.h; sourceTree = "<group>"; };
@@ -153,6 +159,8 @@
 		5622F1F31A02E98F00B5D3F8 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */,
+				5622F1F71A03535700B5D3F8 /* Localizer.swift */,
 				5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */,
 			);
 			path = Services;
@@ -434,12 +442,14 @@
 				56CC2C9E1A000CEB00CBD45A /* FilteredExpression.swift in Sources */,
 				563AE1D519FC48330028C6C1 /* Template.swift in Sources */,
 				563AE20719FCEAB20028C6C1 /* MustacheValue.swift in Sources */,
+				5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */,
 				563AE1C519FC2A380028C6C1 /* ContentType.swift in Sources */,
 				563AE1EF19FC5A2E0028C6C1 /* TemplateASTVisitor.swift in Sources */,
 				563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */,
 				563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */,
 				5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */,
 				563AE1F219FC5A940028C6C1 /* InheritablePartialNode.swift in Sources */,
+				5622F1F81A03535700B5D3F8 /* Localizer.swift in Sources */,
 				563AE1EC19FC55920028C6C1 /* RenderingEngine.swift in Sources */,
 				563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */,
 				563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */,
@@ -467,6 +477,7 @@
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
 				563AE20219FC62330028C6C1 /* Tag.swift in Sources */,
 				563AE1E719FC52B70028C6C1 /* VariableTag.swift in Sources */,
+				5622F1F91A03546200B5D3F8 /* Localizer.swift in Sources */,
 				563AE1DD19FC4CFA0028C6C1 /* Template.swift in Sources */,
 				563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */,
 				563AE1DC19FC4CF10028C6C1 /* Context.swift in Sources */,
@@ -488,6 +499,7 @@
 				563AE1E919FC52CC0028C6C1 /* ExpressionParser.swift in Sources */,
 				563AE1ED19FC55920028C6C1 /* RenderingEngine.swift in Sources */,
 				563AE1E819FC52C00028C6C1 /* Expression.swift in Sources */,
+				5622F1FC1A0355FC00B5D3F8 /* EachFilter.swift in Sources */,
 				56CC2CA21A000F4B00CBD45A /* ScopedExpression.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

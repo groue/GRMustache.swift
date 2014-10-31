@@ -13,12 +13,10 @@ protocol Filter {
     func transformedValue(value: MustacheValue) -> MustacheValue
 }
 
-typealias FilterClosure = (MustacheValue) -> (MustacheValue)
-
 private class BlockFilter: Filter {
-    let block: FilterClosure
+    let block: (MustacheValue) -> (MustacheValue)
     
-    init(block: FilterClosure) {
+    init(_ block: (MustacheValue) -> (MustacheValue)) {
         self.block = block
     }
     
@@ -31,6 +29,34 @@ private class BlockFilter: Filter {
     }
 }
 
-func FilterWithBlock(block: FilterClosure) -> Filter {
-    return BlockFilter(block: block)
+func FilterWithBlock(block: (MustacheValue) -> (MustacheValue)) -> Filter {
+    return BlockFilter(block)
 }
+
+func FilterWithBlock(block: (String?) -> (MustacheValue)) -> Filter {
+    return BlockFilter({ (value) -> (MustacheValue) in
+        switch value.type {
+        case .None:
+            return block(nil)
+        case .BoolValue(let bool):
+            return block("\(bool)")
+        case .IntValue(let int):
+            return block("\(int)")
+        case .DoubleValue(let double):
+            return block("\(double)")
+        case .StringValue(let string):
+            return block(string)
+        case .DictionaryValue(let dictionary):
+            return block("\(dictionary)")
+        case .ArrayValue(let array):
+            return block("\(array)")
+        case .FilterValue(let filter):
+            return block("\(filter)")
+        case .ObjCValue(let object):
+            return block("\(object)")
+        case .CustomValue(let object):
+            return block("\(object)")
+        }
+    })
+}
+

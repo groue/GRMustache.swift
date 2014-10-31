@@ -9,14 +9,13 @@
 import Foundation
 
 struct RenderingOptions {
-    let context: Context
     let enumerationItem: Bool
 }
 
 protocol CustomMustacheValue {
     var mustacheBoolValue: Bool { get }
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue?
-    func renderForMustacheTag(tag: Tag, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
 }
 
 struct MustacheValue {
@@ -97,6 +96,41 @@ struct MustacheValue {
         }
     }
     
+    var mustacheBoolValue: Bool {
+        switch type {
+        case .None:
+            return false
+        case .BoolValue(let bool):
+            return bool
+        case .IntValue(let int):
+            return int != 0
+        case .DoubleValue(let double):
+            return double != 0.0
+        case .StringValue(let string):
+            return countElements(string) > 0
+        case .DictionaryValue:
+            return true
+        case .ArrayValue(let array):
+            return countElements(array) > 0
+        case .FilterValue(_):
+            return true
+        case .ObjCValue(let object):
+            if let _ = object as? NSNull {
+                return false
+            } else if let number = object as? NSNumber {
+                return number.boolValue
+            } else if let string = object as? NSString {
+                return string.length > 0
+            } else if let array = object as? NSArray {
+                return array.count > 0
+            } else {
+                return true
+            }
+        case .CustomValue(let object):
+            return object.mustacheBoolValue
+        }
+    }
+    
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
         switch type {
         case .None:
@@ -144,38 +178,127 @@ struct MustacheValue {
         }
     }
     
-    var mustacheBoolValue: Bool {
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
         switch type {
         case .None:
-            return false
+            switch tag.type {
+            case .Variable:
+                return (rendering: "", contentType: .Text)
+            case .Section, .InvertedSection:
+                return tag.renderContentWithContext(context, error: outError)
+            }
         case .BoolValue(let bool):
-            return bool
+            switch tag.type {
+            case .Variable:
+                return (rendering: "\(bool)", contentType: .Text)
+            case .Section, .InvertedSection:
+                if options.enumerationItem {
+                    return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+                } else {
+                    return tag.renderContentWithContext(context, error: outError)
+                }
+            }
         case .IntValue(let int):
-            return int != 0
+            switch tag.type {
+            case .Variable:
+                return (rendering: "\(int)", contentType: .Text)
+            case .Section, .InvertedSection:
+                if options.enumerationItem {
+                    return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+                } else {
+                    return tag.renderContentWithContext(context, error: outError)
+                }
+            }
         case .DoubleValue(let double):
-            return double != 0.0
+            switch tag.type {
+            case .Variable:
+                return (rendering: "\(double)", contentType: .Text)
+            case .Section, .InvertedSection:
+                if options.enumerationItem {
+                    return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+                } else {
+                    return tag.renderContentWithContext(context, error: outError)
+                }
+            }
         case .StringValue(let string):
-            return countElements(string) > 0
-        case .DictionaryValue:
-            return true
+            switch tag.type {
+            case .Variable:
+                return (rendering:string, contentType:.Text)
+                
+            case .Section:
+                // TODO: why isn't it the same rendering code as Number?
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+                
+            case .InvertedSection:
+                // TODO: why isn't it the same rendering code as Number?
+                return tag.renderContentWithContext(context, error: outError)
+            }
+        case .DictionaryValue(let dictionary):
+            switch tag.type {
+            case .Variable:
+                return (rendering:"\(dictionary)", contentType:.Text)
+                
+            case .Section, .InvertedSection:
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+            }
         case .ArrayValue(let array):
-            return countElements(array) > 0
-        case .FilterValue(_):
-            return true
-        case .ObjCValue(let object):
-            if let _ = object as? NSNull {
-                return false
-            } else if let number = object as? NSNumber {
-                return number.boolValue
-            } else if let string = object as? NSString {
-                return string.length > 0
-            } else if let array = object as? NSArray {
-                return array.count > 0
+            if options.enumerationItem {
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
             } else {
-                return true
+                var buffer = ""
+                var contentType: ContentType?
+                var empty = true
+                for item in array {
+                    empty = false
+                    let itemOptions = RenderingOptions(enumerationItem: true)
+                    if let (itemRendering, itemContentType) = item.renderForMustacheTag(tag, context: context, options: itemOptions, error: outError) {
+                        if contentType == nil {
+                            contentType = itemContentType
+                            buffer = buffer + itemRendering
+                        } else if contentType == itemContentType {
+                            buffer = buffer + itemRendering
+                        } else {
+                            if outError != nil {
+                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
+                            }
+                            return nil
+                        }
+                    } else {
+                        return nil
+                    }
+                }
+                
+                if empty {
+                    switch tag.type {
+                    case .Variable:
+                        return (rendering: "", contentType: .Text)
+                    case .Section, .InvertedSection:
+                        return tag.renderContentWithContext(context, error: outError)
+                    }
+                } else {
+                    return (rendering: buffer, contentType: contentType!)
+                }
+            }
+        case .FilterValue(_):
+            switch tag.type {
+            case .Variable:
+                return (rendering:"[Filter]", contentType:.Text)
+                
+            case .Section, .InvertedSection:
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+                
+            case .InvertedSection:
+                return tag.renderContentWithContext(context, error: outError)
+            }
+        case .ObjCValue(let object):
+            switch tag.type {
+            case .Variable:
+                return (rendering:"\(object)", contentType:.Text)
+            case .Section, .InvertedSection:
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
             }
         case .CustomValue(let object):
-            return object.mustacheBoolValue
+            return object.renderForMustacheTag(tag, context: context, options: options, error: outError)
         }
     }
     

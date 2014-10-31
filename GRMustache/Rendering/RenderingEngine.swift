@@ -99,12 +99,12 @@ class RenderingEngine: TemplateASTVisitor {
         let expressionInvocation = ExpressionInvocation(expression: tag.expression)
         if expressionInvocation.invokeWithContext(context, error: outError) {
             let value = expressionInvocation.value
-            let renderingOptions = RenderingOptions(context: context, enumerationItem: false)
+            let renderingOptions = RenderingOptions(enumerationItem: false)
             var rendering: String
             var renderingContentType: ContentType
             switch tag.type {
             case .Variable:
-                if let (r, c) = renderMustacheValue(value, tag: tag, options: renderingOptions, error: outError) {
+                if let (r, c) = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: outError) {
                     (rendering, renderingContentType) = (r, c)
                 } else {
                     return false
@@ -112,7 +112,7 @@ class RenderingEngine: TemplateASTVisitor {
             case .Section:
                 let boolValue = value.mustacheBoolValue
                 if boolValue {
-                    if let (r, c) = renderMustacheValue(value, tag: tag, options: renderingOptions, error: outError) {
+                    if let (r, c) = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: outError) {
                         (rendering, renderingContentType) = (r, c)
                     } else {
                         return false
@@ -127,7 +127,7 @@ class RenderingEngine: TemplateASTVisitor {
                     rendering = ""
                     renderingContentType = .HTML
                 } else {
-                    if let (r, c) = renderMustacheValue(value, tag: tag, options: renderingOptions, error: outError) {
+                    if let (r, c) = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: outError) {
                         (rendering, renderingContentType) = (r, c)
                     } else {
                         return false
@@ -147,130 +147,4 @@ class RenderingEngine: TemplateASTVisitor {
             return false
         }
     }
-
-
-    func renderMustacheValue(value: MustacheValue, tag: Tag, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
-        switch value.type {
-        case .None:
-            switch tag.type {
-            case .Variable:
-                return (rendering: "", contentType: .Text)
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .BoolValue(let bool):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(bool)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .IntValue(let int):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(int)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .DoubleValue(let double):
-            switch tag.type {
-            case .Variable:
-                return (rendering: "\(double)", contentType: .Text)
-            case .Section, .InvertedSection:
-                if options.enumerationItem {
-                    return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-                } else {
-                    return tag.renderContentWithContext(options.context, error: outError)
-                }
-            }
-        case .StringValue(let string):
-            switch tag.type {
-            case .Variable:
-                return (rendering:string, contentType:.Text)
-                
-            case .Section:
-                // TODO: why isn't it the same rendering code as Number?
-                return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-                
-            case .InvertedSection:
-                // TODO: why isn't it the same rendering code as Number?
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .DictionaryValue(let dictionary):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"\(dictionary)", contentType:.Text)
-                
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-            }
-        case .ArrayValue(let array):
-            if options.enumerationItem {
-                return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                var empty = true
-                for item in array {
-                    empty = false
-                    let itemOptions = RenderingOptions(context: options.context, enumerationItem: true)
-                    if let (itemRendering, itemContentType) = renderMustacheValue(item, tag: tag, options: itemOptions, error: outError) {
-                        if contentType == nil {
-                            contentType = itemContentType
-                            buffer = buffer + itemRendering
-                        } else if contentType == itemContentType {
-                            buffer = buffer + itemRendering
-                        } else {
-                            if outError != nil {
-                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if empty {
-                    switch tag.type {
-                    case .Variable:
-                        return (rendering: "", contentType: .Text)
-                    case .Section, .InvertedSection:
-                        return tag.renderContentWithContext(options.context, error: outError)
-                    }
-                } else {
-                    return (rendering: buffer, contentType: contentType!)
-                }
-            }
-        case .FilterValue(_):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"[Filter]", contentType:.Text)
-                
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-                
-            case .InvertedSection:
-                return tag.renderContentWithContext(options.context, error: outError)
-            }
-        case .ObjCValue(let object):
-            switch tag.type {
-            case .Variable:
-                return (rendering:"\(object)", contentType:.Text)
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(options.context.contextByAddingValue(value), error: outError)
-            }
-        case .CustomValue(let object):
-            return object.renderForMustacheTag(tag, options: options, error: outError)
-        }
-    }
-    
 }

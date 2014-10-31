@@ -25,7 +25,7 @@ class GRMustacheSuiteTests: XCTestCase {
         runTestsFromResource("partials.json", directory: "GRMustacheSuite")
         runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
         runTestsFromResource("sections.json", directory: "GRMustacheSuite")
-//        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
+        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
         runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
         runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
         runTestsFromResource("variables.json", directory: "GRMustacheSuite")
