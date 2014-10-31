@@ -69,6 +69,15 @@ class StandardLibrary: CustomMustacheValue {
                 return MustacheValue(false)
             }
             }),
+        "HTML": MustacheValue([
+            "escape": MustacheValue(FilterWithBlock { (string: String?) -> (MustacheValue) in
+                if let string = string {
+                    return MustacheValue(TranslateHTMLCharacters(string))
+                } else {
+                    return MustacheValue()
+                }
+                })
+            ]),
     ]
     
     let mustacheBoolValue = true
