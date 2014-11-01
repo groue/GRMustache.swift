@@ -13,6 +13,7 @@ class Context {
         case Root
         case Value(value: MustacheValue, parent: Context)
         case InheritablePartial(inheritablePartialNode: InheritablePartialNode, parent: Context)
+        case TagObserver(tagObserver: MustacheTagObserver, parent: Context)
     }
     
     let type: Type
@@ -25,6 +26,30 @@ class Context {
             return value
         case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
             return parent.topMustacheValue
+        case .TagObserver(tagObserver: _, parent: let parent):
+            return parent.topMustacheValue
+        }
+    }
+    
+    var tagObserverStack: [MustacheTagObserver] {
+        switch type {
+        case .Root:
+            return []
+        case .Value(value: let value, parent: let parent):
+            switch value.type {
+            case .RenderableValue(let object):
+                if let tagObserver = object.mustacheTagObserver {
+                    return [tagObserver] + parent.tagObserverStack
+                } else {
+                    return parent.tagObserverStack
+                }
+            default:
+                return parent.tagObserverStack
+            }
+        case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
+            return parent.tagObserverStack
+        case .TagObserver(tagObserver: let tagObserver, parent: let parent):
+            return [tagObserver] + parent.tagObserverStack
         }
     }
     
@@ -53,6 +78,10 @@ class Context {
         return Context(type: .InheritablePartial(inheritablePartialNode: inheritablePartialNode, parent: self))
     }
     
+    func contextByAddingTagObserver(tagObserver: MustacheTagObserver) -> Context {
+        return Context(type: .TagObserver(tagObserver: tagObserver, parent: self))
+    }
+    
     func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
         var usedTemplateASTs: [TemplateAST] = []
         var context = self
@@ -79,6 +108,8 @@ class Context {
                     node = resolvedNode
                 }
                 context = parent
+            case .TagObserver(tagObserver: _, parent: let parent):
+                context = parent
             }
         }
     }
@@ -96,6 +127,8 @@ class Context {
                 return innerValue
             }
         case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
+            return parent.valueForMustacheIdentifier(identifier)
+        case .TagObserver(tagObserver: _, parent: let parent):
             return parent.valueForMustacheIdentifier(identifier)
         }
     }

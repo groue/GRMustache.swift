@@ -8,54 +8,45 @@
 
 import Foundation
 
-protocol Filter {
-    func filterByCurryingArgument(argument: MustacheValue) -> Filter?
-    func transformedValue(value: MustacheValue) -> MustacheValue
+protocol MustacheFilter {
+    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter?
+    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue?
 }
 
-private class BlockFilter: Filter {
-    let block: (MustacheValue) -> (MustacheValue)
+private class BlockFilter: MustacheFilter {
+    let block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)
     
-    init(_ block: (MustacheValue) -> (MustacheValue)) {
+    init(_ block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) {
         self.block = block
     }
     
-    func filterByCurryingArgument(argument: MustacheValue) -> Filter? {
+    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
         return nil
     }
     
-    func transformedValue(value: MustacheValue) -> MustacheValue {
-        return block(value)
+    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
+        return block(value, error: outError)
     }
 }
 
-func FilterWithBlock(block: (MustacheValue) -> (MustacheValue)) -> Filter {
+func MustacheFilterWithBlock(block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) -> MustacheFilter {
     return BlockFilter(block)
 }
 
-func FilterWithBlock(block: (String?) -> (MustacheValue)) -> Filter {
-    return BlockFilter({ (value) -> (MustacheValue) in
+func MustacheFilterWithBlock(block: (String?) -> (MustacheValue)) -> MustacheFilter {
+    return BlockFilter({ (value, outError) -> (MustacheValue?) in
         switch value.type {
         case .None:
             return block(nil)
-        case .BoolValue(let bool):
-            return block("\(bool)")
-        case .IntValue(let int):
-            return block("\(int)")
-        case .DoubleValue(let double):
-            return block("\(double)")
-        case .StringValue(let string):
-            return block(string)
-        case .DictionaryValue(let dictionary):
-            return block("\(dictionary)")
-        case .ArrayValue(let array):
-            return block("\(array)")
-        case .FilterValue(let filter):
-            return block("\(filter)")
-        case .ObjCValue(let object):
-            return block("\(object)")
-        case .CustomValue(let object):
-            return block("\(object)")
+        default:
+            if let string = value.asString() {
+                return block(string)
+            } else {
+                if outError != nil {
+                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not a string"])
+                }
+                return nil
+            }
         }
     })
 }

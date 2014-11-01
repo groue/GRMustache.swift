@@ -8,20 +8,20 @@
 
 import Foundation
 
-class StandardLibrary: CustomMustacheValue {
+class StandardLibrary: MustacheRenderable {
     let items: [String: MustacheValue] = [
-        "capitalized": MustacheValue(FilterWithBlock { (string: String?) -> (MustacheValue) in
+        "capitalized": MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.capitalizedString)
-            }),
-        "lowercase": MustacheValue(FilterWithBlock { (string: String?) -> (MustacheValue) in
+        })),
+        "lowercase": MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.lowercaseString)
-            }),
-        "uppercase": MustacheValue(FilterWithBlock { (string: String?) -> (MustacheValue) in
+        })),
+        "uppercase": MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.uppercaseString)
-            }),
+        })),
         "localize": MustacheValue(Localizer(bundle: nil, table: nil)),
         "each": MustacheValue(EachFilter()),
-        "isBlank": MustacheValue(FilterWithBlock { (value: MustacheValue) -> (MustacheValue) in
+        "isBlank": MustacheValue(MustacheFilterWithBlock { (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
             switch value.type {
             case .None:
                 return MustacheValue(true)
@@ -41,11 +41,11 @@ class StandardLibrary: CustomMustacheValue {
                 return MustacheValue(false)
             case .ObjCValue(let object):
                 return MustacheValue(false)
-            case .CustomValue(let object):
+            case .RenderableValue(let object):
                 return MustacheValue(false)
             }
             }),
-        "isEmpty": MustacheValue(FilterWithBlock { (value: MustacheValue) -> (MustacheValue) in
+        "isEmpty": MustacheValue(MustacheFilterWithBlock { (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
             switch value.type {
             case .None:
                 return MustacheValue(true)
@@ -65,25 +65,21 @@ class StandardLibrary: CustomMustacheValue {
                 return MustacheValue(false)
             case .ObjCValue(let object):
                 return MustacheValue(false)
-            case .CustomValue(let object):
+            case .RenderableValue(let object):
                 return MustacheValue(false)
             }
             }),
         "HTML": MustacheValue([
-            "escape": MustacheValue(FilterWithBlock { (string: String?) -> (MustacheValue) in
-                if let string = string {
-                    return MustacheValue(TranslateHTMLCharacters(string))
-                } else {
-                    return MustacheValue()
-                }
-                })
+            // TODO: make this cast avoidable (Swift does not know if it should use the filter or renderable-based MustacheValue initializer)
+            "escape": MustacheValue(HTMLEscapeRenderable() as MustacheRenderable)
             ]),
     ]
     
     let mustacheBoolValue = true
-    let mustacheFilter: Filter? = nil
+    let mustacheFilter: MustacheFilter? = nil
+    let mustacheTagObserver: MustacheTagObserver? = nil
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
         return nil
     }
     

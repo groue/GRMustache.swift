@@ -19,19 +19,15 @@ public class Template {
         self.baseContext = baseContext
     }
     
-    func render(value: MustacheValue, error outError: NSErrorPointer) -> String? {
+    func render(value: MustacheValue, error outError: NSErrorPointer) -> MustacheRendering? {
         let context = baseContext.contextByAddingValue(value)
-        if let (rendering, _) = renderContentWithContext(context, error: outError) {
-            return rendering
-        } else {
-            return nil
-        }
+        return renderContentWithContext(context, error: outError)
     }
     
     
     // MARK: - Private
     
-    private func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> (String, ContentType)? {
+    private func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> MustacheRendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         return renderingEngine.renderTemplateAST(templateAST, error: outError)
     }

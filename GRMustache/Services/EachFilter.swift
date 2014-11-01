@@ -8,19 +8,21 @@
 
 import Foundation
 
-class EachFilter: Filter {
+class EachFilter: MustacheFilter {
     
-    func filterByCurryingArgument(argument: MustacheValue) -> Filter? {
+    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
         return nil
     }
     
-    func transformedValue(value: MustacheValue) -> MustacheValue {
+    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
         switch(value.type) {
         case .None:
             return value
-        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .FilterValue, .ObjCValue, .CustomValue:
-            // TODO: error
-            return value
+        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .FilterValue, .ObjCValue, .RenderableValue:
+            if outError != nil {
+                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+            }
+            return nil
         case .DictionaryValue(let dictionary):
             return transformedDictionary(dictionary)
         case .ArrayValue(let array):
@@ -60,7 +62,7 @@ class EachFilter: Filter {
         return MustacheValue(mustacheValues)
     }
     
-    class ReplacementValue: CustomMustacheValue {
+    class ReplacementValue: MustacheRenderable {
         let value: MustacheValue
         let index: Int
         let last: Bool
@@ -73,10 +75,11 @@ class EachFilter: Filter {
             self.last = last
         }
         
-        let mustacheFilter: Filter? = nil
+        let mustacheFilter: MustacheFilter? = nil
+        let mustacheTagObserver: MustacheTagObserver? = nil
         var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         
-        func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
+        func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
             var position: [String: MustacheValue] = [:]
             position["@index"] = MustacheValue(index)
             position["@indexPlusOne"] = MustacheValue(index + 1)

@@ -38,7 +38,7 @@ class GRMustacheTests: XCTestCase {
         let templateRepository = TemplateRepository()
         if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
             let data = MustacheValue(["name": MustacheValue("Arthur")])
-            if let rendering = template.render(data, error: &error) {
+            if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
             } else {
                 XCTFail("\(error!)")
@@ -53,7 +53,7 @@ class GRMustacheTests: XCTestCase {
         let templateRepository = TemplateRepository()
         if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
             let data = MustacheValue(["name": "Arthur"])
-            if let rendering = template.render(data, error: &error) {
+            if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
             } else {
                 XCTFail("\(error!)")
@@ -68,7 +68,7 @@ class GRMustacheTests: XCTestCase {
         let templateRepository = TemplateRepository(templates: ["partial": "{{name}}"])
         if let template = templateRepository.templateFromString("<{{>partial}}>", error: &error) {
             let data = MustacheValue(["name": MustacheValue("Arthur")])
-            if let rendering = template.render(data, error: &error) {
+            if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
             } else {
                 XCTFail("\(error!)")

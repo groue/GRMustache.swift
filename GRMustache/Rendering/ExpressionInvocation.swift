@@ -40,7 +40,7 @@ class ExpressionInvocation: ExpressionVisitor {
         switch filterValue.type {
         case .FilterValue(let filter):
             return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
-        case .CustomValue(let object):
+        case .RenderableValue(let object):
             if let filter = object.mustacheFilter {
                 return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
             } else {
@@ -83,7 +83,7 @@ class ExpressionInvocation: ExpressionVisitor {
     
     // MARK: - Private
     
-    func visit(# filter: Filter, argumentValue: MustacheValue, curried: Bool, error outError: NSErrorPointer) -> Bool {
+    func visit(# filter: MustacheFilter, argumentValue: MustacheValue, curried: Bool, error outError: NSErrorPointer) -> Bool {
         if curried {
             if let curriedFilter = filter.filterByCurryingArgument(argumentValue) {
                 value = MustacheValue(curriedFilter)
@@ -94,7 +94,11 @@ class ExpressionInvocation: ExpressionVisitor {
                 return false
             }
         } else {
-            value = filter.transformedValue(argumentValue)
+            if let filterResult = filter.transformedValue(argumentValue, error: outError) {
+                value = filterResult
+            } else {
+                return false
+            }
         }
         return true
     }

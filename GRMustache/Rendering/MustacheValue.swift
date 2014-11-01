@@ -8,16 +8,9 @@
 
 import Foundation
 
-struct RenderingOptions {
-    let enumerationItem: Bool
-}
-
-protocol CustomMustacheValue {
-    var mustacheBoolValue: Bool { get }
-    var mustacheFilter: Filter? { get }
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue?
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
+struct MustacheRendering {
+    let string: String
+    let contentType: ContentType
 }
 
 struct MustacheValue {
@@ -51,12 +44,12 @@ struct MustacheValue {
         type = .ArrayValue(array)
     }
     
-    init(_ filter: Filter) {
+    init(_ filter: MustacheFilter) {
         type = .FilterValue(filter)
     }
     
-    init(_ object: CustomMustacheValue) {
-        type = .CustomValue(object)
+    init(_ object: MustacheRenderable) {
+        type = .RenderableValue(object)
     }
     
     init(_ object: AnyObject?) {
@@ -128,7 +121,7 @@ struct MustacheValue {
             } else {
                 return true
             }
-        case .CustomValue(let object):
+        case .RenderableValue(let object):
             return object.mustacheBoolValue
         }
     }
@@ -171,7 +164,7 @@ struct MustacheValue {
             } else {
                 return MustacheValue(object.valueForKey(identifier))
             }
-        case .CustomValue(let object):
+        case .RenderableValue(let object):
             if let value = object.valueForMustacheIdentifier(identifier) {
                 return value
             } else {
@@ -180,19 +173,19 @@ struct MustacheValue {
         }
     }
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
         switch type {
         case .None:
             switch tag.type {
             case .Variable:
-                return (rendering: "", contentType: .Text)
+                return MustacheRendering(string: "", contentType: .Text)
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(context, error: outError)
             }
         case .BoolValue(let bool):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(bool)", contentType: .Text)
+                return MustacheRendering(string: "\(bool)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
@@ -203,7 +196,7 @@ struct MustacheValue {
         case .IntValue(let int):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(int)", contentType: .Text)
+                return MustacheRendering(string: "\(int)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
@@ -214,7 +207,7 @@ struct MustacheValue {
         case .DoubleValue(let double):
             switch tag.type {
             case .Variable:
-                return (rendering: "\(double)", contentType: .Text)
+                return MustacheRendering(string: "\(double)", contentType: .Text)
             case .Section, .InvertedSection:
                 if options.enumerationItem {
                     return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
@@ -225,7 +218,7 @@ struct MustacheValue {
         case .StringValue(let string):
             switch tag.type {
             case .Variable:
-                return (rendering:string, contentType:.Text)
+                return MustacheRendering(string: string, contentType: .Text)
                 
             case .Section:
                 // TODO: why isn't it the same rendering code as Number?
@@ -238,7 +231,7 @@ struct MustacheValue {
         case .DictionaryValue(let dictionary):
             switch tag.type {
             case .Variable:
-                return (rendering:"\(dictionary)", contentType:.Text)
+                return MustacheRendering(string: "\(dictionary)", contentType: .Text)
                 
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
@@ -253,12 +246,12 @@ struct MustacheValue {
                 for item in array {
                     empty = false
                     let itemOptions = RenderingOptions(enumerationItem: true)
-                    if let (itemRendering, itemContentType) = item.renderForMustacheTag(tag, context: context, options: itemOptions, error: outError) {
+                    if let itemRendering = item.renderForMustacheTag(tag, context: context, options: itemOptions, error: outError) {
                         if contentType == nil {
-                            contentType = itemContentType
-                            buffer = buffer + itemRendering
-                        } else if contentType == itemContentType {
-                            buffer = buffer + itemRendering
+                            contentType = itemRendering.contentType
+                            buffer = buffer + itemRendering.string
+                        } else if contentType == itemRendering.contentType {
+                            buffer = buffer + itemRendering.string
                         } else {
                             if outError != nil {
                                 outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
@@ -273,18 +266,18 @@ struct MustacheValue {
                 if empty {
                     switch tag.type {
                     case .Variable:
-                        return (rendering: "", contentType: .Text)
+                        return MustacheRendering(string: "", contentType: .Text)
                     case .Section, .InvertedSection:
                         return tag.renderContentWithContext(context, error: outError)
                     }
                 } else {
-                    return (rendering: buffer, contentType: contentType!)
+                    return MustacheRendering(string: buffer, contentType: contentType!)
                 }
             }
         case .FilterValue(_):
             switch tag.type {
             case .Variable:
-                return (rendering:"[Filter]", contentType:.Text)
+                return MustacheRendering(string: "[MustacheFilter]", contentType: .Text)
                 
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
@@ -295,12 +288,37 @@ struct MustacheValue {
         case .ObjCValue(let object):
             switch tag.type {
             case .Variable:
-                return (rendering:"\(object)", contentType:.Text)
+                return MustacheRendering(string: "\(object)", contentType: .Text)
             case .Section, .InvertedSection:
                 return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
             }
-        case .CustomValue(let object):
+        case .RenderableValue(let object):
             return object.renderForMustacheTag(tag, context: context, options: options, error: outError)
+        }
+    }
+    
+    func asString() -> String? {
+        switch type {
+        case .None:
+            return nil
+        case .BoolValue(let bool):
+            return "\(bool)"
+        case .IntValue(let int):
+            return "\(int)"
+        case .DoubleValue(let double):
+            return "\(double)"
+        case .StringValue(let string):
+            return string
+        case .DictionaryValue(let dictionary):
+            return "\(dictionary)"
+        case .ArrayValue(let array):
+            return "\(array)"
+        case .FilterValue(let filter):
+            return "\(filter)"
+        case .ObjCValue(let object):
+            return "\(object)"
+        case .RenderableValue(let object):
+            return "\(object)"
         }
     }
     
@@ -312,8 +330,8 @@ struct MustacheValue {
         case StringValue(String)
         case DictionaryValue([String: MustacheValue])
         case ArrayValue([MustacheValue])
-        case FilterValue(Filter)
+        case FilterValue(MustacheFilter)
         case ObjCValue(AnyObject)
-        case CustomValue(CustomMustacheValue)
+        case RenderableValue(MustacheRenderable)
     }
 }

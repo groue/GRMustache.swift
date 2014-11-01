@@ -8,7 +8,7 @@
 
 import Foundation
 
-class Localizer: CustomMustacheValue {
+class Localizer: MustacheRenderable {
     let bundle: NSBundle?
     let table: String?
     
@@ -18,11 +18,12 @@ class Localizer: CustomMustacheValue {
     }
     
     
-    // MARK: - CustomMustacheValue
+    // MARK: - MustacheRenderable
     
     let mustacheBoolValue = true
-    var mustacheFilter: Filter? {
-        return FilterWithBlock({ (value: MustacheValue) -> (MustacheValue) in
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheFilter: MustacheFilter? {
+        return MustacheFilterWithBlock({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue) in
             return value
         })
     }
@@ -31,7 +32,7 @@ class Localizer: CustomMustacheValue {
         return nil
     }
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)? {
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
         return nil
     }
     

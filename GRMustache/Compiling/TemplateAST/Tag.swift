@@ -18,5 +18,5 @@ protocol Tag {
     var expression: Expression { get }
     var type: TagType { get }
     
-    func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> (rendering: String, contentType: ContentType)?
+    func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> MustacheRendering?
 }
