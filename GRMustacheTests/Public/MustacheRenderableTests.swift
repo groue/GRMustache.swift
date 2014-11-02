@@ -294,4 +294,5 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(rendering!, "-")
     }
     
+    // TODO: translate remaining tests, starting from testRenderingObjectDoesNotAutomaticallyEntersCurrentContext
 }
