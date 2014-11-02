@@ -20,7 +20,7 @@ public class MustacheTemplate: MustacheRenderable {
     }
     
     convenience init?(string: String, error outError: NSErrorPointer) {
-        let repository = MustacheTemplateRepository(bundle: nil)
+        let repository = RenderingEngine.currentTemplateRepository() ?? MustacheTemplateRepository(bundle: nil)
         if let templateAST = repository.templateASTFromString(string, contentType: repository.configuration.contentType, templateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
@@ -103,6 +103,9 @@ public class MustacheTemplate: MustacheRenderable {
     
     private func mustacheRendering(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
+        RenderingEngine.pushCurrentTemplateRepository(repository)
+        let rendering = renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
+        RenderingEngine.popCurrentTemplateRepository()
+        return rendering
     }
 }

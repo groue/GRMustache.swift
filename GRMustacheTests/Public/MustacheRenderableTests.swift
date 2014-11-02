@@ -277,4 +277,21 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}{{/renderable}}", error: nil)
         XCTAssertEqual(rendering!, "-")
     }
+
+    func testRenderableObjectCanAccessSiblingTemplates() {
+        let templates = [
+            "template": "{{renderable}}",
+            "partial": "{{subject}}",
+        ]
+        let repository = MustacheTemplateRepository(templates: templates)
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            let alternativeTemplate = MustacheTemplate(string: "{{>partial}}", error:nil)!
+            return alternativeTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        let template = repository.templateNamed("template", error: nil)!
+        let rendering = template.render(value, error: nil)
+        XCTAssertEqual(rendering!, "-")
+    }
+    
 }

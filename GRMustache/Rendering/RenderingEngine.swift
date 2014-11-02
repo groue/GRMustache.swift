@@ -30,6 +30,41 @@ class RenderingEngine: TemplateASTVisitor {
     }
     
     
+    // MARK: - Current Template Repository
+    
+    // Classes do not support (yet) stored properties.
+    // Workaround is to use a wrapper struct.
+    private struct TemplateRepositoryStack {
+        // TODO: make it thread-safe
+        static var stack: [MustacheTemplateRepository] = []
+        static func append(repository: MustacheTemplateRepository) {
+            stack.append(repository)
+        }
+        static func removeLast() {
+            stack.removeLast()
+        }
+        static func lastObject() -> MustacheTemplateRepository? {
+            if stack.isEmpty {
+                return nil
+            } else {
+                return stack[stack.endIndex.predecessor()]
+            }
+        }
+    }
+    
+    class func currentTemplateRepository() -> MustacheTemplateRepository? {
+        return TemplateRepositoryStack.lastObject()
+    }
+
+    class func pushCurrentTemplateRepository(repository: MustacheTemplateRepository) {
+        TemplateRepositoryStack.append(repository)
+    }
+    
+    class func popCurrentTemplateRepository() {
+        TemplateRepositoryStack.removeLast()
+    }
+    
+    
     // MARK: - TemplateASTVisitor
     
     func visit(templateAST: TemplateAST, error outError: NSErrorPointer) -> Bool {
