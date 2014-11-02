@@ -13,6 +13,7 @@ class VariableTag: Tag, TemplateASTNode {
     let contentType: ContentType
     let escapesHTML: Bool
     var type: TagType { return .Variable }
+    let innerTemplateString = ""
     
     init(expression: Expression, contentType: ContentType, escapesHTML: Bool) {
         self.escapesHTML = escapesHTML

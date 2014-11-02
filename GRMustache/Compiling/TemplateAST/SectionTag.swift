@@ -13,11 +13,13 @@ class SectionTag: Tag, TemplateASTNode {
     let templateAST: TemplateAST
     let inverted: Bool
     var type: TagType { return inverted ? .InvertedSection : .Section }
+    let innerTemplateString: String
     
-    init(expression: Expression, inverted: Bool, templateAST: TemplateAST) {
+    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {
         self.expression = expression
         self.inverted = inverted
         self.templateAST = templateAST
+        self.innerTemplateString = innerTemplateString
     }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {

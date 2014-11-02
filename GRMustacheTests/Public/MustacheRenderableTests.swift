@@ -173,4 +173,24 @@ class MustacheRenderableTests: XCTestCase {
         MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)
         XCTAssertEqual(sectionTagDetections, 1)
     }
+    
+    func testRenderableObjectCanAccessInnerTemplateStringFromSectionTag() {
+        var innerTemplateString: String? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{subject}}{{/.}}", error: nil)
+        XCTAssertEqual(innerTemplateString!, "{{subject}}")
+    }
+    
+    func testRenderableObjectCanAccessInnerTemplateStringFromExtensionSectionTag() {
+        var innerTemplateString: String? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{^.}}{{#.}}{{subject}}{{/.}}", error: nil)
+        XCTAssertEqual(innerTemplateString!, "{{subject}}")
+    }
 }

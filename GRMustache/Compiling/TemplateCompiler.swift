@@ -135,20 +135,28 @@ class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-                var extendedExpression: Expression?
+                var extended: (Expression, TemplateToken)?
                 switch compilationState.currentScope.type {
-                case .InvertedSection(openingToken: _, expression: let openingExpression):
+                case .InvertedSection(openingToken: let openingToken, expression: let openingExpression):
                     if (expression == nil && empty) || (openingExpression == expression) {
-                        extendedExpression = openingExpression
+                        extended = (openingExpression, openingToken)
                     }
                 default:
                     break
                 }
 
-                if let extendedExpression = extendedExpression {
+                if let (extendedExpression, extentedToken) = extended {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST)
+                    
+//                    // TODO: uncomment and make it compile
+//                    if token.templateString !== extentedToken.templateString {
+//                        fatalError("Not implemented")
+//                    }
+                    let templateString = token.templateString
+                    let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: extendedExpression)))
@@ -172,20 +180,28 @@ class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-                var extendedExpression: Expression?
+                var extended: (Expression, TemplateToken)?
                 switch compilationState.currentScope.type {
-                case .Section(openingToken: _, expression: let openingExpression):
+                case .Section(openingToken: let openingToken, expression: let openingExpression):
                     if (expression == nil && empty) || (openingExpression == expression) {
-                        extendedExpression = openingExpression
+                        extended = (openingExpression, openingToken)
                     }
                 default:
                     break
                 }
                 
-                if let extendedExpression = extendedExpression {
+                if let (extendedExpression, extentedToken) = extended {
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST)
+                    
+//                    // TODO: uncomment and make it compile
+//                    if token.templateString !== extentedToken.templateString {
+//                        fatalError("Not implemented")
+//                    }
+                    let templateString = token.templateString
+                    let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: extendedExpression)))
@@ -248,7 +264,15 @@ class TemplateCompiler: TemplateTokenConsumer {
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST)
+
+//                    // TODO: uncomment and make it compile
+//                    if token.templateString !== openingToken.templateString {
+//                        fatalError("Not implemented")
+//                    }
+                    let templateString = token.templateString
+                    let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     return true
@@ -272,7 +296,15 @@ class TemplateCompiler: TemplateTokenConsumer {
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST)
+                    
+//                    // TODO: uncomment and make it compile
+//                    if token.templateString !== openingToken.templateString {
+//                        fatalError("Not implemented")
+//                    }
+                    let templateString = token.templateString
+                    let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     return true

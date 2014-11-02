@@ -23,6 +23,9 @@ struct TemplateToken {
     }
     
     let lineNumber: Int
-    let templateSubstring: String
+    let templateString: String
+    let range: Range<String.Index>
     let type: Type
+    
+    var templateSubstring: String { return templateString[range] }
 }

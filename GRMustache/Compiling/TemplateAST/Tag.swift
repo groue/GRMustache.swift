@@ -17,6 +17,7 @@ enum TagType {
 protocol Tag {
     var expression: Expression { get }
     var type: TagType { get }
+    var innerTemplateString: String { get }
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
