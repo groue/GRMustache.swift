@@ -143,4 +143,34 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "<{{#.}}{{/.}}>", error: nil)!
         XCTAssertEqual(rendering, "<>")
     }
+    
+    func testRenderableObjectCanAccessVariableTagType() {
+        var variableTagDetections = 0
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            switch renderingInfo.tag.type {
+            case .Variable:
+                ++variableTagDetections
+            default:
+                break
+            }
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)
+        XCTAssertEqual(variableTagDetections, 1)
+    }
+    
+    func testRenderableObjectCanAccessSectionTagType() {
+        var sectionTagDetections = 0
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            switch renderingInfo.tag.type {
+            case .Section:
+                ++sectionTagDetections
+            default:
+                break
+            }
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)
+        XCTAssertEqual(sectionTagDetections, 1)
+    }
 }
