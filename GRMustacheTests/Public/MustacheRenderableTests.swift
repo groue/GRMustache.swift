@@ -257,4 +257,24 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(renderedContent!, "")
         XCTAssertEqual(renderedContentType!, ContentType.HTML)
     }
+    
+    func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
+        let alternativeTemplate = MustacheTemplate(string:"{{subject}}", error: nil)!
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return alternativeTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        let rendering = MustacheTemplate.render(value, fromString: "{{renderable}}", error: nil)
+        XCTAssertEqual(rendering!, "-")
+    }
+    
+    func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
+        let alternativeTemplate = MustacheTemplate(string:"{{subject}}", error: nil)!
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return alternativeTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}{{/renderable}}", error: nil)
+        XCTAssertEqual(rendering!, "-")
+    }
 }
