@@ -45,6 +45,8 @@ class StandardLibrary: MustacheRenderable {
                 return MustacheValue(false)
             case .ArrayValue(let array):
                 return MustacheValue(array.isEmpty)
+            case .SetValue(let set):
+                return MustacheValue(set.count == 0)
             case .ObjCValue(let object):
                 return MustacheValue(false)
             case .RenderableValue(let object):
@@ -68,6 +70,8 @@ class StandardLibrary: MustacheRenderable {
                 return MustacheValue(false)
             case .ArrayValue(let array):
                 return MustacheValue(array.isEmpty)
+            case .SetValue(let set):
+                return MustacheValue(set.count == 0)
             case .ObjCValue(let object):
                 return MustacheValue(false)
             case .RenderableValue(let object):

@@ -27,6 +27,8 @@ class EachFilter: MustacheFilter {
             return transformedDictionary(dictionary)
         case .ArrayValue(let array):
             return transformedSequence(array)
+        case .SetValue(let set):
+            return transformedSet(set)
         }
     }
     
@@ -42,6 +44,20 @@ class EachFilter: MustacheFilter {
             let replacementValue = ReplacementValue(value: value, index: index, key: nil, last: last)
             mustacheValues.append(MustacheValue(replacementValue))
             i = i.successor()
+        }
+        return MustacheValue(mustacheValues)
+    }
+    
+    func transformedSet(set: NSSet) -> MustacheValue {
+        var mustacheValues: [MustacheValue] = []
+        let count = set.count
+        var index = 0
+        for item in set {
+            let value = MustacheValue(item)
+            let last = index == count
+            let replacementValue = ReplacementValue(value: value, index: index, key: nil, last: last)
+            mustacheValues.append(MustacheValue(replacementValue))
+            ++index
         }
         return MustacheValue(mustacheValues)
     }

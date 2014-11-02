@@ -99,12 +99,46 @@ struct MustacheValue {
                     canonicalDictionary["\(key)"] = MustacheValue(value)
                 })
                 type = .DictionaryValue(canonicalDictionary)
-            } else if let array = object as? NSArray {
-                var canonicalArray: [MustacheValue] = []
-                for item in array {
-                    canonicalArray.append(MustacheValue(item))
+            } else if let enumerable = object as? NSFastEnumeration {
+                if let enumerableObject = object as? NSObjectProtocol {
+                    if enumerableObject.respondsToSelector("objectAtIndexedSubscript:") {
+                        // Array
+                        var array: [MustacheValue] = []
+                        let generator = NSFastGenerator(enumerable)
+                        while true {
+                            if let item: AnyObject = generator.next() {
+                                array.append(MustacheValue(item))
+                            } else {
+                                break
+                            }
+                        }
+                        type = .ArrayValue(array)
+                    } else {
+                        // Set
+                        var set = NSMutableSet()
+                        let generator = NSFastGenerator(enumerable)
+                        while true {
+                            if let item: AnyObject = generator.next() {
+                                set.addObject(item)
+                            } else {
+                                break
+                            }
+                        }
+                        type = .SetValue(set)
+                    }
+                } else {
+                    // Assume Array
+                    var array: [MustacheValue] = []
+                    let generator = NSFastGenerator(enumerable)
+                    while true {
+                        if let item: AnyObject = generator.next() {
+                            array.append(MustacheValue(item))
+                        } else {
+                            break
+                        }
+                    }
+                    type = .ArrayValue(array)
                 }
-                type = .ArrayValue(canonicalArray)
             } else {
                 type = .ObjCValue(object)
             }
@@ -129,6 +163,8 @@ struct MustacheValue {
             return true
         case .ArrayValue(let array):
             return countElements(array) > 0
+        case .SetValue(let set):
+            return set.count > 0
         case .ObjCValue(let object):
             if let _ = object as? NSNull {
                 return false
@@ -136,8 +172,8 @@ struct MustacheValue {
                 return number.boolValue
             } else if let string = object as? NSString {
                 return string.length > 0
-            } else if let array = object as? NSArray {
-                return array.count > 0
+            } else if let enumerable = object as? NSFastEnumeration {
+                return NSFastGenerator(enumerable).next() != nil
             } else {
                 return true
             }
@@ -168,20 +204,32 @@ struct MustacheValue {
             switch identifier {
             case "count":
                 return MustacheValue(countElements(array))
+            case "firstObject":
+                if array.isEmpty {
+                    return MustacheValue()
+                } else {
+                    return array[array.startIndex]
+                }
+            case "lastObject":
+                if array.isEmpty {
+                    return MustacheValue()
+                } else {
+                    return array[array.endIndex.predecessor()]
+                }
+            default:
+                return MustacheValue()
+            }
+        case .SetValue(let set):
+            switch identifier {
+            case "count":
+                return MustacheValue(set.count)
+            case "anyObject":
+                return MustacheValue(set.anyObject())
             default:
                 return MustacheValue()
             }
         case .ObjCValue(let object):
-            if let array = object as? NSArray {
-                switch identifier {
-                case "count":
-                    return MustacheValue(array.count)
-                default:
-                    return MustacheValue()
-                }
-            } else {
-                return MustacheValue(object.valueForKey(identifier))
-            }
+            return MustacheValue(object.valueForKey(identifier))
         case .RenderableValue(let object):
             if let value = object.valueForMustacheIdentifier(identifier) {
                 return value
@@ -292,6 +340,44 @@ struct MustacheValue {
                     return MustacheRendering(string: buffer, contentType: contentType!)
                 }
             }
+        case .SetValue(let set):
+            if options.enumerationItem {
+                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
+            } else {
+                var buffer = ""
+                var contentType: ContentType?
+                var empty = true
+                for item in set {
+                    empty = false
+                    let itemOptions = RenderingOptions(enumerationItem: true)
+                    if let itemRendering = MustacheValue(item).renderForMustacheTag(tag, context: context, options: itemOptions, error: outError) {
+                        if contentType == nil {
+                            contentType = itemRendering.contentType
+                            buffer = buffer + itemRendering.string
+                        } else if contentType == itemRendering.contentType {
+                            buffer = buffer + itemRendering.string
+                        } else {
+                            if outError != nil {
+                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
+                            }
+                            return nil
+                        }
+                    } else {
+                        return nil
+                    }
+                }
+                
+                if empty {
+                    switch tag.type {
+                    case .Variable:
+                        return MustacheRendering(string: "", contentType: .Text)
+                    case .Section, .InvertedSection:
+                        return tag.renderContentWithContext(context, error: outError)
+                    }
+                } else {
+                    return MustacheRendering(string: buffer, contentType: contentType!)
+                }
+            }
         case .ObjCValue(let object):
             switch tag.type {
             case .Variable:
@@ -320,6 +406,8 @@ struct MustacheValue {
             return "\(dictionary)"
         case .ArrayValue(let array):
             return "\(array)"
+        case .SetValue(let set):
+            return "\(set)"
         case .ObjCValue(let object):
             return "\(object)"
         case .RenderableValue(let object):
@@ -335,6 +423,7 @@ struct MustacheValue {
         case StringValue(String)
         case DictionaryValue([String: MustacheValue])
         case ArrayValue([MustacheValue])
+        case SetValue(NSSet)
         case ObjCValue(AnyObject)
         case RenderableValue(MustacheRenderable)
     }

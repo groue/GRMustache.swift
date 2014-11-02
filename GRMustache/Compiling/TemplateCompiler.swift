@@ -10,12 +10,12 @@ import Foundation
 
 class TemplateCompiler: TemplateTokenConsumer {
     private var state: CompilerState
-    let templateRepository: TemplateRepository
+    let repository: MustacheTemplateRepository
     let templateID: TemplateID?
     
-    init(contentType: ContentType, templateRepository: TemplateRepository, templateID: TemplateID?) {
+    init(contentType: ContentType, repository: MustacheTemplateRepository, templateID: TemplateID?) {
         self.state = .Compiling(CompilationState(contentType: contentType))
-        self.templateRepository = templateRepository
+        self.repository = repository
         self.templateID = templateID
     }
     
@@ -294,7 +294,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                         }
                     }
                     
-                    if let partialTemplateAST = templateRepository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
+                    if let partialTemplateAST = repository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
                         
                         switch partialTemplateAST.type {
                         case .Undefined:
@@ -347,7 +347,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var error: NSError?
                 var empty: Bool = false
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
-                    if let partialTemplateAST = templateRepository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
+                    if let partialTemplateAST = repository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
                         let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
                         compilationState.currentScope.appendNode(partialNode)
                         compilationState.compilerContentType = .Locked(compilationState.contentType)

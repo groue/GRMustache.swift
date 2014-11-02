@@ -1,5 +1,5 @@
 //
-//  TemplateRepository.swift
+//  MustacheTemplateRepository.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 25/10/2014.
@@ -10,14 +10,14 @@ import Foundation
 
 typealias TemplateID = String
 
-protocol TemplateRepositoryDataSource {
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
+protocol MustacheTemplateRepositoryDataSource {
+    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID?
     func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String?
 }
 
-public class TemplateRepository {
+public class MustacheTemplateRepository {
     var configuration: Configuration
-    var dataSource: TemplateRepositoryDataSource?
+    var dataSource: MustacheTemplateRepositoryDataSource?
     var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init() {
@@ -40,21 +40,26 @@ public class TemplateRepository {
         dataSource = URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
     }
     
-    public func templateFromString(string: String, error outError: NSErrorPointer) -> Template? {
+    convenience public init(bundle: NSBundle?, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+        self.init()
+        dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
+    }
+    
+    public func templateFromString(string: String, error outError: NSErrorPointer) -> MustacheTemplate? {
         return self.templateFromString(string, contentType: configuration.contentType, error: outError)
     }
     
-    public func templateNamed(name: String, error outError: NSErrorPointer) -> Template? {
+    public func templateNamed(name: String, error outError: NSErrorPointer) -> MustacheTemplate? {
         if let templateAST = templateASTNamed(name, relativeToTemplateID: nil, error: outError) {
-            return Template(templateRepository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func templateFromString(string: String, contentType: ContentType, error outError: NSErrorPointer) -> Template? {
+    func templateFromString(string: String, contentType: ContentType, error outError: NSErrorPointer) -> MustacheTemplate? {
         if let templateAST = self.templateASTFromString(string, contentType: contentType, templateID: nil, error: outError) {
-            return Template(templateRepository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
@@ -94,24 +99,24 @@ public class TemplateRepository {
         }
     }
     
-    
-    // MARK: - Private
-    
-    private func templateASTFromString(string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
-        let compiler = TemplateCompiler(contentType: contentType, templateRepository: self, templateID: templateID)
+    func templateASTFromString(string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
+        let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
         parser.parse(string)
         return compiler.templateAST(error: outError)
     }
     
-    class DictionaryDataSource: TemplateRepositoryDataSource {
+    
+    // MARK: - Private
+    
+    class DictionaryDataSource: MustacheTemplateRepositoryDataSource {
         let templates: [String: String]
         
         init(templates: [String: String]) {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
             return name
         }
         
@@ -120,7 +125,7 @@ public class TemplateRepository {
         }
     }
     
-    class DirectoryDataSource: TemplateRepositoryDataSource {
+    class DirectoryDataSource: MustacheTemplateRepositoryDataSource {
         let directoryPath: String
         let templateExtension: String
         let encoding: NSStringEncoding
@@ -131,7 +136,7 @@ public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -169,7 +174,7 @@ public class TemplateRepository {
         }
     }
     
-    class URLDataSource: TemplateRepositoryDataSource {
+    class URLDataSource: MustacheTemplateRepositoryDataSource {
         let baseURL: NSURL
         let templateExtension: String
         let encoding: NSStringEncoding
@@ -180,7 +185,7 @@ public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -215,6 +220,45 @@ public class TemplateRepository {
         
         func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
             return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: outError)
+        }
+    }
+    
+    class BundleDataSource: MustacheTemplateRepositoryDataSource {
+        let bundle: NSBundle
+        let templateExtension: String
+        let encoding: NSStringEncoding
+        
+        init(bundle: NSBundle, templateExtension: String, encoding: NSStringEncoding) {
+            self.bundle = bundle
+            self.templateExtension = templateExtension
+            self.encoding = encoding
+        }
+        
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository: MustacheTemplateRepository) -> TemplateID? {
+            let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
+                // Rebase template names starting with a /
+                if !name.isEmpty && name[name.startIndex] == "/" {
+                    return (name.substringFromIndex(name.startIndex.successor()), nil)
+                } else {
+                    return (name, baseTemplateID)
+                }
+                }()
+            
+            if normalizedName.isEmpty {
+                return normalizedBaseTemplateID
+            }
+            
+            if let normalizedBaseTemplateID = normalizedBaseTemplateID {
+                var relativePath = normalizedBaseTemplateID.stringByDeletingLastPathComponent
+                relativePath = relativePath.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
+                return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
+            } else {
+                return bundle.pathForResource(normalizedName, ofType: templateExtension)
+            }
+        }
+        
+        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
+            return NSString(contentsOfFile: templateID, encoding: encoding, error: outError)
         }
     }
 }

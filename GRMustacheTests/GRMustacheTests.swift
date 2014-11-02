@@ -35,8 +35,8 @@ class GRMustacheTests: XCTestCase {
 
     func testSwiftVariableInterpolation() {
         var error: NSError?
-        let templateRepository = TemplateRepository()
-        if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
+        let repository = MustacheTemplateRepository()
+        if let template = repository.templateFromString("<{{name}}>", error: &error) {
             let data = MustacheValue(["name": MustacheValue("Arthur")])
             if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
@@ -50,8 +50,8 @@ class GRMustacheTests: XCTestCase {
     
     func testObjCVariableInterpolation() {
         var error: NSError?
-        let templateRepository = TemplateRepository()
-        if let template = templateRepository.templateFromString("<{{name}}>", error: &error) {
+        let repository = MustacheTemplateRepository()
+        if let template = repository.templateFromString("<{{name}}>", error: &error) {
             let data = MustacheValue(["name": "Arthur"])
             if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
@@ -65,8 +65,8 @@ class GRMustacheTests: XCTestCase {
     
     func testPartial() {
         var error: NSError?
-        let templateRepository = TemplateRepository(templates: ["partial": "{{name}}"])
-        if let template = templateRepository.templateFromString("<{{>partial}}>", error: &error) {
+        let repository = MustacheTemplateRepository(templates: ["partial": "{{name}}"])
+        if let template = repository.templateFromString("<{{>partial}}>", error: &error) {
             let data = MustacheValue(["name": MustacheValue("Arthur")])
             if let rendering = template.render(data, error: &error)?.string {
                 XCTAssertEqual(rendering, "<Arthur>", "")
