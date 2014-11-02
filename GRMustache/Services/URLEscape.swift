@@ -1,5 +1,5 @@
 //
-//  HTMLEscapeRenderable.swift
+//  URLEscape.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 01/11/2014.
@@ -8,7 +8,7 @@
 
 import Foundation
 
-class HTMLEscapeRenderable: MustacheRenderable, MustacheFilter, MustacheTagObserver {
+class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     
     
     // MARK: - MustacheRenderable
@@ -44,7 +44,7 @@ class HTMLEscapeRenderable: MustacheRenderable, MustacheFilter, MustacheTagObser
             return value
         default:
             if let string = value.asString() {
-                return MustacheValue(TranslateHTMLCharacters(string))
+                return MustacheValue(escapeURL(string))
             } else {
                 if outError != nil {
                     outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not a string"])
@@ -61,7 +61,7 @@ class HTMLEscapeRenderable: MustacheRenderable, MustacheFilter, MustacheTagObser
         switch tag.type {
         case .Variable:
             if let string = value.asString() {
-                return MustacheValue(TranslateHTMLCharacters(string))
+                return MustacheValue(escapeURL(string))
             } else {
                 return value
             }
@@ -71,5 +71,14 @@ class HTMLEscapeRenderable: MustacheRenderable, MustacheFilter, MustacheTagObser
     }
     
     func mustacheTag(tag: Tag, didRender rendering: MustacheRendering?, forValue: MustacheValue) {
+    }
+    
+    
+    // MARK: - private
+    
+    func escapeURL(string: String) -> String {
+        var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
+        s.removeCharactersInString("?&=")
+        return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
     }
 }

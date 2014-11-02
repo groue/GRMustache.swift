@@ -38,8 +38,6 @@ class ExpressionInvocation: ExpressionVisitor {
         let argumentValue = value
         
         switch filterValue.type {
-        case .FilterValue(let filter):
-            return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
         case .RenderableValue(let object):
             if let filter = object.mustacheFilter {
                 return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)

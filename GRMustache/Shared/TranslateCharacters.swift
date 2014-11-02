@@ -1,5 +1,5 @@
 //
-//  TranslateCharacters.swift
+//  escapeHTML.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 26/10/2014.
@@ -8,23 +8,21 @@
 
 import Foundation
 
-func TranslateHTMLCharacters(string: String) -> String {
+func escapeHTML(string: String) -> String {
+    let escapeTable: [Character: String] = [
+        "<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        "'": "&apos;",
+        "\"": "&quot;",
+    ]
     var escaped = ""
     for c in string {
-        switch c {
-        case "<":
-            escaped = escaped + "&lt;"
-        case ">":
-            escaped = escaped + "&gt;"
-        case "&":
-            escaped = escaped + "&amp;"
-        case "\"":
-            escaped = escaped + "&quot;"
-        case "'":
-            escaped = escaped + "&apos;"
-        default:
+        if let escapedString = escapeTable[c] {
+            escaped += escapedString
+        } else {
             escaped.append(c)
-       }
+        }
     }
     return escaped
 }

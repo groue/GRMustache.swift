@@ -18,7 +18,7 @@ class EachFilter: MustacheFilter {
         switch(value.type) {
         case .None:
             return value
-        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .FilterValue, .ObjCValue, .RenderableValue:
+        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .ObjCValue, .RenderableValue:
             if outError != nil {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
             }

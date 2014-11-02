@@ -39,7 +39,7 @@ class RenderingEngine: TemplateASTVisitor {
             let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
             if let rendering = renderingEngine.renderTemplateAST(templateAST, error: outError) {
                 if contentType == .HTML && rendering.contentType == .Text {
-                    buffer = buffer! + TranslateHTMLCharacters(rendering.string)
+                    buffer = buffer! + escapeHTML(rendering.string)
                 } else {
                     buffer = buffer! + rendering.string
                 }
@@ -134,7 +134,7 @@ class RenderingEngine: TemplateASTVisitor {
             if let rendering = rendering {
                 switch (contentType, rendering.contentType, escapesHTML) {
                 case (.HTML, .Text, true):
-                    buffer = buffer! + TranslateHTMLCharacters(rendering.string)
+                    buffer = buffer! + escapeHTML(rendering.string)
                 default:
                     buffer = buffer! + rendering.string
                 }

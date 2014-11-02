@@ -45,10 +45,32 @@ struct MustacheValue {
     }
     
     init(_ filter: MustacheFilter) {
-        type = .FilterValue(filter)
+        type = .RenderableValue(MustacheFilterRenderable(filter: filter))
+    }
+    
+    init(_ tagObserver: MustacheTagObserver) {
+        type = .RenderableValue(MustacheTagObserverRenderable(tagObserver: tagObserver))
     }
     
     init(_ object: MustacheRenderable) {
+        type = .RenderableValue(object)
+    }
+    
+    // Extra initializer which avoids ambiguity and does not force the user to
+    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheRenderable, MustacheFilter>) {
+        type = .RenderableValue(object)
+    }
+    
+    // Extra initializer which avoids ambiguity and does not force the user to
+    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
+        type = .RenderableValue(object)
+    }
+    
+    // Extra initializer which avoids ambiguity and does not force the user to
+    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTagObserver>) {
         type = .RenderableValue(object)
     }
     
@@ -107,8 +129,6 @@ struct MustacheValue {
             return true
         case .ArrayValue(let array):
             return countElements(array) > 0
-        case .FilterValue(_):
-            return true
         case .ObjCValue(let object):
             if let _ = object as? NSNull {
                 return false
@@ -151,8 +171,6 @@ struct MustacheValue {
             default:
                 return MustacheValue()
             }
-        case .FilterValue(_):
-            return MustacheValue()
         case .ObjCValue(let object):
             if let array = object as? NSArray {
                 switch identifier {
@@ -274,17 +292,6 @@ struct MustacheValue {
                     return MustacheRendering(string: buffer, contentType: contentType!)
                 }
             }
-        case .FilterValue(_):
-            switch tag.type {
-            case .Variable:
-                return MustacheRendering(string: "[MustacheFilter]", contentType: .Text)
-                
-            case .Section, .InvertedSection:
-                return tag.renderContentWithContext(context.contextByAddingValue(self), error: outError)
-                
-            case .InvertedSection:
-                return tag.renderContentWithContext(context, error: outError)
-            }
         case .ObjCValue(let object):
             switch tag.type {
             case .Variable:
@@ -313,8 +320,6 @@ struct MustacheValue {
             return "\(dictionary)"
         case .ArrayValue(let array):
             return "\(array)"
-        case .FilterValue(let filter):
-            return "\(filter)"
         case .ObjCValue(let object):
             return "\(object)"
         case .RenderableValue(let object):
@@ -330,8 +335,57 @@ struct MustacheValue {
         case StringValue(String)
         case DictionaryValue([String: MustacheValue])
         case ArrayValue([MustacheValue])
-        case FilterValue(MustacheFilter)
         case ObjCValue(AnyObject)
         case RenderableValue(MustacheRenderable)
+    }
+}
+
+struct MustacheFilterRenderable: MustacheRenderable {
+    let filter: MustacheFilter
+    
+    init(filter: MustacheFilter) {
+        self.filter = filter
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return filter }
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        return nil
+    }
+    
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
+        switch tag.type {
+        case .Variable:
+            return MustacheRendering(string: "\(mustacheFilter)", contentType: .Text)
+        case .Section, .InvertedSection:
+            return tag.renderContentWithContext(context.contextByAddingValue(MustacheValue(self)), error: outError)
+        }
+    }
+}
+
+struct MustacheTagObserverRenderable: MustacheRenderable {
+    let tagObserver: MustacheTagObserver
+    
+    init(tagObserver: MustacheTagObserver) {
+        self.tagObserver = tagObserver
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    var mustacheTagObserver: MustacheTagObserver? { return tagObserver }
+    
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        return nil
+    }
+    
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
+        switch tag.type {
+        case .Variable:
+            return MustacheRendering(string: "\(tagObserver)", contentType: .Text)
+        case .Section, .InvertedSection:
+            return tag.renderContentWithContext(context.contextByAddingTagObserver(tagObserver), error: outError)
+        }
     }
 }
