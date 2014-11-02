@@ -103,4 +103,44 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
         XCTAssertEqual(rendering, "&amp;")
     }
+    
+    func testRenderableObjectCanSetErrorFromVariableTag() {
+        let errorDomain = "MustacheRenderableTests"
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
+            return nil
+        })
+        var error: NSError?
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, errorDomain)
+    }
+    
+    func testRenderableObjectCanSetErrorFromSectionTag() {
+        let errorDomain = "MustacheRenderableTests"
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
+            return nil
+        })
+        var error: NSError?
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, errorDomain)
+    }
+    
+    func testRenderableObjectCanRenderNilWithoutSettingErrorFromVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return nil
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "<{{.}}>", error: nil)!
+        XCTAssertEqual(rendering, "<>")
+    }
+    
+    func testRenderableObjectCanRenderNilWithoutSettingErrorFromSectionTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return nil
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "<{{#.}}{{/.}}>", error: nil)!
+        XCTAssertEqual(rendering, "<>")
+    }
 }
