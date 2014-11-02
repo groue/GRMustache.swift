@@ -112,8 +112,8 @@ class RenderingEngine: TemplateASTVisitor {
             
             let renderingInfo = RenderingInfo(context: context, tag: tag, enumerationItem: false)
             var rendering: String?
-            var renderingContentType: ContentType = .Text
-            var renderingError: NSError?
+            var renderingContentType: ContentType = .Text   // Default .Text, so that we assume unsafe rendering from users who do not explicitly set it.
+            var renderingError: NSError? = nil              // Default nil, so that we assume success from users who do not explicitly set it.
             switch tag.type {
             case .Variable:
                 rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
@@ -133,6 +133,13 @@ class RenderingEngine: TemplateASTVisitor {
                 } else {
                     rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
                 }
+            }
+            
+            if rendering == nil && renderingError == nil {
+                // Rendering is nil, but rendering error is not set.
+                // Assume a rendering object coded by a lazy programmer, whose
+                // intention is to render nothing.
+                rendering = ""
             }
             
             for tagObserver in tagObserverStack.reverse() {

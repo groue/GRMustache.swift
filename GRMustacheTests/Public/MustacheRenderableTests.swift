@@ -14,8 +14,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         })
-        let value = MustacheValue(["object": MustacheValue(renderable)])
-        let rendering = MustacheTemplate.render(value, fromString: "{{object}}", error: nil)!
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -23,8 +22,59 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         })
-        let value = MustacheValue(["object": MustacheValue(renderable)])
-        let rendering = MustacheTemplate.render(value, fromString: "{{#object}}{{/object}}", error: nil)!
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
         XCTAssertEqual(rendering, "---")
+    }
+    
+    func testRenderableObjectExplicitHTMLRenderingOfEscapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .HTML
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRenderableObjectExplicitHTMLRenderingOfUnescapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .HTML
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRenderableObjectExplicitTextRenderingOfEscapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .Text
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRenderableObjectExplicitTextRenderingOfUnescapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .Text
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRenderableObjectImplicitTextRenderingOfEscapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRenderableObjectImplicitTextRenderingOfUnescapedVariableTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)!
+        XCTAssertEqual(rendering, "&")
     }
 }
