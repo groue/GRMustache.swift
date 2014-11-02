@@ -13,28 +13,12 @@ protocol MustacheFilter {
     func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue?
 }
 
-private class BlockFilter: MustacheFilter {
-    let block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)
-    
-    init(_ block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) {
-        self.block = block
-    }
-    
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
-        return nil
-    }
-    
-    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
-        return block(value, error: outError)
-    }
-}
-
 func MustacheFilterWithBlock(block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) -> MustacheFilter {
-    return BlockFilter(block)
+    return BlockMustacheFilter(block)
 }
 
 func MustacheFilterWithBlock(block: (String?) -> (MustacheValue)) -> MustacheFilter {
-    return BlockFilter({ (value, outError) -> (MustacheValue?) in
+    return BlockMustacheFilter({ (value, outError) -> (MustacheValue?) in
         switch value.type {
         case .None:
             return block(nil)
@@ -49,5 +33,21 @@ func MustacheFilterWithBlock(block: (String?) -> (MustacheValue)) -> MustacheFil
             }
         }
     })
+}
+
+private class BlockMustacheFilter: MustacheFilter {
+    let block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)
+    
+    init(_ block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) {
+        self.block = block
+    }
+    
+    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+        return nil
+    }
+    
+    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
+        return block(value, error: outError)
+    }
 }
 

@@ -66,3 +66,26 @@ protocol MustacheRenderable {
     func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering?
 }
 
+func MustacheRenderableWithBlock(block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)) -> MustacheRenderable {
+    return BlockMustacheRenderable(block)
+}
+
+private class BlockMustacheRenderable: MustacheRenderable {
+    let block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)
+    
+    init(_ block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)) {
+        self.block = block
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        return nil
+    }
+    
+    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
+        return block(tag: tag, context: context, options: options, error: outError)
+    }
+}
