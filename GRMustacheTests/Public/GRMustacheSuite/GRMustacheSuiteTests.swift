@@ -165,7 +165,7 @@ class GRMustacheSuiteTests: XCTestCase {
         
         func testRendering(template: MustacheTemplate) {
             var error: NSError?
-            if let rendering = template.render(renderedValue, error: &error)?.string {
+            if let rendering = template.render(renderedValue, error: &error) {
                 if let expectedRendering = expectedRendering as String! {
                     if expectedRendering != rendering {
                         XCTAssertEqual(rendering, expectedRendering, "Unexpected rendering of \(description)")

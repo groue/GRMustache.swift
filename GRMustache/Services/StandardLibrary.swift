@@ -92,7 +92,7 @@ class StandardLibrary: MustacheRenderable {
     let mustacheFilter: MustacheFilter? = nil
     let mustacheTagObserver: MustacheTagObserver? = nil
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         return nil
     }
     

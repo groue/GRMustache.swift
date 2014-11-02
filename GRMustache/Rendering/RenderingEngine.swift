@@ -18,12 +18,15 @@ class RenderingEngine: TemplateASTVisitor {
         self.context = context
     }
     
-    func renderTemplateAST(templateAST: TemplateAST, error outError: NSErrorPointer) -> MustacheRendering? {
+    func mustacheRendering(templateAST: TemplateAST, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         buffer = ""
         if !visit(templateAST, error: outError) {
             return nil
         }
-        return MustacheRendering(string: buffer!, contentType: contentType)
+        if outContentType != nil {
+            outContentType.memory = contentType
+        }
+        return buffer!
     }
     
     
@@ -37,11 +40,13 @@ class RenderingEngine: TemplateASTVisitor {
         } else {
             // Render separately
             let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
-            if let rendering = renderingEngine.renderTemplateAST(templateAST, error: outError) {
-                if contentType == .HTML && rendering.contentType == .Text {
-                    buffer = buffer! + escapeHTML(rendering.string)
-                } else {
-                    buffer = buffer! + rendering.string
+            var renderingContentType: ContentType = .Text
+            if let rendering = renderingEngine.mustacheRendering(templateAST, contentType: &renderingContentType, error: outError) {
+                switch (contentType, renderingContentType) {
+                case (.HTML, .Text):
+                    buffer = buffer! + escapeHTML(rendering)
+                default:
+                    buffer = buffer! + rendering
                 }
                 return true
             } else {
@@ -105,25 +110,28 @@ class RenderingEngine: TemplateASTVisitor {
                 value = tagObserver.mustacheTag(tag, willRenderValue: value)
             }
             
-            let renderingOptions = RenderingOptions(enumerationItem: false)
-            var rendering: MustacheRendering?
+            let renderingInfo = RenderingInfo(context: context, tag: tag, enumerationItem: false)
+            var rendering: String?
+            var renderingContentType: ContentType = .Text
             var renderingError: NSError?
             switch tag.type {
             case .Variable:
-                rendering = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: &renderingError)
+                rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
             case .Section:
                 let boolValue = value.mustacheBoolValue
                 if boolValue {
-                    rendering = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: &renderingError)
+                    rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
                 } else {
-                    rendering = MustacheRendering(string: "", contentType: .HTML)
+                    rendering = ""
+                    renderingContentType = .Text
                 }
             case .InvertedSection:
                 let boolValue = value.mustacheBoolValue
                 if boolValue {
-                    rendering = MustacheRendering(string: "", contentType: .HTML)
+                    rendering = ""
+                    renderingContentType = .Text
                 } else {
-                    rendering = value.renderForMustacheTag(tag, context: context, options: renderingOptions, error: &renderingError)
+                    rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
                 }
             }
             
@@ -132,11 +140,11 @@ class RenderingEngine: TemplateASTVisitor {
             }
             
             if let rendering = rendering {
-                switch (contentType, rendering.contentType, escapesHTML) {
+                switch (contentType, renderingContentType, escapesHTML) {
                 case (.HTML, .Text, true):
-                    buffer = buffer! + escapeHTML(rendering.string)
+                    buffer = buffer! + escapeHTML(rendering)
                 default:
-                    buffer = buffer! + rendering.string
+                    buffer = buffer! + rendering
                 }
                 return true
             } else {

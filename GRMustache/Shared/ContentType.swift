@@ -12,3 +12,5 @@ enum ContentType {
     case Text
     case HTML
 }
+
+typealias ContentTypePointer = UnsafeMutablePointer<ContentType>

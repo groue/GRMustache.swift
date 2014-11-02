@@ -8,15 +8,29 @@
 
 import Foundation
 
-struct RenderingOptions {
+struct RenderingInfo {
+    let context: Context
+    let tag: Tag
     let enumerationItem: Bool
+    
+    func renderingInfoByExtendingContextWithValue(value: MustacheValue) -> RenderingInfo {
+        return RenderingInfo(context: context.contextByAddingValue(value), tag: tag, enumerationItem: enumerationItem)
+    }
+    
+    func renderingInfoByExtendingContextWithTagObserver(tagObserver: MustacheTagObserver) -> RenderingInfo {
+        return RenderingInfo(context: context.contextByAddingTagObserver(tagObserver), tag: tag, enumerationItem: enumerationItem)
+    }
+    
+    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
+        return RenderingInfo(context: context, tag: tag, enumerationItem: true)
+    }
 }
 
 protocol MustacheTagObserver {
     func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue
     
     // If rendering is nil then an error has occurred.
-    func mustacheTag(tag: Tag, didRender rendering: MustacheRendering?, forValue: MustacheValue)
+    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue)
 }
 
 protocol MustacheRenderable {
@@ -63,17 +77,19 @@ protocol MustacheRenderable {
     /**
     TODO
     */
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering?
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
 
-func MustacheRenderableWithBlock(block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)) -> MustacheRenderable {
+typealias MustacheRenderableBlockType = (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
+
+func MustacheRenderableWithBlock(block: MustacheRenderableBlockType) -> MustacheRenderable {
     return BlockMustacheRenderable(block)
 }
 
 private class BlockMustacheRenderable: MustacheRenderable {
-    let block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)
+    let block: MustacheRenderableBlockType
     
-    init(_ block: (tag: Tag, context: Context, options: RenderingOptions, error: NSErrorPointer) -> (MustacheRendering?)) {
+    init(_ block: MustacheRenderableBlockType) {
         self.block = block
     }
     
@@ -85,7 +101,7 @@ private class BlockMustacheRenderable: MustacheRenderable {
         return nil
     }
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
-        return block(tag: tag, context: context, options: options, error: outError)
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        return block(renderingInfo: renderingInfo, outContentType: outContentType, outError: outError)
     }
 }

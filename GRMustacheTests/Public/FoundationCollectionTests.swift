@@ -39,72 +39,72 @@ class FoundationCollectionTests: XCTestCase {
     }
     
     func testNSArrayIsIterated() {
-        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSArrayIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSArrayCount() {
-        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.count}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.count}}", error: nil)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSArrayFirstObject() {
-        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.firstObject.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.firstObject.key}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSArrayLastObject() {
-        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.lastObject.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(arrayValue, fromString: "{{collection.lastObject.key}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSSetIsIterated() {
-        let rendering = MustacheTemplate.render(setValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(setValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = MustacheTemplate.render(setValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(setValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSSetCount() {
-        let rendering = MustacheTemplate.render(setValue, fromString: "{{collection.count}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(setValue, fromString: "{{collection.count}}", error: nil)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSSetAnyObject() {
-        let rendering = MustacheTemplate.render(setValue, fromString: "{{collection.anyObject.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(setValue, fromString: "{{collection.anyObject.key}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetIsIterated() {
-        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{#collection}}{{key}}{{/collection}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}", error: nil)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSOrderedSetCount() {
-        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.count}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.count}}", error: nil)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSOrderedSetFirstObject() {
-        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.firstObject.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.firstObject.key}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetLastObject() {
-        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.lastObject.key}}", error: nil)!.string
+        let rendering = MustacheTemplate.render(orderedSetValue, fromString: "{{collection.lastObject.key}}", error: nil)!
         XCTAssertEqual(rendering, "value")
     }
     

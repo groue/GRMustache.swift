@@ -24,9 +24,9 @@ class SectionTag: Tag, TemplateASTNode {
         return visitor.visit(self, error: outError)
     }
     
-    func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> MustacheRendering? {
-        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.renderTemplateAST(templateAST, error: outError)
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: renderingInfo.context)
+        return renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

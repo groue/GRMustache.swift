@@ -21,13 +21,13 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         return nil
     }
     
-    func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
-        switch tag.type {
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
         case .Variable:
-            return MustacheRendering(string: "\(self)", contentType: .Text)
+            return "\(self)"
         case .Section, .InvertedSection:
-            let context = context.contextByAddingTagObserver(self)
-            return tag.renderContentWithContext(context, error: outError)
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
         }
     }
 
@@ -70,6 +70,6 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         }
     }
     
-    func mustacheTag(tag: Tag, didRender rendering: MustacheRendering?, forValue: MustacheValue) {
+    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
     }
 }

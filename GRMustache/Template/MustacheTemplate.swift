@@ -69,12 +69,13 @@ public class MustacheTemplate {
         }
     }
     
-    func render(value: MustacheValue, error outError: NSErrorPointer) -> MustacheRendering? {
+    func render(value: MustacheValue, error outError: NSErrorPointer) -> String? {
         let context = baseContext.contextByAddingValue(value)
-        return renderContentWithContext(context, error: outError)
+        var contentType: ContentType = .Text
+        return mustacheRendering(context, contentType: &contentType, error: outError)
     }
     
-    class func render(value: MustacheValue, fromString string: String, error outError: NSErrorPointer) -> MustacheRendering? {
+    class func render(value: MustacheValue, fromString string: String, error outError: NSErrorPointer) -> String? {
         if let template = MustacheTemplate(string: string, error: outError) {
             return template.render(value, error: outError)
         } else {
@@ -85,8 +86,8 @@ public class MustacheTemplate {
     
     // MARK: - Private
     
-    private func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> MustacheRendering? {
+    private func mustacheRendering(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.renderTemplateAST(templateAST, error: outError)
+        return renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
     }
 }

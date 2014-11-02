@@ -95,7 +95,7 @@ class EachFilter: MustacheFilter {
         let mustacheTagObserver: MustacheTagObserver? = nil
         var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         
-        func renderForMustacheTag(tag: Tag, context: Context, options: RenderingOptions, error outError: NSErrorPointer) -> MustacheRendering? {
+        func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
             var position: [String: MustacheValue] = [:]
             position["@index"] = MustacheValue(index)
             position["@indexPlusOne"] = MustacheValue(index + 1)
@@ -105,8 +105,8 @@ class EachFilter: MustacheFilter {
             if let key = key {
                 position["@key"] = MustacheValue(key)
             }
-            let context = context.contextByAddingValue(MustacheValue(position))
-            return value.renderForMustacheTag(tag, context: context, options: options, error: outError)
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(position))
+            return value.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
         }
         
         func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {

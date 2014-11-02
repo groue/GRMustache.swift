@@ -24,8 +24,11 @@ class VariableTag: Tag, TemplateASTNode {
         return visitor.visit(self, error: outError)
     }
     
-    func renderContentWithContext(context: Context, error outError: NSErrorPointer) -> MustacheRendering? {
-        return MustacheRendering(string: "", contentType: contentType)
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        if outContentType != nil {
+            outContentType.memory = contentType
+        }
+        return ""
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
