@@ -77,4 +77,30 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)!
         XCTAssertEqual(rendering, "&")
     }
+    
+    func testRenderableObjectExplicitHTMLRenderingOfSectionTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .HTML
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRenderableObjectExplicitTextRenderingOfSectionTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outContentType.memory = .Text
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRenderableObjectImplicitTextRenderingOfSectionTag() {
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return "&"
+        })
+        let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
+        XCTAssertEqual(rendering, "&amp;")
+    }
 }
