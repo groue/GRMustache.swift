@@ -193,4 +193,68 @@ class MustacheRenderableTests: XCTestCase {
         MustacheTemplate.render(MustacheValue(renderable), fromString: "{{^.}}{{#.}}{{subject}}{{/.}}", error: nil)
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
+
+    func testRenderableObjectCanAccessInnerTemplateStringFromVariableTag() {
+        var innerTemplateString: String? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)
+        XCTAssertEqual(innerTemplateString!, "")
+    }
+    
+    func testRenderableObjectCanAccessRenderedContentFromSectionTag() {
+        var renderedContent: String? = nil
+        var renderedContentType: ContentType? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            renderedContentType = outContentType.memory
+            return nil
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        MustacheTemplate.render(value, fromString: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}", error: nil)
+        XCTAssertEqual(renderedContent!, "-=-")
+        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+    }
+    
+    func testRenderableObjectCanAccessRenderedContentFromExtensionSectionTag() {
+        var renderedContent: String? = nil
+        var renderedContentType: ContentType? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            renderedContentType = outContentType.memory
+            return nil
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        MustacheTemplate.render(value, fromString: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}", error: nil)
+        XCTAssertEqual(renderedContent!, "-=-")
+        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+    }
+    
+    func testRenderableObjectCanAccessRenderedContentFromEscapedVariableTag() {
+        var renderedContent: String? = nil
+        var renderedContentType: ContentType? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            renderedContentType = outContentType.memory
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)
+        XCTAssertEqual(renderedContent!, "")
+        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+    }
+    
+    func testRenderableObjectCanAccessRenderedContentFromUnescapedVariableTag() {
+        var renderedContent: String? = nil
+        var renderedContentType: ContentType? = nil
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            renderedContentType = outContentType.memory
+            return nil
+        })
+        MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)
+        XCTAssertEqual(renderedContent!, "")
+        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+    }
 }
