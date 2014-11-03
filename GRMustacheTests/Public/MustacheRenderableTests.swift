@@ -382,4 +382,32 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
     }
+    
+    func testRenderableObjectCanExtendTagObserverStackInSectionTag() {
+        class TestedRenderable: MustacheRenderable, MustacheTagObserver {
+            let mustacheBoolValue = true
+            var tagWillRenderCount = 0
+            var mustacheTagObserver: MustacheTagObserver? { return self }
+            let mustacheFilter: MustacheFilter? = nil
+            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+                return nil
+            }
+            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
+                // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
+                return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }
+            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+                ++tagWillRenderCount
+                return value
+            }
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            }
+        }
+        let renderable = TestedRenderable()
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
+        let rendering = MustacheTemplate.render(value, fromString: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}", error: nil)!
+        XCTAssertEqual(rendering, "-------")
+        XCTAssertEqual(renderable.tagWillRenderCount, 2)
+    }
 }
