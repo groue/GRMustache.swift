@@ -294,5 +294,37 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(rendering!, "-")
     }
     
-    // TODO: translate remaining tests, starting from testRenderingObjectDoesNotAutomaticallyEntersCurrentContext
+    func testRenderableObjectDoesNotAutomaticallyEntersVariableContextStack() {
+        class TestedRenderable: MustacheRenderable {
+            let mustacheBoolValue = true
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheFilter: MustacheFilter? = nil
+            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+                return MustacheValue("value")
+            }
+            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                return MustacheTemplate(string:"key:{{key}}", error: nil)!.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }
+        }
+        let value = MustacheValue(["renderable": MustacheValue(TestedRenderable())])
+        let rendering = MustacheTemplate.render(value, fromString: "{{renderable}}", error: nil)!
+        XCTAssertEqual(rendering, "key:")
+    }
+    
+    func testRenderableObjectDoesNotAutomaticallyEntersSectionContextStack() {
+        class TestedRenderable: MustacheRenderable {
+            let mustacheBoolValue = true
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheFilter: MustacheFilter? = nil
+            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+                return MustacheValue("value")
+            }
+            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }
+        }
+        let value = MustacheValue(["renderable": MustacheValue(TestedRenderable())])
+        let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}key:{{key}}{{/renderable}}", error: nil)!
+        XCTAssertEqual(rendering, "key:")
+    }
 }
