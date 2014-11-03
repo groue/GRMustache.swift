@@ -11,7 +11,7 @@ import Foundation
 public class MustacheTemplate: MustacheRenderable {
     let repository: MustacheTemplateRepository
     let templateAST: TemplateAST
-    let baseContext: Context
+    var baseContext: Context
     
     init(repository: MustacheTemplateRepository, templateAST: TemplateAST, baseContext: Context) {
         self.repository = repository

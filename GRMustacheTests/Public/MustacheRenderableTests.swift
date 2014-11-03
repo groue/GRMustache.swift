@@ -282,7 +282,7 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(rendering!, "-")
     }
 
-    func testRenderableObjectCanAccessSiblingTemplates() {
+    func testRenderableObjectCanAccessSiblingPartialTemplates() {
         let templates = [
             "template": "{{renderable}}",
             "partial": "{{subject}}",
@@ -409,5 +409,31 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = MustacheTemplate.render(value, fromString: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}", error: nil)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
+    }
+    
+    func testTagObserverCallbacksFromRenderableObject() {
+        class TestedTagObserver: MustacheTagObserver {
+            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+                switch tag.type {
+                case .Section:
+                    return value
+                default:
+                    return MustacheValue("delegate")
+                }
+            }
+            
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            }
+        }
+        
+        let template = MustacheTemplate(string: "{{#renderable}}{{subject}}{{/renderable}}", error: nil)!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(TestedTagObserver())
+        
+        let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        })
+        let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("---")])
+        let rendering = template.render(value, error: nil)!
+        XCTAssertEqual(rendering, "delegate")
     }
 }
