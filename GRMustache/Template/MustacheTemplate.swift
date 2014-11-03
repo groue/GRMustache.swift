@@ -21,7 +21,8 @@ public class MustacheTemplate: MustacheRenderable {
     
     convenience init?(string: String, error outError: NSErrorPointer) {
         let repository = RenderingEngine.currentTemplateRepository() ?? MustacheTemplateRepository(bundle: nil)
-        if let templateAST = repository.templateASTFromString(string, contentType: repository.configuration.contentType, templateID: nil, error: outError) {
+        let contentType = RenderingEngine.currentContentType()
+        if let templateAST = repository.templateASTFromString(string, contentType: contentType, templateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.
