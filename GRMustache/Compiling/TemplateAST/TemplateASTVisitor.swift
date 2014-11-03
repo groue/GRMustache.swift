@@ -9,7 +9,6 @@
 import Foundation
 
 protocol TemplateASTVisitor {
-    func visit(templateAST: TemplateAST, error outError: NSErrorPointer) -> Bool
     func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool
     func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool
     func visit(partialNode: PartialNode, error outError: NSErrorPointer) -> Bool
