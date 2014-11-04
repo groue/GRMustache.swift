@@ -79,9 +79,7 @@ class StandardLibrary: MustacheTraversable {
             }
             })
         
-        let e = HTMLEscape()
-        let v = MustacheValue(e)
-        items["HTML"] = MustacheValue(["escape": v])
+        items["HTML"] = MustacheValue(["escape": MustacheValue(HTMLEscape())])
         
         items["URL"] = MustacheValue(["escape": MustacheValue(URLEscape())])
         

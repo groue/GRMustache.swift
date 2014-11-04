@@ -28,9 +28,9 @@ struct MustacheValue: DebugPrintable {
         case .ArrayValue(let array):
             return "Array(\(array.debugDescription))"
         case .SetValue(let set):
-            return "Set(\(set.description))"
+            return "Set(\(set))"
         case .ObjCValue(let object):
-            return "ObjC(\(object.description))"
+            return "ObjC(\(object))"
         case .ClusterValue(let cluster):
             return "Cluster(\(cluster))"
         }
@@ -59,7 +59,7 @@ struct MustacheValue: DebugPrintable {
     init(_ dictionary: [String: MustacheValue]) {
         type = .DictionaryValue(dictionary)
     }
-    
+
     init(_ array: [MustacheValue]) {
         type = .ArrayValue(array)
     }
@@ -343,7 +343,7 @@ struct MustacheValue: DebugPrintable {
                 return MustacheValue()
             }
         case .ObjCValue(let object):
-            return MustacheValue(object.valueForKey(identifier))
+            return MustacheValue(object.valueForKey?(identifier))
         case .ClusterValue(let cluster):
             if let traversable = cluster.mustacheTraversable {
                 if let value = traversable.valueForMustacheIdentifier(identifier) {
