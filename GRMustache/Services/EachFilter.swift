@@ -91,9 +91,31 @@ class EachFilter: MustacheFilter {
             self.last = last
         }
         
-        let mustacheFilter: MustacheFilter? = nil
-        let mustacheTagObserver: MustacheTagObserver? = nil
         var mustacheBoolValue: Bool { return value.mustacheBoolValue }
+        var mustacheFilter: MustacheFilter? {
+            switch value.type {
+            case .RenderableValue(let renderable):
+                return renderable.mustacheFilter
+            default:
+                return nil
+            }
+        }
+        var mustacheTagObserver: MustacheTagObserver? {
+            switch value.type {
+            case .RenderableValue(let renderable):
+                return renderable.mustacheTagObserver
+            default:
+                return nil
+            }
+        }
+        var mustacheTraversable: MustacheTraversable? {
+            switch value.type {
+            case .RenderableValue(let renderable):
+                return renderable.mustacheTraversable
+            default:
+                return nil
+            }
+        }
         
         func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
             var position: [String: MustacheValue] = [:]
@@ -107,10 +129,6 @@ class EachFilter: MustacheFilter {
             }
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(position))
             return value.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-        
-        func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-            return value.valueForMustacheIdentifier(identifier)
         }
     }
 }

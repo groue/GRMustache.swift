@@ -73,6 +73,8 @@
 		563AE20A19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
 		563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
 		56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */; };
+		56A88ECA1A08B0040055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
+		56A88ECB1A08B4000055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
 		56AD06F719FE704700406BB8 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD06F619FE704700406BB8 /* Error.swift */; };
 		56AD06F819FE71CD00406BB8 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD06F619FE704700406BB8 /* Error.swift */; };
 		56BF06581A063DC800926BEB /* URLEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06571A063DC800926BEB /* URLEscape.swift */; };
@@ -141,6 +143,7 @@
 		563AE20619FCEAB20028C6C1 /* MustacheValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheValue.swift; sourceTree = "<group>"; };
 		563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionVisitor.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableTests.swift; sourceTree = "<group>"; };
+		56A88EC91A08B0040055E40A /* MustacheTraversable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTraversable.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		56BF06571A063DC800926BEB /* URLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEscape.swift; sourceTree = "<group>"; };
 		56BF065A1A063DE600926BEB /* JavascriptEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = JavascriptEscape.swift; sourceTree = "<group>"; };
@@ -329,6 +332,7 @@
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
 				56CC2CA51A00192300CBD45A /* MustacheFilter.swift */,
 				5622F1FD1A051FC400B5D3F8 /* MustacheRenderable.swift */,
+				56A88EC91A08B0040055E40A /* MustacheTraversable.swift */,
 				563AE20619FCEAB20028C6C1 /* MustacheValue.swift */,
 				563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */,
 			);
@@ -485,6 +489,7 @@
 				5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */,
 				563AE1C519FC2A380028C6C1 /* ContentType.swift in Sources */,
 				563AE1EF19FC5A2E0028C6C1 /* TemplateASTVisitor.swift in Sources */,
+				56A88ECA1A08B0040055E40A /* MustacheTraversable.swift in Sources */,
 				563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */,
 				563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */,
 				5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */,
@@ -537,6 +542,7 @@
 				563AE1EA19FC52ED0028C6C1 /* IdentifierExpression.swift in Sources */,
 				563AE1DE19FC4D010028C6C1 /* TemplateAST.swift in Sources */,
 				563AE1F319FC5A940028C6C1 /* InheritablePartialNode.swift in Sources */,
+				56A88ECB1A08B4000055E40A /* MustacheTraversable.swift in Sources */,
 				563AE1F619FC5ACD0028C6C1 /* InheritableSectionNode.swift in Sources */,
 				563AE20819FCEAB20028C6C1 /* MustacheValue.swift in Sources */,
 				5622F1F61A02F62300B5D3F8 /* StandardLibrary.swift in Sources */,

@@ -8,7 +8,7 @@
 
 import Foundation
 
-class StandardLibrary: MustacheRenderable {
+class StandardLibrary: MustacheTraversable {
     let items: [String: MustacheValue]
     init() {
         var items: [String: MustacheValue] = [:]
@@ -79,21 +79,15 @@ class StandardLibrary: MustacheRenderable {
             }
             })
         
-        items["HTML"] = MustacheValue(["escape": MustacheValue(HTMLEscape())])
+        let e = HTMLEscape()
+        let v = MustacheValue(e)
+        items["HTML"] = MustacheValue(["escape": v])
         
         items["URL"] = MustacheValue(["escape": MustacheValue(URLEscape())])
         
         items["javascript"] = MustacheValue(["escape": MustacheValue(JavascriptEscape())])
         
         self.items = items
-    }
-    
-    let mustacheBoolValue = true
-    let mustacheFilter: MustacheFilter? = nil
-    let mustacheTagObserver: MustacheTagObserver? = nil
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return nil
     }
     
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {

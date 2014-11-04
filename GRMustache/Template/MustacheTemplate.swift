@@ -89,10 +89,7 @@ public class MustacheTemplate: MustacheRenderable {
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil
     let mustacheTagObserver: MustacheTagObserver? = nil
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return nil
-    }
+    let mustacheTraversable: MustacheTraversable? = nil
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         return mustacheRendering(renderingInfo.context, contentType: outContentType, error: outError)

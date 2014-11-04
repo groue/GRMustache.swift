@@ -16,10 +16,7 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return self }
     var mustacheTagObserver: MustacheTagObserver? { return self }
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return nil
-    }
+    var mustacheTraversable: MustacheTraversable? = nil
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch renderingInfo.tag.type {

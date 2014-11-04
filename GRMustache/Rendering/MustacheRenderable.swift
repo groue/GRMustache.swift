@@ -56,6 +56,11 @@ protocol MustacheRenderable {
     var mustacheBoolValue: Bool { get }
     
     /**
+    TODO
+    */
+    var mustacheTraversable: MustacheTraversable? { get }
+    
+    /**
     Controls whether the renderable object can be used as a filter.
     
     :returns: An optional filter object that should be applied when the
@@ -68,11 +73,6 @@ protocol MustacheRenderable {
     TODO
     */
     var mustacheTagObserver: MustacheTagObserver? { get }
-    
-    /**
-    TODO
-    */
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue?
     
     /**
     TODO
@@ -94,10 +94,7 @@ private class BlockMustacheRenderable: MustacheRenderable {
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil
     let mustacheTagObserver: MustacheTagObserver? = nil
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return nil
-    }
+    var mustacheTraversable: MustacheTraversable? = nil
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         return block(renderingInfo: renderingInfo, outContentType: outContentType, outError: outError)

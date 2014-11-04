@@ -43,6 +43,10 @@ struct MustacheValue {
         type = .RenderableValue(MustacheFilterRenderable(filter: filter))
     }
     
+    init(_ traversable: MustacheTraversable) {
+        type = .RenderableValue(MustacheTraversableRenderable(traversable: traversable))
+    }
+    
     init(_ tagObserver: MustacheTagObserver) {
         type = .RenderableValue(MustacheTagObserverRenderable(tagObserver: tagObserver))
     }
@@ -51,21 +55,47 @@ struct MustacheValue {
         type = .RenderableValue(object)
     }
     
-    // Extra initializer which avoids ambiguity and does not force the user to
-    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
+        type = .RenderableValue(MustacheTraversableFilterRenderable(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
+        type = .RenderableValue(MustacheTagObserverFilterRenderable(object: object))
+    }
+    
+    init(_ object: protocol<MustacheTraversable, MustacheTagObserver>) {
+        type = .RenderableValue(MustacheTraversableTagObserverRenderable(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
+        type = .RenderableValue(MustacheFilterTraversableTagObserverRenderable(object: object))
+    }
+    
     init(_ object: protocol<MustacheRenderable, MustacheFilter>) {
         type = .RenderableValue(object)
     }
     
-    // Extra initializer which avoids ambiguity and does not force the user to
-    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
+        type = .RenderableValue(object)
+    }
+    
     init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
         type = .RenderableValue(object)
     }
     
-    // Extra initializer which avoids ambiguity and does not force the user to
-    // perform an explicit cast to MustacheRenderable
+    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTraversable>) {
+        type = .RenderableValue(object)
+    }
+    
     init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTagObserver>) {
+        type = .RenderableValue(object)
+    }
+    
+    init(_ object: protocol<MustacheRenderable, MustacheTraversable, MustacheTagObserver>) {
+        type = .RenderableValue(object)
+    }
+    
+    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
         type = .RenderableValue(object)
     }
     
@@ -226,8 +256,12 @@ struct MustacheValue {
         case .ObjCValue(let object):
             return MustacheValue(object.valueForKey(identifier))
         case .RenderableValue(let object):
-            if let value = object.valueForMustacheIdentifier(identifier) {
-                return value
+            if let traversable = object.mustacheTraversable {
+                if let value = traversable.valueForMustacheIdentifier(identifier) {
+                    return value
+                } else {
+                    return MustacheValue()
+                }
             } else {
                 return MustacheValue()
             }
@@ -457,15 +491,35 @@ struct MustacheFilterRenderable: MustacheRenderable {
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return filter }
     let mustacheTagObserver: MustacheTagObserver? = nil
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return nil
-    }
+    var mustacheTraversable: MustacheTraversable? = nil
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch renderingInfo.tag.type {
         case .Variable:
-            return "\(mustacheFilter)"
+            return "\(filter)"
+        case .Section, .InvertedSection:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+}
+
+struct MustacheTraversableRenderable: MustacheRenderable {
+    let traversable: MustacheTraversable
+    
+    init(traversable: MustacheTraversable) {
+        self.traversable = traversable
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return traversable }
+    
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
+        case .Variable:
+            return "\(traversable)"
         case .Section, .InvertedSection:
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
             return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
@@ -483,10 +537,7 @@ struct MustacheTagObserverRenderable: MustacheRenderable {
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil
     var mustacheTagObserver: MustacheTagObserver? { return tagObserver }
-    
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return nil
-    }
+    var mustacheTraversable: MustacheTraversable? = nil
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch renderingInfo.tag.type {
@@ -494,6 +545,98 @@ struct MustacheTagObserverRenderable: MustacheRenderable {
             return "\(tagObserver)"
         case .Section, .InvertedSection:
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(tagObserver)
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+}
+
+struct MustacheTraversableFilterRenderable: MustacheRenderable {
+    let object: protocol<MustacheFilter, MustacheTraversable>
+    
+    init(object: protocol<MustacheFilter, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return object }
+    
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
+        case .Variable:
+            return "\(object)"
+        case .Section, .InvertedSection:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+}
+
+struct MustacheTagObserverFilterRenderable: MustacheRenderable {
+    let object: protocol<MustacheFilter, MustacheTagObserver>
+    
+    init(object: protocol<MustacheFilter, MustacheTagObserver>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    let mustacheTraversable: MustacheTraversable? = nil
+    
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
+        case .Variable:
+            return "\(object)"
+        case .Section, .InvertedSection:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+}
+
+struct MustacheTraversableTagObserverRenderable: MustacheRenderable {
+    let object: protocol<MustacheTraversable, MustacheTagObserver>
+    
+    init(object: protocol<MustacheTraversable, MustacheTagObserver>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    var mustacheTraversable: MustacheTraversable? { return object }
+    
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
+        case .Variable:
+            return "\(object)"
+        case .Section, .InvertedSection:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+}
+
+struct MustacheFilterTraversableTagObserverRenderable: MustacheRenderable {
+    let object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>
+    
+    init(object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    var mustacheTraversable: MustacheTraversable? { return object }
+    
+    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch renderingInfo.tag.type {
+        case .Variable:
+            return "\(object)"
+        case .Section, .InvertedSection:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
             return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
         }
     }

@@ -299,10 +299,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectDoesNotAutomaticallyEntersVariableContextStack() {
-        class TestedRenderable: MustacheRenderable {
+        class TestedRenderable: MustacheRenderable, MustacheTraversable {
             let mustacheBoolValue = true
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheFilter: MustacheFilter? = nil
+            var mustacheTraversable: MustacheTraversable? { return self }
             func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
                 return MustacheValue("value")
             }
@@ -316,10 +317,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectDoesNotAutomaticallyEntersSectionContextStack() {
-        class TestedRenderable: MustacheRenderable {
+        class TestedRenderable: MustacheRenderable, MustacheTraversable {
             let mustacheBoolValue = true
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheFilter: MustacheFilter? = nil
+            var mustacheTraversable: MustacheTraversable? { return self }
             func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
                 return MustacheValue("value")
             }
@@ -361,9 +363,7 @@ class MustacheRenderableTests: XCTestCase {
             var tagWillRenderCount = 0
             var mustacheTagObserver: MustacheTagObserver? { return self }
             let mustacheFilter: MustacheFilter? = nil
-            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-                return nil
-            }
+            let mustacheTraversable: MustacheTraversable? = nil
             func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
                 let template = MustacheTemplate(string: "{{subject}}{{subject}}", error: nil)!
@@ -389,9 +389,7 @@ class MustacheRenderableTests: XCTestCase {
             var tagWillRenderCount = 0
             var mustacheTagObserver: MustacheTagObserver? { return self }
             let mustacheFilter: MustacheFilter? = nil
-            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-                return nil
-            }
+            let mustacheTraversable: MustacheTraversable? = nil
             func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
                 // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
