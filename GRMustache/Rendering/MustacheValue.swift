@@ -1,5 +1,5 @@
 //
-//  MustacheRenderable.swift
+//  MustacheCluster.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 26/10/2014.
@@ -31,8 +31,8 @@ struct MustacheValue: DebugPrintable {
             return "Set(\(set.description))"
         case .ObjCValue(let object):
             return "ObjC(\(object.description))"
-        case .RenderableValue(let object):
-            return "RenderableC(\(object))"
+        case .ClusterValue(let cluster):
+            return "Cluster(\(cluster))"
         }
     }
     
@@ -65,63 +65,63 @@ struct MustacheValue: DebugPrintable {
     }
     
     init(_ filter: MustacheFilter) {
-        type = .RenderableValue(MustacheFilterRenderable(filter: filter))
+        type = .ClusterValue(MustacheFilterCluster(filter: filter))
     }
     
     init(_ traversable: MustacheTraversable) {
-        type = .RenderableValue(MustacheTraversableRenderable(traversable: traversable))
+        type = .ClusterValue(MustacheTraversableCluster(traversable: traversable))
     }
     
     init(_ tagObserver: MustacheTagObserver) {
-        type = .RenderableValue(MustacheTagObserverRenderable(tagObserver: tagObserver))
+        type = .ClusterValue(MustacheTagObserverCluster(tagObserver: tagObserver))
     }
     
-    init(_ object: MustacheRenderable) {
-        type = .RenderableValue(object)
+    init(_ object: MustacheCluster) {
+        type = .ClusterValue(object)
     }
     
     init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
-        type = .RenderableValue(MustacheTraversableFilterRenderable(object: object))
+        type = .ClusterValue(MustacheTraversableFilterCluster(object: object))
     }
     
     init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
-        type = .RenderableValue(MustacheTagObserverFilterRenderable(object: object))
+        type = .ClusterValue(MustacheTagObserverFilterCluster(object: object))
     }
     
     init(_ object: protocol<MustacheTraversable, MustacheTagObserver>) {
-        type = .RenderableValue(MustacheTraversableTagObserverRenderable(object: object))
+        type = .ClusterValue(MustacheTraversableTagObserverCluster(object: object))
     }
     
     init(_ object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
-        type = .RenderableValue(MustacheFilterTraversableTagObserverRenderable(object: object))
+        type = .ClusterValue(MustacheFilterTraversableTagObserverCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheFilter>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheFilter>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheTagObserver>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTraversable>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTagObserver>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheTraversable, MustacheTagObserver>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheTraversable, MustacheTagObserver>) {
+        type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheRenderable, MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
-        type = .RenderableValue(object)
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
+        type = .ClusterValue(object)
     }
     
     init(_ object: AnyObject?) {
@@ -227,8 +227,8 @@ struct MustacheValue: DebugPrintable {
             } else {
                 return true
             }
-        case .RenderableValue(let object):
-            return object.mustacheBoolValue
+        case .ClusterValue(let cluster):
+            return cluster.mustacheBoolValue
         }
     }
     
@@ -280,8 +280,8 @@ struct MustacheValue: DebugPrintable {
             }
         case .ObjCValue(let object):
             return MustacheValue(object.valueForKey(identifier))
-        case .RenderableValue(let object):
-            if let traversable = object.mustacheTraversable {
+        case .ClusterValue(let cluster):
+            if let traversable = cluster.mustacheTraversable {
                 if let value = traversable.valueForMustacheIdentifier(identifier) {
                     return value
                 } else {
@@ -462,8 +462,8 @@ struct MustacheValue: DebugPrintable {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
                 return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             }
-        case .RenderableValue(let object):
-            return object.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        case .ClusterValue(let cluster):
+            return cluster.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
         }
     }
     
@@ -487,8 +487,8 @@ struct MustacheValue: DebugPrintable {
             return "\(set)"
         case .ObjCValue(let object):
             return "\(object)"
-        case .RenderableValue(let object):
-            return "\(object)"
+        case .ClusterValue(let cluster):
+            return "\(cluster)"
         }
     }
     
@@ -502,11 +502,11 @@ struct MustacheValue: DebugPrintable {
         case ArrayValue([MustacheValue])
         case SetValue(NSSet)
         case ObjCValue(AnyObject)
-        case RenderableValue(MustacheRenderable)
+        case ClusterValue(MustacheCluster)
     }
 }
 
-struct MustacheFilterRenderable: MustacheRenderable {
+struct MustacheFilterCluster: MustacheCluster {
     let filter: MustacheFilter
     
     init(filter: MustacheFilter) {
@@ -529,7 +529,7 @@ struct MustacheFilterRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheTraversableRenderable: MustacheRenderable {
+struct MustacheTraversableCluster: MustacheCluster {
     let traversable: MustacheTraversable
     
     init(traversable: MustacheTraversable) {
@@ -552,7 +552,7 @@ struct MustacheTraversableRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheTagObserverRenderable: MustacheRenderable {
+struct MustacheTagObserverCluster: MustacheCluster {
     let tagObserver: MustacheTagObserver
     
     init(tagObserver: MustacheTagObserver) {
@@ -575,7 +575,7 @@ struct MustacheTagObserverRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheTraversableFilterRenderable: MustacheRenderable {
+struct MustacheTraversableFilterCluster: MustacheCluster {
     let object: protocol<MustacheFilter, MustacheTraversable>
     
     init(object: protocol<MustacheFilter, MustacheTraversable>) {
@@ -598,7 +598,7 @@ struct MustacheTraversableFilterRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheTagObserverFilterRenderable: MustacheRenderable {
+struct MustacheTagObserverFilterCluster: MustacheCluster {
     let object: protocol<MustacheFilter, MustacheTagObserver>
     
     init(object: protocol<MustacheFilter, MustacheTagObserver>) {
@@ -621,7 +621,7 @@ struct MustacheTagObserverFilterRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheTraversableTagObserverRenderable: MustacheRenderable {
+struct MustacheTraversableTagObserverCluster: MustacheCluster {
     let object: protocol<MustacheTraversable, MustacheTagObserver>
     
     init(object: protocol<MustacheTraversable, MustacheTagObserver>) {
@@ -644,7 +644,7 @@ struct MustacheTraversableTagObserverRenderable: MustacheRenderable {
     }
 }
 
-struct MustacheFilterTraversableTagObserverRenderable: MustacheRenderable {
+struct MustacheFilterTraversableTagObserverCluster: MustacheCluster {
     let object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>
     
     init(object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {

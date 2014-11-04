@@ -37,8 +37,8 @@ class Context {
             return []
         case .Value(value: let value, parent: let parent):
             switch value.type {
-            case .RenderableValue(let object):
-                if let tagObserver = object.mustacheTagObserver {
+            case .ClusterValue(let cluster):
+                if let tagObserver = cluster.mustacheTagObserver {
                     return [tagObserver] + parent.tagObserverStack
                 } else {
                     return parent.tagObserverStack

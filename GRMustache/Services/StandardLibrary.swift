@@ -49,8 +49,8 @@ class StandardLibrary: MustacheTraversable {
                 return MustacheValue(set.count == 0)
             case .ObjCValue(let object):
                 return MustacheValue(false)
-            case .RenderableValue(let object):
-                return MustacheValue(false)
+            case .ClusterValue(let cluster):
+                return MustacheValue(!cluster.mustacheBoolValue)
             }
             })
         
@@ -74,8 +74,8 @@ class StandardLibrary: MustacheTraversable {
                 return MustacheValue(set.count == 0)
             case .ObjCValue(let object):
                 return MustacheValue(false)
-            case .RenderableValue(let object):
-                return MustacheValue(false)
+            case .ClusterValue(let cluster):
+                return MustacheValue(!cluster.mustacheBoolValue)
             }
             })
         

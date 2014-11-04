@@ -1,5 +1,5 @@
 //
-//  MustacheRenderable.swift
+//  MustacheCluster.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 01/11/2014.
@@ -26,31 +26,24 @@ struct RenderingInfo {
     }
 }
 
-protocol MustacheTagObserver {
-    func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue
-    
-    // If rendering is nil then an error has occurred.
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue)
-}
-
-protocol MustacheRenderable {
+protocol MustacheCluster {
     
     /**
-    Controls whether the renderable object should trigger or avoid the rendering
+    Controls whether the object should trigger or avoid the rendering
     of Mustache sections.
     
-    - true: `{{#renderable}}...{{/}}` are rendered, `{{^renderable}}...{{/}}`
+    - true: `{{#object}}...{{/}}` are rendered, `{{^object}}...{{/}}`
       are not.
-    - false: `{{^renderable}}...{{/}}` are rendered, `{{#renderable}}...{{/}}`
+    - false: `{{^object}}...{{/}}` are rendered, `{{#object}}...{{/}}`
       are not.
     
     Example:
     
-        class MyRenderable: MustacheRenderable {
+        class MyObject: MustacheCluster {
             let mustacheBoolValue = true
         }
     
-    :returns: Whether the renderable object should trigger the rendering of
+    :returns: Whether the object should trigger the rendering of
     Mustache sections.
     */
     var mustacheBoolValue: Bool { get }
@@ -61,11 +54,10 @@ protocol MustacheRenderable {
     var mustacheTraversable: MustacheTraversable? { get }
     
     /**
-    Controls whether the renderable object can be used as a filter.
+    Controls whether the object can be used as a filter.
     
-    :returns: An optional filter object that should be applied when the
-    renderable object is involved in a filter expression such as
-    `renderable(...)`.
+    :returns: An optional filter object that should be applied when the object
+    is involved in a filter expression such as `object(...)`.
     */
     var mustacheFilter: MustacheFilter? { get }
     
@@ -80,11 +72,11 @@ protocol MustacheRenderable {
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
 
-func MustacheRenderableWithBlock(block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) -> MustacheRenderable {
-    return BlockMustacheRenderable(block)
+func MustacheClusterWithBlock(block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) -> MustacheCluster {
+    return BlockMustacheCluster(block)
 }
 
-private class BlockMustacheRenderable: MustacheRenderable {
+private class BlockMustacheCluster: MustacheCluster {
     let block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
     
     init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {

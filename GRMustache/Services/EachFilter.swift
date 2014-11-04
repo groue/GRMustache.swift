@@ -18,7 +18,7 @@ class EachFilter: MustacheFilter {
         switch(value.type) {
         case .None:
             return value
-        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .ObjCValue, .RenderableValue:
+        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .ObjCValue, .ClusterValue:
             if outError != nil {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
             }
@@ -78,7 +78,7 @@ class EachFilter: MustacheFilter {
         return MustacheValue(mustacheValues)
     }
     
-    class ReplacementValue: MustacheRenderable {
+    class ReplacementValue: MustacheCluster {
         let value: MustacheValue
         let index: Int
         let last: Bool
@@ -94,24 +94,24 @@ class EachFilter: MustacheFilter {
         var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         var mustacheFilter: MustacheFilter? {
             switch value.type {
-            case .RenderableValue(let renderable):
-                return renderable.mustacheFilter
+            case .ClusterValue(let cluster):
+                return cluster.mustacheFilter
             default:
                 return nil
             }
         }
         var mustacheTagObserver: MustacheTagObserver? {
             switch value.type {
-            case .RenderableValue(let renderable):
-                return renderable.mustacheTagObserver
+            case .ClusterValue(let cluster):
+                return cluster.mustacheTagObserver
             default:
                 return nil
             }
         }
         var mustacheTraversable: MustacheTraversable? {
             switch value.type {
-            case .RenderableValue(let renderable):
-                return renderable.mustacheTraversable
+            case .ClusterValue(let cluster):
+                return cluster.mustacheTraversable
             default:
                 return nil
             }

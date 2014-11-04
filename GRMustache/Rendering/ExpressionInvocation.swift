@@ -38,8 +38,8 @@ class ExpressionInvocation: ExpressionVisitor {
         let argumentValue = value
         
         switch filterValue.type {
-        case .RenderableValue(let object):
-            if let filter = object.mustacheFilter {
+        case .ClusterValue(let cluster):
+            if let filter = cluster.mustacheFilter {
                 return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
             } else {
                 if outError != nil {

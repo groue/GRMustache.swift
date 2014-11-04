@@ -8,10 +8,10 @@
 
 import Foundation
 
-class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
+class URLEscape: MustacheCluster, MustacheFilter, MustacheTagObserver {
     
     
-    // MARK: - MustacheRenderable
+    // MARK: - MustacheCluster
     
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return self }

@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class MustacheTemplate: MustacheRenderable {
+public class MustacheTemplate: MustacheCluster {
     let repository: MustacheTemplateRepository
     let templateAST: TemplateAST
     var baseContext: Context
@@ -85,7 +85,7 @@ public class MustacheTemplate: MustacheRenderable {
     }
     
     
-    // MARK: - MustacheRenderable
+    // MARK: - MustacheCluster
     
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil

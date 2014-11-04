@@ -13,8 +13,8 @@
 		5622F1F91A03546200B5D3F8 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F71A03535700B5D3F8 /* Localizer.swift */; };
 		5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
 		5622F1FC1A0355FC00B5D3F8 /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
-		5622F1FE1A051FC400B5D3F8 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FD1A051FC400B5D3F8 /* MustacheRenderable.swift */; };
-		5622F1FF1A051FF500B5D3F8 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FD1A051FC400B5D3F8 /* MustacheRenderable.swift */; };
+		5622F1FE1A051FC400B5D3F8 /* MustacheCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */; };
+		5622F1FF1A051FF500B5D3F8 /* MustacheCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */; };
 		5622F2011A054D5800B5D3F8 /* HTMLEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */; };
 		5622F2021A0551DD00B5D3F8 /* HTMLEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */; };
 		563AE19D19FBE47A0028C6C1 /* GRMustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* GRMustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -72,6 +72,8 @@
 		563AE20819FCEAB20028C6C1 /* MustacheValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20619FCEAB20028C6C1 /* MustacheValue.swift */; };
 		563AE20A19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
 		563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
+		569EAE561A0903890052BD26 /* MustacheTagObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE551A0903890052BD26 /* MustacheTagObserver.swift */; };
+		569EAE571A0903950052BD26 /* MustacheTagObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE551A0903890052BD26 /* MustacheTagObserver.swift */; };
 		56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */; };
 		56A88ECA1A08B0040055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
 		56A88ECB1A08B4000055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
@@ -108,7 +110,7 @@
 		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
 		5622F1F71A03535700B5D3F8 /* Localizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
 		5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
-		5622F1FD1A051FC400B5D3F8 /* MustacheRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderable.swift; sourceTree = "<group>"; };
+		5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheCluster.swift; sourceTree = "<group>"; };
 		5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = HTMLEscape.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
 		563AE19719FBE47A0028C6C1 /* GRMustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GRMustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -142,6 +144,7 @@
 		563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionInvocation.swift; sourceTree = "<group>"; };
 		563AE20619FCEAB20028C6C1 /* MustacheValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheValue.swift; sourceTree = "<group>"; };
 		563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionVisitor.swift; sourceTree = "<group>"; };
+		569EAE551A0903890052BD26 /* MustacheTagObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTagObserver.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableTests.swift; sourceTree = "<group>"; };
 		56A88EC91A08B0040055E40A /* MustacheTraversable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTraversable.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -330,8 +333,9 @@
 			children = (
 				563AE1D719FC4A450028C6C1 /* Context.swift */,
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
+				5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */,
 				56CC2CA51A00192300CBD45A /* MustacheFilter.swift */,
-				5622F1FD1A051FC400B5D3F8 /* MustacheRenderable.swift */,
+				569EAE551A0903890052BD26 /* MustacheTagObserver.swift */,
 				56A88EC91A08B0040055E40A /* MustacheTraversable.swift */,
 				563AE20619FCEAB20028C6C1 /* MustacheValue.swift */,
 				563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */,
@@ -468,6 +472,7 @@
 			files = (
 				56CC2C9B1A000C6D00CBD45A /* ImplicitIteratorExpression.swift in Sources */,
 				563AE20119FC62330028C6C1 /* Tag.swift in Sources */,
+				569EAE561A0903890052BD26 /* MustacheTagObserver.swift in Sources */,
 				563AE1C719FC364B0028C6C1 /* TextNode.swift in Sources */,
 				563AE1D019FC446A0028C6C1 /* VariableTag.swift in Sources */,
 				563AE1FB19FC5B860028C6C1 /* SectionTag.swift in Sources */,
@@ -501,7 +506,7 @@
 				563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */,
 				563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */,
 				563AE1CE19FC3A290028C6C1 /* IdentifierExpression.swift in Sources */,
-				5622F1FE1A051FC400B5D3F8 /* MustacheRenderable.swift in Sources */,
+				5622F1FE1A051FC400B5D3F8 /* MustacheCluster.swift in Sources */,
 				56CC2CA11A000EE400CBD45A /* ScopedExpression.swift in Sources */,
 				563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */,
 				563AE1CC19FC3A030028C6C1 /* Expression.swift in Sources */,
@@ -524,7 +529,7 @@
 				563AE1DF19FC4D070028C6C1 /* TemplateASTNode.swift in Sources */,
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
 				563AE20219FC62330028C6C1 /* Tag.swift in Sources */,
-				5622F1FF1A051FF500B5D3F8 /* MustacheRenderable.swift in Sources */,
+				5622F1FF1A051FF500B5D3F8 /* MustacheCluster.swift in Sources */,
 				563AE1E719FC52B70028C6C1 /* VariableTag.swift in Sources */,
 				5622F1F91A03546200B5D3F8 /* Localizer.swift in Sources */,
 				563AE1DD19FC4CFA0028C6C1 /* MustacheTemplate.swift in Sources */,
@@ -534,6 +539,7 @@
 				56AD06F819FE71CD00406BB8 /* Error.swift in Sources */,
 				563AE1FF19FC5DEC0028C6C1 /* TranslateCharacters.swift in Sources */,
 				5622F2021A0551DD00B5D3F8 /* HTMLEscape.swift in Sources */,
+				569EAE571A0903950052BD26 /* MustacheTagObserver.swift in Sources */,
 				563AE1E619FC52B30028C6C1 /* TextNode.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,
 				56CC2C9F1A000E6000CBD45A /* FilteredExpression.swift in Sources */,
