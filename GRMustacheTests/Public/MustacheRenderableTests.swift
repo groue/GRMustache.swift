@@ -670,4 +670,38 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = template.render(value, error: nil)!
         XCTAssertEqual(rendering, "&")
     }
+    
+    func testRenderableObjectInheritContentTypeFromPartial() {
+        let repository = MustacheTemplateRepository(templates: [
+            "templateHTML": "{{ renderable }}|{{> templateText }}",
+            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderable }}"])
+        let value = MustacheValue([
+            "value": MustacheValue("&"),
+            "renderable": MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+                let altTemplate = MustacheTemplate(string: "{{ value }}", error:nil)!
+                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }))])
+        let template = repository.templateNamed("templateHTML", error: nil)!
+        let rendering = template.render(value, error: nil)!
+        XCTAssertEqual(rendering, "&amp;|&amp;")
+    }
+    
+    func testRenderableObjectInheritContentTypeFromMustacheTemplateAsRenderableObject() {
+        let repository1 = MustacheTemplateRepository(templates: [
+            "templateHTML": "{{ renderable }}|{{ templateText }}"])
+        let repository2 = MustacheTemplateRepository(templates: [
+            "templateText": "{{ renderable }}"])
+        repository2.configuration.contentType = .Text
+        
+        let value = MustacheValue([
+            "value": MustacheValue("&"),
+            "templateText": MustacheValue(repository2.templateNamed("templateText", error: nil)!),
+            "renderable": MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+                let altTemplate = MustacheTemplate(string: "{{{ value }}}", error:nil)!
+                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }))])
+        let template = repository1.templateNamed("templateHTML", error: nil)!
+        let rendering = template.render(value, error: nil)!
+        XCTAssertEqual(rendering, "&|&amp;")
+    }
 }
