@@ -96,6 +96,7 @@
 		56CC2CA21A000F4B00CBD45A /* ScopedExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */; };
 		56CC2CA61A00192300CBD45A /* MustacheFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA51A00192300CBD45A /* MustacheFilter.swift */; };
 		56CC2CA71A00195F00CBD45A /* MustacheFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA51A00192300CBD45A /* MustacheFilter.swift */; };
+		56E7F85D1A09519A005DDA29 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -160,6 +161,7 @@
 		56CC2C9D1A000CEB00CBD45A /* FilteredExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilteredExpression.swift; sourceTree = "<group>"; };
 		56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopedExpression.swift; sourceTree = "<group>"; };
 		56CC2CA51A00192300CBD45A /* MustacheFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheFilter.swift; sourceTree = "<group>"; };
+		56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationBaseContextTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -350,6 +352,7 @@
 		56BF069B1A064FE900926BEB /* Public */ = {
 			isa = PBXGroup;
 			children = (
+				56E7F85B1A09517F005DDA29 /* ConfigurationTests */,
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */,
@@ -364,6 +367,14 @@
 				56BF06AF1A064FE900926BEB /* GRMustacheSuiteTests.swift */,
 			);
 			path = GRMustacheSuite;
+			sourceTree = "<group>";
+		};
+		56E7F85B1A09517F005DDA29 /* ConfigurationTests */ = {
+			isa = PBXGroup;
+			children = (
+				56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */,
+			);
+			path = ConfigurationTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -531,6 +542,7 @@
 				563AE1F919FC5AF80028C6C1 /* PartialNode.swift in Sources */,
 				563AE1E419FC52770028C6C1 /* TemplateToken.swift in Sources */,
 				563AE1DB19FC4CE40028C6C1 /* ContentType.swift in Sources */,
+				56E7F85D1A09519A005DDA29 /* ConfigurationBaseContextTests.swift in Sources */,
 				563AE1DF19FC4D070028C6C1 /* TemplateASTNode.swift in Sources */,
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
 				563AE20219FC62330028C6C1 /* Tag.swift in Sources */,

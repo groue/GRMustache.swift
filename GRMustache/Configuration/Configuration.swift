@@ -8,7 +8,7 @@
 
 import UIKit
 
-class Configuration {
+struct Configuration {
     var contentType: ContentType
     var baseContext: Context
     var tagStartDelimiter: String
@@ -21,8 +21,5 @@ class Configuration {
         tagEndDelimiter = "}}"
     }
     
-    class var defaultConfiguration: Configuration {
-        return Configuration()
-    }
-    
+    static var defaultConfiguration = Configuration()
 }
