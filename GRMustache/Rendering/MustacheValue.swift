@@ -8,8 +8,33 @@
 
 import Foundation
 
-struct MustacheValue {
+struct MustacheValue: DebugPrintable {
     let type: Type
+
+    var debugDescription: String {
+        switch type {
+        case .None:
+            return "None"
+        case .BoolValue(let bool):
+            return "Bool(\(bool))"
+        case .IntValue(let int):
+            return "Int(\(int))"
+        case .DoubleValue(let double):
+            return "Int(\(double))"
+        case .StringValue(let string):
+            return "String(\"\(string)\")"
+        case .DictionaryValue(let dictionary):
+            return "Dictionary(\(dictionary.debugDescription))"
+        case .ArrayValue(let array):
+            return "Array(\(array.debugDescription))"
+        case .SetValue(let set):
+            return "Set(\(set.description))"
+        case .ObjCValue(let object):
+            return "ObjC(\(object.description))"
+        case .RenderableValue(let object):
+            return "RenderableC(\(object))"
+        }
+    }
     
     init() {
         type = .None
@@ -357,7 +382,7 @@ struct MustacheValue {
                             buffer = buffer + itemRendering
                         } else {
                             if outError != nil {
-                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
+                                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
                             }
                             return nil
                         }
@@ -403,7 +428,7 @@ struct MustacheValue {
                             buffer = buffer + itemRendering
                         } else {
                             if outError != nil {
-                                outError.memory = NSError(domain: "TODO", code: 0, userInfo: nil)
+                                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
                             }
                             return nil
                         }

@@ -65,13 +65,59 @@ class RenderingEngine: TemplateASTVisitor {
     }
     
     
+    
+    
+    // MARK: - Current Content Type
+    
+    // Classes do not support (yet) stored properties.
+    // Workaround is to use a wrapper struct.
+    private struct ContentTypeStack {
+        // TODO: make it thread-safe
+        static var stack: [ContentType] = []
+        static func append(repository: ContentType) {
+            stack.append(repository)
+        }
+        static func removeLast() {
+            stack.removeLast()
+        }
+        static func lastObject() -> ContentType? {
+            if stack.isEmpty {
+                return nil
+            } else {
+                return stack[stack.endIndex.predecessor()]
+            }
+        }
+    }
+    
+    class func currentContentType() -> ContentType {
+        if let contentType = ContentTypeStack.lastObject() {
+            return contentType
+        } else if let repository = currentTemplateRepository() {
+            return repository.configuration.contentType
+        } else {
+            return Configuration.defaultConfiguration.contentType
+        }
+    }
+    
+    class func pushCurrentContentType(contentType: ContentType) {
+        ContentTypeStack.append(contentType)
+    }
+    
+    class func popCurrentContentType() {
+        ContentTypeStack.removeLast()
+    }
+    
+    
     // MARK: - TemplateASTVisitor
     
     func visit(templateAST: TemplateAST, error outError: NSErrorPointer) -> Bool {
         let ASTContentType = templateAST.contentType
         
         if contentType == ASTContentType {
-            return visit(templateAST.nodes, error: outError)
+            RenderingEngine.pushCurrentContentType(ASTContentType)
+            let result = visit(templateAST.nodes, error: outError)
+            RenderingEngine.popCurrentContentType()
+            return result
         } else {
             // Render separately
             let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
