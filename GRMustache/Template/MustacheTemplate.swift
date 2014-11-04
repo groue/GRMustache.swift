@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class MustacheTemplate: MustacheCluster {
+public class MustacheTemplate: MustacheRenderable {
     let repository: MustacheTemplateRepository
     let templateAST: TemplateAST
     var baseContext: Context
@@ -85,12 +85,7 @@ public class MustacheTemplate: MustacheCluster {
     }
     
     
-    // MARK: - MustacheCluster
-    
-    let mustacheBoolValue = true
-    let mustacheFilter: MustacheFilter? = nil
-    let mustacheTagObserver: MustacheTagObserver? = nil
-    let mustacheTraversable: MustacheTraversable? = nil
+    // MARK: - MustacheRenderable
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         return mustacheRendering(renderingInfo.context, contentType: outContentType, error: outError)

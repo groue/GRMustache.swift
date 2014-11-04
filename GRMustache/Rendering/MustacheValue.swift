@@ -68,39 +68,71 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(MustacheFilterCluster(filter: filter))
     }
     
-    init(_ traversable: MustacheTraversable) {
-        type = .ClusterValue(MustacheTraversableCluster(traversable: traversable))
+    init(_ renderable: MustacheRenderable) {
+        type = .ClusterValue(MustacheRenderableCluster(renderable: renderable))
     }
     
     init(_ tagObserver: MustacheTagObserver) {
         type = .ClusterValue(MustacheTagObserverCluster(tagObserver: tagObserver))
     }
     
-    init(_ object: MustacheCluster) {
-        type = .ClusterValue(object)
+    init(_ traversable: MustacheTraversable) {
+        type = .ClusterValue(MustacheTraversableCluster(traversable: traversable))
     }
     
-    init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
-        type = .ClusterValue(MustacheTraversableFilterCluster(object: object))
+    init(_ object: protocol<MustacheFilter, MustacheRenderable>) {
+        type = .ClusterValue(MustacheFilterRenderableCluster(object: object))
     }
     
     init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheTagObserverFilterCluster(object: object))
+        type = .ClusterValue(MustacheFilterTagObserverCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheTraversable, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheTraversableTagObserverCluster(object: object))
+    init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
+        type = .ClusterValue(MustacheFilterTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheFilterTraversableTagObserverCluster(object: object))
+    init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
+        type = .ClusterValue(MustacheRenderableTagObserverCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
+        type = .ClusterValue(MustacheRenderableTraversableCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(MustacheTagObserverTraversableCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        type = .ClusterValue(MustacheFilterRenderableTagObserverCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        type = .ClusterValue(MustacheFilterRenderableTraversableCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(MustacheFilterTagObserverTraversableCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(MustacheRenderableTagObserverTraversableCluster(object: object))
+    }
+    
+    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(MustacheFilterRenderableTagObserverTraversableCluster(object: object))
+    }
+    
+    init(_ object: MustacheCluster) {
+        type = .ClusterValue(object)
     }
     
     init(_ object: protocol<MustacheCluster, MustacheFilter>) {
         type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
+    init(_ object: protocol<MustacheCluster, MustacheRenderable>) {
         type = .ClusterValue(object)
     }
     
@@ -108,7 +140,11 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
+    init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable>) {
         type = .ClusterValue(object)
     }
     
@@ -116,11 +152,39 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheTraversable, MustacheTagObserver>) {
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
         type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
+    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        type = .ClusterValue(object)
+    }
+    
+    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
         type = .ClusterValue(object)
     }
     
@@ -463,7 +527,12 @@ struct MustacheValue: DebugPrintable {
                 return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             }
         case .ClusterValue(let cluster):
-            return cluster.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            if let renderable = cluster.mustacheRenderable {
+                return renderable.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            } else {
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
+                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            }
         }
     }
     
@@ -515,41 +584,23 @@ struct MustacheFilterCluster: MustacheCluster {
     
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return filter }
+    let mustacheRenderable: MustacheRenderable? = nil
     let mustacheTagObserver: MustacheTagObserver? = nil
-    var mustacheTraversable: MustacheTraversable? = nil
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(filter)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
+    let mustacheTraversable: MustacheTraversable? = nil
 }
 
-struct MustacheTraversableCluster: MustacheCluster {
-    let traversable: MustacheTraversable
+struct MustacheRenderableCluster: MustacheCluster {
+    let renderable: MustacheRenderable
     
-    init(traversable: MustacheTraversable) {
-        self.traversable = traversable
+    init(renderable: MustacheRenderable) {
+        self.renderable = renderable
     }
     
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil
+    var mustacheRenderable: MustacheRenderable? { return renderable }
     let mustacheTagObserver: MustacheTagObserver? = nil
-    var mustacheTraversable: MustacheTraversable? { return traversable }
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(traversable)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
+    let mustacheTraversable: MustacheTraversable? = nil
 }
 
 struct MustacheTagObserverCluster: MustacheCluster {
@@ -561,44 +612,40 @@ struct MustacheTagObserverCluster: MustacheCluster {
     
     let mustacheBoolValue = true
     let mustacheFilter: MustacheFilter? = nil
+    let mustacheRenderable: MustacheRenderable? = nil
     var mustacheTagObserver: MustacheTagObserver? { return tagObserver }
-    var mustacheTraversable: MustacheTraversable? = nil
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(tagObserver)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(tagObserver)
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
+    let mustacheTraversable: MustacheTraversable? = nil
 }
 
-struct MustacheTraversableFilterCluster: MustacheCluster {
-    let object: protocol<MustacheFilter, MustacheTraversable>
+struct MustacheTraversableCluster: MustacheCluster {
+    let traversable: MustacheTraversable
     
-    init(object: protocol<MustacheFilter, MustacheTraversable>) {
+    init(traversable: MustacheTraversable) {
+        self.traversable = traversable
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    let mustacheRenderable: MustacheRenderable? = nil
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return traversable }
+}
+
+struct MustacheFilterRenderableCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheRenderable>
+    
+    init(object: protocol<MustacheFilter, MustacheRenderable>) {
         self.object = object
     }
     
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return object }
+    var mustacheRenderable: MustacheRenderable? { return object }
     let mustacheTagObserver: MustacheTagObserver? = nil
-    var mustacheTraversable: MustacheTraversable? { return object }
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(object)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
+    let mustacheTraversable: MustacheTraversable? = nil
 }
 
-struct MustacheTagObserverFilterCluster: MustacheCluster {
+struct MustacheFilterTagObserverCluster: MustacheCluster {
     let object: protocol<MustacheFilter, MustacheTagObserver>
     
     init(object: protocol<MustacheFilter, MustacheTagObserver>) {
@@ -607,62 +654,134 @@ struct MustacheTagObserverFilterCluster: MustacheCluster {
     
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return object }
+    let mustacheRenderable: MustacheRenderable? = nil
     var mustacheTagObserver: MustacheTagObserver? { return object }
     let mustacheTraversable: MustacheTraversable? = nil
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(object)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
 }
 
-struct MustacheTraversableTagObserverCluster: MustacheCluster {
-    let object: protocol<MustacheTraversable, MustacheTagObserver>
+struct MustacheFilterTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheTraversable>
     
-    init(object: protocol<MustacheTraversable, MustacheTagObserver>) {
-        self.object = object
-    }
-    
-    let mustacheBoolValue = true
-    let mustacheFilter: MustacheFilter? = nil
-    var mustacheTagObserver: MustacheTagObserver? { return object }
-    var mustacheTraversable: MustacheTraversable? { return object }
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(object)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
-}
-
-struct MustacheFilterTraversableTagObserverCluster: MustacheCluster {
-    let object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>
-    
-    init(object: protocol<MustacheFilter, MustacheTraversable, MustacheTagObserver>) {
+    init(object: protocol<MustacheFilter, MustacheTraversable>) {
         self.object = object
     }
     
     let mustacheBoolValue = true
     var mustacheFilter: MustacheFilter? { return object }
+    let mustacheRenderable: MustacheRenderable? = nil
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+
+struct MustacheRenderableTagObserverCluster: MustacheCluster {
+    let object: protocol<MustacheRenderable, MustacheTagObserver>
+    
+    init(object: protocol<MustacheRenderable, MustacheTagObserver>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    var mustacheRenderable: MustacheRenderable? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    let mustacheTraversable: MustacheTraversable? = nil
+}
+
+struct MustacheRenderableTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheRenderable, MustacheTraversable>
+    
+    init(object: protocol<MustacheRenderable, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    var mustacheRenderable: MustacheRenderable? { return object }
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+
+struct MustacheTagObserverTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheTagObserver, MustacheTraversable>
+    
+    init(object: protocol<MustacheTagObserver, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    let mustacheRenderable: MustacheRenderable? = nil
     var mustacheTagObserver: MustacheTagObserver? { return object }
     var mustacheTraversable: MustacheTraversable? { return object }
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
-        case .Variable:
-            return "\(object)"
-        case .Section, .InvertedSection:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-        }
-    }
 }
+
+struct MustacheFilterRenderableTagObserverCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>
+    
+    init(object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    var mustacheRenderable: MustacheRenderable? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    let mustacheTraversable: MustacheTraversable? = nil
+}
+
+struct MustacheFilterRenderableTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>
+    
+    init(object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    var mustacheRenderable: MustacheRenderable? { return object }
+    let mustacheTagObserver: MustacheTagObserver? = nil
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+
+struct MustacheFilterTagObserverTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>
+    
+    init(object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    let mustacheRenderable: MustacheRenderable? = nil
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+
+struct MustacheRenderableTagObserverTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>
+    
+    init(object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    let mustacheFilter: MustacheFilter? = nil
+    var mustacheRenderable: MustacheRenderable? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+
+struct MustacheFilterRenderableTagObserverTraversableCluster: MustacheCluster {
+    let object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>
+    
+    init(object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.object = object
+    }
+    
+    let mustacheBoolValue = true
+    var mustacheFilter: MustacheFilter? { return object }
+    var mustacheRenderable: MustacheRenderable? { return object }
+    var mustacheTagObserver: MustacheTagObserver? { return object }
+    var mustacheTraversable: MustacheTraversable? { return object }
+}
+

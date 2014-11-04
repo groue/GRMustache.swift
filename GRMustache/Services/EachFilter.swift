@@ -78,7 +78,7 @@ class EachFilter: MustacheFilter {
         return MustacheValue(mustacheValues)
     }
     
-    class ReplacementValue: MustacheCluster {
+    class ReplacementValue: MustacheCluster, MustacheRenderable {
         let value: MustacheValue
         let index: Int
         let last: Bool
@@ -91,6 +91,7 @@ class EachFilter: MustacheFilter {
             self.last = last
         }
         
+        // TODO: API inconsistency: why is mustacheBoolValue easy to extract, and not mustacheFilter?
         var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         var mustacheFilter: MustacheFilter? {
             switch value.type {
@@ -115,6 +116,9 @@ class EachFilter: MustacheFilter {
             default:
                 return nil
             }
+        }
+        var mustacheRenderable: MustacheRenderable? {
+            return self
         }
         
         func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {

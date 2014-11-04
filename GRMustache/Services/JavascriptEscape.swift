@@ -8,15 +8,10 @@
 
 import Foundation
 
-class JavascriptEscape: MustacheCluster, MustacheFilter, MustacheTagObserver {
+class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     
     
-    // MARK: - MustacheCluster
-    
-    let mustacheBoolValue = true
-    var mustacheFilter: MustacheFilter? { return self }
-    var mustacheTagObserver: MustacheTagObserver? { return self }
-    var mustacheTraversable: MustacheTraversable? = nil
+    // MARK: - MustacheRenderable
     
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch renderingInfo.tag.type {

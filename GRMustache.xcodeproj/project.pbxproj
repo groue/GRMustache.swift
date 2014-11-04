@@ -74,6 +74,8 @@
 		563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */; };
 		569EAE561A0903890052BD26 /* MustacheTagObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE551A0903890052BD26 /* MustacheTagObserver.swift */; };
 		569EAE571A0903950052BD26 /* MustacheTagObserver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE551A0903890052BD26 /* MustacheTagObserver.swift */; };
+		569EAE591A0905E00052BD26 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE581A0905E00052BD26 /* MustacheRenderable.swift */; };
+		569EAE5A1A090B280052BD26 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE581A0905E00052BD26 /* MustacheRenderable.swift */; };
 		56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */; };
 		56A88ECA1A08B0040055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
 		56A88ECB1A08B4000055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
@@ -145,6 +147,7 @@
 		563AE20619FCEAB20028C6C1 /* MustacheValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheValue.swift; sourceTree = "<group>"; };
 		563AE20919FD090F0028C6C1 /* ExpressionVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionVisitor.swift; sourceTree = "<group>"; };
 		569EAE551A0903890052BD26 /* MustacheTagObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTagObserver.swift; sourceTree = "<group>"; };
+		569EAE581A0905E00052BD26 /* MustacheRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderable.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableTests.swift; sourceTree = "<group>"; };
 		56A88EC91A08B0040055E40A /* MustacheTraversable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTraversable.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -335,6 +338,7 @@
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
 				5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */,
 				56CC2CA51A00192300CBD45A /* MustacheFilter.swift */,
+				569EAE581A0905E00052BD26 /* MustacheRenderable.swift */,
 				569EAE551A0903890052BD26 /* MustacheTagObserver.swift */,
 				56A88EC91A08B0040055E40A /* MustacheTraversable.swift */,
 				563AE20619FCEAB20028C6C1 /* MustacheValue.swift */,
@@ -475,6 +479,7 @@
 				569EAE561A0903890052BD26 /* MustacheTagObserver.swift in Sources */,
 				563AE1C719FC364B0028C6C1 /* TextNode.swift in Sources */,
 				563AE1D019FC446A0028C6C1 /* VariableTag.swift in Sources */,
+				569EAE591A0905E00052BD26 /* MustacheRenderable.swift in Sources */,
 				563AE1FB19FC5B860028C6C1 /* SectionTag.swift in Sources */,
 				56BF06581A063DC800926BEB /* URLEscape.swift in Sources */,
 				563AE1C919FC38B80028C6C1 /* ExpressionParser.swift in Sources */,
@@ -536,6 +541,7 @@
 				563AE20B19FD090F0028C6C1 /* ExpressionVisitor.swift in Sources */,
 				563AE1DC19FC4CF10028C6C1 /* Context.swift in Sources */,
 				56BF06591A063DC800926BEB /* URLEscape.swift in Sources */,
+				569EAE5A1A090B280052BD26 /* MustacheRenderable.swift in Sources */,
 				56AD06F819FE71CD00406BB8 /* Error.swift in Sources */,
 				563AE1FF19FC5DEC0028C6C1 /* TranslateCharacters.swift in Sources */,
 				5622F2021A0551DD00B5D3F8 /* HTMLEscape.swift in Sources */,
