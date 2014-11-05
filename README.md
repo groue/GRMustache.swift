@@ -41,13 +41,13 @@ Forget the strict minimalism of the genuine Mustache language: GRMustache ships 
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralizeFilter = MustacheFilterWithBlock { (count: Int?) -> (MustacheValue) in
+let pluralizeFilter = { (count: Int?) -> (MustacheValue) in
     
     // This filter returns an object that performs custom rendering:
     
-    return MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+    return MustacheValue({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
         
-        // Fetch the section inner content
+        // Fetch the section inner content...
         
         let string = renderingInfo.tag.innerTemplateString
         
@@ -58,7 +58,7 @@ let pluralizeFilter = MustacheFilterWithBlock { (count: Int?) -> (MustacheValue)
         } else {
             return string
         }
-    }))
+    })
 }
 
 

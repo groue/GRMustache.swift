@@ -76,8 +76,24 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(MustacheFilterCluster(filter: filter))
     }
     
+    init(_ block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue)) {
+        type = .ClusterValue(MustacheFilterCluster(filter: MustacheFilterWithBlock(block)))
+    }
+    
+    init(_ block: (String?) -> (MustacheValue)) {
+        type = .ClusterValue(MustacheFilterCluster(filter: MustacheFilterWithBlock(block)))
+    }
+    
+    init(_ block: (Int?) -> (MustacheValue)) {
+        type = .ClusterValue(MustacheFilterCluster(filter: MustacheFilterWithBlock(block)))
+    }
+    
     init(_ renderable: MustacheRenderable) {
         type = .ClusterValue(MustacheRenderableCluster(renderable: renderable))
+    }
+    
+    init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
+        type = .ClusterValue(MustacheRenderableCluster(renderable: BlockMustacheRenderable(block)))
     }
     
     init(_ tagObserver: MustacheTagObserver) {

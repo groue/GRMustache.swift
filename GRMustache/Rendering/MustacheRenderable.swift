@@ -35,7 +35,7 @@ func MustacheRenderableWithBlock(block: (renderingInfo: RenderingInfo, outConten
     return BlockMustacheRenderable(block)
 }
 
-private class BlockMustacheRenderable: MustacheRenderable {
+class BlockMustacheRenderable: MustacheRenderable {
     let block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
     
     init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
