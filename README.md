@@ -67,13 +67,9 @@ let pluralizeFilter = MustacheFilterWithBlock { (count: Int?) -> (MustacheValue)
 MustacheConfiguration.defaultConfiguration.extendBaseContextWithValue(MustacheValue(["pluralize": MustacheValue(pluralizeFilter)]))
 
 
-// Use it
+// I have 3 cats.
 
 let template = MustacheTemplate(named: "cats", error: nil)!
 let value = MustacheValue(["cats": ["Kitty", "Pussy", "Melba"]])
-
-
-// I have 3 cats.
-
 let rendering = template.render(value, error: nil)!
 ```
