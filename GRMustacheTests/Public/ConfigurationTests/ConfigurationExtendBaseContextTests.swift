@@ -12,7 +12,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = MustacheConfiguration()
-        configuration.extendingBaseContextWithValue(MustacheValue(["name": "Arthur"]))
+        configuration.extendBaseContextWithValue(MustacheValue(["name": "Arthur"]))
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}", error: nil)!
@@ -37,7 +37,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
             }
         }
         var configuration = MustacheConfiguration()
-        configuration.extendingBaseContextWithTagObserver(TestedTagObserver())
+        configuration.extendBaseContextWithTagObserver(TestedTagObserver())
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}", error: nil)!

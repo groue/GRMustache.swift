@@ -17,6 +17,7 @@
 		5622F1FF1A051FF500B5D3F8 /* MustacheCluster.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */; };
 		5622F2011A054D5800B5D3F8 /* HTMLEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */; };
 		5622F2021A0551DD00B5D3F8 /* HTMLEscape.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */; };
+		56330A151A0A9CB7007A0ECE /* example1.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56330A141A0A9CB7007A0ECE /* example1.mustache */; };
 		563AE19D19FBE47A0028C6C1 /* GRMustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* GRMustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		563AE1A319FBE47A0028C6C1 /* GRMustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563AE19719FBE47A0028C6C1 /* GRMustache.framework */; };
 		563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */; };
@@ -99,6 +100,7 @@
 		56CC2CA61A00192300CBD45A /* MustacheFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA51A00192300CBD45A /* MustacheFilter.swift */; };
 		56CC2CA71A00195F00CBD45A /* MustacheFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA51A00192300CBD45A /* MustacheFilter.swift */; };
 		56E7F85D1A09519A005DDA29 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */; };
+		56F05DB61A0A9FC3008B1FFC /* example2.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56F05DB51A0A9FC3008B1FFC /* example2.mustache */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,6 +119,7 @@
 		5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
 		5622F1FD1A051FC400B5D3F8 /* MustacheCluster.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheCluster.swift; sourceTree = "<group>"; };
 		5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = HTMLEscape.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		56330A141A0A9CB7007A0ECE /* example1.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example1.mustache; sourceTree = "<group>"; };
 		563AE19719FBE47A0028C6C1 /* GRMustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = GRMustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		563AE19C19FBE47A0028C6C1 /* GRMustache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GRMustache.h; sourceTree = "<group>"; };
@@ -166,6 +169,7 @@
 		56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopedExpression.swift; sourceTree = "<group>"; };
 		56CC2CA51A00192300CBD45A /* MustacheFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheFilter.swift; sourceTree = "<group>"; };
 		56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationBaseContextTests.swift; sourceTree = "<group>"; };
+		56F05DB51A0A9FC3008B1FFC /* example2.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = example2.mustache; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -247,6 +251,8 @@
 			children = (
 				56BF069B1A064FE900926BEB /* Public */,
 				563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */,
+				56330A141A0A9CB7007A0ECE /* example1.mustache */,
+				56F05DB51A0A9FC3008B1FFC /* example2.mustache */,
 				563AE1A719FBE47A0028C6C1 /* Supporting Files */,
 			);
 			path = GRMustacheTests;
@@ -480,7 +486,9 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56F05DB61A0A9FC3008B1FFC /* example2.mustache in Resources */,
 				56BF06C31A06500500926BEB /* GRMustacheSuite in Resources */,
+				56330A151A0A9CB7007A0ECE /* example1.mustache in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,28 +11,28 @@ import XCTest
 
 class GRMustacheTests: XCTestCase {
     
-//    override func setUp() {
-//        super.setUp()
-//        // Put setup code here. This method is called before the invocation of each test method in the class.
-//    }
-//    
-//    override func tearDown() {
-//        // Put teardown code here. This method is called after the invocation of each test method in the class.
-//        super.tearDown()
-//    }
-//    
-//    func testExample() {
-//        // This is an example of a functional test case.
-//        XCTAssert(true, "Pass")
-//    }
-//    
-//    func testPerformanceExample() {
-//        // This is an example of a performance test case.
-//        self.measureBlock() {
-//            // Put the code you want to measure the time of here.
-//        }
-//    }
-
+    //    override func setUp() {
+    //        super.setUp()
+    //        // Put setup code here. This method is called before the invocation of each test method in the class.
+    //    }
+    //
+    //    override func tearDown() {
+    //        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    //        super.tearDown()
+    //    }
+    //
+    //    func testExample() {
+    //        // This is an example of a functional test case.
+    //        XCTAssert(true, "Pass")
+    //    }
+    //
+    //    func testPerformanceExample() {
+    //        // This is an example of a performance test case.
+    //        self.measureBlock() {
+    //            // Put the code you want to measure the time of here.
+    //        }
+    //    }
+    
     func testSwiftVariableInterpolation() {
         var error: NSError?
         let repository = MustacheTemplateRepository()
@@ -76,5 +76,65 @@ class GRMustacheTests: XCTestCase {
         } else {
             XCTFail("\(error!)")
         }
+    }
+    
+    func testReadmeExample1() {
+        let testBundle = NSBundle(forClass: GRMustacheTests.self)
+        let template = MustacheTemplate(named: "example1", bundle: testBundle, error: nil)!
+        let value = MustacheValue([
+            "name": "Chris",
+            "value": 10000.0,
+            "taxed_value": 10000 - (10000 * 0.4),
+            "in_ca": true
+            ])
+        let rendering = template.render(value, error: nil)!
+        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
+    }
+    
+    func testReadmeExample2() {
+        // Define the `pluralize` filter.
+        //
+        // {{# pluralize(count) }}...{{/ }} renders the plural form of the
+        // section content if the `count` argument is greater than 1.
+        
+        let pluralizeFilter = MustacheFilterWithBlock { (count: Int?) -> (MustacheValue) in
+            
+            // This filter returns an object that performs custom rendering:
+            
+            return MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+                
+                // Perform the regular rendering of the section content...
+                
+                let rendering = renderingInfo.tag.renderContent(renderingInfo, contentType: contentType, error: error)!
+                
+                // ... and pluralize it if needed.
+                
+                if count! > 1 {
+                    return rendering + "s"  // naive
+                } else {
+                    return rendering
+                }
+            }))
+        }
+        
+        
+        // Register the pluralize filter for all Mustache renderings:
+        
+        MustacheConfiguration.defaultConfiguration.extendBaseContextWithValue(MustacheValue(["pluralize": MustacheValue(pluralizeFilter)]))
+        
+        
+        // Use it
+        
+        let testBundle = NSBundle(forClass: GRMustacheTests.self)
+        let template = MustacheTemplate(named: "example2", bundle: testBundle, error: nil)!
+        let value = MustacheValue([
+            "cats": ["Kitty", "Pussy", "Melba"]
+            ])
+        
+        
+        // I have 3 cats.
+        
+        let rendering = template.render(value, error: nil)!
+        XCTAssertEqual(rendering, "I have 3 cats.")
     }
 }

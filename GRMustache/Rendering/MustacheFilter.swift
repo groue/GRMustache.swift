@@ -35,6 +35,24 @@ func MustacheFilterWithBlock(block: (String?) -> (MustacheValue)) -> MustacheFil
     })
 }
 
+func MustacheFilterWithBlock(block: (Int?) -> (MustacheValue)) -> MustacheFilter {
+    return BlockMustacheFilter({ (value, outError) -> (MustacheValue?) in
+        switch value.type {
+        case .None:
+            return block(nil)
+        default:
+            if let int = value.asInt() {
+                return block(int)
+            } else {
+                if outError != nil {
+                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not an int"])
+                }
+                return nil
+            }
+        }
+    })
+}
+
 private class BlockMustacheFilter: MustacheFilter {
     let block: (MustacheValue, error: NSErrorPointer) -> (MustacheValue?)
     

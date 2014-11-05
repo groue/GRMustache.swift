@@ -563,6 +563,17 @@ struct MustacheValue: DebugPrintable {
         }
     }
     
+    func asInt() -> Int? {
+        switch type {
+        case .IntValue(let int):
+            return int
+        case .DoubleValue(let double):
+            return Int(double)
+        default:
+            return nil
+        }
+    }
+    
     enum Type {
         case None
         case BoolValue(Bool)
