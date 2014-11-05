@@ -18,7 +18,7 @@ class TemplateParser {
     let tagStartDelimiter: String
     let tagEndDelimiter: String
     
-    init(tokenConsumer: TemplateTokenConsumer, configuration: Configuration) {
+    init(tokenConsumer: TemplateTokenConsumer, configuration: MustacheConfiguration) {
         self.tokenConsumer = tokenConsumer
         self.tagStartDelimiter = configuration.tagStartDelimiter
         self.tagEndDelimiter = configuration.tagEndDelimiter

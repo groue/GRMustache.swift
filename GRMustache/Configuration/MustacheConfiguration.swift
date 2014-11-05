@@ -1,5 +1,5 @@
 //
-//  Configuration.swift
+//  MustacheConfiguration.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 25/10/2014.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-struct Configuration {
+struct MustacheConfiguration {
     var contentType: ContentType
     var baseContext: Context
     var tagStartDelimiter: String
@@ -21,5 +21,5 @@ struct Configuration {
         tagEndDelimiter = "}}"
     }
     
-    static var defaultConfiguration = Configuration()
+    static var defaultConfiguration = MustacheConfiguration()
 }

@@ -13,27 +13,27 @@ class ConfigurationBaseContextTests: XCTestCase {
     override func tearDown() {
         super.tearDown()
         
-        Configuration.defaultConfiguration.baseContext = Configuration().baseContext
+        MustacheConfiguration.defaultConfiguration.baseContext = MustacheConfiguration().baseContext
     }
     
     func testFactoryConfigurationHasStandardLibraryInBaseContextRegardlessOfDefaultConfiguration() {
-        Configuration.defaultConfiguration.baseContext = Context()
+        MustacheConfiguration.defaultConfiguration.baseContext = Context()
         let repository = MustacheTemplateRepository()
-        repository.configuration = Configuration()
+        repository.configuration = MustacheConfiguration()
         let template = repository.templateFromString("{{uppercase(foo)}}", error: nil)!
-        let rendering = template.render(MustacheValue(["foo": MustacheValue("success")]), error: nil)!
+        let rendering = template.render(MustacheValue(["foo": "success"]), error: nil)!
         XCTAssertEqual(rendering, "SUCCESS")
     }
     
     func testDefaultConfigurationCustomBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": MustacheValue("success")]))
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         let template = MustacheTemplate(string: "{{foo}}", error: nil)!
         let rendering = template.render(MustacheValue(), error: nil)!
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultConfigurationCustomBaseContextHasNoStandardLibrary() {
-        Configuration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": MustacheValue("success")]))
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         let template = MustacheTemplate(string: "{{uppercase(foo)}}", error: nil)!
         var error: NSError?
         let rendering = template.render(MustacheValue(), error: &error)
@@ -42,15 +42,15 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": MustacheValue("failure")]))
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "failure"]))
         let template = MustacheTemplate(string: "{{foo}}", error: nil)!
-        template.baseContext = Context(MustacheValue(["foo": MustacheValue("success")]))
+        template.baseContext = Context(MustacheValue(["foo": "success"]))
         let rendering = template.render(MustacheValue(), error: nil)!
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": MustacheValue("success")]))
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         let repository = MustacheTemplateRepository()
         let template = repository.templateFromString("{{foo}}", error: nil)!
         let rendering = template.render(MustacheValue(), error: nil)!

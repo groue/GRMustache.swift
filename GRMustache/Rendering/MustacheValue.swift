@@ -60,6 +60,14 @@ struct MustacheValue: DebugPrintable {
         type = .DictionaryValue(dictionary)
     }
 
+    init(_ dictionary: [String: AnyObject]) {
+        var mustacheDictionary: [String: MustacheValue] = [:]
+        for (key, value) in dictionary {
+            mustacheDictionary[key] = MustacheValue(value)
+        }
+        type = .DictionaryValue(mustacheDictionary)
+    }
+    
     init(_ array: [MustacheValue]) {
         type = .ArrayValue(array)
     }

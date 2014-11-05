@@ -37,7 +37,7 @@ class GRMustacheTests: XCTestCase {
         var error: NSError?
         let repository = MustacheTemplateRepository()
         if let template = repository.templateFromString("<{{name}}>", error: &error) {
-            let data = MustacheValue(["name": MustacheValue("Arthur")])
+            let data = MustacheValue(["name": "Arthur"])
             if let rendering = template.render(data, error: &error) {
                 XCTAssertEqual(rendering, "<Arthur>", "")
             } else {
@@ -67,7 +67,7 @@ class GRMustacheTests: XCTestCase {
         var error: NSError?
         let repository = MustacheTemplateRepository(templates: ["partial": "{{name}}"])
         if let template = repository.templateFromString("<{{>partial}}>", error: &error) {
-            let data = MustacheValue(["name": MustacheValue("Arthur")])
+            let data = MustacheValue(["name": "Arthur"])
             if let rendering = template.render(data, error: &error) {
                 XCTAssertEqual(rendering, "<Arthur>", "")
             } else {

@@ -16,12 +16,12 @@ protocol MustacheTemplateRepositoryDataSource {
 }
 
 public class MustacheTemplateRepository {
-    var configuration: Configuration
+    var configuration: MustacheConfiguration
     var dataSource: MustacheTemplateRepositoryDataSource?
     var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init() {
-        configuration = Configuration.defaultConfiguration
+        configuration = MustacheConfiguration.defaultConfiguration
         templateASTForTemplateID = [:]
     }
     
