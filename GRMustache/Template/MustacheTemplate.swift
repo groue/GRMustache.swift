@@ -32,9 +32,9 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(templatePath: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
-        let repository = MustacheTemplateRepository(directoryPath: templatePath.stringByDeletingLastPathComponent, templateExtension: templatePath.pathExtension, encoding: encoding)
-        let templateName = templatePath.stringByDeletingPathExtension
+    convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+        let repository = MustacheTemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
+        let templateName = path.stringByDeletingPathExtension
         if let templateAST = repository.templateASTNamed(templateName, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
@@ -45,9 +45,9 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(templateURL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
-        let repository = MustacheTemplateRepository(baseURL: templateURL.URLByDeletingLastPathComponent!, templateExtension: templateURL.pathExtension, encoding: encoding)
-        let templateName = templateURL.URLByDeletingPathExtension?.lastPathComponent
+    convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+        let repository = MustacheTemplateRepository(baseURL: URL.URLByDeletingLastPathComponent!, templateExtension: URL.pathExtension, encoding: encoding)
+        let templateName = URL.URLByDeletingPathExtension?.lastPathComponent
         if let templateAST = repository.templateASTNamed(templateName!, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
@@ -58,9 +58,9 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(resource: String, bundle: NSBundle?, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+    convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
         let repository = MustacheTemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
-        if let templateAST = repository.templateASTNamed(resource, relativeToTemplateID: nil, error: outError) {
+        if let templateAST = repository.templateASTNamed(name, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.
