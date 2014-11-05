@@ -47,16 +47,16 @@ let pluralizeFilter = MustacheFilterWithBlock { (count: Int?) -> (MustacheValue)
     
     return MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
         
-        // Perform the regular rendering of the section content...
+        // Fetch the section inner content
         
-        let rendering = renderingInfo.tag.renderContent(renderingInfo, contentType: contentType, error: error)!
+        let string = renderingInfo.tag.innerTemplateString
         
         // ... and pluralize it if needed.
         
         if count! > 1 {
-            return rendering + "s"  // naive
+            return string + "s"  // naive
         } else {
-            return rendering
+            return string
         }
     }))
 }
