@@ -64,7 +64,7 @@ let pluralizeFilter = { (count: Int?) -> (MustacheValue) in
 
 // Register the pluralize filter for all Mustache renderings:
 
-MustacheConfiguration.defaultConfiguration.extendBaseContextWithValue(MustacheValue(["pluralize": MustacheValue(pluralizeFilter)]))
+MustacheConfiguration.defaultConfiguration.extendBaseContextWith(value: MustacheValue(pluralizeFilter), forKey: "pluralize")
 
 
 // I have 3 cats.

@@ -23,11 +23,15 @@ struct MustacheConfiguration {
     
     static var defaultConfiguration = MustacheConfiguration()
     
-    mutating func extendBaseContextWithValue(value: MustacheValue) {
+    mutating func extendBaseContextWith(#value: MustacheValue) {
         baseContext = baseContext.contextByAddingValue(value)
     }
     
-    mutating func extendBaseContextWithTagObserver(tagObserver: MustacheTagObserver) {
+    mutating func extendBaseContextWith(#value: MustacheValue, forKey key: String) {
+        baseContext = baseContext.contextByAddingValue(MustacheValue([key: value]))
+    }
+    
+    mutating func extendBaseContextWith(#tagObserver: MustacheTagObserver) {
         baseContext = baseContext.contextByAddingTagObserver(tagObserver)
     }
 }
