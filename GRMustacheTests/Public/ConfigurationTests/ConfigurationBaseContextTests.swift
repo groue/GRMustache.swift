@@ -20,7 +20,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         MustacheConfiguration.defaultConfiguration.baseContext = Context()
         let repository = MustacheTemplateRepository()
         repository.configuration = MustacheConfiguration()
-        let template = repository.templateFromString("{{uppercase(foo)}}", error: nil)!
+        let template = repository.template(string: "{{uppercase(foo)}}", error: nil)!
         let rendering = template.render(MustacheValue(["foo": "success"]), error: nil)!
         XCTAssertEqual(rendering, "SUCCESS")
     }
@@ -52,7 +52,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     func testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext() {
         MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         let repository = MustacheTemplateRepository()
-        let template = repository.templateFromString("{{foo}}", error: nil)!
+        let template = repository.template(string: "{{foo}}", error: nil)!
         let rendering = template.render(MustacheValue(), error: nil)!
         XCTAssertEqual(rendering, "success")
     }

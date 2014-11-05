@@ -208,8 +208,8 @@ class MustacheRenderableTests: XCTestCase {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         })
@@ -223,8 +223,8 @@ class MustacheRenderableTests: XCTestCase {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         })
@@ -238,8 +238,8 @@ class MustacheRenderableTests: XCTestCase {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         })
@@ -252,8 +252,8 @@ class MustacheRenderableTests: XCTestCase {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         })
@@ -302,8 +302,8 @@ class MustacheRenderableTests: XCTestCase {
                 return MustacheValue("value")
             }
             func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-                return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+                return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         }
         let value = MustacheValue(["renderable": MustacheValue(TestedRenderable())])
@@ -325,8 +325,8 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanExtendValueContextStackInSectionTag() {
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(["subject2": MustacheValue("+++")]))
-            // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         })
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("---")])
         let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}", error: nil)!
@@ -360,8 +360,8 @@ class MustacheRenderableTests: XCTestCase {
             var tagWillRenderCount = 0
             func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
-                // TODO: "renderingInfo.tag.mustacheRendering(renderingInfo" is not a nice API.
-                return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
+                return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
             func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
                 ++tagWillRenderCount
@@ -393,7 +393,7 @@ class MustacheRenderableTests: XCTestCase {
         }
         
         let renderable = MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         })
         
         let template = MustacheTemplate(string: "{{#renderable}}{{subject}}{{/renderable}}", error: nil)!
@@ -597,7 +597,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testMustacheTemplateAsRenderableObject() {
         let repository = MustacheTemplateRepository(templates: ["partial": "{{subject}}"])
-        let template = repository.templateNamed("partial", error: nil)!
+        let template = repository.template(named: "partial", error: nil)!
         let value = MustacheValue(["partial": MustacheValue(template), "subject": MustacheValue("---")])
         let rendering = MustacheTemplate.render(value, fromString: "{{partial}}", error: nil)!
         XCTAssertEqual(rendering, "---")
@@ -605,7 +605,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testMustacheTemplateAsRenderableObjectInNotHTMLEscaped() {
         let repository = MustacheTemplateRepository(templates: ["partial": "<{{subject}}>"])
-        let template = repository.templateNamed("partial", error: nil)!
+        let template = repository.template(named: "partial", error: nil)!
         let value = MustacheValue(["partial": MustacheValue(template), "subject": MustacheValue("---")])
         let rendering = MustacheTemplate.render(value, fromString: "{{partial}}", error: nil)!
         XCTAssertEqual(rendering, "<--->")
@@ -622,7 +622,7 @@ class MustacheRenderableTests: XCTestCase {
             return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
         })
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
-        let template = repository.templateNamed("template", error: nil)!
+        let template = repository.template(named: "template", error: nil)!
         let rendering = template.render(value, error: nil)
         XCTAssertEqual(rendering!, "-")
     }
@@ -635,12 +635,12 @@ class MustacheRenderableTests: XCTestCase {
             "template2": "{{ renderable }}",
             "partial": "partial2"])
         let value = MustacheValue([
-            "template2": MustacheValue(repository2.templateNamed("template2", error: nil)!),
+            "template2": MustacheValue(repository2.template(named: "template2", error: nil)!),
             "renderable": MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{>partial}}", error:nil)!
                 return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             }))])
-        let template = repository1.templateNamed("template1", error:nil)!
+        let template = repository1.template(named: "template1", error:nil)!
         let rendering = template.render(value, error: nil)!
         XCTAssertEqual(rendering, "partial1|partial2")
     }
@@ -681,7 +681,7 @@ class MustacheRenderableTests: XCTestCase {
                 let altTemplate = MustacheTemplate(string: "{{ value }}", error:nil)!
                 return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             }))])
-        let template = repository.templateNamed("templateHTML", error: nil)!
+        let template = repository.template(named: "templateHTML", error: nil)!
         let rendering = template.render(value, error: nil)!
         XCTAssertEqual(rendering, "&amp;|&amp;")
     }
@@ -695,12 +695,12 @@ class MustacheRenderableTests: XCTestCase {
         
         let value = MustacheValue([
             "value": MustacheValue("&"),
-            "templateText": MustacheValue(repository2.templateNamed("templateText", error: nil)!),
+            "templateText": MustacheValue(repository2.template(named: "templateText", error: nil)!),
             "renderable": MustacheValue(MustacheRenderableWithBlock({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{{ value }}}", error:nil)!
                 return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             }))])
-        let template = repository1.templateNamed("templateHTML", error: nil)!
+        let template = repository1.template(named: "templateHTML", error: nil)!
         let rendering = template.render(value, error: nil)!
         XCTAssertEqual(rendering, "&|&amp;")
     }

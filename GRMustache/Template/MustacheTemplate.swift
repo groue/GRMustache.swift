@@ -22,7 +22,7 @@ public class MustacheTemplate: MustacheRenderable {
     convenience init?(string: String, error outError: NSErrorPointer) {
         let repository = RenderingEngine.currentTemplateRepository() ?? MustacheTemplateRepository(bundle: nil)
         let contentType = RenderingEngine.currentContentType()
-        if let templateAST = repository.templateASTFromString(string, contentType: contentType, templateID: nil, error: outError) {
+        if let templateAST = repository.templateAST(string: string, contentType: contentType, templateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.
@@ -35,7 +35,7 @@ public class MustacheTemplate: MustacheRenderable {
     convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
         let repository = MustacheTemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
         let templateName = path.stringByDeletingPathExtension
-        if let templateAST = repository.templateASTNamed(templateName, relativeToTemplateID: nil, error: outError) {
+        if let templateAST = repository.templateAST(named: templateName, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.
@@ -48,7 +48,7 @@ public class MustacheTemplate: MustacheRenderable {
     convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
         let repository = MustacheTemplateRepository(baseURL: URL.URLByDeletingLastPathComponent!, templateExtension: URL.pathExtension, encoding: encoding)
         let templateName = URL.URLByDeletingPathExtension?.lastPathComponent
-        if let templateAST = repository.templateASTNamed(templateName!, relativeToTemplateID: nil, error: outError) {
+        if let templateAST = repository.templateAST(named: templateName!, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.
@@ -60,7 +60,7 @@ public class MustacheTemplate: MustacheRenderable {
     
     convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
         let repository = MustacheTemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
-        if let templateAST = repository.templateASTNamed(name, relativeToTemplateID: nil, error: outError) {
+        if let templateAST = repository.templateAST(named: name, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
             // Failable initializers require all properties to be set.

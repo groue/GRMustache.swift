@@ -372,72 +372,66 @@ struct MustacheValue: DebugPrintable {
             switch tag.type {
             case .Variable:
                 return ""
-            case .Section, .InvertedSection:
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            case .Section:
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         case .BoolValue(let bool):
             switch tag.type {
             case .Variable:
                 return "\(bool)"
-            case .Section, .InvertedSection:
+            case .Section:
                 if renderingInfo.enumerationItem {
                     let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 } else {
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 }
             }
         case .IntValue(let int):
             switch tag.type {
             case .Variable:
                 return "\(int)"
-            case .Section, .InvertedSection:
+            case .Section:
                 if renderingInfo.enumerationItem {
                     let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 } else {
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 }
             }
         case .DoubleValue(let double):
             switch tag.type {
             case .Variable:
                 return "\(double)"
-            case .Section, .InvertedSection:
+            case .Section:
                 if renderingInfo.enumerationItem {
                     let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 } else {
-                    return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                 }
             }
         case .StringValue(let string):
             switch tag.type {
             case .Variable:
                 return string
-                
             case .Section:
-                // TODO: why isn't it the same rendering code as Number?
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
-                
-            case .InvertedSection:
-                // TODO: why isn't it the same rendering code as Number?
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         case .DictionaryValue(let dictionary):
             switch tag.type {
             case .Variable:
                 return "\(dictionary)"
                 
-            case .Section, .InvertedSection:
+            case .Section:
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         case .ArrayValue(let array):
             if renderingInfo.enumerationItem {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
@@ -470,8 +464,8 @@ struct MustacheValue: DebugPrintable {
                             outContentType.memory = .Text
                         }
                         return ""
-                    case .Section, .InvertedSection:
-                        return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    case .Section:
+                        return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                     }
                 } else {
                     if outContentType != nil {
@@ -483,7 +477,7 @@ struct MustacheValue: DebugPrintable {
         case .SetValue(let set):
             if renderingInfo.enumerationItem {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
@@ -516,8 +510,8 @@ struct MustacheValue: DebugPrintable {
                             outContentType.memory = .Text
                         }
                         return ""
-                    case .Section, .InvertedSection:
-                        return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                    case .Section:
+                        return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
                     }
                 } else {
                     if outContentType != nil {
@@ -530,16 +524,16 @@ struct MustacheValue: DebugPrintable {
             switch tag.type {
             case .Variable:
                 return "\(object)"
-            case .Section, .InvertedSection:
+            case .Section:
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
                 return renderable.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
             } else {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         }
     }

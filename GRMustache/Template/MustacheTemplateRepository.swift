@@ -45,27 +45,27 @@ public class MustacheTemplateRepository {
         dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
     }
     
-    public func templateFromString(string: String, error outError: NSErrorPointer) -> MustacheTemplate? {
-        return self.templateFromString(string, contentType: configuration.contentType, error: outError)
+    public func template(#string: String, error outError: NSErrorPointer) -> MustacheTemplate? {
+        return self.template(string: string, contentType: configuration.contentType, error: outError)
     }
     
-    public func templateNamed(name: String, error outError: NSErrorPointer) -> MustacheTemplate? {
-        if let templateAST = templateASTNamed(name, relativeToTemplateID: nil, error: outError) {
+    public func template(named name: String, error outError: NSErrorPointer) -> MustacheTemplate? {
+        if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: outError) {
             return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func templateFromString(string: String, contentType: ContentType, error outError: NSErrorPointer) -> MustacheTemplate? {
-        if let templateAST = self.templateASTFromString(string, contentType: contentType, templateID: nil, error: outError) {
+    func template(#string: String, contentType: ContentType, error outError: NSErrorPointer) -> MustacheTemplate? {
+        if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: outError) {
             return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func templateASTNamed(name: String, relativeToTemplateID templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
+    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID, inRepository: self) {
             if let templateAST = templateASTForTemplateID[templateID] {
                 return templateAST
@@ -74,7 +74,7 @@ public class MustacheTemplateRepository {
                 if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &error) {
                     let templateAST = TemplateAST()
                     templateASTForTemplateID[templateID] = templateAST
-                    if let compiledAST = templateASTFromString(templateString, contentType: configuration.contentType, templateID: templateID, error: outError) {
+                    if let compiledAST = self.templateAST(string: templateString, contentType: configuration.contentType, templateID: templateID, error: outError) {
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
                     } else {
@@ -99,7 +99,7 @@ public class MustacheTemplateRepository {
         }
     }
     
-    func templateASTFromString(string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
+    func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
         let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
         parser.parse(string)

@@ -17,9 +17,9 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
         switch renderingInfo.tag.type {
         case .Variable:
             return "\(self)"
-        case .Section, .InvertedSection:
+        case .Section:
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
-            return renderingInfo.tag.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
     }
 
@@ -57,7 +57,7 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
             } else {
                 return value
             }
-        case .Section, .InvertedSection:
+        case .Section:
             return value
         }
     }

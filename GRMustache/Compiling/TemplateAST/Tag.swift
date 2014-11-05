@@ -11,13 +11,13 @@ import Foundation
 enum TagType {
     case Variable
     case Section
-    case InvertedSection
 }
 
 protocol Tag {
     var expression: Expression { get }
     var type: TagType { get }
     var innerTemplateString: String { get }
+    var inverted: Bool { get } // this should be protected
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
+    func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }

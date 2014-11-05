@@ -200,19 +200,20 @@ class RenderingEngine: TemplateASTVisitor {
                 rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
             case .Section:
                 let boolValue = value.mustacheBoolValue
-                if boolValue {
-                    rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                if tag.inverted {
+                    if boolValue {
+                        rendering = ""
+                        renderingContentType = .Text
+                    } else {
+                        rendering = renderingInfo.tag.renderContent(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                    }
                 } else {
-                    rendering = ""
-                    renderingContentType = .Text
-                }
-            case .InvertedSection:
-                let boolValue = value.mustacheBoolValue
-                if boolValue {
-                    rendering = ""
-                    renderingContentType = .Text
-                } else {
-                    rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                    if boolValue {
+                        rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                    } else {
+                        rendering = ""
+                        renderingContentType = .Text
+                    }
                 }
             }
             

@@ -97,20 +97,20 @@ class GRMustacheSuiteTests: XCTestCase {
                     let templateExtension = templateName.pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         var error: NSError?
-                        if let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
+                        if let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
                             XCTAssertNotNil(error, "Expected parsing error in \(description)")
                             testError(error!, replayOnFailure: {
-                                let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
+                                let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension, error: &error)
                             })
                         }
-                        if let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error) {
+                        if let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension, error: &error) {
                             templates.append(template)
                         } else {
                             XCTAssertNotNil(error, "Expected parsing error in \(description)")
                             testError(error!, replayOnFailure: {
-                                let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).templateNamed(templateName.stringByDeletingPathExtension, error: &error)
+                                let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension, error: &error)
                             })
                         }
                     }
@@ -119,20 +119,20 @@ class GRMustacheSuiteTests: XCTestCase {
                     var templates: [MustacheTemplate] = []
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         var error: NSError?
-                        if let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
+                        if let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString, error: &error) {
                             templates.append(template)
                         } else {
                             XCTAssertNotNil(error, "Expected parsing error in \(description)")
                             testError(error!, replayOnFailure: {
-                                let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
+                                let template = MustacheTemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString, error: &error)
                             })
                         }
-                        if let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error) {
+                        if let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).template(string: templateString, error: &error) {
                             templates.append(template)
                         } else {
                             XCTAssertNotNil(error, "Expected parsing error in \(description)")
                             testError(error!, replayOnFailure: {
-                                let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).templateFromString(templateString, error: &error)
+                                let template = MustacheTemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath)!, templateExtension: "", encoding: encoding).template(string: templateString, error: &error)
                             })
                         }
                     }
@@ -147,12 +147,12 @@ class GRMustacheSuiteTests: XCTestCase {
                     return []
                 } else if let templateString = templateString {
                     var error: NSError?
-                    if let template = MustacheTemplateRepository().templateFromString(templateString, error: &error) {
+                    if let template = MustacheTemplateRepository().template(string: templateString, error: &error) {
                         return [template]
                     } else {
                         XCTAssertNotNil(error, "Expected parsing error in \(description)")
                         testError(error!, replayOnFailure: {
-                            let template = MustacheTemplateRepository().templateFromString(templateString, error: &error)
+                            let template = MustacheTemplateRepository().template(string: templateString, error: &error)
                         })
                         return []
                     }

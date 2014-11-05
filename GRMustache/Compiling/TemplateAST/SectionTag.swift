@@ -12,7 +12,7 @@ class SectionTag: Tag, TemplateASTNode {
     let expression: Expression
     let templateAST: TemplateAST
     let inverted: Bool
-    var type: TagType { return inverted ? .InvertedSection : .Section }
+    let type: TagType = .Section
     let innerTemplateString: String
     
     init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {
@@ -26,7 +26,7 @@ class SectionTag: Tag, TemplateASTNode {
         return visitor.visit(self, error: outError)
     }
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: renderingInfo.context)
         return renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
     }

@@ -326,7 +326,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                         }
                     }
                     
-                    if let partialTemplateAST = repository.templateASTNamed(closedPartialName, relativeToTemplateID:templateID, error: &error) {
+                    if let partialTemplateAST = repository.templateAST(named: closedPartialName, relativeToTemplateID:templateID, error: &error) {
                         
                         switch partialTemplateAST.type {
                         case .Undefined:
@@ -379,7 +379,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 var error: NSError?
                 var empty: Bool = false
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
-                    if let partialTemplateAST = repository.templateASTNamed(partialName, relativeToTemplateID: templateID, error: &error) {
+                    if let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error) {
                         let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
                         compilationState.currentScope.appendNode(partialNode)
                         compilationState.compilerContentType = .Locked(compilationState.contentType)

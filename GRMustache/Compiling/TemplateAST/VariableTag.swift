@@ -14,6 +14,7 @@ class VariableTag: Tag, TemplateASTNode {
     let escapesHTML: Bool
     var type: TagType { return .Variable }
     let innerTemplateString = ""
+    let inverted = true
     
     init(expression: Expression, contentType: ContentType, escapesHTML: Bool) {
         self.escapesHTML = escapesHTML
@@ -25,7 +26,7 @@ class VariableTag: Tag, TemplateASTNode {
         return visitor.visit(self, error: outError)
     }
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         if outContentType != nil {
             outContentType.memory = contentType
         }
