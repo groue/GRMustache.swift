@@ -19,7 +19,7 @@ public class MustacheTemplate: MustacheRenderable {
         self.baseContext = baseContext
     }
     
-    convenience init?(string: String, error outError: NSErrorPointer) {
+    convenience init?(string: String, error outError: NSErrorPointer = nil) {
         let repository = RenderingEngine.currentTemplateRepository() ?? MustacheTemplateRepository(bundle: nil)
         let contentType = RenderingEngine.currentContentType()
         if let templateAST = repository.templateAST(string: string, contentType: contentType, templateID: nil, error: outError) {
@@ -32,7 +32,7 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+    convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer = nil) {
         let repository = MustacheTemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
         let templateName = path.stringByDeletingPathExtension
         if let templateAST = repository.templateAST(named: templateName, relativeToTemplateID: nil, error: outError) {
@@ -45,7 +45,7 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+    convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer = nil) {
         let repository = MustacheTemplateRepository(baseURL: URL.URLByDeletingLastPathComponent!, templateExtension: URL.pathExtension, encoding: encoding)
         let templateName = URL.URLByDeletingPathExtension?.lastPathComponent
         if let templateAST = repository.templateAST(named: templateName!, relativeToTemplateID: nil, error: outError) {
@@ -58,7 +58,7 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer) {
+    convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer = nil) {
         let repository = MustacheTemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         if let templateAST = repository.templateAST(named: name, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -70,13 +70,13 @@ public class MustacheTemplate: MustacheRenderable {
         }
     }
     
-    func render(value: MustacheValue, error outError: NSErrorPointer) -> String? {
+    func render(value: MustacheValue, error outError: NSErrorPointer = nil) -> String? {
         let context = baseContext.contextByAddingValue(value)
         var contentType: ContentType = .Text
         return mustacheRendering(context, contentType: &contentType, error: outError)
     }
     
-    class func render(value: MustacheValue, fromString string: String, error outError: NSErrorPointer) -> String? {
+    class func render(value: MustacheValue, fromString string: String, error outError: NSErrorPointer = nil) -> String? {
         if let template = MustacheTemplate(string: string, error: outError) {
             return template.render(value, error: outError)
         } else {

@@ -16,14 +16,14 @@ Its APIs are similar to the Objective-C version [GRMustache](https://github.com/
     {{/in_ca}}
 
 ```swift
-let template = MustacheTemplate(named: "template", error: nil)!
+let template = MustacheTemplate(named: "template")!
 let value = MustacheValue([
     "name": "Chris",
     "value": 10000.0,
     "taxed_value": 10000 - (10000 * 0.4),
     "in_ca": true
 ])
-let rendering = template.render(value, error: nil)!
+let rendering = template.render(value)!
 ```
 
 Mustache, and beyond
@@ -69,7 +69,7 @@ MustacheConfiguration.defaultConfiguration.extendBaseContextWithValue(MustacheVa
 
 // I have 3 cats.
 
-let template = MustacheTemplate(named: "cats", error: nil)!
+let template = MustacheTemplate(named: "cats")!
 let value = MustacheValue(["cats": ["Kitty", "Pussy", "Melba"]])
-let rendering = template.render(value, error: nil)!
+let rendering = template.render(value)!
 ```

@@ -80,14 +80,14 @@ class GRMustacheTests: XCTestCase {
     
     func testReadmeExample1() {
         let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = MustacheTemplate(named: "example1", bundle: testBundle, error: nil)!
+        let template = MustacheTemplate(named: "example1", bundle: testBundle)!
         let value = MustacheValue([
             "name": "Chris",
             "value": 10000.0,
             "taxed_value": 10000 - (10000 * 0.4),
             "in_ca": true
             ])
-        let rendering = template.render(value, error: nil)!
+        let rendering = template.render(value)!
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     
@@ -126,7 +126,7 @@ class GRMustacheTests: XCTestCase {
         // Use it
         
         let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = MustacheTemplate(named: "example2", bundle: testBundle, error: nil)!
+        let template = MustacheTemplate(named: "example2", bundle: testBundle)!
         let value = MustacheValue([
             "cats": ["Kitty", "Pussy", "Melba"]
             ])
@@ -134,7 +134,7 @@ class GRMustacheTests: XCTestCase {
         
         // I have 3 cats.
         
-        let rendering = template.render(value, error: nil)!
+        let rendering = template.render(value)!
         XCTAssertEqual(rendering, "I have 3 cats.")
     }
 }
