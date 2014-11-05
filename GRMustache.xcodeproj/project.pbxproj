@@ -77,6 +77,7 @@
 		569EAE591A0905E00052BD26 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE581A0905E00052BD26 /* MustacheRenderable.swift */; };
 		569EAE5A1A090B280052BD26 /* MustacheRenderable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE581A0905E00052BD26 /* MustacheRenderable.swift */; };
 		569EAE5F1A0A4D720052BD26 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE5E1A0A4D720052BD26 /* ConfigurationExtendBaseContextTests.swift */; };
+		569EAE611A0A4FC10052BD26 /* ConfigurationTagDelimitersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569EAE601A0A4FC10052BD26 /* ConfigurationTagDelimitersTests.swift */; };
 		56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */; };
 		56A88ECA1A08B0040055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
 		56A88ECB1A08B4000055E40A /* MustacheTraversable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC91A08B0040055E40A /* MustacheTraversable.swift */; };
@@ -151,6 +152,7 @@
 		569EAE551A0903890052BD26 /* MustacheTagObserver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTagObserver.swift; sourceTree = "<group>"; };
 		569EAE581A0905E00052BD26 /* MustacheRenderable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderable.swift; sourceTree = "<group>"; };
 		569EAE5E1A0A4D720052BD26 /* ConfigurationExtendBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationExtendBaseContextTests.swift; sourceTree = "<group>"; };
+		569EAE601A0A4FC10052BD26 /* ConfigurationTagDelimitersTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationTagDelimitersTests.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableTests.swift; sourceTree = "<group>"; };
 		56A88EC91A08B0040055E40A /* MustacheTraversable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheTraversable.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -376,6 +378,7 @@
 			children = (
 				56E7F85C1A09519A005DDA29 /* ConfigurationBaseContextTests.swift */,
 				569EAE5E1A0A4D720052BD26 /* ConfigurationExtendBaseContextTests.swift */,
+				569EAE601A0A4FC10052BD26 /* ConfigurationTagDelimitersTests.swift */,
 			);
 			path = ConfigurationTests;
 			sourceTree = "<group>";
@@ -545,6 +548,7 @@
 				563AE1F919FC5AF80028C6C1 /* PartialNode.swift in Sources */,
 				563AE1E419FC52770028C6C1 /* TemplateToken.swift in Sources */,
 				563AE1DB19FC4CE40028C6C1 /* ContentType.swift in Sources */,
+				569EAE611A0A4FC10052BD26 /* ConfigurationTagDelimitersTests.swift in Sources */,
 				56E7F85D1A09519A005DDA29 /* ConfigurationBaseContextTests.swift in Sources */,
 				563AE1DF19FC4D070028C6C1 /* TemplateASTNode.swift in Sources */,
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
