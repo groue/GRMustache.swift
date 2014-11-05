@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import UIKit
+import Foundation
 
 struct MustacheConfiguration {
     var contentType: ContentType
@@ -22,4 +22,12 @@ struct MustacheConfiguration {
     }
     
     static var defaultConfiguration = MustacheConfiguration()
+    
+    mutating func extendingBaseContextWithValue(value: MustacheValue) {
+        baseContext = baseContext.contextByAddingValue(value)
+    }
+    
+    mutating func extendingBaseContextWithTagObserver(tagObserver: MustacheTagObserver) {
+        baseContext = baseContext.contextByAddingTagObserver(tagObserver)
+    }
 }
