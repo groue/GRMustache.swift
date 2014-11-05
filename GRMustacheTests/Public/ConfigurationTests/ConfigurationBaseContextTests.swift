@@ -56,4 +56,74 @@ class ConfigurationBaseContextTests: XCTestCase {
         let rendering = template.render(MustacheValue(), error: nil)!
         XCTAssertEqual(rendering, "success")
     }
+    
+    func testRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.baseContext = Context(MustacheValue(["foo": "success"]))
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.baseContext = Context(MustacheValue(["foo": "success"]))
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration() {
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "failure"]))
+        var configuration = MustacheConfiguration()
+        configuration.baseContext = Context(MustacheValue(["foo": "success"]))
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
+        MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "failure"]))
+        let repository = MustacheTemplateRepository()
+        repository.configuration.baseContext = Context(MustacheValue(["foo": "success"]))
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.baseContext = Context(MustacheValue(["foo": "failure"]))
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        template.baseContext = Context(MustacheValue(["foo": "success"]))
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.baseContext = Context(MustacheValue(["foo": "failure"]))
+        let template = repository.template(string: "{{foo}}", error: nil)!
+        template.baseContext = Context(MustacheValue(["foo": "success"]))
+        let rendering = template.render(MustacheValue(), error: nil)!
+        XCTAssertEqual(rendering, "success")
+    }
+    
+    func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
+    
+    func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
+    
+    func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
 }
