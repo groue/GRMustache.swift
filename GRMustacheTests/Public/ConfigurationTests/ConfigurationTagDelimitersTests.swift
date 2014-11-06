@@ -30,8 +30,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         MustacheConfiguration.defaultConfiguration.tagStartDelimiter = "<%"
         MustacheConfiguration.defaultConfiguration.tagEndDelimiter = "%>"
         
-        let template = MustacheTemplate(string: "<%subject%>", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = MustacheTemplate(string: "<%subject%>")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -39,8 +39,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         MustacheConfiguration.defaultConfiguration.tagStartDelimiter = "<%"
         MustacheConfiguration.defaultConfiguration.tagEndDelimiter = "%>"
         
-        let template = MustacheTemplate(string: "<%=[[ ]]=%>[[subject]]", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = MustacheTemplate(string: "<%=[[ ]]=%>[[subject]]")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -66,8 +66,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "<%subject%>", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "<%subject%>")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -76,8 +76,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagStartDelimiter = "<%"
         repository.configuration.tagEndDelimiter = "%>"
         
-        let template = repository.template(string: "<%subject%>", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "<%subject%>")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -91,8 +91,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "[[subject]]", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "[[subject]]")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -104,8 +104,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagStartDelimiter = "[["
         repository.configuration.tagEndDelimiter = "]]"
         
-        let template = repository.template(string: "[[subject]]", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "[[subject]]")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -116,8 +116,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "<%=[[ ]]=%>[[subject]]", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "<%=[[ ]]=%>[[subject]]")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -126,8 +126,8 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagStartDelimiter = "<%"
         repository.configuration.tagEndDelimiter = "%>"
         
-        let template = repository.template(string: "<%=[[ ]]=%>[[subject]]", error: nil)!
-        let rendering = template.render(MustacheValue(["subject": "---"]), error:nil)!
+        let template = repository.template(string: "<%=[[ ]]=%>[[subject]]")!
+        let rendering = template.render(MustacheValue(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     

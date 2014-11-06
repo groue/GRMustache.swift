@@ -15,12 +15,12 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         configuration.extendBaseContextWithValue(MustacheValue(["name": "Arthur"]))
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{name}}", error: nil)!
+        let template = repository.template(string: "{{name}}")!
         
-        var rendering = template.render(MustacheValue(), error: nil)!
+        var rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(MustacheValue(["name": "Bobby"]), error: nil)!
+        rendering = template.render(MustacheValue(["name": "Bobby"]))!
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -40,8 +40,8 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         configuration.extendBaseContextWithTagObserver(TestedTagObserver())
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{name}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{name}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "delegate")
     }
 }

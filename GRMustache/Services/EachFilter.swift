@@ -91,7 +91,7 @@ class EachFilter: MustacheFilter {
             self.last = last
         }
         
-        var mustacheBoolValue: Bool { return value.boolValue() }
+        var mustacheBoolValue: Bool { return value.mustacheBoolValue }
         var mustacheFilter: MustacheFilter? { return value.filterValue() }
         var mustacheTagObserver: MustacheTagObserver? { return value.tagObserverValue() }
         var mustacheTraversable: MustacheTraversable? { return value.traversableValue() }

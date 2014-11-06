@@ -45,11 +45,11 @@ public class MustacheTemplateRepository {
         dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
     }
     
-    public func template(#string: String, error outError: NSErrorPointer) -> MustacheTemplate? {
+    public func template(#string: String, error outError: NSErrorPointer = nil) -> MustacheTemplate? {
         return self.template(string: string, contentType: configuration.contentType, error: outError)
     }
     
-    public func template(named name: String, error outError: NSErrorPointer) -> MustacheTemplate? {
+    public func template(named name: String, error outError: NSErrorPointer = nil) -> MustacheTemplate? {
         if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: outError) {
             return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {

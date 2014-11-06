@@ -8,7 +8,7 @@
 
 import Foundation
 
-struct MustacheValue: DebugPrintable {
+class MustacheValue: DebugPrintable {
     
     enum Type {
         case None
@@ -269,7 +269,7 @@ struct MustacheValue: DebugPrintable {
     
     // MARK: Conversion to base types
     
-    func boolValue() -> Bool {
+    var mustacheBoolValue: Bool {
         switch type {
         case .None:
             return false
@@ -288,19 +288,18 @@ struct MustacheValue: DebugPrintable {
         case .SetValue(let set):
             return set.count > 0
         case .ObjCValue(let object):
-            if let _ = object as? NSNull {
-                return false
-            } else if let number = object as? NSNumber {
-                return number.boolValue
-            } else if let string = object as? NSString {
-                return string.length > 0
-            } else if let enumerable = object as? NSFastEnumeration {
-                return NSFastGenerator(enumerable).next() != nil
-            } else {
-                return true
-            }
+            return true
         case .ClusterValue(let cluster):
             return cluster.mustacheBoolValue
+        }
+    }
+    
+    func boolValue() -> Bool? {
+        switch type {
+        case .BoolValue(let bool):
+            return bool
+        default:
+            return nil
         }
     }
     
@@ -351,32 +350,6 @@ struct MustacheValue: DebugPrintable {
         }
     }
     
-    func arrayValue() -> [MustacheValue]? {
-        switch type {
-        case .ArrayValue(let array):
-            return array
-        default:
-            return nil
-        }
-    }
-    
-    func arrayValue() -> [AnyObject]? {
-        switch type {
-        case .ArrayValue(let array):
-            var result: [AnyObject] = []
-            for item in array {
-                if let object: AnyObject = item.anyObjectValue() {
-                    result.append(object)
-                }
-            }
-            return result
-        case .SetValue(let set):
-            return nil
-        default:
-            return nil
-        }
-    }
-    
     func dictionaryValue() -> [String: MustacheValue]? {
         switch type {
         case .DictionaryValue(let dictionary):
@@ -396,6 +369,39 @@ struct MustacheValue: DebugPrintable {
                 }
             }
             return result
+        default:
+            return nil
+        }
+    }
+    
+    func arrayValue() -> [MustacheValue]? {
+        switch type {
+        case .ArrayValue(let array):
+            return array
+        default:
+            return nil
+        }
+    }
+    
+    func arrayValue() -> [AnyObject]? {
+        switch type {
+        case .ArrayValue(let array):
+            var result: [AnyObject] = []
+            for item in array {
+                if let object: AnyObject = item.anyObjectValue() {
+                    result.append(object)
+                }
+            }
+            return result
+        default:
+            return nil
+        }
+    }
+    
+    func setValue() -> NSSet? {
+        switch type {
+        case .SetValue(let set):
+            return set
         default:
             return nil
         }
@@ -492,12 +498,12 @@ struct MustacheValue: DebugPrintable {
         type = .DictionaryValue(dictionary)
     }
     
-    init(_ dictionary: [String: AnyObject]) {
+    convenience init(_ dictionary: [String: AnyObject]) {
         var mustacheDictionary: [String: MustacheValue] = [:]
         for (key, value) in dictionary {
             mustacheDictionary[key] = MustacheValue(value)
         }
-        type = .DictionaryValue(mustacheDictionary)
+        self.init(mustacheDictionary)
     }
     
     // MARK: init(Array)
@@ -512,62 +518,42 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(MustacheFilterCluster(filter: filter))
     }
     
-    init(_ filter: (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) {
-        type = .ClusterValue(MustacheFilterCluster(filter: MustacheBlockFilter(filter)))
+    convenience init(_ filter: (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(filter))
     }
     
-    init(_ filter: (String?) -> (MustacheValue)) {
-        type = .ClusterValue(MustacheFilterCluster(filter: MustacheBlockFilter({ (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+    convenience init(_ filter: (values: [MustacheValue], error: NSErrorPointer) -> (MustacheValue?)) {
+        self.init(MustacheBlockVariadicFilter(filter, arguments: []))
+    }
+    
+    convenience init(_ filter: (Int?) -> (MustacheValue?)) {
+        self.init(filter, compute: MustacheValue.intValue)
+    }
+    
+    convenience init(_ filter: (Double?) -> (MustacheValue?)) {
+        self.init(filter, compute: MustacheValue.doubleValue)
+    }
+    
+    convenience init(_ filter: (String?) -> (MustacheValue?)) {
+        self.init(filter, compute: MustacheValue.stringValue)
+    }
+    
+    private convenience init<T>(_ filter: (T?) -> (MustacheValue?), compute: MustacheValue -> () -> (T?)) {
+        self.init(MustacheBlockFilter({ (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
             switch value.type {
             case .None:
                 return filter(nil)
             default:
-                if let string = value.stringValue() {
-                    return filter(string)
+                if let value = compute(value)() {
+                    return filter(value)
                 } else {
                     if outError != nil {
-                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: String expected"])
+                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: \(T.self) expected"])
                     }
                     return nil
                 }
             }
-        })))
-    }
-    
-    init(_ filter: (Int?) -> (MustacheValue)) {
-        type = .ClusterValue(MustacheFilterCluster(filter: MustacheBlockFilter({ (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
-            switch value.type {
-            case .None:
-                return filter(nil)
-            default:
-                if let int = value.intValue() {
-                    return filter(int)
-                } else {
-                    if outError != nil {
-                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: Int expected"])
-                    }
-                    return nil
-                }
-            }
-        })))
-    }
-    
-    init(_ filter: (Double?) -> (MustacheValue)) {
-        type = .ClusterValue(MustacheFilterCluster(filter: MustacheBlockFilter({ (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
-            switch value.type {
-            case .None:
-                return filter(nil)
-            default:
-                if let double = value.doubleValue() {
-                    return filter(double)
-                } else {
-                    if outError != nil {
-                        outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: Double expected"])
-                    }
-                    return nil
-                }
-            }
-        })))
+        }))
     }
     
     // MARK: init(MustacheRenderable)
@@ -576,8 +562,8 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(MustacheRenderableCluster(renderable: renderable))
     }
     
-    init(_ block: (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
-        type = .ClusterValue(MustacheRenderableCluster(renderable: MustacheBlockRenderable(block)))
+    convenience init(_ block: (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
+        self.init(MustacheBlockRenderable(block))
     }
     
     // MARK: init(MustacheTagObserver)
@@ -594,112 +580,112 @@ struct MustacheValue: DebugPrintable {
     
     // MARK: init(MustacheCluster)
     
-    init(_ object: protocol<MustacheFilter, MustacheRenderable>) {
-        type = .ClusterValue(MustacheFilterRenderableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheFilterTagObserverCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
-        type = .ClusterValue(MustacheFilterTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheRenderableTagObserverCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
-        type = .ClusterValue(MustacheRenderableTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(MustacheTagObserverTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
-        type = .ClusterValue(MustacheFilterRenderableTagObserverCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
-        type = .ClusterValue(MustacheFilterRenderableTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(MustacheFilterTagObserverTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(MustacheRenderableTagObserverTraversableCluster(object: object))
-    }
-    
-    init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(MustacheFilterRenderableTagObserverTraversableCluster(object: object))
-    }
-    
     init(_ object: MustacheCluster) {
         type = .ClusterValue(object)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheRenderable>) {
+        self.init(MustacheFilterRenderableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheRenderable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
+        self.init(MustacheFilterTagObserverCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheTagObserver>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
+        self.init(MustacheFilterTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
+        self.init(MustacheRenderableTagObserverCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
+        self.init(MustacheRenderableTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheTagObserver, MustacheTraversable>) {
+        self.init(MustacheTagObserverTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        self.init(MustacheFilterRenderableTagObserverCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        self.init(MustacheFilterRenderableTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        self.init(MustacheFilterTagObserverTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(MustacheRenderableTagObserverTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(MustacheFilterRenderableTagObserverTraversableCluster(object: object))
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter>) {
+        self.init(object as MustacheCluster)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheCluster, MustacheRenderable>) {
+        self.init(object as MustacheCluster)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheCluster, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
     }
     
-    init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
-        type = .ClusterValue(object)
+    convenience init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
+    }
+    
+    convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
     // MARK: init(AnyObject?)
@@ -1028,6 +1014,24 @@ private class MustacheBlockFilter: MustacheFilter {
     
     func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
         return block(value: value, error: outError)
+    }
+}
+
+private class MustacheBlockVariadicFilter: MustacheFilter {
+    let arguments: [MustacheValue]
+    let block: (values: [MustacheValue], error: NSErrorPointer) -> (MustacheValue?)
+    
+    init(_ block: (values: [MustacheValue], error: NSErrorPointer) -> (MustacheValue?), arguments: [MustacheValue]) {
+        self.block = block
+        self.arguments = arguments
+    }
+    
+    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
+        return block(values: arguments + [value], error: outError)
+    }
+    
+    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+        return MustacheBlockVariadicFilter(block, arguments: arguments + [argument])
     }
 }
 

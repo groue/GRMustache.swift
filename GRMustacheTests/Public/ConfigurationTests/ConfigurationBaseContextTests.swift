@@ -22,23 +22,23 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = MustacheConfiguration()
         
-        let template = repository.template(string: "{{uppercase(foo)}}", error: nil)!
-        let rendering = template.render(MustacheValue(["foo": "success"]), error: nil)!
+        let template = repository.template(string: "{{uppercase(foo)}}")!
+        let rendering = template.render(MustacheValue(["foo": "success"]))!
         XCTAssertEqual(rendering, "SUCCESS")
     }
     
     func testDefaultConfigurationCustomBaseContext() {
         MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let template = MustacheTemplate(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = MustacheTemplate(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultConfigurationCustomBaseContextHasNoStandardLibrary() {
         MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let template = MustacheTemplate(string: "{{uppercase(foo)}}", error: nil)!
+        let template = MustacheTemplate(string: "{{uppercase(foo)}}")!
         var error: NSError?
         let rendering = template.render(MustacheValue(), error: &error)
         XCTAssertNil(rendering)
@@ -48,9 +48,9 @@ class ConfigurationBaseContextTests: XCTestCase {
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
         MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "failure"]))
         
-        let template = MustacheTemplate(string: "{{foo}}", error: nil)!
+        let template = MustacheTemplate(string: "{{foo}}")!
         template.baseContext = Context(MustacheValue(["foo": "success"]))
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -58,8 +58,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         MustacheConfiguration.defaultConfiguration.baseContext = Context(MustacheValue(["foo": "success"]))
         
         let repository = MustacheTemplateRepository()
-        let template = repository.template(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -70,8 +70,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -79,8 +79,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -93,8 +93,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -104,8 +104,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let template = repository.template(string: "{{foo}}")!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -116,10 +116,10 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
+        let template = repository.template(string: "{{foo}}")!
         template.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -127,10 +127,10 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = MustacheTemplateRepository()
         repository.configuration.baseContext = Context(MustacheValue(["foo": "failure"]))
         
-        let template = repository.template(string: "{{foo}}", error: nil)!
+        let template = repository.template(string: "{{foo}}")!
         template.baseContext = Context(MustacheValue(["foo": "success"]))
         
-        let rendering = template.render(MustacheValue(), error: nil)!
+        let rendering = template.render(MustacheValue())!
         XCTAssertEqual(rendering, "success")
     }
     

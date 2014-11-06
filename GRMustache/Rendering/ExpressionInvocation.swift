@@ -92,10 +92,20 @@ class ExpressionInvocation: ExpressionVisitor {
                 return false
             }
         } else {
-            if let filterResult = filter.transformedValue(argumentValue, error: outError) {
+            var filterError: NSError? = nil
+            if let filterResult = filter.transformedValue(argumentValue, error: &filterError) {
                 value = filterResult
-            } else {
+            } else if let filterError = filterError {
+                if outError != nil {
+                    outError.memory = filterError
+                }
                 return false
+            } else {
+                // Filter result is nil, but filter error is not set.
+                // Assume a filter coded by a lazy programmer, whose
+                // intention is to return the empty value.
+                
+                value = MustacheValue()
             }
         }
         return true
