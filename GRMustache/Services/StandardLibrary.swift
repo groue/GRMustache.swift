@@ -13,23 +13,23 @@ class StandardLibrary: MustacheTraversable {
     init() {
         var items: [String: MustacheValue] = [:]
         
-        items["capitalized"] = MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
+        items["capitalized"] = MustacheValue({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.capitalizedString)
-        }))
+        })
         
-        items["lowercase"] = MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
+        items["lowercase"] = MustacheValue({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.lowercaseString)
-        }))
+        })
         
-        items["uppercase"] = MustacheValue(MustacheFilterWithBlock({ (string: String?) -> (MustacheValue) in
+        items["uppercase"] = MustacheValue({ (string: String?) -> (MustacheValue) in
             return MustacheValue(string?.uppercaseString)
-        }))
+        })
         
         items["localize"] = MustacheValue(Localizer(bundle: nil, table: nil))
         
         items["each"] = MustacheValue(EachFilter())
         
-        items["isBlank"] = MustacheValue(MustacheFilterWithBlock { (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
+        items["isBlank"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
             switch value.type {
             case .None:
                 return MustacheValue(true)
@@ -51,10 +51,9 @@ class StandardLibrary: MustacheTraversable {
                 return MustacheValue(false)
             case .ClusterValue(let cluster):
                 return MustacheValue(!cluster.mustacheBoolValue)
-            }
-            })
+            }})
         
-        items["isEmpty"] = MustacheValue(MustacheFilterWithBlock { (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
+        items["isEmpty"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
             switch value.type {
             case .None:
                 return MustacheValue(true)
@@ -76,8 +75,7 @@ class StandardLibrary: MustacheTraversable {
                 return MustacheValue(false)
             case .ClusterValue(let cluster):
                 return MustacheValue(!cluster.mustacheBoolValue)
-            }
-            })
+            }})
         
         items["HTML"] = MustacheValue(["escape": MustacheValue(HTMLEscape())])
         

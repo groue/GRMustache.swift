@@ -91,35 +91,11 @@ class EachFilter: MustacheFilter {
             self.last = last
         }
         
-        // TODO: API inconsistency: why is mustacheBoolValue easy to extract, and not mustacheFilter?
-        var mustacheBoolValue: Bool { return value.mustacheBoolValue }
-        var mustacheFilter: MustacheFilter? {
-            switch value.type {
-            case .ClusterValue(let cluster):
-                return cluster.mustacheFilter
-            default:
-                return nil
-            }
-        }
-        var mustacheTagObserver: MustacheTagObserver? {
-            switch value.type {
-            case .ClusterValue(let cluster):
-                return cluster.mustacheTagObserver
-            default:
-                return nil
-            }
-        }
-        var mustacheTraversable: MustacheTraversable? {
-            switch value.type {
-            case .ClusterValue(let cluster):
-                return cluster.mustacheTraversable
-            default:
-                return nil
-            }
-        }
-        var mustacheRenderable: MustacheRenderable? {
-            return self
-        }
+        var mustacheBoolValue: Bool { return value.boolValue() }
+        var mustacheFilter: MustacheFilter? { return value.filterValue() }
+        var mustacheTagObserver: MustacheTagObserver? { return value.tagObserverValue() }
+        var mustacheTraversable: MustacheTraversable? { return value.traversableValue() }
+        var mustacheRenderable: MustacheRenderable? { return self }
         
         func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
             var position: [String: MustacheValue] = [:]

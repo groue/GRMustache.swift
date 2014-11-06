@@ -30,19 +30,3 @@ protocol MustacheRenderable {
     func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
 
-
-func MustacheRenderableWithBlock(block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) -> MustacheRenderable {
-    return BlockMustacheRenderable(block)
-}
-
-class BlockMustacheRenderable: MustacheRenderable {
-    let block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
-    
-    init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
-        self.block = block
-    }
-    
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return block(renderingInfo: renderingInfo, outContentType: outContentType, outError: outError)
-    }
-}

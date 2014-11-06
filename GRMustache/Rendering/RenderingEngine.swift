@@ -199,7 +199,7 @@ class RenderingEngine: TemplateASTVisitor {
             case .Variable:
                 rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
             case .Section:
-                let boolValue = value.mustacheBoolValue
+                let boolValue = value.boolValue()
                 if tag.inverted {
                     if boolValue {
                         rendering = ""

@@ -35,7 +35,7 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         case .None:
             return value
         default:
-            if let string = value.asString() {
+            if let string = value.stringValue() {
                 return MustacheValue(escapeHTML(string))
             } else {
                 if outError != nil {
@@ -52,7 +52,7 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
         switch tag.type {
         case .Variable:
-            if let string = value.asString() {
+            if let string = value.stringValue() {
                 return MustacheValue(escapeHTML(string))
             } else {
                 return value
