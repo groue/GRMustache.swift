@@ -26,6 +26,41 @@ let value = MustacheValue([
 let rendering = template.render(value)!
 ```
 
+
+Rendering of pure Swift Objects
+-------------------------------
+
+GRMustache can render pure Swift objects, with a little help:
+
+```swift
+// Define a pure Swift object:
+
+struct User {
+    let name: String
+}
+
+
+// Let Mustache dig into it, using the MustacheTraversable protocol:
+
+extension User: MustacheTraversable {
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        switch identifier {
+        case "name":
+            return MustacheValue(name)
+        default:
+            return nil
+        }
+    }
+}
+
+// Hello Arthur!
+
+let templateString = "Hello {{name}}!"
+let user = User(name: "Arthur")
+let rendering = MustacheTemplate.render(MustacheValue(user), fromString:templateString)!
+```
+
+
 Mustache, and beyond
 --------------------
 

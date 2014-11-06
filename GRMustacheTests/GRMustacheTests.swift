@@ -131,4 +131,25 @@ class GRMustacheTests: XCTestCase {
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "I have 3 cats.")
     }
+    
+    func testReadmeExample3() {
+        let user = ReadmeExample3User(name: "Arthur")
+        let rendering = MustacheTemplate.render(MustacheValue(user), fromString:"Hello {{name}}!")!
+        XCTAssertEqual(rendering, "Hello Arthur!")
+    }
+}
+
+struct ReadmeExample3User {
+    let name: String
+}
+
+extension ReadmeExample3User: MustacheTraversable {
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        switch identifier {
+        case "name":
+            return MustacheValue(name)
+        default:
+            return nil
+        }
+    }
 }
