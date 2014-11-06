@@ -61,7 +61,7 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool {
-        value = context!.valueForMustacheIdentifier(expression.identifier)
+        value = context![expression.identifier]
         return true
     }
     
@@ -74,7 +74,7 @@ class ExpressionInvocation: ExpressionVisitor {
         if !expression.baseExpression.acceptExpressionVisitor(self, error: outError) {
             return false
         }
-        value = value.valueForMustacheIdentifier(expression.identifier)
+        value = value[expression.identifier]
         return true
     }
     

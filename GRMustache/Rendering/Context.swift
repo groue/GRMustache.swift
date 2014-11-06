@@ -114,22 +114,22 @@ class Context {
         }
     }
     
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue {
+    subscript(identifier: String) -> MustacheValue {
         switch type {
         case .Root:
             return MustacheValue()
         case .Value(value: let value, parent: let parent):
-            let innerValue = value.valueForMustacheIdentifier(identifier)
+            let innerValue = value[identifier]
             switch innerValue.type {
             case .None:
-                return parent.valueForMustacheIdentifier(identifier)
+                return parent[identifier]
             default:
                 return innerValue
             }
         case .InheritablePartial(inheritablePartialNode: _, parent: let parent):
-            return parent.valueForMustacheIdentifier(identifier)
+            return parent[identifier]
         case .TagObserver(tagObserver: _, parent: let parent):
-            return parent.valueForMustacheIdentifier(identifier)
+            return parent[identifier]
         }
     }
 }
