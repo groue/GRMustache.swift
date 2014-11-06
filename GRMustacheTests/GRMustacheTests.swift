@@ -101,11 +101,11 @@ class GRMustacheTests: XCTestCase {
             
             // This filter returns an object that performs custom rendering:
             
-            return MustacheValue({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+            return MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
                 
                 // Fetch the section inner content...
                 
-                let string = renderingInfo.tag.innerTemplateString
+                let string = tag.innerTemplateString
                 
                 // ... and pluralize it if needed.
                 
@@ -123,17 +123,11 @@ class GRMustacheTests: XCTestCase {
         MustacheConfiguration.defaultConfiguration.extendBaseContextWith(value: MustacheValue(pluralizeFilter), forKey: "pluralize")
         
         
-        // Use it
+        // I have 3 cats.
         
         let testBundle = NSBundle(forClass: GRMustacheTests.self)
         let template = MustacheTemplate(named: "example2", bundle: testBundle)!
-        let value = MustacheValue([
-            "cats": ["Kitty", "Pussy", "Melba"]
-            ])
-        
-        
-        // I have 3 cats.
-        
+        let value = MustacheValue(["cats": ["Kitty", "Pussy", "Melba"]])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "I have 3 cats.")
     }

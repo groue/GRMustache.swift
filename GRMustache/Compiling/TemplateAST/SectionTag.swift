@@ -8,11 +8,11 @@
 
 import Foundation
 
-class SectionTag: Tag, TemplateASTNode {
+class SectionTag: MustacheTag, TemplateASTNode {
     let expression: Expression
     let templateAST: TemplateAST
     let inverted: Bool
-    let type: TagType = .Section
+    let type: MustacheTagType = .Section
     let innerTemplateString: String
     
     init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {
@@ -28,7 +28,7 @@ class SectionTag: Tag, TemplateASTNode {
     
     func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: renderingInfo.context)
-        return renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
+        return renderingEngine.render(templateAST, contentType: outContentType, error: outError)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

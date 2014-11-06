@@ -11,7 +11,7 @@ import XCTest
 class MustacheRenderableTests: XCTestCase {
 
     func testRenderablePerformsVariableRendering() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
@@ -19,7 +19,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderablePerformsSectionRendering() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
@@ -27,7 +27,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitHTMLRenderingOfEscapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "&"
         }
@@ -36,7 +36,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitHTMLRenderingOfUnescapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "&"
         }
@@ -45,7 +45,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitTextRenderingOfEscapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "&"
         }
@@ -54,7 +54,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitTextRenderingOfUnescapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "&"
         }
@@ -63,7 +63,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectImplicitTextRenderingOfEscapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)!
@@ -71,7 +71,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectImplicitTextRenderingOfUnescapedVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{{.}}}", error: nil)!
@@ -79,7 +79,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitHTMLRenderingOfSectionTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "&"
         }
@@ -88,7 +88,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectExplicitTextRenderingOfSectionTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "&"
         }
@@ -97,7 +97,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectImplicitTextRenderingOfSectionTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{/.}}", error: nil)!
@@ -106,7 +106,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanSetErrorFromVariableTag() {
         let errorDomain = "MustacheClusterTests"
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
             return nil
         }
@@ -118,7 +118,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanSetErrorFromSectionTag() {
         let errorDomain = "MustacheClusterTests"
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
             return nil
         }
@@ -129,7 +129,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanRenderNilWithoutSettingErrorFromVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return nil
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "<{{.}}>", error: nil)!
@@ -137,7 +137,7 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanRenderNilWithoutSettingErrorFromSectionTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return nil
         }
         let rendering = MustacheTemplate.render(MustacheValue(renderable), fromString: "<{{#.}}{{/.}}>", error: nil)!
@@ -146,8 +146,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessVariableTagType() {
         var variableTagDetections = 0
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            switch renderingInfo.tag.type {
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            switch tag.type {
             case .Variable:
                 ++variableTagDetections
             default:
@@ -161,8 +161,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessSectionTagType() {
         var sectionTagDetections = 0
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            switch renderingInfo.tag.type {
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            switch tag.type {
             case .Section:
                 ++sectionTagDetections
             default:
@@ -176,8 +176,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessInnerTemplateStringFromSectionTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = renderingInfo.tag.innerTemplateString
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = tag.innerTemplateString
             return nil
         }
         MustacheTemplate.render(MustacheValue(renderable), fromString: "{{#.}}{{subject}}{{/.}}", error: nil)
@@ -186,8 +186,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessInnerTemplateStringFromExtensionSectionTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = renderingInfo.tag.innerTemplateString
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = tag.innerTemplateString
             return nil
         }
         MustacheTemplate.render(MustacheValue(renderable), fromString: "{{^.}}{{#.}}{{subject}}{{/.}}", error: nil)
@@ -196,8 +196,8 @@ class MustacheRenderableTests: XCTestCase {
 
     func testRenderableObjectCanAccessInnerTemplateStringFromVariableTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = renderingInfo.tag.innerTemplateString
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            innerTemplateString = tag.innerTemplateString
             return nil
         }
         MustacheTemplate.render(MustacheValue(renderable), fromString: "{{.}}", error: nil)
@@ -207,9 +207,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanAccessRenderedContentFromSectionTag() {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         }
@@ -222,9 +222,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanAccessRenderedContentFromExtensionSectionTag() {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         }
@@ -237,9 +237,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanAccessRenderedContentFromEscapedVariableTag() {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         }
@@ -251,9 +251,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanAccessRenderedContentFromUnescapedVariableTag() {
         var renderedContent: String? = nil
         var renderedContentType: ContentType? = nil
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             renderedContentType = outContentType.memory
             return nil
         }
@@ -264,8 +264,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
         let altTemplate = MustacheTemplate(string:"{{subject}}", error: nil)!
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
         let rendering = MustacheTemplate.render(value, fromString: "{{renderable}}", error: nil)
@@ -274,8 +274,8 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
         let altTemplate = MustacheTemplate(string:"{{subject}}", error: nil)!
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
         let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}{{/renderable}}", error: nil)
@@ -287,8 +287,8 @@ class MustacheRenderableTests: XCTestCase {
             func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
                 return MustacheValue("value")
             }
-            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                return MustacheTemplate(string:"key:{{key}}", error: nil)!.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                return MustacheTemplate(string:"key:{{key}}", error: nil)!.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
             }
         }
         let value = MustacheValue(["renderable": MustacheValue(TestedRenderable())])
@@ -301,9 +301,9 @@ class MustacheRenderableTests: XCTestCase {
             func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
                 return MustacheValue("value")
             }
-            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-                return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
         }
         let value = MustacheValue(["renderable": MustacheValue(TestedRenderable())])
@@ -312,10 +312,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(["subject2": MustacheValue("+++")]))
             let template = MustacheTemplate(string: "{{subject}}{{subject2}}", error: nil)!
-            return template.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("---")])
         let rendering = MustacheTemplate.render(value, fromString: "{{renderable}}", error: nil)!
@@ -323,10 +323,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendValueContextStackInSectionTag() {
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(["subject2": MustacheValue("+++")]))
-            // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("---")])
         let rendering = MustacheTemplate.render(value, fromString: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}", error: nil)!
@@ -336,16 +336,16 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInVariableTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
                 let template = MustacheTemplate(string: "{{subject}}{{subject}}", error: nil)!
-                return template.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
             }
-            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
                 ++tagWillRenderCount
                 return value
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
             }
         }
         let renderable = TestedRenderable()
@@ -358,16 +358,16 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInSectionTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
-                // TODO: "renderingInfo.tag.renderContent(renderingInfo" is not a nice API.
-                return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                // TODO: "tag.renderContent(renderingInfo" is not a nice API.
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
             }
-            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
                 ++tagWillRenderCount
                 return value
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
             }
         }
         let renderable = TestedRenderable()
@@ -379,7 +379,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectTriggersTagObserverCallbacks() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
                 switch tag.type {
                 case .Section:
                     return value
@@ -388,12 +388,12 @@ class MustacheRenderableTests: XCTestCase {
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
             }
         }
         
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
         
         let template = MustacheTemplate(string: "{{#renderable}}{{subject}}{{/renderable}}", error: nil)!
@@ -405,7 +405,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromVariableTag() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
                 switch tag.type {
                 case .Section:
                     return value
@@ -414,13 +414,13 @@ class MustacheRenderableTests: XCTestCase {
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
             }
         }
         
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let template = MustacheTemplate(string: "{{subject}}", error: nil)!
-            return template.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         
         let template = MustacheTemplate(string: "{{renderable}}", error: nil)!
@@ -432,7 +432,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromSectionTag() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
                 switch tag.type {
                 case .Section:
                     return value
@@ -441,13 +441,13 @@ class MustacheRenderableTests: XCTestCase {
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
             }
         }
         
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let template = MustacheTemplate(string: "{{subject}}", error: nil)!
-            return template.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return template.render(renderingInfo, contentType: outContentType, error: outError)
         }
         
         let template = MustacheTemplate(string: "{{#renderable}}{{/renderable}}", error: nil)!
@@ -458,10 +458,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfRenderableObjectsInSectionTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "1"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "2"
         }
         let value = MustacheValue(["items": MustacheValue([MustacheValue(renderable1), MustacheValue(renderable2)])])
@@ -470,10 +470,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "1"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "2"
         }
         let value = MustacheValue(["items": MustacheValue([MustacheValue(renderable1), MustacheValue(renderable2)])])
@@ -482,11 +482,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfExplicitHTMLRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<2>"
         }
@@ -496,11 +496,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfExplicitHTMLRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<2>"
         }
@@ -510,11 +510,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfExplicitTextRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<2>"
         }
@@ -524,11 +524,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfExplicitTextRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<2>"
         }
@@ -538,10 +538,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfImplicitTextRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "<2>"
         }
         let value = MustacheValue(["items": MustacheValue([MustacheValue(renderable1), MustacheValue(renderable2)])])
@@ -550,10 +550,10 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfImplicitTextRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "<2>"
         }
         let value = MustacheValue(["items": MustacheValue([MustacheValue(renderable1), MustacheValue(renderable2)])])
@@ -562,11 +562,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfInconsistentContentTypeRenderableObjectsInVariableTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<2>"
         }
@@ -579,11 +579,11 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testArrayOfInconsistentContentTypeRenderableObjectsInSectionTag() {
-        let renderable1 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable1 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .Text
             return "<1>"
         }
-        let renderable2 = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable2 = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             outContentType.memory = .HTML
             return "<2>"
         }
@@ -617,9 +617,9 @@ class MustacheRenderableTests: XCTestCase {
             "partial": "{{subject}}",
         ]
         let repository = MustacheTemplateRepository(templates: templates)
-        let renderable = { (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             let altTemplate = MustacheTemplate(string: "{{>partial}}", error:nil)!
-            return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
         }
         let value = MustacheValue(["renderable": MustacheValue(renderable), "subject": MustacheValue("-")])
         let template = repository.template(named: "template", error: nil)!
@@ -636,9 +636,9 @@ class MustacheRenderableTests: XCTestCase {
             "partial": "partial2"])
         let value = MustacheValue([
             "template2": MustacheValue(repository2.template(named: "template2", error: nil)!),
-            "renderable": MustacheValue({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{>partial}}", error:nil)!
-                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
             })])
         let template = repository1.template(named: "template1", error:nil)!
         let rendering = template.render(value, error: nil)!
@@ -648,9 +648,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
         let value = MustacheValue([
             "object": MustacheValue("&"),
-            "renderable": MustacheValue({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{ object }}", error:nil)!
-                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
             })])
         
         let template = MustacheTemplate(string: "{{%CONTENT_TYPE:HTML}}{{renderable}}", error: nil)!
@@ -661,9 +661,9 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectInheritTextContentTypeOfCurrentlyRenderedTemplate() {
         let value = MustacheValue([
             "object": MustacheValue("&"),
-            "renderable": MustacheValue({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{ object }}", error:nil)!
-                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
             })])
         
         let template = MustacheTemplate(string: "{{%CONTENT_TYPE:TEXT}}{{renderable}}", error: nil)!
@@ -677,9 +677,9 @@ class MustacheRenderableTests: XCTestCase {
             "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderable }}"])
         let value = MustacheValue([
             "value": MustacheValue("&"),
-            "renderable": MustacheValue({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{ value }}", error:nil)!
-                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
             })])
         let template = repository.template(named: "templateHTML", error: nil)!
         let rendering = template.render(value, error: nil)!
@@ -696,9 +696,9 @@ class MustacheRenderableTests: XCTestCase {
         let value = MustacheValue([
             "value": MustacheValue("&"),
             "templateText": MustacheValue(repository2.template(named: "templateText", error: nil)!),
-            "renderable": MustacheValue({ (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
                 let altTemplate = MustacheTemplate(string: "{{{ value }}}", error:nil)!
-                return altTemplate.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
             })])
         let template = repository1.template(named: "templateHTML", error: nil)!
         let rendering = template.render(value, error: nil)!

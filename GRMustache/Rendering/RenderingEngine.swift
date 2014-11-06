@@ -18,7 +18,7 @@ class RenderingEngine: TemplateASTVisitor {
         self.context = context
     }
     
-    func mustacheRendering(templateAST: TemplateAST, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    func render(templateAST: TemplateAST, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         buffer = ""
         if !visit(templateAST, error: outError) {
             return nil
@@ -122,7 +122,7 @@ class RenderingEngine: TemplateASTVisitor {
             // Render separately
             let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
             var renderingContentType: ContentType = .Text
-            if let rendering = renderingEngine.mustacheRendering(templateAST, contentType: &renderingContentType, error: outError) {
+            if let rendering = renderingEngine.render(templateAST, contentType: &renderingContentType, error: outError) {
                 switch (contentType, renderingContentType) {
                 case (.HTML, .Text):
                     buffer = buffer! + escapeHTML(rendering)
@@ -178,7 +178,7 @@ class RenderingEngine: TemplateASTVisitor {
         return true
     }
     
-    func visit(tag: Tag, escapesHTML: Bool, error outError: NSErrorPointer) -> Bool {
+    func visit(tag: MustacheTag, escapesHTML: Bool, error outError: NSErrorPointer) -> Bool {
         
         // Evaluate expression
         
@@ -191,13 +191,13 @@ class RenderingEngine: TemplateASTVisitor {
                 value = tagObserver.mustacheTag(tag, willRenderValue: value)
             }
             
-            let renderingInfo = RenderingInfo(context: context, tag: tag, enumerationItem: false)
+            let renderingInfo = RenderingInfo(context: context, enumerationItem: false)
             var rendering: String?
             var renderingContentType: ContentType = .Text   // Default .Text, so that we assume unsafe rendering from users who do not explicitly set it.
             var renderingError: NSError? = nil              // Default nil, so that we assume success from users who do not explicitly set it.
             switch tag.type {
             case .Variable:
-                rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: &renderingContentType, error: &renderingError)
             case .Section:
                 let boolValue = value.boolValue()
                 if tag.inverted {
@@ -205,11 +205,11 @@ class RenderingEngine: TemplateASTVisitor {
                         rendering = ""
                         renderingContentType = .Text
                     } else {
-                        rendering = renderingInfo.tag.renderContent(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                        rendering = tag.renderContent(renderingInfo, contentType: &renderingContentType, error: &renderingError)
                     }
                 } else {
                     if boolValue {
-                        rendering = value.mustacheRendering(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                        rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: &renderingContentType, error: &renderingError)
                     } else {
                         rendering = ""
                         renderingContentType = .Text

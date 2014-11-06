@@ -97,7 +97,7 @@ class EachFilter: MustacheFilter {
         var mustacheTraversable: MustacheTraversable? { return value.traversableValue() }
         var mustacheRenderable: MustacheRenderable? { return self }
         
-        func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
             var position: [String: MustacheValue] = [:]
             position["@index"] = MustacheValue(index)
             position["@indexPlusOne"] = MustacheValue(index + 1)
@@ -108,7 +108,7 @@ class EachFilter: MustacheFilter {
                 position["@key"] = MustacheValue(key)
             }
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(position))
-            return value.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+            return value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
     }
 }

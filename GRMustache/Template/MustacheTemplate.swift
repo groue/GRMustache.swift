@@ -73,7 +73,11 @@ public class MustacheTemplate: MustacheRenderable {
     func render(value: MustacheValue, error outError: NSErrorPointer = nil) -> String? {
         let context = baseContext.contextByAddingValue(value)
         var contentType: ContentType = .Text
-        return mustacheRendering(context, contentType: &contentType, error: outError)
+        return render(context, contentType: &contentType, error: outError)
+    }
+    
+    func render(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        return render(renderingInfo.context, contentType: outContentType, error: outError)
     }
     
     class func render(value: MustacheValue, fromString string: String, error outError: NSErrorPointer = nil) -> String? {
@@ -87,17 +91,17 @@ public class MustacheTemplate: MustacheRenderable {
     
     // MARK: - MustacheRenderable
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return mustacheRendering(renderingInfo.context, contentType: outContentType, error: outError)
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        return render(renderingInfo.context, contentType: outContentType, error: outError)
     }
     
     
     // MARK: - Private
     
-    private func mustacheRendering(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    private func render(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         RenderingEngine.pushCurrentTemplateRepository(repository)
-        let rendering = renderingEngine.mustacheRendering(templateAST, contentType: outContentType, error: outError)
+        let rendering = renderingEngine.render(templateAST, contentType: outContentType, error: outError)
         RenderingEngine.popCurrentTemplateRepository()
         return rendering
     }

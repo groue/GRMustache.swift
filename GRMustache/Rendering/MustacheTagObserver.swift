@@ -9,8 +9,8 @@
 import Foundation
 
 protocol MustacheTagObserver {
-    func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue
+    func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue
     
     // If rendering is nil then an error has occurred.
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue)
+    func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue)
 }

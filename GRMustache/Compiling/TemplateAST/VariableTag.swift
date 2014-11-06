@@ -8,11 +8,11 @@
 
 import Foundation
 
-class VariableTag: Tag, TemplateASTNode {
+class VariableTag: MustacheTag, TemplateASTNode {
     let expression: Expression
     let contentType: ContentType
     let escapesHTML: Bool
-    var type: TagType { return .Variable }
+    var type: MustacheTagType { return .Variable }
     let innerTemplateString = ""
     let inverted = true
     

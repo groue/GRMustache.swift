@@ -13,13 +13,13 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
     
     // MARK: - MustacheRenderable
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch renderingInfo.tag.type {
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch tag.type {
         case .Variable:
             return "\(self)"
         case .Section:
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
-            return renderingInfo.tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
     }
 
@@ -49,7 +49,7 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
     
     // MARK: - MustacheTagObserver
     
-    func mustacheTag(tag: Tag, willRenderValue value: MustacheValue) -> MustacheValue {
+    func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
         switch tag.type {
         case .Variable:
             if let string = value.stringValue() {
@@ -62,7 +62,7 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
         }
     }
     
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: MustacheValue) {
+    func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
     }
     
     

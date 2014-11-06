@@ -45,11 +45,11 @@ let pluralizeFilter = { (count: Int?) -> (MustacheValue) in
     
     // This filter returns an object that performs custom rendering:
     
-    return MustacheValue({ (renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+    return MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
         
         // Fetch the section inner content...
         
-        let string = renderingInfo.tag.innerTemplateString
+        let string = tag.innerTemplateString
         
         // ... and pluralize it if needed.
         
@@ -69,7 +69,7 @@ MustacheConfiguration.defaultConfiguration.extendBaseContextWith(value: Mustache
 
 // I have 3 cats.
 
-let template = MustacheTemplate(named: "cats")!
+let template = MustacheTemplate(named: "example2")!
 let value = MustacheValue(["cats": ["Kitty", "Pussy", "Melba"]])
 let rendering = template.render(value)!
 ```

@@ -94,8 +94,8 @@ struct MustacheValue: DebugPrintable {
     
     // MARK: Rendering
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        let tag = renderingInfo.tag
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        let tag = tag
         switch type {
         case .None:
             switch tag.type {
@@ -169,7 +169,7 @@ struct MustacheValue: DebugPrintable {
                 for item in array {
                     empty = false
                     var itemContentType: ContentType = .Text
-                    if let itemRendering = item.mustacheRendering(enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
+                    if let itemRendering = item.renderForMustacheTag(tag, renderingInfo: enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
                         if contentType == nil {
                             contentType = itemContentType
                             buffer = buffer + itemRendering
@@ -215,7 +215,7 @@ struct MustacheValue: DebugPrintable {
                 for item in set {
                     empty = false
                     var itemContentType: ContentType = .Text
-                    if let itemRendering = MustacheValue(item).mustacheRendering(enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
+                    if let itemRendering = MustacheValue(item).renderForMustacheTag(tag, renderingInfo: enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
                         if contentType == nil {
                             contentType = itemContentType
                             buffer = buffer + itemRendering
@@ -259,7 +259,7 @@ struct MustacheValue: DebugPrintable {
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
-                return renderable.mustacheRendering(renderingInfo, contentType: outContentType, error: outError)
+                return renderable.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
             } else {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
                 return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
@@ -576,7 +576,7 @@ struct MustacheValue: DebugPrintable {
         type = .ClusterValue(MustacheRenderableCluster(renderable: renderable))
     }
     
-    init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
+    init(_ block: (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
         type = .ClusterValue(MustacheRenderableCluster(renderable: MustacheBlockRenderable(block)))
     }
     
@@ -1032,13 +1032,13 @@ private class MustacheBlockFilter: MustacheFilter {
 }
 
 class MustacheBlockRenderable: MustacheRenderable {
-    let block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
+    let block: (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)
     
-    init(_ block: (renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
+    init(_ block: (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?)) {
         self.block = block
     }
     
-    func mustacheRendering(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return block(renderingInfo: renderingInfo, outContentType: outContentType, outError: outError)
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        return block(tag: tag, renderingInfo: renderingInfo, outContentType: outContentType, outError: outError)
     }
 }
