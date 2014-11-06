@@ -120,7 +120,7 @@ class GRMustacheTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        MustacheConfiguration.defaultConfiguration.extendBaseContextWith(value: MustacheValue(pluralizeFilter), forKey: "pluralize")
+        MustacheConfiguration.defaultConfiguration.extendBaseContextWithValue(MustacheValue(pluralizeFilter), forKey: "pluralize")
         
         
         // I have 3 cats.
