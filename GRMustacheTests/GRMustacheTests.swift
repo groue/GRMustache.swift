@@ -137,6 +137,27 @@ class GRMustacheTests: XCTestCase {
         let rendering = MustacheTemplate.render(MustacheValue(user), fromString:"Hello {{name}}!")!
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
+    
+    func testCustomValueExtraction() {
+        // Test that one can define a value extraction method similar to
+        // MustacheValue.intValue, MustacheValue.doubleValue, etc.
+        //
+        // Here we use MustacheValue.extractedCustomValue
+        let value = MustacheValue([
+            "string": MustacheValue("success"),
+            "custom": MustacheValue(CustomValue()),
+            "f": MustacheValue({ (value: MustacheValue, error: NSErrorPointer?) -> (MustacheValue?) in
+                if let c = value.customValue() {
+                    return MustacheValue("custom")
+                } else {
+                    return MustacheValue("other")
+                }
+            })
+            ])
+        let template = MustacheTemplate(string:"{{f(custom)}},{{f(string)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "custom,other")
+    }
 }
 
 struct ReadmeExample3User {
@@ -151,5 +172,17 @@ extension ReadmeExample3User: MustacheTraversable {
         default:
             return nil
         }
+    }
+}
+
+struct CustomValue: MustacheTraversable {
+    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+        return MustacheValue()
+    }
+}
+
+extension MustacheValue {
+    func customValue() -> CustomValue? {
+        return self.traversableValue() as? CustomValue
     }
 }
