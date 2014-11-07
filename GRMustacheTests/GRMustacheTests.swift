@@ -158,6 +158,28 @@ class GRMustacheTests: XCTestCase {
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "custom,other")
     }
+    
+    // TODO
+//    func testCustomValueFilter() {
+//        // Test that one can define a value extraction method similar to
+//        // MustacheValue.intValue, MustacheValue.doubleValue, etc.
+//        //
+//        // Here we use MustacheValue.extractedCustomValue
+//        let value = MustacheValue([
+//            "string": MustacheValue("success"),
+//            "custom": MustacheValue(CustomValue()),
+//            "f": MustacheValue({ (value: CustomValue?) -> (MustacheValue?) in
+//                if value != nil {
+//                    return MustacheValue("custom")
+//                } else {
+//                    return MustacheValue("other")
+//                }
+//            })
+//            ])
+//        let template = MustacheTemplate(string:"{{f(custom)}},{{f(string)}}")!
+//        let rendering = template.render(value)!
+//        XCTAssertEqual(rendering, "custom,other")
+//    }
 }
 
 struct ReadmeExample3User {
