@@ -147,7 +147,7 @@ class GRMustacheTests: XCTestCase {
             "string": MustacheValue("success"),
             "custom": MustacheValue(CustomValue()),
             "f": MustacheValue({ (value: MustacheValue, error: NSErrorPointer?) -> (MustacheValue?) in
-                if let c = value.customValue() {
+                if let c: CustomValue = value.value() {
                     return MustacheValue("custom")
                 } else {
                     return MustacheValue("other")
@@ -175,14 +175,11 @@ extension ReadmeExample3User: MustacheTraversable {
     }
 }
 
-struct CustomValue: MustacheTraversable {
+struct CustomValue: MustacheTraversable, MustacheRenderable {
     func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
         return MustacheValue()
     }
-}
-
-extension MustacheValue {
-    func customValue() -> CustomValue? {
-        return self.traversableValue() as? CustomValue
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        return nil
     }
 }
