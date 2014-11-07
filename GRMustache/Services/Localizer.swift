@@ -20,7 +20,7 @@ class Localizer: MustacheFilter, MustacheTagObserver {
     
     // MARK: - MustacheFilter
     
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
         return nil
     }
     

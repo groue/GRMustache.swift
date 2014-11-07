@@ -83,7 +83,7 @@ class ExpressionInvocation: ExpressionVisitor {
     
     func visit(# filter: MustacheFilter, argumentValue: MustacheValue, curried: Bool, error outError: NSErrorPointer) -> Bool {
         if curried {
-            if let curriedFilter = filter.filterByCurryingArgument(argumentValue) {
+            if let curriedFilter = filter.filterWithAppliedArgument(argumentValue) {
                 value = MustacheValue(curriedFilter)
             } else {
                 if outError != nil {

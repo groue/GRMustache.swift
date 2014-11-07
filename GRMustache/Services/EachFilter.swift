@@ -10,7 +10,7 @@ import Foundation
 
 class EachFilter: MustacheFilter {
     
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
         return nil
     }
     

@@ -1008,7 +1008,7 @@ private class MustacheBlockFilter: MustacheFilter {
         self.block = block
     }
     
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
         return nil
     }
     
@@ -1030,7 +1030,7 @@ private class MustacheBlockVariadicFilter: MustacheFilter {
         return block(values: arguments + [value], error: outError)
     }
     
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter? {
+    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
         return MustacheBlockVariadicFilter(block, arguments: arguments + [argument])
     }
 }

@@ -9,6 +9,6 @@
 import Foundation
 
 protocol MustacheFilter {
-    func filterByCurryingArgument(argument: MustacheValue) -> MustacheFilter?
+    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter?
     func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue?
 }
