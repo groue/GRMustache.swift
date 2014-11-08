@@ -178,14 +178,13 @@ class GRMustacheTests: XCTestCase {
             }
         }
         
-        let filterBlock = { (value: CustomValue?) -> (MustacheValue?) in
+        let filterValue = MustacheValue({ (value: CustomValue?) -> (MustacheValue?) in
             if value != nil {
                 return MustacheValue("custom")
             } else {
                 return MustacheValue("other")
             }
-        }
-        let filterValue = MustacheValue(filterBlock)
+        })
         let value = MustacheValue([
             "string": MustacheValue("success"),
             "custom": MustacheValue(CustomValue()),
