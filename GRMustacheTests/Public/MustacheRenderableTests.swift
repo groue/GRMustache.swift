@@ -693,13 +693,14 @@ class MustacheRenderableTests: XCTestCase {
             "templateText": "{{ renderable }}"])
         repository2.configuration.contentType = .Text
         
+        let renderableValue = MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            let altTemplate = MustacheTemplate(string: "{{{ value }}}")!
+            return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+        })
         let value = MustacheValue([
             "value": MustacheValue("&"),
             "templateText": MustacheValue(repository2.template(named: "templateText")!),
-            "renderable": MustacheValue({ (tag: MustacheTag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-                let altTemplate = MustacheTemplate(string: "{{{ value }}}")!
-                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
-            })])
+            "renderable": renderableValue])
         let template = repository1.template(named: "templateHTML")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "&|&amp;")

@@ -166,27 +166,35 @@ class GRMustacheTests: XCTestCase {
         XCTAssertEqual(rendering, "custom,other")
     }
     
-    // TODO
-//    func testCustomValueFilter() {
-//        // Test that one can define a value extraction method similar to
-//        // MustacheValue.intValue, MustacheValue.doubleValue, etc.
-//        //
-//        // Here we use MustacheValue.extractedCustomValue
-//        let value = MustacheValue([
-//            "string": MustacheValue("success"),
-//            "custom": MustacheValue(CustomValue()),
-//            "f": MustacheValue({ (value: CustomValue?) -> (MustacheValue?) in
-//                if value != nil {
-//                    return MustacheValue("custom")
-//                } else {
-//                    return MustacheValue("other")
-//                }
-//            })
-//            ])
-//        let template = MustacheTemplate(string:"{{f(custom)}},{{f(string)}}")!
-//        let rendering = template.render(value)!
-//        XCTAssertEqual(rendering, "custom,other")
-//    }
+    func testCustomValueFilter() {
+        // Test that one can define a filter taking a CustomValue as an argument.
+        
+        struct CustomValue: MustacheTraversable, MustacheRenderable {
+            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+                return MustacheValue()
+            }
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                return nil
+            }
+        }
+        
+        let filterBlock = { (value: CustomValue?) -> (MustacheValue?) in
+            if value != nil {
+                return MustacheValue("custom")
+            } else {
+                return MustacheValue("other")
+            }
+        }
+        let filterValue = MustacheValue(filterBlock)
+        let value = MustacheValue([
+            "string": MustacheValue("success"),
+            "custom": MustacheValue(CustomValue()),
+            "f": filterValue
+            ])
+        let template = MustacheTemplate(string:"{{f(custom)}},{{f(string)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "custom,other")
+    }
 }
 
 struct ReadmeExample3User {

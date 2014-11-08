@@ -158,7 +158,317 @@ extension MustacheValue {
     
     convenience init<T: MustacheObject>(_ block: (T?) -> (MustacheValue?)) {
         self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
-            if let object:T = value.object() {
+            if let object: T = value.object() {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: MustacheCluster>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheRenderable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheRenderable) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheTagObserver) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheTraversable) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheRenderable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheRenderable, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheRenderable) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheRenderable, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheRenderable) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheTagObserver) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheRenderable) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = ((value.object() as MustacheCluster?)?.mustacheFilter) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheRenderable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheRenderable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheRenderable, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    convenience init<T: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>>(_ block: (T?) -> (MustacheValue?)) {
+        self.init(MustacheBlockFilter(block: { (value: MustacheValue, outError: NSErrorPointer) -> (MustacheValue?) in
+            if let object = (value.object() as MustacheCluster?) as? T {
                 return block(object)
             } else {
                 return block(nil)
