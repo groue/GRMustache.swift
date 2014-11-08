@@ -25,7 +25,7 @@ class Localizer: MustacheFilter, MustacheTagObserver {
     }
     
     func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
-        if let string = value.stringValue() {
+        if let string = value.string() {
             if let localizedString = localizedStringForKey(string) {
                 return MustacheValue(localizedString)
             } else {

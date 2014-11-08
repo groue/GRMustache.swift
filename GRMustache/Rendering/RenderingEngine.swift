@@ -199,7 +199,7 @@ class RenderingEngine: TemplateASTVisitor {
             case .Variable:
                 rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: &renderingContentType, error: &renderingError)
             case .Section:
-                let boolValue = value.mustacheBoolValue
+                let boolValue = value.mustacheBool
                 if tag.inverted {
                     if boolValue {
                         rendering = ""
@@ -244,6 +244,98 @@ class RenderingEngine: TemplateASTVisitor {
             }
         } else {
             return false
+        }
+    }
+}
+
+
+// =============================================================================
+// MARK: - Rendering Support
+
+extension Bool: MustacheCluster, MustacheRenderable {
+    
+    var mustacheBool: Bool { return self }
+    var mustacheTraversable: MustacheTraversable? { return nil }
+    var mustacheFilter: MustacheFilter? { return nil }
+    var mustacheTagObserver: MustacheTagObserver? { return nil }
+    var mustacheRenderable: MustacheRenderable? { return self }
+    
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch tag.type {
+        case .Variable:
+            return "\(self)"
+        case .Section:
+            if renderingInfo.enumerationItem {
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            } else {
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            }
+        }
+    }
+}
+
+extension Int: MustacheCluster, MustacheRenderable {
+    
+    var mustacheBool: Bool { return self != 0 }
+    var mustacheTraversable: MustacheTraversable? { return nil }
+    var mustacheFilter: MustacheFilter? { return nil }
+    var mustacheTagObserver: MustacheTagObserver? { return nil }
+    var mustacheRenderable: MustacheRenderable? { return self }
+    
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch tag.type {
+        case .Variable:
+            return "\(self)"
+        case .Section:
+            if renderingInfo.enumerationItem {
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            } else {
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            }
+        }
+    }
+}
+
+extension Double: MustacheCluster, MustacheRenderable {
+    
+    var mustacheBool: Bool { return self != 0.0 }
+    var mustacheTraversable: MustacheTraversable? { return nil }
+    var mustacheFilter: MustacheFilter? { return nil }
+    var mustacheTagObserver: MustacheTagObserver? { return nil }
+    var mustacheRenderable: MustacheRenderable? { return self }
+    
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch tag.type {
+        case .Variable:
+            return "\(self)"
+        case .Section:
+            if renderingInfo.enumerationItem {
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            } else {
+                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            }
+        }
+    }
+}
+
+extension String: MustacheCluster, MustacheRenderable {
+    
+    var mustacheBool: Bool { return countElements(self) > 0 }
+    var mustacheTraversable: MustacheTraversable? { return nil }
+    var mustacheFilter: MustacheFilter? { return nil }
+    var mustacheTagObserver: MustacheTagObserver? { return nil }
+    var mustacheRenderable: MustacheRenderable? { return self }
+    
+    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+        switch tag.type {
+        case .Variable:
+            return self
+        case .Section:
+            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(MustacheValue(self))
+            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
     }
 }

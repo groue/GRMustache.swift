@@ -139,15 +139,22 @@ class GRMustacheTests: XCTestCase {
     }
     
     func testCustomValueExtraction() {
-        // Test that one can define a value extraction method similar to
-        // MustacheValue.intValue, MustacheValue.doubleValue, etc.
-        //
-        // Here we use MustacheValue.extractedCustomValue
+        // Test that one can define a value from MustacheValue.
+
+        struct CustomValue: MustacheTraversable, MustacheRenderable {
+            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+                return MustacheValue()
+            }
+            func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+                return nil
+            }
+        }
+
         let value = MustacheValue([
             "string": MustacheValue("success"),
             "custom": MustacheValue(CustomValue()),
             "f": MustacheValue({ (value: MustacheValue, error: NSErrorPointer?) -> (MustacheValue?) in
-                if let c: CustomValue = value.value() {
+                if let c: CustomValue = value.object() {
                     return MustacheValue("custom")
                 } else {
                     return MustacheValue("other")
@@ -197,11 +204,3 @@ extension ReadmeExample3User: MustacheTraversable {
     }
 }
 
-struct CustomValue: MustacheTraversable, MustacheRenderable {
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
-        return MustacheValue()
-    }
-    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return nil
-    }
-}

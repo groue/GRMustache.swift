@@ -18,17 +18,17 @@ class EachFilter: MustacheFilter {
         switch(value.type) {
         case .None:
             return value
-        case .BoolValue, .IntValue, .DoubleValue, .StringValue, .ObjCValue, .ClusterValue:
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
-            }
-            return nil
         case .DictionaryValue(let dictionary):
             return transformedDictionary(dictionary)
         case .ArrayValue(let array):
             return transformedSequence(array)
         case .SetValue(let set):
             return transformedSet(set)
+        default:
+            if outError != nil {
+                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+            }
+            return nil
         }
     }
     
@@ -91,10 +91,10 @@ class EachFilter: MustacheFilter {
             self.last = last
         }
         
-        var mustacheBoolValue: Bool { return value.mustacheBoolValue }
-        var mustacheFilter: MustacheFilter? { return value.filterValue() }
-        var mustacheTagObserver: MustacheTagObserver? { return value.tagObserverValue() }
-        var mustacheTraversable: MustacheTraversable? { return value.traversableValue() }
+        var mustacheBool: Bool { return value.mustacheBool }
+        var mustacheFilter: MustacheFilter? { return (value.object() as MustacheCluster?)?.mustacheFilter }
+        var mustacheTagObserver: MustacheTagObserver? { return (value.object() as MustacheCluster?)?.mustacheTagObserver }
+        var mustacheTraversable: MustacheTraversable? { return (value.object() as MustacheCluster?)?.mustacheTraversable }
         var mustacheRenderable: MustacheRenderable? { return self }
         
         func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {

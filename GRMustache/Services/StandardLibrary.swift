@@ -30,52 +30,26 @@ class StandardLibrary: MustacheTraversable {
         items["each"] = MustacheValue(EachFilter())
         
         items["isBlank"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
-            switch value.type {
-            case .None:
-                return MustacheValue(true)
-            case .BoolValue(let bool):
-                return MustacheValue(bool)
-            case .IntValue(let int):
+            if let int: Int = value.object() {
                 return MustacheValue(false)
-            case .DoubleValue(let double):
+            } else if let double: Double = value.double() {
                 return MustacheValue(false)
-            case .StringValue(let string):
+            } else if let string: String = value.object() {
                 return MustacheValue(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
-            case .DictionaryValue(let dictionary):
-                return MustacheValue(false)
-            case .ArrayValue(let array):
-                return MustacheValue(array.isEmpty)
-            case .SetValue(let set):
-                return MustacheValue(set.count == 0)
-            case .ObjCValue(let object):
-                return MustacheValue(false)
-            case .ClusterValue(let cluster):
-                return MustacheValue(!cluster.mustacheBoolValue)
-            }})
+            } else {
+                return MustacheValue(!value.mustacheBool)
+            }
+        })
         
         items["isEmpty"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
-            switch value.type {
-            case .None:
-                return MustacheValue(true)
-            case .BoolValue(let bool):
-                return MustacheValue(bool)
-            case .IntValue(let int):
+            if let int: Int = value.object() {
                 return MustacheValue(false)
-            case .DoubleValue(let double):
+            } else if let double: Double = value.double() {
                 return MustacheValue(false)
-            case .StringValue(let string):
-                return MustacheValue(string.isEmpty)
-            case .DictionaryValue(let dictionary):
-                return MustacheValue(false)
-            case .ArrayValue(let array):
-                return MustacheValue(array.isEmpty)
-            case .SetValue(let set):
-                return MustacheValue(set.count == 0)
-            case .ObjCValue(let object):
-                return MustacheValue(false)
-            case .ClusterValue(let cluster):
-                return MustacheValue(!cluster.mustacheBoolValue)
-            }})
+            } else {
+                return MustacheValue(!value.mustacheBool)
+            }
+        })
         
         items["HTML"] = MustacheValue(["escape": MustacheValue(HTMLEscape())])
         

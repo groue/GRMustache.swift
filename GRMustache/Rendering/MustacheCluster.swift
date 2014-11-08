@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol MustacheCluster {
+protocol MustacheCluster: MustacheObject {
     
     /**
     Controls whether the object should trigger or avoid the rendering
@@ -22,13 +22,13 @@ protocol MustacheCluster {
     Example:
     
         class MyObject: MustacheCluster {
-            let mustacheBoolValue = true
+            let mustacheBool = true
         }
     
     :returns: Whether the object should trigger the rendering of
     Mustache sections.
     */
-    var mustacheBoolValue: Bool { get }
+    var mustacheBool: Bool { get }
     
     /**
     TODO
