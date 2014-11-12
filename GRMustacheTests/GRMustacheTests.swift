@@ -139,9 +139,9 @@ class GRMustacheTests: XCTestCase {
     }
     
     func testCustomValueExtraction() {
-        // Test that one can define a value from MustacheValue.
+        // Test that one can extract a custom value from MustacheValue.
 
-        struct CustomValue: MustacheTraversable, MustacheRenderable {
+        struct CustomValue1: MustacheTraversable, MustacheRenderable {
             func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
                 return MustacheValue()
             }
@@ -149,21 +149,18 @@ class GRMustacheTests: XCTestCase {
                 return nil
             }
         }
-
-        let value = MustacheValue([
-            "string": MustacheValue("success"),
-            "custom": MustacheValue(CustomValue()),
-            "f": MustacheValue({ (value: MustacheValue, error: NSErrorPointer?) -> (MustacheValue?) in
-                if let c: CustomValue = value.object() {
-                    return MustacheValue("custom")
-                } else {
-                    return MustacheValue("other")
-                }
-            })
-            ])
-        let template = MustacheTemplate(string:"{{f(custom)}},{{f(string)}}")!
-        let rendering = template.render(value)!
-        XCTAssertEqual(rendering, "custom,other")
+        
+        struct CustomValue2: MustacheObject {
+        }
+        
+        let custom1 = CustomValue1()
+        let custom2 = CustomValue2()
+        let value1: MustacheValue = MustacheValue(custom1)
+        let value2: MustacheValue = MustacheValue(custom2)
+        
+        // The test lies in the fact that those two lines compile:
+        let extractedCustom1: CustomValue1? = value1.object()
+        let extractedCustom2: CustomValue2? = value2.object()
     }
     
     func testCustomValueFilter() {
