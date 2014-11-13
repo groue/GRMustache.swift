@@ -9,7 +9,7 @@
 import Foundation
 
 struct RenderingInfo {
-    let context: Context
+    let context: MustacheContext
     let enumerationItem: Bool
     
     func renderingInfoByExtendingContextWithValue(value: MustacheValue) -> RenderingInfo {

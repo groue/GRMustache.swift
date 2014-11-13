@@ -10,13 +10,13 @@ import Foundation
 
 struct MustacheConfiguration {
     var contentType: ContentType
-    var baseContext: Context
+    var baseContext: MustacheContext
     var tagStartDelimiter: String
     var tagEndDelimiter: String
     
     init() {
         contentType = .HTML
-        baseContext = Context(MustacheValue(StandardLibrary()))
+        baseContext = MustacheContext(MustacheValue(StandardLibrary()))
         tagStartDelimiter = "{{"
         tagEndDelimiter = "}}"
     }

@@ -1,5 +1,5 @@
 //
-//  Context.swift
+//  MustacheContext.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 25/10/2014.
@@ -8,15 +8,15 @@
 
 import Foundation
 
-// Context is an immutable value.
+// MustacheContext is an immutable value.
 // However, it can not be a struct because it is recursive.
 // So it only exposes immutable APIs.
-class Context {
+class MustacheContext {
     enum Type {
         case Root
-        case Value(value: MustacheValue, parent: Context)
-        case InheritablePartial(inheritablePartialNode: InheritablePartialNode, parent: Context)
-        case TagObserver(tagObserver: MustacheTagObserver, parent: Context)
+        case Value(value: MustacheValue, parent: MustacheContext)
+        case InheritablePartial(inheritablePartialNode: InheritablePartialNode, parent: MustacheContext)
+        case TagObserver(tagObserver: MustacheTagObserver, parent: MustacheContext)
     }
     
     let type: Type
@@ -65,24 +65,24 @@ class Context {
     }
     
     convenience init(_ value: MustacheValue) {
-        self.init(type: .Value(value: value, parent: Context()))
+        self.init(type: .Value(value: value, parent: MustacheContext()))
     }
     
-    func contextByAddingValue(value: MustacheValue) -> Context {
+    func contextByAddingValue(value: MustacheValue) -> MustacheContext {
         switch value.type {
         case .None:
             return self
         default:
-            return Context(type: .Value(value: value, parent: self))
+            return MustacheContext(type: .Value(value: value, parent: self))
         }
     }
     
-    func contextByAddingInheritablePartialNode(inheritablePartialNode: InheritablePartialNode) -> Context {
-        return Context(type: .InheritablePartial(inheritablePartialNode: inheritablePartialNode, parent: self))
+    func contextByAddingInheritablePartialNode(inheritablePartialNode: InheritablePartialNode) -> MustacheContext {
+        return MustacheContext(type: .InheritablePartial(inheritablePartialNode: inheritablePartialNode, parent: self))
     }
     
-    func contextByAddingTagObserver(tagObserver: MustacheTagObserver) -> Context {
-        return Context(type: .TagObserver(tagObserver: tagObserver, parent: self))
+    func contextByAddingTagObserver(tagObserver: MustacheTagObserver) -> MustacheContext {
+        return MustacheContext(type: .TagObserver(tagObserver: tagObserver, parent: self))
     }
     
     func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {

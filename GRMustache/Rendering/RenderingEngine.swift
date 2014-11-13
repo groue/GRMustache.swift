@@ -10,10 +10,10 @@ import Foundation
 
 class RenderingEngine: TemplateASTVisitor {
     let contentType: ContentType
-    var context: Context
+    var context: MustacheContext
     var buffer: String?
     
-    init(contentType: ContentType, context: Context) {
+    init(contentType: ContentType, context: MustacheContext) {
         self.contentType = contentType
         self.context = context
     }

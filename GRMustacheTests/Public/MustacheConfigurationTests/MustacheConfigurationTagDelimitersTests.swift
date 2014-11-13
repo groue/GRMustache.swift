@@ -1,5 +1,5 @@
 //
-//  ConfigurationTagDelimitersTests.swift
+//  MustacheConfigurationTagDelimitersTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 05/11/2014.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-class ConfigurationTagDelimitersTests: XCTestCase {
+class MustacheConfigurationTagDelimitersTests: XCTestCase {
    
     override func tearDown() {
         super.tearDown()

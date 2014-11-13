@@ -1,5 +1,5 @@
 //
-//  ConfigurationExtendBaseContextTests.swift
+//  MustacheConfigurationExtendBaseContextTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 05/11/2014.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-class ConfigurationExtendBaseContextTests: XCTestCase {
+class MustacheConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = MustacheConfiguration()

@@ -11,14 +11,14 @@ import Foundation
 class ExpressionInvocation: ExpressionVisitor {
     let expression: Expression
     var value: MustacheValue
-    private var context: Context?
+    private var context: MustacheContext?
     
     init (expression: Expression) {
         self.value = MustacheValue()
         self.expression = expression
     }
     
-    func invokeWithContext(context: Context, error outError: NSErrorPointer) -> Bool {
+    func invokeWithContext(context: MustacheContext, error outError: NSErrorPointer) -> Bool {
         self.context = context
         return expression.acceptExpressionVisitor(self, error: outError)
     }

@@ -11,9 +11,9 @@ import Foundation
 public class MustacheTemplate: MustacheRenderable {
     let repository: MustacheTemplateRepository
     let templateAST: TemplateAST
-    var baseContext: Context
+    var baseContext: MustacheContext
     
-    init(repository: MustacheTemplateRepository, templateAST: TemplateAST, baseContext: Context) {
+    init(repository: MustacheTemplateRepository, templateAST: TemplateAST, baseContext: MustacheContext) {
         self.repository = repository
         self.templateAST = templateAST
         self.baseContext = baseContext
@@ -27,7 +27,7 @@ public class MustacheTemplate: MustacheRenderable {
         } else {
             // Failable initializers require all properties to be set.
             // So be it, with dummy values.
-            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
+            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: MustacheContext())
             return nil
         }
     }
@@ -40,7 +40,7 @@ public class MustacheTemplate: MustacheRenderable {
         } else {
             // Failable initializers require all properties to be set.
             // So be it, with dummy values.
-            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
+            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: MustacheContext())
             return nil
         }
     }
@@ -53,7 +53,7 @@ public class MustacheTemplate: MustacheRenderable {
         } else {
             // Failable initializers require all properties to be set.
             // So be it, with dummy values.
-            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
+            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: MustacheContext())
             return nil
         }
     }
@@ -65,7 +65,7 @@ public class MustacheTemplate: MustacheRenderable {
         } else {
             // Failable initializers require all properties to be set.
             // So be it, with dummy values.
-            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
+            self.init(repository: MustacheTemplateRepository(), templateAST: TemplateAST(), baseContext: MustacheContext())
             return nil
         }
     }
@@ -98,7 +98,7 @@ public class MustacheTemplate: MustacheRenderable {
     
     // MARK: - Private
     
-    private func render(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    private func render(context: MustacheContext, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         RenderingEngine.pushCurrentTemplateRepository(repository)
         let rendering = renderingEngine.render(templateAST, contentType: outContentType, error: outError)
