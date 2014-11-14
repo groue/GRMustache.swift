@@ -135,4 +135,16 @@ class MustacheContext {
             return parent[identifier]
         }
     }
+    
+    func valueForMustacheExpression(expression string: String, error outError: NSErrorPointer = nil) -> MustacheValue? {
+        let parser = ExpressionParser()
+        var empty = false
+        if let expression = parser.parse(string, empty: &empty, error: outError) {
+            let invocation = ExpressionInvocation(expression: expression)
+            if invocation.invokeWithContext(self, error: outError) {
+                return invocation.value
+            }
+        }
+        return nil
+    }
 }
