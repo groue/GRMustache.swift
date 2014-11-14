@@ -22,12 +22,12 @@ class MustacheValue {
     
     let type: Type
     
-    init() {
-        type = .None
-    }
-    
     init(type: Type) {
         self.type = type
+    }
+    
+    convenience init() {
+        self.init(type: .None)
     }
     
     convenience init(_ object: AnyObject?) {
