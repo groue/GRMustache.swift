@@ -1,5 +1,5 @@
 //
-//  MustacheConfigurationTests.swift
+//  MustacheConfigurationContentTypeTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 13/11/2014.
@@ -8,7 +8,7 @@
 
 import XCTest
 
-class MustacheConfigurationTests: XCTestCase {
+class MustacheConfigurationContentTypeTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
@@ -193,4 +193,129 @@ class MustacheConfigurationTests: XCTestCase {
         repo = MustacheTemplateRepository()
         XCTAssertEqual(repo.configuration.contentType, ContentType.Text)
     }
+    
+    func testRepositoryConfigurationContentTypeHTMLHasTemplateRenderEscapedInputWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .HTML
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRepositoryConfigurationContentTypeHTMLHasTemplateRenderEscapedInputWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .HTML
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRepositoryConfigurationContentTypeTextHasTemplateRenderUnescapedInputWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .Text
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRepositoryConfigurationContentTypeTextHasTemplateRenderUnescapedInputWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .Text
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+
+    func testRepositoryConfigurationContentTypeTextOverridesDefaultConfigurationContentTypeHTMLWhenSettingTheWholeConfiguration() {
+        MustacheConfiguration.defaultConfiguration.contentType = .HTML
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .Text
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRepositoryConfigurationContentTypeTextOverridesDefaultConfigurationContentTypeHTMLWhenUpdatingRepositoryConfiguration() {
+        MustacheConfiguration.defaultConfiguration.contentType = .HTML
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .Text
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testRepositoryConfigurationContentTypeHTMLOverridesDefaultConfigurationContentTypeTextWhenSettingTheWholeConfiguration() {
+        MustacheConfiguration.defaultConfiguration.contentType = .Text
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .HTML
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRepositoryConfigurationContentTypeHTMLOverridesDefaultConfigurationContentTypeTextWhenUpdatingRepositoryConfiguration() {
+        MustacheConfiguration.defaultConfiguration.contentType = .Text
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .HTML
+        let template = repository.template(string: "{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testPragmaContentTypeTextOverridesRepositoryConfigurationContentTypeHTMLWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .HTML
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testPragmaContentTypeTextOverridesRepositoryConfigurationContentTypeHTMLWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .HTML
+        let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&")
+    }
+    
+    func testPragmaContentTypeHTMLOverridesRepositoryConfigurationContentTypeTextWhenSettingTheWholeConfiguration() {
+        var configuration = MustacheConfiguration()
+        configuration.contentType = .Text
+        let repository = MustacheTemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testPragmaContentTypeHTMLOverridesRepositoryConfigurationContentTypeTextWhenUpdatingRepositoryConfiguration() {
+        let repository = MustacheTemplateRepository()
+        repository.configuration.contentType = .Text
+        let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
+        let rendering = template.render(MustacheValue("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+    }
+    
+    func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
+    
+    func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
+    
+    func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
+        // TODO: import test from GRMustache
+    }
+    
 }
