@@ -6,6 +6,89 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
+public protocol Cluster {
+    
+    /**
+    Controls whether the object should trigger or avoid the rendering
+    of Mustache sections.
+    
+    - true: `{{#object}}...{{/}}` are rendered, `{{^object}}...{{/}}`
+    are not.
+    - false: `{{^object}}...{{/}}` are rendered, `{{#object}}...{{/}}`
+    are not.
+    
+    Example:
+    
+    class MyObject: Cluster {
+    let mustacheBool = true
+    }
+    
+    :returns: Whether the object should trigger the rendering of
+    Mustache sections.
+    */
+    var mustacheBool: Bool { get }
+    
+    /**
+    TODO
+    */
+    var mustacheTraversable: Traversable? { get }
+    
+    /**
+    Controls whether the object can be used as a filter.
+    
+    :returns: An optional filter object that should be applied when the object
+    is involved in a filter expression such as `object(...)`.
+    */
+    var mustacheFilter: Filter? { get }
+    
+    /**
+    TODO
+    */
+    var mustacheTagObserver: TagObserver? { get }
+    
+    /**
+    TODO
+    */
+    var mustacheRenderable: Renderable? { get }
+}
+
+public protocol Filter {
+    func mustacheFilterByApplyingArgument(argument: Value) -> Filter?
+    func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value?
+}
+
+public struct RenderingInfo {
+    public let context: Context
+    let enumerationItem: Bool
+    
+    public func renderingInfoByExtendingContextWithValue(value: Value) -> RenderingInfo {
+        return RenderingInfo(context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
+    }
+    
+    public func renderingInfoByExtendingContextWithTagObserver(tagObserver: TagObserver) -> RenderingInfo {
+        return RenderingInfo(context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
+    }
+    
+    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
+        return RenderingInfo(context: context, enumerationItem: true)
+    }
+}
+
+public protocol Renderable {
+    func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
+}
+
+public protocol TagObserver {
+    func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value
+    
+    // If rendering is nil then an error has occurred.
+    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value)
+}
+
+public protocol Traversable {
+    func valueForMustacheIdentifier(identifier: String) -> Value?
+}
+
 public class Value {
     private enum Type {
         case None
@@ -17,6 +100,7 @@ public class Value {
     }
     
     private let type: Type
+    
     var isEmpty: Bool {
         switch type {
         case .None:
