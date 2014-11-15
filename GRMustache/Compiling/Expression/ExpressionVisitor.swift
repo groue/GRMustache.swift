@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 protocol ExpressionVisitor {
     func visit(expression: FilteredExpression, error outError: NSErrorPointer) -> Bool
     func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool

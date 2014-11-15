@@ -6,61 +6,61 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-class StandardLibrary: MustacheTraversable {
-    let items: [String: MustacheValue]
+class StandardLibrary: Traversable {
+    
+    private let items: [String: Value]
+    
     init() {
-        var items: [String: MustacheValue] = [:]
+        var items: [String: Value] = [:]
         
-        items["capitalized"] = MustacheValue({ (string: String?) -> (MustacheValue) in
-            return MustacheValue(string?.capitalizedString)
+        items["capitalized"] = Value({ (string: String?) -> (Value) in
+            return Value(string?.capitalizedString)
         })
         
-        items["lowercase"] = MustacheValue({ (string: String?) -> (MustacheValue) in
-            return MustacheValue(string?.lowercaseString)
+        items["lowercase"] = Value({ (string: String?) -> (Value) in
+            return Value(string?.lowercaseString)
         })
         
-        items["uppercase"] = MustacheValue({ (string: String?) -> (MustacheValue) in
-            return MustacheValue(string?.uppercaseString)
+        items["uppercase"] = Value({ (string: String?) -> (Value) in
+            return Value(string?.uppercaseString)
         })
         
-        items["localize"] = MustacheValue(Localizer(bundle: nil, table: nil))
+        items["localize"] = Value(Localizer(bundle: nil, table: nil))
         
-        items["each"] = MustacheValue(EachFilter())
+        items["each"] = Value(EachFilter())
         
-        items["isBlank"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
+        items["isBlank"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
             if let int: Int = value.object() {
-                return MustacheValue(false)
+                return Value(false)
             } else if let double: Double = value.double() {
-                return MustacheValue(false)
+                return Value(false)
             } else if let string: String = value.object() {
-                return MustacheValue(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
+                return Value(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
             } else {
-                return MustacheValue(!value.mustacheBool)
+                return Value(!value.mustacheBool)
             }
         })
         
-        items["isEmpty"] = MustacheValue({ (value: MustacheValue, error: NSErrorPointer) -> (MustacheValue?) in
+        items["isEmpty"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
             if let int: Int = value.object() {
-                return MustacheValue(false)
+                return Value(false)
             } else if let double: Double = value.double() {
-                return MustacheValue(false)
+                return Value(false)
             } else {
-                return MustacheValue(!value.mustacheBool)
+                return Value(!value.mustacheBool)
             }
         })
         
-        items["HTML"] = MustacheValue(["escape": MustacheValue(HTMLEscape())])
+        items["HTML"] = Value(["escape": Value(HTMLEscape())])
         
-        items["URL"] = MustacheValue(["escape": MustacheValue(URLEscape())])
+        items["URL"] = Value(["escape": Value(URLEscape())])
         
-        items["javascript"] = MustacheValue(["escape": MustacheValue(JavascriptEscape())])
+        items["javascript"] = Value(["escape": Value(JavascriptEscape())])
         
         self.items = items
     }
     
-    func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+    func valueForMustacheIdentifier(identifier: String) -> Value? {
         return items[identifier]
     }
 }

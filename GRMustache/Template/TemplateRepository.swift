@@ -1,27 +1,25 @@
 //
-//  MustacheTemplateRepository.swift
+//  TemplateRepository.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 25/10/2014.
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
+public typealias TemplateID = String
 
-typealias TemplateID = String
-
-protocol MustacheTemplateRepositoryDataSource {
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID?
+public protocol TemplateRepositoryDataSource {
+    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
     func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String?
 }
 
-public class MustacheTemplateRepository {
-    var configuration: MustacheConfiguration
-    var dataSource: MustacheTemplateRepositoryDataSource?
-    var templateASTForTemplateID: [TemplateID: TemplateAST]
+public class TemplateRepository {
+    public var configuration: Configuration
+    public var dataSource: TemplateRepositoryDataSource?
+    private var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init() {
-        configuration = MustacheConfiguration.defaultConfiguration
+        configuration = Configuration.defaultConfiguration
         templateASTForTemplateID = [:]
     }
     
@@ -45,21 +43,21 @@ public class MustacheTemplateRepository {
         dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
     }
     
-    public func template(#string: String, error outError: NSErrorPointer = nil) -> MustacheTemplate? {
+    public func template(#string: String, error outError: NSErrorPointer = nil) -> Template? {
         return self.template(string: string, contentType: configuration.contentType, error: outError)
     }
     
-    public func template(named name: String, error outError: NSErrorPointer = nil) -> MustacheTemplate? {
+    public func template(named name: String, error outError: NSErrorPointer = nil) -> Template? {
         if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: outError) {
-            return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func template(#string: String, contentType: ContentType, error outError: NSErrorPointer) -> MustacheTemplate? {
+    func template(#string: String, contentType: ContentType, error outError: NSErrorPointer) -> Template? {
         if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: outError) {
-            return MustacheTemplate(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
@@ -109,14 +107,14 @@ public class MustacheTemplateRepository {
     
     // MARK: - Private
     
-    class DictionaryDataSource: MustacheTemplateRepositoryDataSource {
+    private class DictionaryDataSource: TemplateRepositoryDataSource {
         let templates: [String: String]
         
         init(templates: [String: String]) {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
             return name
         }
         
@@ -125,7 +123,7 @@ public class MustacheTemplateRepository {
         }
     }
     
-    class DirectoryDataSource: MustacheTemplateRepositoryDataSource {
+    private class DirectoryDataSource: TemplateRepositoryDataSource {
         let directoryPath: String
         let templateExtension: String
         let encoding: NSStringEncoding
@@ -136,7 +134,7 @@ public class MustacheTemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -174,7 +172,7 @@ public class MustacheTemplateRepository {
         }
     }
     
-    class URLDataSource: MustacheTemplateRepositoryDataSource {
+    private class URLDataSource: TemplateRepositoryDataSource {
         let baseURL: NSURL
         let templateExtension: String
         let encoding: NSStringEncoding
@@ -185,7 +183,7 @@ public class MustacheTemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:MustacheTemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -223,7 +221,7 @@ public class MustacheTemplateRepository {
         }
     }
     
-    class BundleDataSource: MustacheTemplateRepositoryDataSource {
+    private class BundleDataSource: TemplateRepositoryDataSource {
         let bundle: NSBundle
         let templateExtension: String
         let encoding: NSStringEncoding
@@ -234,7 +232,7 @@ public class MustacheTemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository: MustacheTemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository: TemplateRepository) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {

@@ -1,14 +1,12 @@
 //
-//  MustacheCluster.swift
+//  Cluster.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 01/11/2014.
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-protocol MustacheCluster: MustacheObject {
+public protocol Cluster {
     
     /**
     Controls whether the object should trigger or avoid the rendering
@@ -21,7 +19,7 @@ protocol MustacheCluster: MustacheObject {
     
     Example:
     
-        class MyObject: MustacheCluster {
+        class MyObject: Cluster {
             let mustacheBool = true
         }
     
@@ -33,7 +31,7 @@ protocol MustacheCluster: MustacheObject {
     /**
     TODO
     */
-    var mustacheTraversable: MustacheTraversable? { get }
+    var mustacheTraversable: Traversable? { get }
     
     /**
     Controls whether the object can be used as a filter.
@@ -41,15 +39,15 @@ protocol MustacheCluster: MustacheObject {
     :returns: An optional filter object that should be applied when the object
     is involved in a filter expression such as `object(...)`.
     */
-    var mustacheFilter: MustacheFilter? { get }
+    var mustacheFilter: Filter? { get }
     
     /**
     TODO
     */
-    var mustacheTagObserver: MustacheTagObserver? { get }
+    var mustacheTagObserver: TagObserver? { get }
     
     /**
     TODO
     */
-    var mustacheRenderable: MustacheRenderable? { get }
+    var mustacheRenderable: Renderable? { get }
 }

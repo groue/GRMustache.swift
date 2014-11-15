@@ -6,44 +6,42 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-class Localizer: MustacheFilter, MustacheTagObserver {
-    let bundle: NSBundle?
-    let table: String?
+public class Localizer: Filter, TagObserver {
+    public let bundle: NSBundle?
+    public let table: String?
     
-    init(bundle: NSBundle?, table: String?) {
+    public init(bundle: NSBundle?, table: String?) {
         self.bundle = bundle
         self.table = table
     }
     
     
-    // MARK: - MustacheFilter
+    // MARK: - Filter
     
-    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
+    public func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
         return nil
     }
     
-    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
+    public func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
         if let string = value.string() {
             if let localizedString = localizedStringForKey(string) {
-                return MustacheValue(localizedString)
+                return Value(localizedString)
             } else {
-                return MustacheValue()
+                return Value()
             }
         } else {
-            return MustacheValue()
+            return Value()
         }
     }
     
     
-    // MARK: - MustacheTagObserver
+    // MARK: - TagObserver
     
-    func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
+    public func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         return value
     }
     
-    func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
+    public func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
     }
     
     

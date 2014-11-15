@@ -6,11 +6,22 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class ExpressionParser {
     
     func parse(string: String, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> Expression? {
+        
+        enum State {
+            case Error
+            case Initial
+            case LeadingDot
+            case Identifier(start: String.Index)
+            case WaitingForIdentifier
+            case IdentifierDone
+            case FilterDone
+            case Empty
+            case Valid(expression: Expression)
+        }
+        
         var state: State = .Initial
         var filterExpressionStack: [Expression] = []
         var currentExpression: Expression?
@@ -289,17 +300,5 @@ class ExpressionParser {
         }
         
         return nil
-    }
-    
-    enum State {
-        case Error
-        case Initial
-        case LeadingDot
-        case Identifier(start: String.Index)
-        case WaitingForIdentifier
-        case IdentifierDone
-        case FilterDone
-        case Empty
-        case Valid(expression: Expression)
     }
 }

@@ -6,13 +6,11 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-class SectionTag: MustacheTag, TemplateASTNode {
+class SectionTag: MustacheExpressionTag, TemplateASTNode {
     let expression: Expression
     let templateAST: TemplateAST
     let inverted: Bool
-    let type: MustacheTagType = .Section
+    let type: TagType = .Section
     let innerTemplateString: String
     
     init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {

@@ -6,14 +6,12 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
+class URLEscape: Renderable, Filter, TagObserver {
     
     
-    // MARK: - MustacheRenderable
+    // MARK: - Renderable
     
-    func renderForMustacheTag(tag: MustacheTag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {
         case .Variable:
             return "\(self)"
@@ -24,36 +22,28 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     }
 
     
-    // MARK: - MustacheFilter
+    // MARK: - Filter
     
-    func filterWithAppliedArgument(argument: MustacheValue) -> MustacheFilter? {
+    func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
         return nil
     }
     
-    func transformedValue(value: MustacheValue, error outError: NSErrorPointer) -> MustacheValue? {
-        switch value.type {
-        case .None:
-            return value
-        default:
-            if let string = value.string() {
-                return MustacheValue(escapeURL(string))
-            } else {
-                if outError != nil {
-                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not a string"])
-                }
-                return nil
-            }
+    func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
+        if let string = value.string() {
+            return Value(escapeURL(string))
+        } else {
+            return Value()
         }
     }
     
     
-    // MARK: - MustacheTagObserver
+    // MARK: - TagObserver
     
-    func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
+    func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         switch tag.type {
         case .Variable:
             if let string = value.string() {
-                return MustacheValue(escapeURL(string))
+                return Value(escapeURL(string))
             } else {
                 return value
             }
@@ -62,13 +52,13 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         }
     }
     
-    func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
+    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
     }
     
     
     // MARK: - private
     
-    func escapeURL(string: String) -> String {
+    private func escapeURL(string: String) -> String {
         var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
         s.removeCharactersInString("?&=")
         return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""

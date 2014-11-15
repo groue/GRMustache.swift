@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class PartialNode: TemplateASTNode {
     let partialName: String
     let templateAST: TemplateAST

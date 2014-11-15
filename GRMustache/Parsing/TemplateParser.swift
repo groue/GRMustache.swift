@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 protocol TemplateTokenConsumer {
     func parser(parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
     func parser(parser:TemplateParser, didFailWithError error:NSError)
@@ -15,10 +13,10 @@ protocol TemplateTokenConsumer {
 
 class TemplateParser {
     let tokenConsumer: TemplateTokenConsumer
-    let tagStartDelimiter: String
-    let tagEndDelimiter: String
+    private let tagStartDelimiter: String
+    private let tagEndDelimiter: String
     
-    init(tokenConsumer: TemplateTokenConsumer, configuration: MustacheConfiguration) {
+    init(tokenConsumer: TemplateTokenConsumer, configuration: Configuration) {
         self.tokenConsumer = tokenConsumer
         self.tagStartDelimiter = configuration.tagStartDelimiter
         self.tagEndDelimiter = configuration.tagEndDelimiter
@@ -247,7 +245,7 @@ class TemplateParser {
     
     // MARK: - Private
     
-    enum State {
+    private enum State {
         case Start
         case Text
         case Tag
@@ -255,7 +253,7 @@ class TemplateParser {
         case SetDelimitersTag
     }
     
-    struct Delimiters {
+    private struct Delimiters {
         let tagStart: String
         let tagStartLength: Int
         let tagEnd: String
@@ -289,7 +287,7 @@ class TemplateParser {
         }
     }
     
-    func failWithParseError(#lineNumber: Int, description: String) {
+    private func failWithParseError(#lineNumber: Int, description: String) {
         let userInfo = [NSLocalizedDescriptionKey: "Parse error at line \(lineNumber): \(description)"]
         var error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: userInfo)
         tokenConsumer.parser(self, didFailWithError: error)

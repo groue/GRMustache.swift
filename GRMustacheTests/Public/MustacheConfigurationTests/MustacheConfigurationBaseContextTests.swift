@@ -1,5 +1,5 @@
 //
-//  MustacheConfigurationBaseContextTests.swift
+//  ConfigurationBaseContextTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 04/11/2014.
@@ -7,130 +7,131 @@
 //
 
 import XCTest
+import GRMustache
 
-class MustacheConfigurationBaseContextTests: XCTestCase {
+class ConfigurationBaseContextTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
         
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheConfiguration().baseContext
+        Configuration.defaultConfiguration.baseContext = Configuration().baseContext
     }
     
     func testFactoryConfigurationHasStandardLibraryInBaseContextRegardlessOfDefaultConfiguration() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext()
+        Configuration.defaultConfiguration.baseContext = Context()
         
-        let repository = MustacheTemplateRepository()
-        repository.configuration = MustacheConfiguration()
+        let repository = TemplateRepository()
+        repository.configuration = Configuration()
         
         let template = repository.template(string: "{{uppercase(foo)}}")!
-        let rendering = template.render(MustacheValue(["foo": "success"]))!
+        let rendering = template.render(Value(["foo": "success"]))!
         XCTAssertEqual(rendering, "SUCCESS")
     }
     
     func testDefaultConfigurationCustomBaseContext() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "success"]))
         
-        let template = MustacheTemplate(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let template = Template(string: "{{foo}}")!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultConfigurationCustomBaseContextHasNoStandardLibrary() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "success"]))
         
-        let template = MustacheTemplate(string: "{{uppercase(foo)}}")!
+        let template = Template(string: "{{uppercase(foo)}}")!
         var error: NSError?
-        let rendering = template.render(MustacheValue(), error: &error)
+        let rendering = template.render(Value(), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError); // no such filter
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "failure"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "failure"]))
         
-        let template = MustacheTemplate(string: "{{foo}}")!
-        template.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
-        let rendering = template.render(MustacheValue())!
+        let template = Template(string: "{{foo}}")!
+        template.baseContext = Context(Value(["foo": "success"]))
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "success"]))
         
-        let repository = MustacheTemplateRepository()
+        let repository = TemplateRepository()
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
-        var configuration = MustacheConfiguration()
-        configuration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        var configuration = Configuration()
+        configuration.baseContext = Context(Value(["foo": "success"]))
         
-        let repository = MustacheTemplateRepository()
+        let repository = TemplateRepository()
         repository.configuration = configuration
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
-        let repository = MustacheTemplateRepository()
-        repository.configuration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        let repository = TemplateRepository()
+        repository.configuration.baseContext = Context(Value(["foo": "success"]))
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "failure"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "failure"]))
         
-        var configuration = MustacheConfiguration()
-        configuration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        var configuration = Configuration()
+        configuration.baseContext = Context(Value(["foo": "success"]))
         
-        let repository = MustacheTemplateRepository()
+        let repository = TemplateRepository()
         repository.configuration = configuration
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
-        MustacheConfiguration.defaultConfiguration.baseContext = MustacheContext(MustacheValue(["foo": "failure"]))
+        Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "failure"]))
         
-        let repository = MustacheTemplateRepository()
-        repository.configuration.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        let repository = TemplateRepository()
+        repository.configuration.baseContext = Context(Value(["foo": "success"]))
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
-        var configuration = MustacheConfiguration()
-        configuration.baseContext = MustacheContext(MustacheValue(["foo": "failure"]))
+        var configuration = Configuration()
+        configuration.baseContext = Context(Value(["foo": "failure"]))
         
-        let repository = MustacheTemplateRepository()
+        let repository = TemplateRepository()
         repository.configuration = configuration
         
         let template = repository.template(string: "{{foo}}")!
-        template.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        template.baseContext = Context(Value(["foo": "success"]))
         
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     
     func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
-        let repository = MustacheTemplateRepository()
-        repository.configuration.baseContext = MustacheContext(MustacheValue(["foo": "failure"]))
+        let repository = TemplateRepository()
+        repository.configuration.baseContext = Context(Value(["foo": "failure"]))
         
         let template = repository.template(string: "{{foo}}")!
-        template.baseContext = MustacheContext(MustacheValue(["foo": "success"]))
+        template.baseContext = Context(Value(["foo": "success"]))
         
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "success")
     }
     

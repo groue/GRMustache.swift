@@ -6,19 +6,17 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class ExpressionInvocation: ExpressionVisitor {
-    let expression: Expression
-    var value: MustacheValue
-    private var context: MustacheContext?
+    private let expression: Expression
+    var value: Value
+    private var context: Context?
     
     init (expression: Expression) {
-        self.value = MustacheValue()
+        self.value = Value()
         self.expression = expression
     }
     
-    func invokeWithContext(context: MustacheContext, error outError: NSErrorPointer) -> Bool {
+    func invokeWithContext(context: Context, error outError: NSErrorPointer) -> Bool {
         self.context = context
         return expression.acceptExpressionVisitor(self, error: outError)
     }
@@ -37,22 +35,14 @@ class ExpressionInvocation: ExpressionVisitor {
         }
         let argumentValue = value
         
-        switch filterValue.type {
-        case .ClusterValue(let cluster):
-            if let filter = cluster.mustacheFilter {
-                return visit(filter: filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
-            } else {
-                if outError != nil {
-                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
-                }
-                return false
-            }
-        case .None:
+        if filterValue.isEmpty {
             if outError != nil {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
             }
             return false
-        default:
+        } else if let filter: Filter = filterValue.object() {
+            return visit(filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
+        } else {
             if outError != nil {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
             }
@@ -66,7 +56,7 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool {
-        value = context!.topMustacheValue
+        value = context!.topValue
         return true
     }
     
@@ -81,10 +71,10 @@ class ExpressionInvocation: ExpressionVisitor {
     
     // MARK: - Private
     
-    func visit(# filter: MustacheFilter, argumentValue: MustacheValue, curried: Bool, error outError: NSErrorPointer) -> Bool {
+    private func visit(filter: Filter, argumentValue: Value, curried: Bool, error outError: NSErrorPointer) -> Bool {
         if curried {
-            if let curriedFilter = filter.filterWithAppliedArgument(argumentValue) {
-                value = MustacheValue(curriedFilter)
+            if let curriedFilter = filter.mustacheFilterByApplyingArgument(argumentValue) {
+                value = Value(curriedFilter)
             } else {
                 if outError != nil {
                     outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -93,7 +83,7 @@ class ExpressionInvocation: ExpressionVisitor {
             }
         } else {
             var filterError: NSError? = nil
-            if let filterResult = filter.transformedValue(argumentValue, error: &filterError) {
+            if let filterResult = filter.transformedMustacheValue(argumentValue, error: &filterError) {
                 value = filterResult
             } else if let filterError = filterError {
                 if outError != nil {
@@ -105,7 +95,7 @@ class ExpressionInvocation: ExpressionVisitor {
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
                 
-                value = MustacheValue()
+                value = Value()
             }
         }
         return true

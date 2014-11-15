@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 func escapeHTML(string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",

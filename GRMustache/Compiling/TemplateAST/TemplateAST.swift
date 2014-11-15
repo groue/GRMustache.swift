@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class TemplateAST {
     enum Type {
         case Undefined
@@ -15,7 +13,7 @@ class TemplateAST {
     }
     var type: Type
     
-    init(type: Type) {
+    private init(type: Type) {
         self.type = type
     }
     

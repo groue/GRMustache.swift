@@ -6,13 +6,11 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
-class VariableTag: MustacheTag, TemplateASTNode {
+class VariableTag: MustacheExpressionTag, TemplateASTNode {
     let expression: Expression
     let contentType: ContentType
     let escapesHTML: Bool
-    var type: MustacheTagType { return .Variable }
+    var type: TagType { return .Variable }
     let innerTemplateString = ""
     let inverted = true
     

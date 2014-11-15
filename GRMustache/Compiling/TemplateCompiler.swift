@@ -6,14 +6,12 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class TemplateCompiler: TemplateTokenConsumer {
     private var state: CompilerState
-    let repository: MustacheTemplateRepository
-    let templateID: TemplateID?
+    private let repository: TemplateRepository
+    private let templateID: TemplateID?
     
-    init(contentType: ContentType, repository: MustacheTemplateRepository, templateID: TemplateID?) {
+    init(contentType: ContentType, repository: TemplateRepository, templateID: TemplateID?) {
         self.state = .Compiling(CompilationState(contentType: contentType))
         self.repository = repository
         self.templateID = templateID
@@ -399,7 +397,7 @@ class TemplateCompiler: TemplateTokenConsumer {
     
     // MARK: - Private
     
-    class CompilationState {
+    private class CompilationState {
         var currentScope: Scope {
             return scopeStack[scopeStack.endIndex - 1]
         }
@@ -434,12 +432,12 @@ class TemplateCompiler: TemplateTokenConsumer {
         private var scopeStack: [Scope]
     }
     
-    enum CompilerState {
+    private enum CompilerState {
         case Compiling(CompilationState)
         case Error(NSError)
     }
     
-    class Scope {
+    private class Scope {
         let type: Type
         var templateASTNodes: [TemplateASTNode]
         
@@ -461,7 +459,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
+    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(inheritableSectionName) == 0 {
@@ -480,7 +478,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         return inheritableSectionName
     }
     
-    func partialNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
+    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(partialName) == 0 {
@@ -499,7 +497,7 @@ class TemplateCompiler: TemplateTokenConsumer {
         return partialName
     }
     
-    func parseErrorAtToken(token: TemplateToken, description: String) -> NSError {
+    private func parseErrorAtToken(token: TemplateToken, description: String) -> NSError {
         let userInfo = [NSLocalizedDescriptionKey: "Parse error at line \(token.lineNumber): \(description)"]
         return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: userInfo)
     }

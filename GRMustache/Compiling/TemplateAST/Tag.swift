@@ -1,5 +1,5 @@
 //
-//  MustacheTag.swift
+//  Tag.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 26/10/2014.
@@ -8,16 +8,19 @@
 
 import Foundation
 
-enum MustacheTagType {
+public enum TagType {
     case Variable
     case Section
 }
 
-protocol MustacheTag {
-    var expression: Expression { get }
-    var type: MustacheTagType { get }
+public protocol Tag {
+    var type: TagType { get }
     var innerTemplateString: String { get }
     var inverted: Bool { get } // this should be protected
     
     func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
+}
+
+protocol MustacheExpressionTag: Tag {
+    var expression: Expression { get }
 }

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 class ScopedExpression: Expression {
     let baseExpression: Expression
     let identifier: String

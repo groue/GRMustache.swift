@@ -1,5 +1,5 @@
 //
-//  MustacheConfigurationExtendBaseContextTests.swift
+//  ConfigurationExtendBaseContextTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 05/11/2014.
@@ -7,20 +7,21 @@
 //
 
 import XCTest
+import GRMustache
 
-class MustacheConfigurationExtendBaseContextTests: XCTestCase {
+class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
-        var configuration = MustacheConfiguration()
-        configuration.extendBaseContextWithValue(MustacheValue(["name": "Arthur"]))
-        let repository = MustacheTemplateRepository()
+        var configuration = Configuration()
+        configuration.extendBaseContextWithValue(Value(["name": "Arthur"]))
+        let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
         
-        var rendering = template.render(MustacheValue())!
+        var rendering = template.render(Value())!
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(MustacheValue(["name": "Bobby"]))!
+        rendering = template.render(Value(["name": "Bobby"]))!
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -29,19 +30,19 @@ class MustacheConfigurationExtendBaseContextTests: XCTestCase {
     }
     
     func testConfigurationExtendBaseContextWithTagObserver() {
-        class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: MustacheTag, willRenderValue value: MustacheValue) -> MustacheValue {
-                return MustacheValue("delegate")
+        class TestedTagObserver: TagObserver {
+            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+                return Value("delegate")
             }
-            func mustacheTag(tag: MustacheTag, didRender rendering: String?, forValue: MustacheValue) {
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
             }
         }
-        var configuration = MustacheConfiguration()
+        var configuration = Configuration()
         configuration.extendBaseContextWithTagObserver(TestedTagObserver())
-        let repository = MustacheTemplateRepository()
+        let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
-        let rendering = template.render(MustacheValue())!
+        let rendering = template.render(Value())!
         XCTAssertEqual(rendering, "delegate")
     }
 }

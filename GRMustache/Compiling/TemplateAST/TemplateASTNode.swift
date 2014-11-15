@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 protocol TemplateASTNode: class {
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode

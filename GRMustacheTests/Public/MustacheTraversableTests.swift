@@ -1,5 +1,5 @@
 //
-//  MustacheTraversableTests.swift
+//  TraversableTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 14/11/2014.
@@ -7,22 +7,23 @@
 //
 
 import XCTest
+import GRMustache
 
-class MustacheTraversableTests: XCTestCase {
+class TraversableTests: XCTestCase {
  
-    func testMustacheTraversable() {
-        class T: MustacheTraversable {
-            func valueForMustacheIdentifier(identifier: String) -> MustacheValue? {
+    func testTraversable() {
+        class T: Traversable {
+            func valueForMustacheIdentifier(identifier: String) -> Value? {
                 if identifier == "self" {
-                    return MustacheValue(self)
+                    return Value(self)
                 } else {
-                    return MustacheValue(identifier)
+                    return Value(identifier)
                 }
             }
         }
         
-        let template = MustacheTemplate(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(MustacheValue(T()))!
+        let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
+        let rendering = template.render(Value(T()))!
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

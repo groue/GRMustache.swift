@@ -6,10 +6,8 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
+public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
 
-let GRMustacheErrorDomain = "GRMustacheErrorDomain"
-
-let GRMustacheErrorCodeParseError = 0
-let GRMustacheErrorCodeTemplateNotFound = 1
-let GRMustacheErrorCodeRenderingError = 2
+public let GRMustacheErrorCodeParseError = 0
+public let GRMustacheErrorCodeTemplateNotFound = 1
+public let GRMustacheErrorCodeRenderingError = 2

@@ -6,8 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-import Foundation
-
 protocol TemplateASTVisitor {
     func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool
     func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool
