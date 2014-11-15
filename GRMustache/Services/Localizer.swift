@@ -23,7 +23,7 @@ public class Localizer: Filter, TagObserver {
     }
     
     public func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
-        if let string = value.string() {
+        if let string = value.toString() {
             if let localizedString = localizedStringForKey(string) {
                 return Value(localizedString)
             } else {

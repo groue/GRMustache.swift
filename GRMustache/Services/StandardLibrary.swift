@@ -32,7 +32,7 @@ class StandardLibrary: Traversable {
         items["isBlank"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
             if let int: Int = value.object() {
                 return Value(false)
-            } else if let double: Double = value.double() {
+            } else if let double: Double = value.object() {
                 return Value(false)
             } else if let string: String = value.object() {
                 return Value(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
@@ -44,7 +44,7 @@ class StandardLibrary: Traversable {
         items["isEmpty"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
             if let int: Int = value.object() {
                 return Value(false)
-            } else if let double: Double = value.double() {
+            } else if let double: Double = value.object() {
                 return Value(false)
             } else {
                 return Value(!value.mustacheBool)
