@@ -143,6 +143,7 @@ class GRMustacheTests: XCTestCase {
 
         // A single protocol that is wrapped in a Cluster
         struct CustomValue1: Traversable {
+            let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
@@ -150,6 +151,7 @@ class GRMustacheTests: XCTestCase {
         
         // Two protocols that are wrapped in a Cluster
         struct CustomValue2: Traversable, Renderable {
+            let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
@@ -160,11 +162,16 @@ class GRMustacheTests: XCTestCase {
         
         // A cluster
         struct CustomValue3: Cluster {
+            let name: String
             let mustacheBool = true
             var mustacheTraversable: Traversable? = nil
             let mustacheFilter: Filter? = nil
             let mustacheTagObserver: TagObserver? = nil
             let mustacheRenderable: Renderable? = nil
+            
+            init(name: String) {
+                self.name = name
+            }
 
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -173,31 +180,41 @@ class GRMustacheTests: XCTestCase {
         
         // A cluster that wraps itself
         struct CustomValue4: Cluster, Traversable {
+            let name: String
             let mustacheBool = true
             var mustacheTraversable: Traversable? { return self }
             let mustacheFilter: Filter? = nil
             let mustacheTagObserver: TagObserver? = nil
             let mustacheRenderable: Renderable? = nil
             
+            init(name: String) {
+                self.name = name
+            }
+            
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
         }
         
-        let custom1 = CustomValue1()
-        let custom2 = CustomValue2()
-        let custom3 = CustomValue3()
-        let custom4 = CustomValue4()
+        let custom1 = CustomValue1(name: "custom1")
+        let custom2 = CustomValue2(name: "custom2")
+        let custom3 = CustomValue3(name: "custom3")
+        let custom4 = CustomValue4(name: "custom4")
+        
         let value1: Value = Value(custom1)
         let value2: Value = Value(custom2)
         let value3: Value = Value(custom3)
         let value4: Value = Value(custom4)
         
-        // The test lies in the fact that those lines compile:
-        let extractedCustom1: CustomValue1? = value1.object()
-        let extractedCustom2: CustomValue2? = value2.object()
-        let extractedCustom3: CustomValue3? = value3.object()
-        let extractedCustom4: CustomValue4? = value4.object()
+        let extractedCustom1: CustomValue1 = value1.object()!
+        let extractedCustom2: CustomValue2 = value2.object()!
+        let extractedCustom3: CustomValue3 = value3.object()!
+        let extractedCustom4: CustomValue4 = value4.object()!
+        
+        XCTAssertEqual(extractedCustom1.name, "custom1")
+        XCTAssertEqual(extractedCustom2.name, "custom2")
+        XCTAssertEqual(extractedCustom3.name, "custom3")
+        XCTAssertEqual(extractedCustom4.name, "custom4")
     }
     
     func testCustomValueFilter() {
@@ -205,6 +222,7 @@ class GRMustacheTests: XCTestCase {
         
         // A single protocol that is wrapped in a Cluster
         struct CustomValue1: Traversable {
+            let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
@@ -212,6 +230,7 @@ class GRMustacheTests: XCTestCase {
         
         // Two protocols that are wrapped in a Cluster
         struct CustomValue2: Traversable, Renderable {
+            let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
@@ -222,11 +241,16 @@ class GRMustacheTests: XCTestCase {
         
         // A cluster
         struct CustomValue3: Cluster {
+            let name: String
             let mustacheBool = true
             var mustacheTraversable: Traversable? = nil
             let mustacheFilter: Filter? = nil
             let mustacheTagObserver: TagObserver? = nil
             let mustacheRenderable: Renderable? = nil
+            
+            init(name: String) {
+                self.name = name
+            }
             
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -235,11 +259,16 @@ class GRMustacheTests: XCTestCase {
         
         // A cluster that wraps itself
         struct CustomValue4: Cluster, Traversable {
+            let name: String
             let mustacheBool = true
             var mustacheTraversable: Traversable? { return self }
             let mustacheFilter: Filter? = nil
             let mustacheTagObserver: TagObserver? = nil
             let mustacheRenderable: Renderable? = nil
+            
+            init(name: String) {
+                self.name = name
+            }
             
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -247,32 +276,32 @@ class GRMustacheTests: XCTestCase {
         }
         
         let filter1 = { (value: CustomValue1?) -> (Value?) in
-            if value != nil {
-                return Value("custom1")
+            if let value = value {
+                return Value(value.name)
             } else {
                 return Value("other")
             }
         }
 
         let filter2 = { (value: CustomValue2?) -> (Value?) in
-            if value != nil {
-                return Value("custom2")
+            if let value = value {
+                return Value(value.name)
             } else {
                 return Value("other")
             }
         }
 
         let filter3 = { (value: CustomValue3?) -> (Value?) in
-            if value != nil {
-                return Value("custom3")
+            if let value = value {
+                return Value(value.name)
             } else {
                 return Value("other")
             }
         }
         
         let filter4 = { (value: CustomValue4?) -> (Value?) in
-            if value != nil {
-                return Value("custom4")
+            if let value = value {
+                return Value(value.name)
             } else {
                 return Value("other")
             }
@@ -282,7 +311,7 @@ class GRMustacheTests: XCTestCase {
         
         let value1 = Value([
             "string": Value("success"),
-            "custom": Value(CustomValue1()),
+            "custom": Value(CustomValue1(name: "custom1")),
             "f": Value(filter1)
             ])
         let rendering1 = template.render(value1)!
@@ -290,7 +319,7 @@ class GRMustacheTests: XCTestCase {
         
         let value2 = Value([
             "string": Value("success"),
-            "custom": Value(CustomValue2()),
+            "custom": Value(CustomValue2(name: "custom2")),
             "f": Value(filter2)
             ])
         let rendering2 = template.render(value2)!
@@ -298,7 +327,7 @@ class GRMustacheTests: XCTestCase {
         
         let value3 = Value([
             "string": Value("success"),
-            "custom": Value(CustomValue3()),
+            "custom": Value(CustomValue3(name: "custom3")),
             "f": Value(filter3)
             ])
         let rendering3 = template.render(value3)!
@@ -306,7 +335,7 @@ class GRMustacheTests: XCTestCase {
         
         let value4 = Value([
             "string": Value("success"),
-            "custom": Value(CustomValue4()),
+            "custom": Value(CustomValue4(name: "custom4")),
             "f": Value(filter4)
             ])
         let rendering4 = template.render(value4)!
