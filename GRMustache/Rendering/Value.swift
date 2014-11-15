@@ -6,7 +6,14 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public protocol Cluster {
+
+// =============================================================================
+// MARK: - Facets
+
+public protocol Wrappable {
+}
+
+public protocol Cluster: Wrappable {
     
     /**
     Controls whether the object should trigger or avoid the rendering
@@ -52,42 +59,29 @@ public protocol Cluster {
     var mustacheRenderable: Renderable? { get }
 }
 
-public protocol Filter {
+public protocol Filter: Wrappable {
     func mustacheFilterByApplyingArgument(argument: Value) -> Filter?
     func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value?
 }
 
-public struct RenderingInfo {
-    public let context: Context
-    let enumerationItem: Bool
-    
-    public func renderingInfoByExtendingContextWithValue(value: Value) -> RenderingInfo {
-        return RenderingInfo(context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
-    }
-    
-    public func renderingInfoByExtendingContextWithTagObserver(tagObserver: TagObserver) -> RenderingInfo {
-        return RenderingInfo(context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
-    }
-    
-    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
-        return RenderingInfo(context: context, enumerationItem: true)
-    }
-}
-
-public protocol Renderable {
+public protocol Renderable: Wrappable {
     func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
 
-public protocol TagObserver {
+public protocol TagObserver: Wrappable {
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value
     
     // If rendering is nil then an error has occurred.
     func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value)
 }
 
-public protocol Traversable {
+public protocol Traversable: Wrappable {
     func valueForMustacheIdentifier(identifier: String) -> Value?
 }
+
+
+// =============================================================================
+// MARK: - Value
 
 public class Value {
     private enum Type {
@@ -203,6 +197,10 @@ public class Value {
         self.init(type: .ArrayValue(array))
     }
 
+    private class func wrappableFromCluster(cluster: Cluster?) -> Wrappable? {
+        return cluster?.mustacheFilter ?? cluster?.mustacheRenderable ?? cluster?.mustacheTagObserver ?? cluster?.mustacheTraversable ?? cluster
+    }
+    
 }
 
 
@@ -240,309 +238,9 @@ extension Value {
         }))
     }
     
-    public convenience init<T: Cluster>(_ block: (T?) -> (Value?)) {
+    public convenience init<T: Wrappable>(_ block: (T?) -> (Value?)) {
         self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Renderable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheRenderable) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheTagObserver) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheTraversable) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, Renderable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Renderable, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheRenderable) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Renderable, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheRenderable) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheTagObserver) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, Renderable, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, Renderable, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Renderable, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheRenderable) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Filter, Renderable, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = ((value.object() as Cluster?)?.mustacheFilter) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Renderable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, Renderable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Renderable, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Renderable, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, Renderable, TagObserver>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, Renderable, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Renderable, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: protocol<Cluster, Filter, Renderable, TagObserver, Traversable>>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = (value.object() as Cluster?) as? T {
+            if let object = Value.wrappableFromCluster(value.object() as Cluster?) as? T {
                 return block(object)
             } else {
                 return block(nil)
@@ -871,15 +569,6 @@ extension Value {
         }
     }
     
-    public func object<T: Cluster>() -> T? {
-        switch type {
-        case .ClusterValue(let cluster):
-            return cluster as? T
-        default:
-            return nil
-        }
-    }
-    
     public func object() -> [String: Value]? {
         switch type {
         case .DictionaryValue(let dictionary):
@@ -959,124 +648,8 @@ extension Value {
         return (object() as Cluster?)?.mustacheTraversable
     }
     
-    public func object<T: protocol<Filter>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Renderable>>() -> T? {
-        return (object() as Cluster?)?.mustacheRenderable as? T
-    }
-    
-    public func object<T: protocol<TagObserver>>() -> T? {
-        return (object() as Cluster?)?.mustacheTagObserver as? T
-    }
-    
-    public func object<T: protocol<Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheTraversable as? T
-    }
-    
-    public func object<T: protocol<Filter, Renderable>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Filter, TagObserver>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Filter, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Renderable, TagObserver>>() -> T? {
-        return (object() as Cluster?)?.mustacheRenderable as? T
-    }
-    
-    public func object<T: protocol<Renderable, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheRenderable as? T
-    }
-    
-    public func object<T: protocol<TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheTagObserver as? T
-    }
-    
-    public func object<T: protocol<Filter, Renderable, TagObserver>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Filter, Renderable, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Filter, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Renderable, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheRenderable as? T
-    }
-    
-    public func object<T: protocol<Filter, Renderable, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?)?.mustacheFilter as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Renderable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, TagObserver>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, Renderable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, TagObserver>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Renderable, TagObserver>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Renderable, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, Renderable, TagObserver>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, Renderable, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Renderable, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
-    }
-    
-    public func object<T: protocol<Cluster, Filter, Renderable, TagObserver, Traversable>>() -> T? {
-        return (object() as Cluster?) as? T
+    public func object<T: Wrappable>() -> T? {
+        return Value.wrappableFromCluster(object() as Cluster?) as? T
     }
     
 }
