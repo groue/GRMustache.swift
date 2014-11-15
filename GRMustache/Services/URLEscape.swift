@@ -29,7 +29,7 @@ class URLEscape: Renderable, Filter, TagObserver {
     }
     
     func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
-        if let string = value.string() {
+        if let string = value.toString() {
             return Value(escapeURL(string))
         } else {
             return Value()
@@ -42,7 +42,7 @@ class URLEscape: Renderable, Filter, TagObserver {
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         switch tag.type {
         case .Variable:
-            if let string = value.string() {
+            if let string = value.toString() {
                 return Value(escapeURL(string))
             } else {
                 return value

@@ -250,7 +250,7 @@ extension Value {
     
     public convenience init(_ block: (Int?) -> (Value?)) {
         self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let int = value.int() {
+            if let int = value.toInt() {
                 return block(int)
             } else {
                 return block(nil)
@@ -260,7 +260,7 @@ extension Value {
     
     public convenience init(_ block: (Double?) -> (Value?)) {
         self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let double = value.double() {
+            if let double = value.toDouble() {
                 return block(double)
             } else {
                 return block(nil)
@@ -270,7 +270,7 @@ extension Value {
     
     public convenience init(_ block: (String?) -> (Value?)) {
         self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let string = value.string() {
+            if let string = value.toString() {
                 return block(string)
             } else {
                 return block(nil)
@@ -587,7 +587,7 @@ extension Value {
         }
     }
     
-    public func int() -> Int? {
+    public func toInt() -> Int? {
         if let int: Int = object() {
             return int
         } else if let double: Double = object() {
@@ -597,7 +597,7 @@ extension Value {
         }
     }
     
-    public func double() -> Double? {
+    public func toDouble() -> Double? {
         if let int: Int = object() {
             return Double(int)
         } else if let double: Double = object() {
@@ -607,7 +607,7 @@ extension Value {
         }
     }
     
-    public func string() -> String? {
+    public func toString() -> String? {
         switch type {
         case .None:
             return nil
