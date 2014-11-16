@@ -86,6 +86,77 @@ class FilterTests: XCTestCase {
         let template = Template(string:"{{ math.double(x) }}")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "2")
+    }
+    
+    func testFilterCanReturnFilter() {
+        let value = Value([
+            "prefix": Value("prefix"),
+            "value": Value("value"),
+            "f": Value({ (string1: String?) -> (Value) in
+                return Value({ (string2: String?) -> (Value) in
+                    return Value("\(string1!)\(string2!)")
+                })
+            })
+            ])
+        let template = Template(string:"{{f(prefix)(value)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "prefixvalue")
+    }
+    
+    func testImplicitIteratorCanReturnFilter() {
+        let value = Value({ (_: Value) -> (Value) in
+            return Value("filter")
+        })
+        let template = Template(string:"{{.(a)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "filter")
+    }
+    
+    func testMissingFilterError() {
+        let value = Value([
+            "name": Value("Name"),
+            "replace": Value({ (_: Value) -> (Value) in
+                return Value("replace")
+            })
+        ])
         
+        var template = Template(string:"<{{missing(missing)}}>")!
+        var error: NSError?
+        var rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        template = Template(string:"<{{missing(name)}}>")!
+        rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        template = Template(string:"<{{replace(missing(name))}}>")!
+        rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        template = Template(string:"<{{missing(replace(name))}}>")!
+        rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+    }
+    
+    func testNotAFilterError() {
+        let value = Value([
+            "name": "Name",
+            "filter": "filter"
+            ])
+        
+        var template = Template(string:"<{{filter(name)}}>")!
+        var error: NSError?
+        var rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
 }

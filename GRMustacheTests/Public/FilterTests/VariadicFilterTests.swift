@@ -102,4 +102,22 @@ class VariadicFilterTests: XCTestCase {
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "nil")
     }
+    
+    func testImplicitIteratorCanBeVariadicFilterArgument() {
+        let value = Value([
+            "f": Value({ (arguments: [Value]) -> (Value) in
+                var result = ""
+                for argument in arguments {
+                    if let dictionary: [String: Value] = argument.object() {
+                        result += String(countElements(dictionary))
+                    }
+                }
+                return Value(result)
+            }),
+            "foo": Value(["a": "a", "b": "b", "c": "c"])
+            ])
+        let template = Template(string:"{{f(foo,.)}} {{f(.,foo)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "32 23")
+    }
 }
