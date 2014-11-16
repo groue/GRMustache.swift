@@ -61,4 +61,19 @@ class FilterTests: XCTestCase {
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "<> <rootName>")
     }
+    
+    func testFilterArgumentsDoNotEnterSectionContextStack() {
+        // TODO: avoid this `as [String: Value]` cast
+        let value = Value([
+            "test": Value("success"),
+            "filtered": Value(["test": "failure"]),
+            "filter": Value({ (_: Value) -> (Value) in
+                return Value(true)
+            })
+            ] as [String: Value])
+        let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<success instead of failure>")
+    }
+    
 }

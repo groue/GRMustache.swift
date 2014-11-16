@@ -285,7 +285,7 @@ class ExpressionParser {
         case .Error(let description):
             outEmpty = false
             if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression: \(description)"])
+                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
             }
             return nil
         case .Valid(expression: let validExpression):
