@@ -126,6 +126,8 @@ class GRMustacheTests: XCTestCase {
         let value = Value(["cats": ["Kitty", "Pussy", "Melba"]])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "I have 3 cats.")
+        
+        Configuration.defaultConfiguration = Configuration()
     }
     
     func testReadmeExample3() {
