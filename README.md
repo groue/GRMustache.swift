@@ -78,20 +78,16 @@ Forget the strict minimalism of the genuine Mustache language: GRMustache ships 
 
 let pluralizeFilter = { (count: Int?) -> (Value) in
     
-    // This filter returns an object that performs custom rendering:
+    // Return a block that performs custom rendering:
     
     return Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
         
-        // Fetch the section inner content...
-        
-        let string = tag.innerTemplateString
-        
-        // ... and pluralize it if needed.
+        // Pluralize the section inner content if needed:
         
         if count! > 1 {
-            return string + "s"  // naive
+            return tag.innerTemplateString + "s"  // naive
         } else {
-            return string
+            return tag.innerTemplateString
         }
     })
 }
