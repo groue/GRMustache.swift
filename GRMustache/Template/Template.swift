@@ -78,14 +78,6 @@ public class Template: Renderable {
         return render(renderingInfo.context, contentType: outContentType, error: outError)
     }
     
-    public class func render(value: Value, fromString string: String, error outError: NSErrorPointer = nil) -> String? {
-        if let template = Template(string: string, error: outError) {
-            return template.render(value, error: outError)
-        } else {
-            return nil
-        }
-    }
-    
     
     // MARK: - Renderable
     

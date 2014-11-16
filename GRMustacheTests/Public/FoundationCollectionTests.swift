@@ -40,72 +40,72 @@ class FoundationCollectionTests: XCTestCase {
     }
     
     func testNSArrayIsIterated() {
-        let rendering = Template.render(arrayValue, fromString: "{{#collection}}{{key}}{{/collection}}")!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(arrayValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSArrayIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template.render(arrayValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}")!
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(arrayValue)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSArrayCount() {
-        let rendering = Template.render(arrayValue, fromString: "{{collection.count}}")!
+        let rendering = Template(string: "{{collection.count}}")!.render(arrayValue)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSArrayFirstObject() {
-        let rendering = Template.render(arrayValue, fromString: "{{collection.firstObject.key}}")!
+        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(arrayValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSArrayLastObject() {
-        let rendering = Template.render(arrayValue, fromString: "{{collection.lastObject.key}}")!
+        let rendering = Template(string: "{{collection.lastObject.key}}")!.render(arrayValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSSetIsIterated() {
-        let rendering = Template.render(setValue, fromString: "{{#collection}}{{key}}{{/collection}}")!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(setValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template.render(setValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}")!
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(setValue)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSSetCount() {
-        let rendering = Template.render(setValue, fromString: "{{collection.count}}")!
+        let rendering = Template(string: "{{collection.count}}")!.render(setValue)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSSetAnyObject() {
-        let rendering = Template.render(setValue, fromString: "{{collection.anyObject.key}}")!
+        let rendering = Template(string: "{{collection.anyObject.key}}")!.render(setValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetIsIterated() {
-        let rendering = Template.render(orderedSetValue, fromString: "{{#collection}}{{key}}{{/collection}}")!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(orderedSetValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template.render(orderedSetValue, fromString: "{{#collection.key}}{{.}}{{/collection.key}}")!
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(orderedSetValue)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSOrderedSetCount() {
-        let rendering = Template.render(orderedSetValue, fromString: "{{collection.count}}")!
+        let rendering = Template(string: "{{collection.count}}")!.render(orderedSetValue)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSOrderedSetFirstObject() {
-        let rendering = Template.render(orderedSetValue, fromString: "{{collection.firstObject.key}}")!
+        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(orderedSetValue)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetLastObject() {
-        let rendering = Template.render(orderedSetValue, fromString: "{{collection.lastObject.key}}")!
+        let rendering = Template(string: "{{collection.lastObject.key}}")!.render(orderedSetValue)!
         XCTAssertEqual(rendering, "value")
     }
     

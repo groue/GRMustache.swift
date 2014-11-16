@@ -134,7 +134,7 @@ class GRMustacheTests: XCTestCase {
     
     func testReadmeExample3() {
         let user = ReadmeExample3User(name: "Arthur")
-        let rendering = Template.render(Value(user), fromString:"Hello {{name}}!")!
+        let rendering = Template(string:"Hello {{name}}!")!.render(Value(user))!
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     

@@ -57,7 +57,7 @@ extension User: Traversable {
 
 let templateString = "Hello {{name}}!"
 let user = User(name: "Arthur")
-let rendering = Template.render(Value(user), fromString:templateString)!
+let rendering = Template(string: templateString)!.render(Value(user))!
 ```
 
 

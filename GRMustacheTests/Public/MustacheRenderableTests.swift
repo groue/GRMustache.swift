@@ -15,7 +15,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{.}}")!
+        let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -23,7 +23,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "---"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{#.}}{{/.}}")!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -32,7 +32,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .HTML
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{.}}")!
+        let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -41,7 +41,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .HTML
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{{.}}}")!
+        let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -50,7 +50,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .Text
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{.}}")!
+        let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -59,7 +59,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .Text
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{{.}}}")!
+        let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -67,7 +67,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{.}}")!
+        let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -75,7 +75,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{{.}}}")!
+        let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -84,7 +84,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .HTML
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{#.}}{{/.}}")!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -93,7 +93,7 @@ class RenderableTests: XCTestCase {
             outContentType.memory = .Text
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{#.}}{{/.}}")!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -101,7 +101,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return "&"
         }
-        let rendering = Template.render(Value(renderable), fromString: "{{#.}}{{/.}}")!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -112,7 +112,7 @@ class RenderableTests: XCTestCase {
             return nil
         }
         var error: NSError?
-        let rendering = Template.render(Value(renderable), fromString: "{{.}}", error: &error)
+        let rendering = Template(string: "{{.}}")!.render(Value(renderable), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
@@ -124,7 +124,7 @@ class RenderableTests: XCTestCase {
             return nil
         }
         var error: NSError?
-        let rendering = Template.render(Value(renderable), fromString: "{{#.}}{{/.}}", error: &error)
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
@@ -133,7 +133,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return nil
         }
-        let rendering = Template.render(Value(renderable), fromString: "<{{.}}>")!
+        let rendering = Template(string: "<{{.}}>")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "<>")
     }
     
@@ -141,7 +141,7 @@ class RenderableTests: XCTestCase {
         let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
             return nil
         }
-        let rendering = Template.render(Value(renderable), fromString: "<{{#.}}{{/.}}>")!
+        let rendering = Template(string: "<{{#.}}{{/.}}>")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "<>")
     }
     
@@ -156,7 +156,7 @@ class RenderableTests: XCTestCase {
             }
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{.}}")
+        Template(string: "{{.}}")!.render(Value(renderable))
         XCTAssertEqual(variableTagDetections, 1)
     }
     
@@ -171,7 +171,7 @@ class RenderableTests: XCTestCase {
             }
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{#.}}{{/.}}")
+        Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(sectionTagDetections, 1)
     }
     
@@ -181,7 +181,7 @@ class RenderableTests: XCTestCase {
             innerTemplateString = tag.innerTemplateString
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{#.}}{{subject}}{{/.}}")
+        Template(string: "{{#.}}{{subject}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
@@ -191,7 +191,7 @@ class RenderableTests: XCTestCase {
             innerTemplateString = tag.innerTemplateString
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{^.}}{{#.}}{{subject}}{{/.}}")
+        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
 
@@ -201,7 +201,7 @@ class RenderableTests: XCTestCase {
             innerTemplateString = tag.innerTemplateString
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{.}}")
+        Template(string: "{{.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "")
     }
     
@@ -215,7 +215,7 @@ class RenderableTests: XCTestCase {
             return nil
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        Template.render(value, fromString: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}")
+        Template(string: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
         XCTAssertEqual(renderedContent!, "-=-")
         XCTAssertEqual(renderedContentType!, ContentType.HTML)
     }
@@ -230,7 +230,7 @@ class RenderableTests: XCTestCase {
             return nil
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        Template.render(value, fromString: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}")
+        Template(string: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
         XCTAssertEqual(renderedContent!, "-=-")
         XCTAssertEqual(renderedContentType!, ContentType.HTML)
     }
@@ -244,7 +244,7 @@ class RenderableTests: XCTestCase {
             renderedContentType = outContentType.memory
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{.}}")
+        Template(string: "{{.}}")!.render(Value(renderable))
         XCTAssertEqual(renderedContent!, "")
         XCTAssertEqual(renderedContentType!, ContentType.HTML)
     }
@@ -258,7 +258,7 @@ class RenderableTests: XCTestCase {
             renderedContentType = outContentType.memory
             return nil
         }
-        Template.render(Value(renderable), fromString: "{{{.}}}")
+        Template(string: "{{{.}}}")!.render(Value(renderable))
         XCTAssertEqual(renderedContent!, "")
         XCTAssertEqual(renderedContentType!, ContentType.HTML)
     }
@@ -269,7 +269,7 @@ class RenderableTests: XCTestCase {
             return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        let rendering = Template.render(value, fromString: "{{renderable}}")!
+        let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "-")
     }
     
@@ -279,7 +279,7 @@ class RenderableTests: XCTestCase {
             return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        let rendering = Template.render(value, fromString: "{{#renderable}}{{/renderable}}")!
+        let rendering = Template(string: "{{#renderable}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "-")
     }
 
@@ -293,7 +293,7 @@ class RenderableTests: XCTestCase {
             }
         }
         let value = Value(["renderable": Value(TestedRenderable())])
-        let rendering = Template.render(value, fromString: "{{renderable}}")!
+        let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "key:")
     }
     
@@ -308,7 +308,7 @@ class RenderableTests: XCTestCase {
             }
         }
         let value = Value(["renderable": Value(TestedRenderable())])
-        let rendering = Template.render(value, fromString: "{{#renderable}}key:{{key}}{{/renderable}}")!
+        let rendering = Template(string: "{{#renderable}}key:{{key}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "key:")
     }
     
@@ -319,7 +319,7 @@ class RenderableTests: XCTestCase {
             return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
-        let rendering = Template.render(value, fromString: "{{renderable}}")!
+        let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "---+++")
     }
     
@@ -330,7 +330,7 @@ class RenderableTests: XCTestCase {
             return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
-        let rendering = Template.render(value, fromString: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!
+        let rendering = Template(string: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "---+++")
     }
     
@@ -351,7 +351,7 @@ class RenderableTests: XCTestCase {
         }
         let renderable = TestedRenderable()
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        let rendering = Template.render(value, fromString: "{{subject}}{{renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!
+        let rendering = Template(string: "{{subject}}{{renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
     }
@@ -373,7 +373,7 @@ class RenderableTests: XCTestCase {
         }
         let renderable = TestedRenderable()
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
-        let rendering = Template.render(value, fromString: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!
+        let rendering = Template(string: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
     }
@@ -466,7 +466,7 @@ class RenderableTests: XCTestCase {
             return "2"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{#items}}{{/items}}")!
+        let rendering = Template(string: "{{#items}}{{/items}}")!.render(value)!
         XCTAssertEqual(rendering, "12")
     }
     
@@ -478,7 +478,7 @@ class RenderableTests: XCTestCase {
             return "2"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{items}}")!
+        let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "12")
     }
     
@@ -492,7 +492,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{items}}")!
+        let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -506,7 +506,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{{items}}}")!
+        let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -520,7 +520,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{items}}")!
+        let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
     
@@ -534,7 +534,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{{items}}}")!
+        let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -546,7 +546,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{items}}")!
+        let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
     
@@ -558,7 +558,7 @@ class RenderableTests: XCTestCase {
             return "<2>"
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template.render(value, fromString: "{{{items}}}")!
+        let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -573,7 +573,7 @@ class RenderableTests: XCTestCase {
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         var error: NSError?
-        let rendering = Template.render(value, fromString: "{{items}}", error: &error)
+        let rendering = Template(string: "{{items}}")!.render(value, error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -590,7 +590,7 @@ class RenderableTests: XCTestCase {
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         var error: NSError?
-        let rendering = Template.render(value, fromString: "{{#items}}{{/items}}", error: &error)
+        let rendering = Template(string: "{{#items}}{{/items}}")!.render(value, error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -600,7 +600,7 @@ class RenderableTests: XCTestCase {
         let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
         let template = repository.template(named: "partial")!
         let value = Value(["partial": Value(template), "subject": Value("---")])
-        let rendering = Template.render(value, fromString: "{{partial}}")!
+        let rendering = Template(string: "{{partial}}")!.render(value)!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -608,7 +608,7 @@ class RenderableTests: XCTestCase {
         let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
         let template = repository.template(named: "partial")!
         let value = Value(["partial": Value(template), "subject": Value("---")])
-        let rendering = Template.render(value, fromString: "{{partial}}")!
+        let rendering = Template(string: "{{partial}}")!.render(value)!
         XCTAssertEqual(rendering, "<--->")
     }
     
