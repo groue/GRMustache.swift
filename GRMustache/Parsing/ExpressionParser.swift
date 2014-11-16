@@ -78,7 +78,8 @@ class ExpressionParser {
                         state = .Initial
                         let filterExpression = filterExpressionStack[filterExpressionStack.endIndex - 1]
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true)
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        currentExpression = nil
                     }
                 case "{", "}", "&", "$", "#", "^", "/", "<", ">":
                     state = .Error
@@ -141,7 +142,8 @@ class ExpressionParser {
                         state = .Initial
                         let filterExpression = filterExpressionStack[filterExpressionStack.endIndex - 1]
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true)
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        currentExpression = nil
                     }
                 default:
                     break
@@ -189,7 +191,8 @@ class ExpressionParser {
                         state = .Initial
                         let filterExpression = filterExpressionStack[filterExpressionStack.endIndex - 1]
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true)
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        currentExpression = nil
                     }
                 default:
                     state = .Error

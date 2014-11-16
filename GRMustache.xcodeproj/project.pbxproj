@@ -58,6 +58,7 @@
 		56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
 		56FC9C8D1A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C871A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift */; };
 		56FC9C8E1A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C891A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift */; };
+		56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C901A189FA70020AAF8 /* VariadicFilterTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -125,6 +126,7 @@
 		56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationExtendBaseContextTests.swift; sourceTree = "<group>"; };
 		56FC9C871A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationTagDelimitersTests.swift; sourceTree = "<group>"; };
 		56FC9C891A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextValueForMustacheExpressionTests.swift; sourceTree = "<group>"; };
+		56FC9C901A189FA70020AAF8 /* VariadicFilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariadicFilterTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -314,6 +316,7 @@
 			children = (
 				56FC9C831A17CD0C0020AAF8 /* ConfigurationTests */,
 				56FC9C881A17CD0C0020AAF8 /* ContextTests */,
+				56FC9C8F1A189F960020AAF8 /* FilterTests */,
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */,
@@ -348,6 +351,14 @@
 				56FC9C891A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift */,
 			);
 			path = ContextTests;
+			sourceTree = "<group>";
+		};
+		56FC9C8F1A189F960020AAF8 /* FilterTests */ = {
+			isa = PBXGroup;
+			children = (
+				56FC9C901A189FA70020AAF8 /* VariadicFilterTests.swift */,
+			);
+			path = FilterTests;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -505,6 +516,7 @@
 			files = (
 				56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */,
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
+				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
 				5698D0271A1626240039D564 /* MustacheTraversableTests.swift in Sources */,
 				56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,

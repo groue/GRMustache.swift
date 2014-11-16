@@ -28,7 +28,7 @@ class JavascriptEscape: Renderable, Filter, TagObserver {
         return nil
     }
     
-    func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
+    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
         if let string = value.toString() {
             return Value(escapeJavascript(string))
         } else {

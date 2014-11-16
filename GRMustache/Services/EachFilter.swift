@@ -12,7 +12,7 @@ class EachFilter: Filter {
         return nil
     }
     
-    func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
+    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
         if value.isEmpty {
             return value
         } else if let dictionary: [String: Value] = value.object() {
@@ -22,8 +22,8 @@ class EachFilter: Filter {
         } else if let set = value.object() as? NSSet {
             return transformedSet(set)
         } else {
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
             }
             return nil
         }

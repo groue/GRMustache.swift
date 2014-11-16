@@ -61,7 +61,7 @@ public protocol Cluster: Wrappable {
 
 public protocol Filter: Wrappable {
     func mustacheFilterByApplyingArgument(argument: Value) -> Filter?
-    func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value?
+    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value?
 }
 
 public protocol Renderable: Wrappable {
@@ -225,11 +225,27 @@ extension Value {
 extension Value {
     
     public convenience init(_ block: (Value, NSErrorPointer) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: block))
+        self.init(BlockFilter(block: block))
+    }
+    
+    public convenience init(_ block: (Value) -> (Value?)) {
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> (Value?) in
+            return block(value)
+        }))
+    }
+    
+    public convenience init(_ block: ([Value], NSErrorPointer) -> (Value?)) {
+        self.init(BlockVariadicFilter(arguments: [], block: block))
+    }
+    
+    public convenience init(_ block: ([Value]) -> (Value?)) {
+        self.init(BlockVariadicFilter(arguments: [], block: { (arguments: [Value], error: NSErrorPointer) -> (Value?) in
+            return block(arguments)
+        }))
     }
     
     public convenience init(_ block: (AnyObject?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
             if let object:AnyObject = value.object() {
                 return block(object)
             } else {
@@ -239,7 +255,7 @@ extension Value {
     }
     
     public convenience init<T: Wrappable>(_ block: (T?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
             if let object = Value.wrappableFromCluster(value.object() as Cluster?) as? T {
                 return block(object)
             } else {
@@ -249,7 +265,7 @@ extension Value {
     }
     
     public convenience init(_ block: (Int?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
             if let int = value.toInt() {
                 return block(int)
             } else {
@@ -259,7 +275,7 @@ extension Value {
     }
     
     public convenience init(_ block: (Double?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
             if let double = value.toDouble() {
                 return block(double)
             } else {
@@ -269,7 +285,7 @@ extension Value {
     }
     
     public convenience init(_ block: (String?) -> (Value?)) {
-        self.init(MustacheBlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
             if let string = value.toString() {
                 return block(string)
             } else {
@@ -278,15 +294,28 @@ extension Value {
         }))
     }
     
-    private struct MustacheBlockFilter: Filter {
+    private struct BlockFilter: Filter {
         let block: (Value, NSErrorPointer) -> (Value?)
         
         func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
             return nil
         }
         
-        func transformedMustacheValue(value: Value, error outError: NSErrorPointer) -> Value? {
-            return block(value, outError)
+        func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
+            return block(value, error)
+        }
+    }
+    
+    private struct BlockVariadicFilter: Filter {
+        let arguments: [Value]
+        let block: ([Value], NSErrorPointer) -> (Value?)
+        
+        func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+            return BlockVariadicFilter(arguments: arguments + [argument], block: block)
+        }
+        
+        func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
+            return block(arguments + [value], error)
         }
     }
 }
@@ -298,10 +327,10 @@ extension Value {
 extension Value {
     
     public convenience init(_ block: (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?)) {
-        self.init(MustacheBlockRenderable(block: block))
+        self.init(BlockRenderable(block: block))
     }
     
-    private struct MustacheBlockRenderable: Renderable {
+    private struct BlockRenderable: Renderable {
         let block: (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?)
         
         func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
