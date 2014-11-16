@@ -76,4 +76,16 @@ class FilterTests: XCTestCase {
         XCTAssertEqual(rendering, "<success instead of failure>")
     }
     
+    func testFilterNameSpace() {
+        let value = Value([
+            "x": Value(1),
+            "math": Value(["double": Value({ (x: Int?) -> (Value) in
+                return Value((x ?? 0) * 2)
+            })])
+            ])
+        let template = Template(string:"{{ math.double(x) }}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "2")
+        
+    }
 }
