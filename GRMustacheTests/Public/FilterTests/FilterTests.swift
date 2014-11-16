@@ -25,4 +25,40 @@ class FilterTests: XCTestCase {
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "<Name> <prefixName> <NAME> <prefixNAME> <PREFIXNAME>")
     }
+    
+    func testScopedValueAreExtractedOutOfAFilterExpression() {
+        let template = Template(string:"<{{f(object).name}}> {{#f(object)}}<{{name}}>{{/f(object)}}")!
+        var value: Value
+        var rendering: String
+        
+        value = Value([
+            "object": Value(["name": "objectName"]),
+            "name": Value("rootName"),
+            "f": Value({ (value: Value) -> (Value) in
+                return value
+            })
+            ])
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<objectName> <objectName>")
+        
+        value = Value([
+            "object": Value(["name": "objectName"]),
+            "name": Value("rootName"),
+            "f": Value({ (_: Value) -> (Value) in
+                return Value(["name": "filterName"])
+            })
+            ])
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<filterName> <filterName>")
+        
+        value = Value([
+            "object": Value(["name": "objectName"]),
+            "name": Value("rootName"),
+            "f": Value({ (_: Value) -> (Value) in
+                return Value(true)
+            })
+            ])
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<> <rootName>")
+    }
 }
