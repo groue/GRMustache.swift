@@ -54,59 +54,52 @@ class VariadicFilterTests: XCTestCase {
         XCTAssertEqual(rendering, "bar")
     }
     
-//    - (void)testVariadicFiltersCanBeRootOfScopedExpression
-//    {
-//    GRMustacheFilter *filter = [GRMustacheFilter variadicFilterWithBlock:^id(NSArray *arguments) {
-//    return @{@"foo": @"bar"};
-//    }];
-//    
-//    id data = @{ @"f": filter };
-//    NSString *rendering = [[GRMustacheTemplate templateFromString:@"{{f(a,b).foo}}" error:NULL] renderObject:data error:NULL];
-//    XCTAssertEqualObjects(rendering, @"bar", @"");
-//    }
-//    
-//    - (void)testVariadicFiltersCanBeUsedForObjectSections
-//    {
-//    GRMustacheFilter *filter = [GRMustacheFilter variadicFilterWithBlock:^id(NSArray *arguments) {
-//    return @{@"foo": @"bar"};
-//    }];
-//    
-//    id data = @{ @"f": filter };
-//    NSString *rendering = [[GRMustacheTemplate templateFromString:@"{{#f(a,b)}}{{foo}}{{/}}" error:NULL] renderObject:data error:NULL];
-//    XCTAssertEqualObjects(rendering, @"bar", @"");
-//    }
-//    
-//    - (void)testVariadicFiltersCanBeUsedForEnumerableSections
-//    {
-//    GRMustacheFilter *filter = [GRMustacheFilter variadicFilterWithBlock:^id(NSArray *arguments) {
-//    return arguments;
-//    }];
-//    
-//    id data = @{ @"a": @"a", @"b": @"b", @"c": @"c", @"f": filter };
-//    NSString *rendering = [[GRMustacheTemplate templateFromString:@"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}" error:NULL] renderObject:data error:NULL];
-//    XCTAssertEqualObjects(rendering, @"ab abc", @"");
-//    }
-//    
-//    - (void)testVariadicFiltersCanBeUsedForBooleanSections
-//    {
-//    GRMustacheFilter *identityFilter = [GRMustacheFilter variadicFilterWithBlock:^id(NSArray *arguments) {
-//    return [arguments objectAtIndex:0];
-//    }];
-//    
-//    id data = @{ @"yes": @YES, @"no": @NO, @"f": identityFilter };
-//    NSString *rendering = [[GRMustacheTemplate templateFromString:@"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}" error:NULL] renderObject:data error:NULL];
-//    XCTAssertEqualObjects(rendering, @"YES NO", @"");
-//    }
-//    
-//    - (void)testVariadicFiltersThatReturnNilCanBeUsedInBooleanSections
-//    {
-//    GRMustacheFilter *nilFilter = [GRMustacheFilter variadicFilterWithBlock:^id(NSArray *arguments) {
-//    return nil;
-//    }];
-//    
-//    id data = @{ @"f": nilFilter };
-//    NSString *rendering = [[GRMustacheTemplate templateFromString:@"{{^f(x)}}nil{{/}}" error:NULL] renderObject:data error:NULL];
-//    XCTAssertEqualObjects(rendering, @"nil", @"");
-//    }
-
+    func testVariadicFilterCanBeUsedForObjectSections() {
+        let filter = Value({ (args: [Value]) -> (Value) in
+            return Value(["foo": "bar"])
+        })
+        let value = Value(["f": filter])
+        let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "bar")
+    }
+    
+    func testVariadicFilterCanBeUsedForEnumerableSections() {
+        let filter = Value({ (args: [Value]) -> (Value) in
+            return Value(args)
+        })
+        let value = Value([
+            "a": Value("a"),
+            "b": Value("b"),
+            "c": Value("c"),
+            "f": filter
+            ] as [String:Value])
+        let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "ab abc")
+    }
+    
+    func testVariadicFilterCanBeUsedForBooleanSections() {
+        let filter = Value({ (args: [Value]) -> (Value?) in
+            return args.first
+        })
+        let value = Value([
+            "yes": Value(true),
+            "no": Value(false),
+            "f": filter
+            ] as [String:Value])
+        let template = Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "YES NO")
+    }
+    
+    func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
+        let filter = Value({ (args: [Value]) -> (Value?) in
+            return nil
+        })
+        let value = Value(["f": filter])
+        let template = Template(string:"{{^f(x)}}nil{{/}}")!
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "nil")
+    }
 }

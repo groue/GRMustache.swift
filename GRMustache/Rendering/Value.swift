@@ -112,6 +112,11 @@ public class Value {
         self.init(type: .None)
     }
     
+    // TODO: find a way to prevent the Value(Value) construct
+    public convenience init!(_ value: Value) {
+        self.init(type: value.type)
+    }
+    
     public convenience init(_ object: AnyObject?) {
         if let object: AnyObject = object {
             if object is NSNull {
@@ -184,7 +189,7 @@ public class Value {
             self.init()
         }
     }
-
+    
     public convenience init(_ cluster: Cluster) {
         self.init(type: .ClusterValue(cluster))
     }
@@ -551,7 +556,7 @@ extension Value {
         
         var debugDescription: String {
             let object: Any = mustacheFilter ?? mustacheRenderable ?? mustacheTagObserver ?? mustacheTraversable ?? "null"
-            return "\(object)"
+            return "ClusterWrapper(\(object))"
         }
     }
 }
@@ -692,17 +697,17 @@ extension Value: DebugPrintable {
     public var debugDescription: String {
         switch type {
         case .None:
-            return "None"
+            return "Value.None"
         case .AnyObjectValue(let object):
-            return "AnyObject(\(object))"
+            return "Value.AnyObjectValue(\(object))"
         case .DictionaryValue(let dictionary):
-            return "Dictionary(\(dictionary.debugDescription))"
+            return "Value.DictionaryValue(\(dictionary.debugDescription))"
         case .ArrayValue(let array):
-            return "Array(\(array.debugDescription))"
+            return "Value.ArrayValue(\(array.debugDescription))"
         case .SetValue(let set):
-            return "Set(\(set))"
+            return "Value.SetValue(\(set))"
         case .ClusterValue(let cluster):
-            return "Cluster(\(cluster))"
+            return "Value.ClusterValue(\(cluster))"
         }
     }
 }

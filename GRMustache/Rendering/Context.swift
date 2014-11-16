@@ -144,13 +144,13 @@ extension Context: DebugPrintable {
     public var debugDescription: String {
         switch type {
         case .Root:
-            return "Root"
+            return "Context.Root"
         case .ValueType(value: let value, parent: let parent):
-            return "Value(\(value)):\(parent.debugDescription)"
+            return "Context.ValueType(\(value)):\(parent.debugDescription)"
         case .InheritablePartialNodeType(inheritablePartialNode: let node, parent: let parent):
-            return "InheritablePartialNode(\(node)):\(parent.debugDescription)"
+            return "Context.InheritablePartialNodeType(\(node)):\(parent.debugDescription)"
         case .TagObserverType(tagObserver: let tagObserver, parent: let parent):
-            return "TagObserver(\(tagObserver)):\(parent.debugDescription)"
+            return "Context.TagObserverType(\(tagObserver)):\(parent.debugDescription)"
         }
     }
 }
