@@ -1,0 +1,58 @@
+//
+//  ContextTests.swift
+//  GRMustache
+//
+//  Created by Gwendal Roué on 17/11/2014.
+//  Copyright (c) 2014 Gwendal Roué. All rights reserved.
+//
+
+import XCTest
+import GRMustache
+
+class ContextTests: XCTestCase {
+    
+    func testContextConstructor() {
+        let template = Template(string: "{{uppercase(foo)}}")!
+        let value = Value(["foo": "bar"])
+        
+        var rendering = template.render(value)
+        XCTAssertEqual(rendering!, "BAR")
+        
+        template.baseContext = Context()
+        var error: NSError?
+        rendering = template.render(value, error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+    }
+    
+    func testContextWithValueConstructor() {
+        let template = Template(string: "{{foo}}")!
+        
+        var rendering = template.render(Value())!
+        XCTAssertEqual(rendering, "")
+        
+        let value = Value(["foo": "bar"])
+        template.baseContext = Context(value)
+        rendering = template.render(Value())!
+        XCTAssertEqual(rendering, "bar")
+    }
+    
+    func testContextWithTagObserverConstructor() {
+        class CustomTagObserver: TagObserver {
+            var success = false
+            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+                success = true
+                return value
+            }
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            }
+        }
+        
+        let template = Template(string: "{{success}}")!
+        let tagObserver = CustomTagObserver()
+        template.baseContext = Context(tagObserver)
+        template.render(Value())
+        XCTAssertTrue(tagObserver.success)
+    }
+}

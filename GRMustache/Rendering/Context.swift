@@ -61,6 +61,10 @@ public class Context {
         self.init(type: .ValueType(value: value, parent: Context()))
     }
     
+    public convenience init(_ tagObserver: TagObserver) {
+        self.init(type: .TagObserverType(tagObserver: tagObserver, parent: Context()))
+    }
+    
     public func contextByAddingValue(value: Value) -> Context {
         if value.isEmpty {
             return self
