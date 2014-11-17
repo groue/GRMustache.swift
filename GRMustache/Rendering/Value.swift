@@ -735,16 +735,16 @@ extension Value {
             case "count":
                 return Value(countElements(array))
             case "firstObject":
-                if array.isEmpty {
-                    return Value()
+                if let first = array.first {
+                    return first
                 } else {
-                    return array[array.startIndex]
+                    return Value()
                 }
             case "lastObject":
-                if array.isEmpty {
-                    return Value()
+                if let last = array.last {
+                    return last
                 } else {
-                    return array[array.endIndex.predecessor()]
+                    return Value()
                 }
             default:
                 return Value()
@@ -759,12 +759,8 @@ extension Value {
                 return Value()
             }
         case .ClusterValue(let cluster):
-            if let traversable = cluster.mustacheTraversable {
-                if let value = traversable.valueForMustacheIdentifier(identifier) {
-                    return value
-                } else {
-                    return Value()
-                }
+            if let value = cluster.mustacheTraversable?.valueForMustacheIdentifier(identifier) {
+                return value
             } else {
                 return Value()
             }
