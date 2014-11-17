@@ -11,7 +11,7 @@ public class Localizer: Filter, TagObserver {
     public let table: String?
     
     public init(bundle: NSBundle?, table: String?) {
-        self.bundle = bundle
+        self.bundle = bundle ?? NSBundle.mainBundle()
         self.table = table
     }
     
@@ -23,12 +23,8 @@ public class Localizer: Filter, TagObserver {
     }
     
     public func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        if let string = value.toString() {
-            if let localizedString = localizedStringForKey(string) {
-                return Value(localizedString)
-            } else {
-                return Value()
-            }
+        if let localizedString = localizedStringForKey(value.toString()) {
+            return Value(localizedString)
         } else {
             return Value()
         }
@@ -47,7 +43,11 @@ public class Localizer: Filter, TagObserver {
     
     // MARK: - Private
     
-    private func localizedStringForKey(key: String) -> String? {
-        return bundle?.localizedStringForKey(key, value:"", table:table)
+    private func localizedStringForKey(key: String?) -> String? {
+        if let key = key {
+            return bundle?.localizedStringForKey(key, value:"", table:table)
+        } else {
+            return nil
+        }
     }
 }
