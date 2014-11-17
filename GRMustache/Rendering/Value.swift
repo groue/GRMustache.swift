@@ -95,7 +95,7 @@ public class Value {
     
     private let type: Type
     
-    var isEmpty: Bool {
+    public var isEmpty: Bool {
         switch type {
         case .None:
             return true

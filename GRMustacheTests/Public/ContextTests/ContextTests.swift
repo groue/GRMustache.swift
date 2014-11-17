@@ -38,6 +38,10 @@ class ContextTests: XCTestCase {
         XCTAssertEqual(rendering, "bar")
     }
     
+    func testContextWithProtectedObjectConstructor() {
+        // TODO: import test from GRMustache
+    }
+    
     func testContextWithTagObserverConstructor() {
         class CustomTagObserver: TagObserver {
             var success = false
@@ -54,5 +58,41 @@ class ContextTests: XCTestCase {
         template.baseContext = Context(tagObserver)
         template.render(Value())
         XCTAssertTrue(tagObserver.success)
+    }
+    
+    func testTopMustacheValue() {
+        var context = Context()
+        XCTAssertTrue(context.topMustacheValue.isEmpty)
+        
+        context = context.contextByAddingValue(Value("object"))
+        XCTAssertEqual((context.topMustacheValue.object()! as String), "object")
+        
+        // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
+        
+        class CustomTagObserver: TagObserver {
+            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+                return value
+            }
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            }
+        }
+        context = context.contextByAddingTagObserver(CustomTagObserver())
+        XCTAssertEqual(context.topMustacheValue.object()! as String, "object")
+
+        context = context.contextByAddingValue(Value("object2"))
+        XCTAssertEqual(context.topMustacheValue.object()! as String, "object2")
+    }
+    
+    func testSubscript() {
+        let context = Context(Value(["name": "name1", "a": ["name": "name2"]]))
+        
+        // '.' is an expression, not a key
+        XCTAssertTrue(context["."].isEmpty)
+        
+        // 'name' is a key
+        XCTAssertEqual(context["name"].object()! as String, "name1")
+        
+        // 'a.name' is an expression, not a key
+        XCTAssertTrue(context["a.name"].isEmpty)
     }
 }

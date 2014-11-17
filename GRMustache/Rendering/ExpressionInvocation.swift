@@ -56,7 +56,7 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool {
-        value = context!.topValue
+        value = context!.topMustacheValue
         return true
     }
     

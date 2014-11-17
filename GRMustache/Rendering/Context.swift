@@ -19,16 +19,16 @@ public class Context {
     
     private let type: Type
     
-    var topValue: Value {
+    public var topMustacheValue: Value {
         switch type {
         case .Root:
             return Value()
         case .ValueType(value: let value, parent: _):
             return value
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.topValue
+            return parent.topMustacheValue
         case .TagObserverType(tagObserver: _, parent: let parent):
-            return parent.topValue
+            return parent.topMustacheValue
         }
     }
     
@@ -113,7 +113,7 @@ public class Context {
         }
     }
     
-    subscript(identifier: String) -> Value {
+    public subscript(identifier: String) -> Value {
         switch type {
         case .Root:
             return Value()
