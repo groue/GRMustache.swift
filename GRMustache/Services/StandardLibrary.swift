@@ -25,6 +25,7 @@ class StandardLibrary: MustacheTraversable {
             return Value(string?.uppercaseString)
         })
         
+        // TODO: test that Value contains the correct object type
         items["localize"] = Value(Localizer(bundle: nil, table: nil))
         
         items["each"] = Value(EachFilter())
