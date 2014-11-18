@@ -14,7 +14,7 @@ public struct RenderingInfo {
         return RenderingInfo(context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
     }
     
-    public func renderingInfoByExtendingContextWithTagObserver(tagObserver: TagObserver) -> RenderingInfo {
+    public func renderingInfoByExtendingContextWithTagObserver(tagObserver: MustacheTagObserver) -> RenderingInfo {
         return RenderingInfo(context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
     }
     
@@ -267,13 +267,13 @@ class RenderingEngine: TemplateASTVisitor {
 // =============================================================================
 // MARK: - Rendering Support
 
-extension Bool: Cluster, Renderable {
+extension Bool: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self }
-    public var mustacheTraversable: Traversable? { return nil }
-    public var mustacheFilter: Filter? { return nil }
-    public var mustacheTagObserver: TagObserver? { return nil }
-    public var mustacheRenderable: Renderable? { return self }
+    public var mustacheTraversable: MustacheTraversable? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+    public var mustacheRenderable: MustacheRenderable? { return self }
     
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {
@@ -290,13 +290,13 @@ extension Bool: Cluster, Renderable {
     }
 }
 
-extension Int: Cluster, Renderable {
+extension Int: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0 }
-    public var mustacheTraversable: Traversable? { return nil }
-    public var mustacheFilter: Filter? { return nil }
-    public var mustacheTagObserver: TagObserver? { return nil }
-    public var mustacheRenderable: Renderable? { return self }
+    public var mustacheTraversable: MustacheTraversable? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+    public var mustacheRenderable: MustacheRenderable? { return self }
     
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {
@@ -313,13 +313,13 @@ extension Int: Cluster, Renderable {
     }
 }
 
-extension Double: Cluster, Renderable {
+extension Double: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0.0 }
-    public var mustacheTraversable: Traversable? { return nil }
-    public var mustacheFilter: Filter? { return nil }
-    public var mustacheTagObserver: TagObserver? { return nil }
-    public var mustacheRenderable: Renderable? { return self }
+    public var mustacheTraversable: MustacheTraversable? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+    public var mustacheRenderable: MustacheRenderable? { return self }
     
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {
@@ -336,13 +336,13 @@ extension Double: Cluster, Renderable {
     }
 }
 
-extension String: Cluster, Renderable {
+extension String: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheTraversable: Traversable? { return nil }
-    public var mustacheFilter: Filter? { return nil }
-    public var mustacheTagObserver: TagObserver? { return nil }
-    public var mustacheRenderable: Renderable? { return self }
+    public var mustacheTraversable: MustacheTraversable? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+    public var mustacheRenderable: MustacheRenderable? { return self }
     
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {

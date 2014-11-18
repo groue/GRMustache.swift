@@ -139,16 +139,16 @@ class GRMustacheTests: XCTestCase {
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from Value.
 
-        // A single protocol that is wrapped in a Cluster
-        struct CustomValue1: Traversable {
+        // A single protocol that is wrapped in a MustacheCluster
+        struct CustomValue1: MustacheTraversable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
         }
         
-        // Two protocols that are wrapped in a Cluster
-        struct CustomValue2: Traversable, Renderable {
+        // Two protocols that are wrapped in a MustacheCluster
+        struct CustomValue2: MustacheTraversable, MustacheRenderable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -159,13 +159,13 @@ class GRMustacheTests: XCTestCase {
         }
         
         // A cluster
-        struct CustomValue3: Cluster {
+        struct CustomValue3: MustacheCluster {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: Traversable? = nil
-            let mustacheFilter: Filter? = nil
-            let mustacheTagObserver: TagObserver? = nil
-            let mustacheRenderable: Renderable? = nil
+            var mustacheTraversable: MustacheTraversable? = nil
+            let mustacheFilter: MustacheFilter? = nil
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheRenderable: MustacheRenderable? = nil
             
             init(name: String) {
                 self.name = name
@@ -177,13 +177,13 @@ class GRMustacheTests: XCTestCase {
         }
         
         // A cluster that wraps itself
-        struct CustomValue4: Cluster, Traversable {
+        struct CustomValue4: MustacheCluster, MustacheTraversable {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: Traversable? { return self }
-            let mustacheFilter: Filter? = nil
-            let mustacheTagObserver: TagObserver? = nil
-            let mustacheRenderable: Renderable? = nil
+            var mustacheTraversable: MustacheTraversable? { return self }
+            let mustacheFilter: MustacheFilter? = nil
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheRenderable: MustacheRenderable? = nil
             
             init(name: String) {
                 self.name = name
@@ -218,16 +218,16 @@ class GRMustacheTests: XCTestCase {
     func testCustomValueFilter() {
         // Test that one can define a filter taking a CustomValue as an argument.
         
-        // A single protocol that is wrapped in a Cluster
-        struct CustomValue1: Traversable {
+        // A single protocol that is wrapped in a MustacheCluster
+        struct CustomValue1: MustacheTraversable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
         }
         
-        // Two protocols that are wrapped in a Cluster
-        struct CustomValue2: Traversable, Renderable {
+        // Two protocols that are wrapped in a MustacheCluster
+        struct CustomValue2: MustacheTraversable, MustacheRenderable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -238,13 +238,13 @@ class GRMustacheTests: XCTestCase {
         }
         
         // A cluster
-        struct CustomValue3: Cluster {
+        struct CustomValue3: MustacheCluster {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: Traversable? = nil
-            let mustacheFilter: Filter? = nil
-            let mustacheTagObserver: TagObserver? = nil
-            let mustacheRenderable: Renderable? = nil
+            var mustacheTraversable: MustacheTraversable? = nil
+            let mustacheFilter: MustacheFilter? = nil
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheRenderable: MustacheRenderable? = nil
             
             init(name: String) {
                 self.name = name
@@ -256,13 +256,13 @@ class GRMustacheTests: XCTestCase {
         }
         
         // A cluster that wraps itself
-        struct CustomValue4: Cluster, Traversable {
+        struct CustomValue4: MustacheCluster, MustacheTraversable {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: Traversable? { return self }
-            let mustacheFilter: Filter? = nil
-            let mustacheTagObserver: TagObserver? = nil
-            let mustacheRenderable: Renderable? = nil
+            var mustacheTraversable: MustacheTraversable? { return self }
+            let mustacheFilter: MustacheFilter? = nil
+            let mustacheTagObserver: MustacheTagObserver? = nil
+            let mustacheRenderable: MustacheRenderable? = nil
             
             init(name: String) {
                 self.name = name
@@ -345,7 +345,7 @@ struct ReadmeExample3User {
     let name: String
 }
 
-extension ReadmeExample3User: Traversable {
+extension ReadmeExample3User: MustacheTraversable {
     func valueForMustacheIdentifier(identifier: String) -> Value? {
         switch identifier {
         case "name":

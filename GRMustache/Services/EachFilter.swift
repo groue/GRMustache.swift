@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class EachFilter: Filter {
+class EachFilter: MustacheFilter {
     
-    func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
         return nil
     }
     
@@ -75,7 +75,7 @@ class EachFilter: Filter {
         return Value(mustacheValues)
     }
     
-    private class ReplacementValue: Cluster, Renderable {
+    private class ReplacementValue: MustacheCluster, MustacheRenderable {
         let value: Value
         let index: Int
         let last: Bool
@@ -89,10 +89,10 @@ class EachFilter: Filter {
         }
         
         var mustacheBool: Bool { return value.mustacheBool }
-        var mustacheFilter: Filter? { return (value.object() as Cluster?)?.mustacheFilter }
-        var mustacheTagObserver: TagObserver? { return (value.object() as Cluster?)?.mustacheTagObserver }
-        var mustacheTraversable: Traversable? { return (value.object() as Cluster?)?.mustacheTraversable }
-        var mustacheRenderable: Renderable? { return self }
+        var mustacheFilter: MustacheFilter? { return (value.object() as MustacheCluster?)?.mustacheFilter }
+        var mustacheTagObserver: MustacheTagObserver? { return (value.object() as MustacheCluster?)?.mustacheTagObserver }
+        var mustacheTraversable: MustacheTraversable? { return (value.object() as MustacheCluster?)?.mustacheTraversable }
+        var mustacheRenderable: MustacheRenderable? { return self }
         
         func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
             var position: [String: Value] = [:]

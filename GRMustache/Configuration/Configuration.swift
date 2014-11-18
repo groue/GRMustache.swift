@@ -29,7 +29,7 @@ public struct Configuration {
         baseContext = baseContext.contextByAddingValue(Value([key: value]))
     }
     
-    public mutating func extendBaseContextWithTagObserver(tagObserver: TagObserver) {
+    public mutating func extendBaseContextWithTagObserver(tagObserver: MustacheTagObserver) {
         baseContext = baseContext.contextByAddingTagObserver(tagObserver)
     }
 }

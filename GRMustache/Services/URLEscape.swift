@@ -6,10 +6,10 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class URLEscape: Renderable, Filter, TagObserver {
+class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     
     
-    // MARK: - Renderable
+    // MARK: - MustacheRenderable
     
     func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         switch tag.type {
@@ -22,9 +22,9 @@ class URLEscape: Renderable, Filter, TagObserver {
     }
 
     
-    // MARK: - Filter
+    // MARK: - MustacheFilter
     
-    func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
         return nil
     }
     
@@ -37,7 +37,7 @@ class URLEscape: Renderable, Filter, TagObserver {
     }
     
     
-    // MARK: - TagObserver
+    // MARK: - MustacheTagObserver
     
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         switch tag.type {

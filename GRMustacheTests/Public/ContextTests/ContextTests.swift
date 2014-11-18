@@ -43,7 +43,7 @@ class ContextTests: XCTestCase {
     }
     
     func testContextWithTagObserverConstructor() {
-        class CustomTagObserver: TagObserver {
+        class CustomTagObserver: MustacheTagObserver {
             var success = false
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 success = true
@@ -69,7 +69,7 @@ class ContextTests: XCTestCase {
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
         
-        class CustomTagObserver: TagObserver {
+        class CustomTagObserver: MustacheTagObserver {
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 return value
             }

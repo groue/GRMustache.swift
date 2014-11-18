@@ -29,7 +29,8 @@ class LocalizerTests: XCTestCase {
     
     func testLocalizer() {
         let template = Template(string: "{{localize(string)}}")!
-        let value = Value(["localize": Value(localizer as protocol<Filter, TagObserver>), "string": Value("testable?")])
+        // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
+        let value = Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>), "string": Value("testable?")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "YES")
     }
@@ -71,15 +72,15 @@ class LocalizerTests: XCTestCase {
     
     func testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString() {
         var template = Template(string: "{{#localize}}%d{{/}}")!
-        // TODO: make this protocol<Filter, Renderable, TagObserver> cast unnecessary
-        template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<Filter, Renderable, TagObserver>)]))
+        // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
+        template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>)]))
         var rendering = template.render(Value())!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%d", value: nil, table: nil), "ha ha percent d %d")
         XCTAssertEqual(rendering, "ha ha percent d %d")
         
         template = Template(string: "{{#localize}}%@{{/}}")!
-        // TODO: make this protocol<Filter, Renderable, TagObserver> cast unnecessary
-        template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<Filter, Renderable, TagObserver>)]))
+        // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
+        template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>)]))
         rendering = template.render(Value())!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%@", value: nil, table: nil), "ha ha percent @ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@")

@@ -30,7 +30,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
     }
     
     func testConfigurationExtendBaseContextWithTagObserver() {
-        class TestedTagObserver: TagObserver {
+        class TestedTagObserver: MustacheTagObserver {
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 return Value("delegate")
             }

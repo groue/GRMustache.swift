@@ -12,7 +12,7 @@ import GRMustache
 class TraversableTests: XCTestCase {
  
     func testTraversable() {
-        class T: Traversable {
+        class T: MustacheTraversable {
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 if identifier == "self" {
                     return Value(self)

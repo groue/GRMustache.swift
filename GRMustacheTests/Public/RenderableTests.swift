@@ -284,7 +284,7 @@ class RenderableTests: XCTestCase {
     }
 
     func testRenderableObjectDoesNotAutomaticallyEntersVariableContextStack() {
-        class TestedRenderable: Renderable, Traversable {
+        class TestedRenderable: MustacheRenderable, MustacheTraversable {
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value("value")
             }
@@ -298,7 +298,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectDoesNotAutomaticallyEntersSectionContextStack() {
-        class TestedRenderable: Renderable, Traversable {
+        class TestedRenderable: MustacheRenderable, MustacheTraversable {
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value("value")
             }
@@ -335,7 +335,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendTagObserverStackInVariableTag() {
-        class TestedRenderable: Renderable, TagObserver {
+        class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
             func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
@@ -357,7 +357,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendTagObserverStackInSectionTag() {
-        class TestedRenderable: Renderable, TagObserver {
+        class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
             func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
@@ -379,7 +379,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectTriggersTagObserverCallbacks() {
-        class TestedTagObserver: TagObserver {
+        class TestedTagObserver: MustacheTagObserver {
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 switch tag.type {
                 case .Section:
@@ -405,7 +405,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromVariableTag() {
-        class TestedTagObserver: TagObserver {
+        class TestedTagObserver: MustacheTagObserver {
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 switch tag.type {
                 case .Section:
@@ -432,7 +432,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromSectionTag() {
-        class TestedTagObserver: TagObserver {
+        class TestedTagObserver: MustacheTagObserver {
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 switch tag.type {
                 case .Section:

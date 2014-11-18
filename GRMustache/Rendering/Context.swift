@@ -14,7 +14,7 @@ public class Context {
         case Root
         case ValueType(value: Value, parent: Context)
         case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
-        case TagObserverType(tagObserver: TagObserver, parent: Context)
+        case TagObserverType(tagObserver: MustacheTagObserver, parent: Context)
     }
     
     private let type: Type
@@ -32,12 +32,12 @@ public class Context {
         }
     }
     
-    var tagObserverStack: [TagObserver] {
+    var tagObserverStack: [MustacheTagObserver] {
         switch type {
         case .Root:
             return []
         case .ValueType(value: let value, parent: let parent):
-            if let tagObserver: TagObserver = value.object() {
+            if let tagObserver: MustacheTagObserver = value.object() {
                 return [tagObserver] + parent.tagObserverStack
             } else {
                 return parent.tagObserverStack
@@ -61,7 +61,7 @@ public class Context {
         self.init(type: .ValueType(value: value, parent: Context()))
     }
     
-    public convenience init(_ tagObserver: TagObserver) {
+    public convenience init(_ tagObserver: MustacheTagObserver) {
         self.init(type: .TagObserverType(tagObserver: tagObserver, parent: Context()))
     }
     
@@ -77,7 +77,7 @@ public class Context {
         return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self))
     }
     
-    public func contextByAddingTagObserver(tagObserver: TagObserver) -> Context {
+    public func contextByAddingTagObserver(tagObserver: MustacheTagObserver) -> Context {
         return Context(type: .TagObserverType(tagObserver: tagObserver, parent: self))
     }
     

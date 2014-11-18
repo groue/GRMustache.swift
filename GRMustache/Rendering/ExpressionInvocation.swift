@@ -40,7 +40,7 @@ class ExpressionInvocation: ExpressionVisitor {
                 outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
             }
             return false
-        } else if let filter: Filter = filterValue.object() {
+        } else if let filter: MustacheFilter = filterValue.object() {
             return visit(filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
         } else {
             if outError != nil {
@@ -71,7 +71,7 @@ class ExpressionInvocation: ExpressionVisitor {
     
     // MARK: - Private
     
-    private func visit(filter: Filter, argumentValue: Value, curried: Bool, error outError: NSErrorPointer) -> Bool {
+    private func visit(filter: MustacheFilter, argumentValue: Value, curried: Bool, error outError: NSErrorPointer) -> Bool {
         if curried {
             if let curriedFilter = filter.mustacheFilterByApplyingArgument(argumentValue) {
                 value = Value(curriedFilter)
@@ -91,7 +91,7 @@ class ExpressionInvocation: ExpressionVisitor {
                 }
                 return false
             } else {
-                // Filter result is nil, but filter error is not set.
+                // MustacheFilter result is nil, but filter error is not set.
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
                 

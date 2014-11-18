@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Localizer: Filter, Renderable, TagObserver {
+public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver {
     public let bundle: NSBundle
     public let table: String?
     var formatArguments: [String]?
@@ -19,9 +19,9 @@ public class Localizer: Filter, Renderable, TagObserver {
     }
     
     
-    // MARK: - Filter
+    // MARK: - MustacheFilter
     
-    public func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+    public func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
         return nil
     }
     
@@ -34,7 +34,7 @@ public class Localizer: Filter, Renderable, TagObserver {
     }
     
     
-    // MARK: - Renderable
+    // MARK: - MustacheRenderable
     
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         
@@ -113,7 +113,7 @@ public class Localizer: Filter, Renderable, TagObserver {
     }
     
     
-    // MARK: - TagObserver
+    // MARK: - MustacheTagObserver
     
     public func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         switch tag.type {

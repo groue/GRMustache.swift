@@ -40,9 +40,9 @@ struct User {
 }
 
 
-// Let Mustache dig into it, using the `Traversable` protocol:
+// Let Mustache dig into it, using the `MustacheTraversable` protocol:
 
-extension User: Traversable {
+extension User: MustacheTraversable {
     func valueForMustacheIdentifier(identifier: String) -> Value? {
         switch identifier {
         case "name":

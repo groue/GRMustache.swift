@@ -15,6 +15,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = Value({ (args: [Value]) -> (Value) in
             return Value(",".join(args.map { $0.toString() ?? "" }))
         })
+        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "a": Value("a"),
             "b": Value("b"),
@@ -33,6 +34,7 @@ class VariadicFilterTests: XCTestCase {
                 return Value(joined + "+" + (value.toString() ?? ""))
             })
         })
+        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "a": Value("a"),
             "b": Value("b"),
@@ -68,6 +70,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = Value({ (args: [Value]) -> (Value) in
             return Value(args)
         })
+        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "a": Value("a"),
             "b": Value("b"),
@@ -83,6 +86,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = Value({ (args: [Value]) -> (Value?) in
             return args.first
         })
+        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "yes": Value(true),
             "no": Value(false),

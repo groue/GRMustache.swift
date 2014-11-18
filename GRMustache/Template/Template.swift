@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public class Template: Renderable {
+public class Template: MustacheRenderable {
     private let repository: TemplateRepository
     private let templateAST: TemplateAST
     public var baseContext: Context
@@ -79,7 +79,7 @@ public class Template: Renderable {
     }
     
     
-    // MARK: - Renderable
+    // MARK: - MustacheRenderable
     
     // TODO: make this one not public
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {

@@ -10,10 +10,10 @@
 // =============================================================================
 // MARK: - Facets
 
-public protocol Wrappable {
+public protocol MustacheWrappable {
 }
 
-public protocol Cluster: Wrappable {
+public protocol MustacheCluster: MustacheWrappable {
     
     /**
     Controls whether the object should trigger or avoid the rendering
@@ -26,7 +26,7 @@ public protocol Cluster: Wrappable {
     
     Example:
     
-    class MyObject: Cluster {
+    class MyObject: MustacheCluster {
     let mustacheBool = true
     }
     
@@ -38,7 +38,7 @@ public protocol Cluster: Wrappable {
     /**
     TODO
     */
-    var mustacheTraversable: Traversable? { get }
+    var mustacheTraversable: MustacheTraversable? { get }
     
     /**
     Controls whether the object can be used as a filter.
@@ -46,36 +46,36 @@ public protocol Cluster: Wrappable {
     :returns: An optional filter object that should be applied when the object
     is involved in a filter expression such as `object(...)`.
     */
-    var mustacheFilter: Filter? { get }
+    var mustacheFilter: MustacheFilter? { get }
     
     /**
     TODO
     */
-    var mustacheTagObserver: TagObserver? { get }
+    var mustacheTagObserver: MustacheTagObserver? { get }
     
     /**
     TODO
     */
-    var mustacheRenderable: Renderable? { get }
+    var mustacheRenderable: MustacheRenderable? { get }
 }
 
-public protocol Filter: Wrappable {
-    func mustacheFilterByApplyingArgument(argument: Value) -> Filter?
+public protocol MustacheFilter: MustacheWrappable {
+    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter?
     func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value?
 }
 
-public protocol Renderable: Wrappable {
+public protocol MustacheRenderable: MustacheWrappable {
     func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
 
-public protocol TagObserver: Wrappable {
+public protocol MustacheTagObserver: MustacheWrappable {
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value
     
     // If rendering is nil then an error has occurred.
     func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value)
 }
 
-public protocol Traversable: Wrappable {
+public protocol MustacheTraversable: MustacheWrappable {
     func valueForMustacheIdentifier(identifier: String) -> Value?
 }
 
@@ -90,7 +90,7 @@ public class Value {
         case DictionaryValue([String: Value])
         case ArrayValue([Value])
         case SetValue(NSSet)
-        case ClusterValue(Cluster)
+        case ClusterValue(MustacheCluster)
     }
     
     private let type: Type
@@ -190,7 +190,7 @@ public class Value {
         }
     }
     
-    public convenience init(_ cluster: Cluster) {
+    public convenience init(_ cluster: MustacheCluster) {
         self.init(type: .ClusterValue(cluster))
     }
 
@@ -202,7 +202,7 @@ public class Value {
         self.init(type: .ArrayValue(array))
     }
 
-    private class func wrappableFromCluster(cluster: Cluster?) -> Wrappable? {
+    private class func wrappableFromCluster(cluster: MustacheCluster?) -> MustacheWrappable? {
         return cluster?.mustacheFilter ?? cluster?.mustacheRenderable ?? cluster?.mustacheTagObserver ?? cluster?.mustacheTraversable ?? cluster
     }
     
@@ -225,7 +225,7 @@ extension Value {
 
 
 // =============================================================================
-// MARK: - Filter Convenience Initializers
+// MARK: - MustacheFilter Convenience Initializers
 
 extension Value {
     
@@ -259,9 +259,9 @@ extension Value {
         }))
     }
     
-    public convenience init<T: Wrappable>(_ block: (T?) -> (Value?)) {
+    public convenience init<T: MustacheWrappable>(_ block: (T?) -> (Value?)) {
         self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = Value.wrappableFromCluster(value.object() as Cluster?) as? T {
+            if let object = Value.wrappableFromCluster(value.object() as MustacheCluster?) as? T {
                 return block(object)
             } else {
                 return block(nil)
@@ -299,10 +299,10 @@ extension Value {
         }))
     }
     
-    private struct BlockFilter: Filter {
+    private struct BlockFilter: MustacheFilter {
         let block: (Value, NSErrorPointer) -> (Value?)
         
-        func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+        func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
             return nil
         }
         
@@ -311,11 +311,11 @@ extension Value {
         }
     }
     
-    private struct BlockVariadicFilter: Filter {
+    private struct BlockVariadicFilter: MustacheFilter {
         let arguments: [Value]
         let block: ([Value], NSErrorPointer) -> (Value?)
         
-        func mustacheFilterByApplyingArgument(argument: Value) -> Filter? {
+        func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
             return BlockVariadicFilter(arguments: arguments + [argument], block: block)
         }
         
@@ -327,7 +327,7 @@ extension Value {
 
 
 // =============================================================================
-// MARK: - Renderable Convenience Initializers
+// MARK: - MustacheRenderable Convenience Initializers
 
 extension Value {
     
@@ -335,7 +335,7 @@ extension Value {
         self.init(BlockRenderable(block: block))
     }
     
-    private struct BlockRenderable: Renderable {
+    private struct BlockRenderable: MustacheRenderable {
         let block: (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?)
         
         func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
@@ -346,208 +346,208 @@ extension Value {
 
 
 // =============================================================================
-// MARK: - Cluster Convenience Initializers
+// MARK: - MustacheCluster Convenience Initializers
 
 extension Value {
     
-    public convenience init(_ object: protocol<Filter>) {
+    public convenience init(_ object: protocol<MustacheFilter>) {
         self.init(ClusterWrapper(object))
     }
 
-    public convenience init(_ object: protocol<Renderable>) {
+    public convenience init(_ object: protocol<MustacheRenderable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<TagObserver>) {
+    public convenience init(_ object: protocol<MustacheTagObserver>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Traversable>) {
+    public convenience init(_ object: protocol<MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, Renderable>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheRenderable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, TagObserver>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, Traversable>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Renderable, TagObserver>) {
+    public convenience init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Renderable, Traversable>) {
+    public convenience init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<TagObserver, Traversable>) {
+    public convenience init(_ object: protocol<MustacheTagObserver, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, Renderable, TagObserver>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, Renderable, Traversable>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, TagObserver, Traversable>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Renderable, TagObserver, Traversable>) {
+    public convenience init(_ object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
     
-    public convenience init(_ object: protocol<Filter, Renderable, TagObserver, Traversable>) {
+    public convenience init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
         self.init(ClusterWrapper(object))
     }
 
-    public convenience init(_ object: protocol<Cluster, Filter>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Renderable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheRenderable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, TagObserver>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, Renderable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, TagObserver>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Renderable, TagObserver>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Renderable, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, TagObserver, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, Renderable, TagObserver>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, Renderable, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, TagObserver, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Renderable, TagObserver, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    public convenience init(_ object: protocol<Cluster, Filter, Renderable, TagObserver, Traversable>) {
-        self.init(object as Cluster)
+    public convenience init(_ object: protocol<MustacheCluster, MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
+        self.init(object as MustacheCluster)
     }
     
-    private struct ClusterWrapper: Cluster, DebugPrintable {
+    private struct ClusterWrapper: MustacheCluster, DebugPrintable {
         let mustacheBool = true
-        let mustacheFilter: Filter?
-        let mustacheRenderable: Renderable?
-        let mustacheTagObserver: TagObserver?
-        let mustacheTraversable: Traversable?
+        let mustacheFilter: MustacheFilter?
+        let mustacheRenderable: MustacheRenderable?
+        let mustacheTagObserver: MustacheTagObserver?
+        let mustacheTraversable: MustacheTraversable?
         
-        init(_ object: protocol<Filter>) {
+        init(_ object: protocol<MustacheFilter>) {
             mustacheFilter = object
         }
         
-        init(_ object: protocol<Renderable>) {
+        init(_ object: protocol<MustacheRenderable>) {
             mustacheRenderable = object
         }
         
-        init(_ object: protocol<TagObserver>) {
+        init(_ object: protocol<MustacheTagObserver>) {
             mustacheTagObserver = object
         }
         
-        init(_ object: protocol<Traversable>) {
+        init(_ object: protocol<MustacheTraversable>) {
             mustacheTraversable = object
         }
 
-        init(_ object: protocol<Filter, Renderable>) {
+        init(_ object: protocol<MustacheFilter, MustacheRenderable>) {
             mustacheFilter = object
             mustacheRenderable = object
         }
         
-        init(_ object: protocol<Filter, TagObserver>) {
+        init(_ object: protocol<MustacheFilter, MustacheTagObserver>) {
             mustacheFilter = object
             mustacheTagObserver = object
         }
         
-        init(_ object: protocol<Filter, Traversable>) {
+        init(_ object: protocol<MustacheFilter, MustacheTraversable>) {
             mustacheFilter = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<Renderable, TagObserver>) {
+        init(_ object: protocol<MustacheRenderable, MustacheTagObserver>) {
             mustacheRenderable = object
             mustacheTagObserver = object
         }
         
-        init(_ object: protocol<Renderable, Traversable>) {
+        init(_ object: protocol<MustacheRenderable, MustacheTraversable>) {
             mustacheRenderable = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<TagObserver, Traversable>) {
+        init(_ object: protocol<MustacheTagObserver, MustacheTraversable>) {
             mustacheTagObserver = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<Filter, Renderable, TagObserver>) {
+        init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>) {
             mustacheFilter = object
             mustacheRenderable = object
             mustacheTagObserver = object
         }
         
-        init(_ object: protocol<Filter, Renderable, Traversable>) {
+        init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTraversable>) {
             mustacheFilter = object
             mustacheRenderable = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<Filter, TagObserver, Traversable>) {
+        init(_ object: protocol<MustacheFilter, MustacheTagObserver, MustacheTraversable>) {
             mustacheFilter = object
             mustacheTagObserver = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<Renderable, TagObserver, Traversable>) {
+        init(_ object: protocol<MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
             mustacheRenderable = object
             mustacheTagObserver = object
             mustacheTraversable = object
         }
         
-        init(_ object: protocol<Filter, Renderable, TagObserver, Traversable>) {
+        init(_ object: protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver, MustacheTraversable>) {
             mustacheFilter = object
             mustacheRenderable = object
             mustacheTagObserver = object
@@ -594,7 +594,7 @@ extension Value {
         }
     }
     
-    public func object() -> Cluster? {
+    public func object() -> MustacheCluster? {
         switch type {
         case .ClusterValue(let cluster):
             return cluster
@@ -666,24 +666,24 @@ extension Value {
 
 extension Value {
 
-    public func object() -> Filter? {
-        return (object() as Cluster?)?.mustacheFilter
+    public func object() -> MustacheFilter? {
+        return (object() as MustacheCluster?)?.mustacheFilter
     }
     
-    public func object() -> Renderable? {
-        return (object() as Cluster?)?.mustacheRenderable
+    public func object() -> MustacheRenderable? {
+        return (object() as MustacheCluster?)?.mustacheRenderable
     }
     
-    public func object() -> TagObserver? {
-        return (object() as Cluster?)?.mustacheTagObserver
+    public func object() -> MustacheTagObserver? {
+        return (object() as MustacheCluster?)?.mustacheTagObserver
     }
     
-    public func object() -> Traversable? {
-        return (object() as Cluster?)?.mustacheTraversable
+    public func object() -> MustacheTraversable? {
+        return (object() as MustacheCluster?)?.mustacheTraversable
     }
     
-    public func object<T: Wrappable>() -> T? {
-        return Value.wrappableFromCluster(object() as Cluster?) as? T
+    public func object<T: MustacheWrappable>() -> T? {
+        return Value.wrappableFromCluster(object() as MustacheCluster?) as? T
     }
     
 }
