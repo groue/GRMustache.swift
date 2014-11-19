@@ -239,19 +239,27 @@ class RenderingEngine: TemplateASTVisitor {
                 rendering = ""
             }
             
-            for tagObserver in tagObserverStack.reverse() {
-                tagObserver.mustacheTag(tag, didRender:rendering, forValue: value)
-            }
-            
             if let rendering = rendering {
+                var rendering = rendering
                 switch (contentType, renderingContentType, escapesHTML) {
                 case (.HTML, .Text, true):
-                    buffer = buffer! + escapeHTML(rendering)
+                    rendering = escapeHTML(rendering)
                 default:
-                    buffer = buffer! + rendering
+                    break
                 }
+                
+                buffer = buffer! + rendering
+                
+                for tagObserver in tagObserverStack.reverse() {
+                    tagObserver.mustacheTag(tag, didRender:rendering, forValue: value)
+                }
+                
                 return true
             } else {
+                for tagObserver in tagObserverStack.reverse() {
+                    tagObserver.mustacheTag(tag, didRender:nil, forValue: value)
+                }
+                
                 if outError != nil {
                     outError.memory = renderingError!
                 }
