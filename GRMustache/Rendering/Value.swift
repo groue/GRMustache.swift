@@ -64,6 +64,10 @@ public protocol MustacheFilter: MustacheWrappable {
     func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value?
 }
 
+@objc public protocol GRMustacheFilter {
+    
+}
+
 public protocol MustacheRenderable: MustacheWrappable {
     func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
 }
