@@ -8,7 +8,7 @@
 
 
 // =============================================================================
-// MARK: - Facets
+// MARK: - Facet Protocols
 
 public protocol MustacheWrappable {
 }
@@ -62,10 +62,6 @@ public protocol MustacheCluster: MustacheWrappable {
 public protocol MustacheFilter: MustacheWrappable {
     func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter?
     func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value?
-}
-
-@objc public protocol GRMustacheFilter {
-    
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
@@ -593,6 +589,19 @@ extension Value {
             return result
         case .SetValue(let set):
             return set
+        case .ClusterValue(let cluster):
+            // The four types declared as Clusters in RenderingEngine.swift
+            if let bool: Bool = object() {
+                return bool
+            } else if let int: Int = object() {
+                return int
+            } else if let double: Double = object() {
+                return double
+            } else if let string: String = object() {
+                return string
+            } else {
+                return nil
+            }
         default:
             return nil
         }
