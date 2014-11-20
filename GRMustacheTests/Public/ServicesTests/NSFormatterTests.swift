@@ -171,4 +171,109 @@ class NSFormatterTests: XCTestCase {
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "NO")
     }
+    
+    func testNumberFormatterRendersNothingForNSDate() {
+        // Check that NSNumberFormatter does not have surprising behavior, and
+        // does not format NSDate.
+        
+        let percentFormatter = NSNumberFormatter()
+        percentFormatter.numberStyle = .PercentStyle
+        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        
+        let value = Value(["format": Value(percentFormatter), "value": Value(NSDate())])
+        
+        var template = Template(string: "<{{format(value)}}>")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+    }
+    
+    func testDateFormatterRendersNothingForMissingValue() {
+        // Check that NSDateFormatter does not have surprising behavior, and
+        // does not format nil.
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .FullStyle
+        
+        let value = Value(["format": Value(dateFormatter)])
+        
+        var template = Template(string: "<{{format(value)}}>")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+    }
+    
+    func testDateFormatterRendersNothingForNSNull() {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .FullStyle
+        
+        let value = Value(["format": Value(dateFormatter), "value": Value(NSNull())])
+        
+        var template = Template(string: "<{{format(value)}}>")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+    }
+    
+    func testDateFormatterRendersNothingForNSString() {
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .FullStyle
+        
+        var value = Value(["format": Value(dateFormatter), "value": Value("1")])
+        
+        var template = Template(string: "<{{format(value)}}>")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+        
+        value = Value(["format": Value(dateFormatter), "value": Value("YES")])
+        
+        template = Template(string: "<{{format(value)}}>")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+        
+        value = Value(["format": Value(dateFormatter), "value": Value("foo")])
+        
+        template = Template(string: "<{{format(value)}}>")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+    }
+    
+    func testDateFormatterRendersNothingForNSNumber() {
+        // Check that NSDateFormatter does not have surprising behavior, and
+        // does not format NSNumber.
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .FullStyle
+        
+        let value = Value(["format": Value(dateFormatter), "value": Value(0)])
+        
+        var template = Template(string: "<{{format(value)}}>")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<>")
+        
+        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "NO")
+    }
 }
