@@ -131,7 +131,7 @@ public class Context {
         }
     }
     
-    public func valueForMustacheExpression(expression string: String, error outError: NSErrorPointer = nil) -> Value? {
+    public func valueForMustacheExpression(string: String, error outError: NSErrorPointer = nil) -> Value? {
         let parser = ExpressionParser()
         var empty = false
         if let expression = parser.parse(string, empty: &empty, error: outError) {
