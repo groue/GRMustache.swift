@@ -72,7 +72,7 @@ public protocol MustacheTagObserver: MustacheWrappable {
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value
     
     // If rendering is nil then an error has occurred.
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value)
+    func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value)
 }
 
 public protocol MustacheTraversable: MustacheWrappable {

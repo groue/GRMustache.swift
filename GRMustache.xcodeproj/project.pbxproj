@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		560250801A1E0A93008E4BD6 /* TagObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */; };
 		5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
 		5622F1F81A03535700B5D3F8 /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F71A03535700B5D3F8 /* Localizer.swift */; };
 		5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
@@ -79,6 +80,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagObserverTests.swift; sourceTree = "<group>"; };
 		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
 		5622F1F71A03535700B5D3F8 /* Localizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
 		5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
@@ -162,6 +164,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5602507E1A1E0A82008E4BD6 /* TagObserverTests */ = {
+			isa = PBXGroup;
+			children = (
+				5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */,
+			);
+			path = TagObserverTests;
+			sourceTree = "<group>";
+		};
 		5622F1F31A02E98F00B5D3F8 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -347,6 +357,7 @@
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56A88EC71A066EC40055E40A /* RenderableTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
+				5602507E1A1E0A82008E4BD6 /* TagObserverTests */,
 				5698D0261A1626240039D564 /* TraversableTests.swift */,
 			);
 			path = Public;
@@ -545,6 +556,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				560250801A1E0A93008E4BD6 /* TagObserverTests.swift in Sources */,
 				56A88EC81A066EC40055E40A /* RenderableTests.swift in Sources */,
 				564717311A18EAE600E383F9 /* FilterTests.swift in Sources */,
 				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
