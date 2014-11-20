@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class StandardLibrary: MustacheTraversable {
+public class StandardLibrary: MustacheTraversable {
     
     private let items: [String: Value]
     
-    init() {
+    public init() {
         var items: [String: Value] = [:]
         
         items["capitalized"] = Value({ (string: String?) -> (Value) in
@@ -61,7 +61,7 @@ class StandardLibrary: MustacheTraversable {
         self.items = items
     }
     
-    func valueForMustacheIdentifier(identifier: String) -> Value? {
+    public func valueForMustacheIdentifier(identifier: String) -> Value? {
         return items[identifier]
     }
 }

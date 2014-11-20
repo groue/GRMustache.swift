@@ -42,11 +42,19 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
         switch tag.type {
         case .Variable:
-            if let string = value.toString() {
-                return Value(escapeHTML(string))
-            } else {
-                return value
-            }
+            // {{ value }}
+            //
+            // We can not escape `object`, because it is not a string.
+            // We want to escape its rendering.
+            // So return a rendering object that will eventually render `object`,
+            // and escape its rendering.
+            return Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+                if let rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: contentType, error: error) {
+                    return escapeHTML(rendering)
+                } else {
+                    return nil
+                }
+            })
         case .Section:
             return value
         }
