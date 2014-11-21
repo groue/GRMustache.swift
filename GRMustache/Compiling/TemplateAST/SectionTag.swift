@@ -12,6 +12,17 @@ class SectionTag: MustacheExpressionTag, TemplateASTNode {
     let inverted: Bool
     let type: TagType = .Section
     let innerTemplateString: String
+    var description: String {
+        if let token = expression.token {
+            if let templateID = token.templateID {
+                return "<SectionTag \(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)>"
+            } else {
+                return "<SectionTag \(token.templateSubstring) at line \(token.lineNumber)>"
+            }
+        } else {
+            return "<SectionTag>"
+        }
+    }
     
     init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {
         self.expression = expression

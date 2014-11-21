@@ -10,9 +10,10 @@ class ScopedExpression: Expression {
     let baseExpression: Expression
     let identifier: String
     
-    init(baseExpression: Expression, identifier: String) {
+    init(token: TemplateToken?, baseExpression: Expression, identifier: String) {
         self.baseExpression = baseExpression
         self.identifier = identifier
+        super.init(token: token)
     }
     
     override func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {

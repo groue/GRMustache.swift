@@ -102,7 +102,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .EscapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                if let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
@@ -114,7 +114,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .UnescapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                if let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error) {
                     compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
@@ -126,7 +126,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .Section(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
@@ -171,7 +171,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .InvertedSection(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
@@ -246,7 +246,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                    let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
                         break
@@ -278,7 +278,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                    let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
                         break

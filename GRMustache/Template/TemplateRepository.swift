@@ -100,7 +100,7 @@ public class TemplateRepository {
     func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
         let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
-        parser.parse(string)
+        parser.parse(string, templateID: templateID)
         return compiler.templateAST(error: outError)
     }
     

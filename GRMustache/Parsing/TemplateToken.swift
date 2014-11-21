@@ -26,6 +26,7 @@ struct TemplateToken {
     let templateString: String
     let range: Range<String.Index>
     let type: Type
+    let templateID: TemplateID?
     
     var templateSubstring: String { return templateString[range] }
 }

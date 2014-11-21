@@ -13,6 +13,17 @@ class VariableTag: MustacheExpressionTag, TemplateASTNode {
     var type: TagType { return .Variable }
     let innerTemplateString = ""
     let inverted = true
+    var description: String {
+        if let token = expression.token {
+            if let templateID = token.templateID {
+                return "<VariableTag \(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)>"
+            } else {
+                return "<VariableTag \(token.templateSubstring) at line \(token.lineNumber)>"
+            }
+        } else {
+            return "<VariableTag>"
+        }
+    }
     
     init(expression: Expression, contentType: ContentType, escapesHTML: Bool) {
         self.escapesHTML = escapesHTML

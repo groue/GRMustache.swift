@@ -7,6 +7,12 @@
 //
 
 class Expression: Equatable {
+    let token: TemplateToken?
+    
+    init(token: TemplateToken?) {
+        self.token = token
+    }
+    
     func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
         fatalError("Subclass must override")
     }

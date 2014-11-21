@@ -13,7 +13,7 @@ public enum TagType {
     case Section
 }
 
-public protocol Tag {
+public protocol Tag: Printable {
     var type: TagType { get }
     var innerTemplateString: String { get }
     var inverted: Bool { get } // this should be protected
