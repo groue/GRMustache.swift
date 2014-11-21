@@ -344,10 +344,10 @@ extension Double: MustacheCluster, MustacheRenderable {
     }
 }
 
-extension String: MustacheCluster, MustacheRenderable {
+extension String: MustacheCluster, MustacheRenderable, MustacheTraversable {
     
     public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheTraversable: MustacheTraversable? { return nil }
+    public var mustacheTraversable: MustacheTraversable? { return self }
     public var mustacheFilter: MustacheFilter? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -359,6 +359,15 @@ extension String: MustacheCluster, MustacheRenderable {
         case .Section:
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
             return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        }
+    }
+    
+    public func valueForMustacheIdentifier(identifier: String) -> Value? {
+        switch identifier {
+        case "length":
+            return Value(countElements(self))
+        default:
+            return nil
         }
     }
 }
