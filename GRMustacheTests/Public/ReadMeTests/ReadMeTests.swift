@@ -12,8 +12,8 @@ import GRMustache
 class ReadMeTests: XCTestCase {
     
     func testReadmeExample1() {
-        let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = Template(named: "example1", bundle: testBundle)!
+        let testBundle = NSBundle(forClass: self.dynamicType)
+        let template = Template(named: "ReadMeExample1", bundle: testBundle)!
         let value = Value([
             "name": "Chris",
             "value": 10000.0,
@@ -54,8 +54,8 @@ class ReadMeTests: XCTestCase {
         
         // I have 3 cats.
         
-        let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = Template(named: "example2", bundle: testBundle)!
+        let testBundle = NSBundle(forClass: self.dynamicType)
+        let template = Template(named: "ReadMeExample2", bundle: testBundle)!
         let value = Value(["cats": ["Kitty", "Pussy", "Melba"]])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "I have 3 cats.")

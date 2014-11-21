@@ -32,7 +32,7 @@ class GRMustacheSuiteTests: XCTestCase {
     }
     
     func runTestsFromResource(name: String, directory: String) {
-        let testBundle = NSBundle(forClass: GRMustacheSuiteTests.self)
+        let testBundle = NSBundle(forClass: self.dynamicType)
         let path: String! = testBundle.pathForResource(directory, ofType:nil)?.stringByAppendingPathComponent(name)
         if path == nil {
             XCTFail("No such test suite \(directory)/\(name)")
