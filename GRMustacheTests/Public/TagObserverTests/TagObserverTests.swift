@@ -57,7 +57,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(success)
     }
     
-    func testVariableTagDelegate() {
+    func testVariableTagObserver() {
         var preRenderingValue: Value?
         var preRenderingTagType: TagType?
         var postRenderingValue: Value?
@@ -84,7 +84,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual((postRenderingValue?.object() as Int?)!, 1)
     }
     
-    func testSectionTagDelegate() {
+    func testSectionTagObserver() {
         var preRenderingTagType: TagType?
         var postRenderingTagType: TagType?
         let willRenderBlock = { (tag: Tag, value: Value) -> Value in
@@ -103,5 +103,129 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual(rendering, "<>")
         XCTAssertEqual(preRenderingTagType!, TagType.Section)
         XCTAssertEqual(postRenderingTagType!, TagType.Section)
+    }
+    
+    func testMultipleTagsObserver() {
+        var preRenderingValues: [Value] = []
+        var preRenderingTagTypes: [TagType] = []
+        var postRenderingValues: [Value] = []
+        var postRenderingTagTypes: [TagType] = []
+        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+            preRenderingValues.append(value)
+            preRenderingTagTypes.append(tag.type)
+            if countElements(preRenderingValues) == 1 {
+                return Value(true)
+            } else {
+                return Value("observer")
+            }
+        }
+        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) -> Void in
+            postRenderingValues.append(value)
+            postRenderingTagTypes.append(tag.type)
+        }
+        let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: didRenderBlock)
+        
+        let template = Template(string: "<{{#foo}}{{bar}}{{/foo}}>")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        let rendering = template.render(Value())!
+        
+        XCTAssertEqual(rendering, "<observer>")
+        XCTAssertEqual(countElements(preRenderingValues), 2)
+        XCTAssertEqual(countElements(postRenderingValues), 2)
+        XCTAssertTrue(preRenderingValues[0].isEmpty)
+        XCTAssertTrue(preRenderingValues[1].isEmpty)
+        XCTAssertEqual((postRenderingValues[0].object() as String?)!, "observer")
+        XCTAssertEqual((postRenderingValues[1].object() as Bool?)!, true)
+        XCTAssertEqual(preRenderingTagTypes[0], TagType.Section)
+        XCTAssertEqual(preRenderingTagTypes[1], TagType.Variable)
+        XCTAssertEqual(postRenderingTagTypes[0], TagType.Variable)
+        XCTAssertEqual(postRenderingTagTypes[1], TagType.Section)
+    }
+    
+    func testObserverInterpretsRenderedValue() {
+        var willRenderCount = 0;
+        var renderedValue: Value? = nil
+        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+            ++willRenderCount
+            renderedValue = value
+            return value
+        }
+        let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: nil)
+        
+        let filter = { (string: String?) -> (Value) in
+            return Value(string?.uppercaseString)
+        }
+        
+        var template = Template(string: "{{subject}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        var rendering = template.render(Value())!
+        XCTAssertEqual(rendering, "")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertTrue(renderedValue!.isEmpty)
+        
+        template = Template(string: "{{subject}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["subject": "foo"]))!
+        XCTAssertEqual(rendering, "foo")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertEqual((renderedValue!.object() as String?)!, "foo")
+        
+        template = Template(string: "{{subject.foo}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value())!
+        XCTAssertEqual(rendering, "")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertTrue(renderedValue!.isEmpty)
+        
+        template = Template(string: "{{subject.foo}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["subject": "foo"]))!
+        XCTAssertEqual(rendering, "")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertTrue(renderedValue!.isEmpty)
+        
+        template = Template(string: "{{subject.foo}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["subject": ["foo": "bar"]]))!
+        XCTAssertEqual(rendering, "bar")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertEqual((renderedValue!.object() as String?)!, "bar")
+        
+        template = Template(string: "{{filter(subject)}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["filter": Value(filter)]))!
+        XCTAssertEqual(rendering, "")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertTrue(renderedValue!.isEmpty)
+        
+        template = Template(string: "{{filter(subject)}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
+        XCTAssertEqual(rendering, "FOO")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertEqual((renderedValue!.object() as String?)!, "FOO")
+        
+        template = Template(string: "{{filter(subject).length}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        willRenderCount = 0
+        renderedValue = nil
+        rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
+        XCTAssertEqual(rendering, "3")
+        XCTAssertEqual(willRenderCount, 1)
+        XCTAssertEqual((renderedValue!.object() as Int?)!, 3)
     }
 }
