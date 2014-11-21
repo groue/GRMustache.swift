@@ -32,7 +32,7 @@ public class Template: MustacheRenderable {
     
     public convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error outError: NSErrorPointer = nil) {
         let repository = TemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
-        let templateName = path.stringByDeletingPathExtension
+        let templateName = path.stringByDeletingPathExtension.lastPathComponent
         if let templateAST = repository.templateAST(named: templateName, relativeToTemplateID: nil, error: outError) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {

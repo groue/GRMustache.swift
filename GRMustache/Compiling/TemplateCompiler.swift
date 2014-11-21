@@ -102,8 +102,8 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .EscapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error) {
-                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true))
+                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
@@ -114,8 +114,8 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .UnescapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error) {
-                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false))
+                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
@@ -126,7 +126,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .Section(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
+                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
@@ -153,7 +153,7 @@ class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST, openingToken: extentedToken, innerTemplateString: templateString[innerContentRange])
                     
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -171,7 +171,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .InvertedSection(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
+                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                 
                 if expression == nil && !empty {
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
@@ -198,7 +198,7 @@ class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST, openingToken: extentedToken, innerTemplateString: templateString[innerContentRange])
                     
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -246,7 +246,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
+                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
                         break
@@ -269,7 +269,7 @@ class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
 
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -278,7 +278,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, token: token, empty: &empty, error: &error)
+                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
                     switch (expression, empty) {
                     case (nil, true):
                         break
@@ -301,7 +301,7 @@ class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
                     
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)

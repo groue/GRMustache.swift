@@ -9,9 +9,8 @@
 class IdentifierExpression: Expression {
     let identifier: String
     
-    init(token: TemplateToken?, identifier: String) {
+    init(identifier: String) {
         self.identifier = identifier
-        super.init(token: token)
     }
     
     override func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {

@@ -7,27 +7,25 @@
 //
 
 class SectionTag: MustacheExpressionTag, TemplateASTNode {
+    let openingToken: TemplateToken
     let expression: Expression
     let templateAST: TemplateAST
     let inverted: Bool
     let type: TagType = .Section
     let innerTemplateString: String
     var description: String {
-        if let token = expression.token {
-            if let templateID = token.templateID {
-                return "<SectionTag \(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)>"
-            } else {
-                return "<SectionTag \(token.templateSubstring) at line \(token.lineNumber)>"
-            }
+        if let templateID = openingToken.templateID {
+            return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber) of template \(templateID)"
         } else {
-            return "<SectionTag>"
+            return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber)"
         }
     }
     
-    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, innerTemplateString: String) {
+    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
         self.expression = expression
         self.inverted = inverted
         self.templateAST = templateAST
+        self.openingToken = openingToken
         self.innerTemplateString = innerTemplateString
     }
     

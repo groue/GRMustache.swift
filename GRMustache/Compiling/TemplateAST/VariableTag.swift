@@ -7,6 +7,7 @@
 //
 
 class VariableTag: MustacheExpressionTag, TemplateASTNode {
+    let token: TemplateToken
     let expression: Expression
     let contentType: ContentType
     let escapesHTML: Bool
@@ -14,21 +15,18 @@ class VariableTag: MustacheExpressionTag, TemplateASTNode {
     let innerTemplateString = ""
     let inverted = true
     var description: String {
-        if let token = expression.token {
-            if let templateID = token.templateID {
-                return "<VariableTag \(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)>"
-            } else {
-                return "<VariableTag \(token.templateSubstring) at line \(token.lineNumber)>"
-            }
+        if let templateID = token.templateID {
+            return "\(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)"
         } else {
-            return "<VariableTag>"
+            return "\(token.templateSubstring) at line \(token.lineNumber)"
         }
     }
     
-    init(expression: Expression, contentType: ContentType, escapesHTML: Bool) {
+    init(expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) {
         self.escapesHTML = escapesHTML
         self.contentType = contentType
         self.expression = expression
+        self.token = token
     }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {

@@ -11,11 +11,10 @@ class FilteredExpression: Expression {
     let argumentExpression: Expression
     let curried: Bool
     
-    init(token: TemplateToken?, filterExpression: Expression, argumentExpression: Expression, curried: Bool) {
+    init(filterExpression: Expression, argumentExpression: Expression, curried: Bool) {
         self.filterExpression = filterExpression
         self.argumentExpression = argumentExpression
         self.curried = curried
-        super.init(token: token)
     }
     
     override func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
