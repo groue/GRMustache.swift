@@ -15,7 +15,6 @@
 		56330A151A0A9CB7007A0ECE /* example1.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56330A141A0A9CB7007A0ECE /* example1.mustache */; };
 		563AE19D19FBE47A0028C6C1 /* GRMustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* GRMustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		563AE1A319FBE47A0028C6C1 /* GRMustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 563AE19719FBE47A0028C6C1 /* GRMustache.framework */; };
-		563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */; };
 		563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B419FBE4FF0028C6C1 /* TemplateParser.swift */; };
 		563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B619FBE6220028C6C1 /* TemplateToken.swift */; };
 		563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B919FBE6F40028C6C1 /* Configuration.swift */; };
@@ -57,6 +56,8 @@
 		56BF06C31A06500500926BEB /* GRMustacheSuite in Resources */ = {isa = PBXBuildFile; fileRef = 56BF06C21A06500500926BEB /* GRMustacheSuite */; };
 		56BF06C51A0650B400926BEB /* FoundationCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */; };
 		56C8D6DC1A1DCB9500F106F8 /* StandardLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */; };
+		56C8D6DE1A1F19AE00F106F8 /* ReadMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DD1A1F19AE00F106F8 /* ReadMeTests.swift */; };
+		56C8D6E11A1F1A4700F106F8 /* ValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */; };
 		56CC2C9B1A000C6D00CBD45A /* ImplicitIteratorExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2C9A1A000C6D00CBD45A /* ImplicitIteratorExpression.swift */; };
 		56CC2C9E1A000CEB00CBD45A /* FilteredExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2C9D1A000CEB00CBD45A /* FilteredExpression.swift */; };
 		56CC2CA11A000EE400CBD45A /* ScopedExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */; };
@@ -91,7 +92,6 @@
 		563AE19C19FBE47A0028C6C1 /* GRMustache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GRMustache.h; sourceTree = "<group>"; };
 		563AE1A219FBE47A0028C6C1 /* GRMustacheTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GRMustacheTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE1A819FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GRMustacheTests.swift; sourceTree = "<group>"; };
 		563AE1B419FBE4FF0028C6C1 /* TemplateParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateParser.swift; sourceTree = "<group>"; };
 		563AE1B619FBE6220028C6C1 /* TemplateToken.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateToken.swift; sourceTree = "<group>"; };
 		563AE1B919FBE6F40028C6C1 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
@@ -133,6 +133,8 @@
 		56BF06C21A06500500926BEB /* GRMustacheSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GRMustacheSuite; sourceTree = "<group>"; };
 		56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoundationCollectionTests.swift; sourceTree = "<group>"; };
 		56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibraryTests.swift; sourceTree = "<group>"; };
+		56C8D6DD1A1F19AE00F106F8 /* ReadMeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadMeTests.swift; sourceTree = "<group>"; };
+		56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTests.swift; sourceTree = "<group>"; };
 		56CC2C9A1A000C6D00CBD45A /* ImplicitIteratorExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImplicitIteratorExpression.swift; sourceTree = "<group>"; };
 		56CC2C9D1A000CEB00CBD45A /* FilteredExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilteredExpression.swift; sourceTree = "<group>"; };
 		56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopedExpression.swift; sourceTree = "<group>"; };
@@ -232,7 +234,6 @@
 			isa = PBXGroup;
 			children = (
 				56BF069B1A064FE900926BEB /* Public */,
-				563AE1A919FBE47A0028C6C1 /* GRMustacheTests.swift */,
 				56330A141A0A9CB7007A0ECE /* example1.mustache */,
 				56F05DB51A0A9FC3008B1FFC /* example2.mustache */,
 				563AE1A719FBE47A0028C6C1 /* Supporting Files */,
@@ -355,10 +356,12 @@
 				56FC9C8F1A189F960020AAF8 /* FilterTests */,
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
+				56C8D6DD1A1F19AE00F106F8 /* ReadMeTests.swift */,
 				56A88EC71A066EC40055E40A /* RenderableTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
 				5602507E1A1E0A82008E4BD6 /* TagObserverTests */,
 				5698D0261A1626240039D564 /* TraversableTests.swift */,
+				56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */,
 			);
 			path = Public;
 			sourceTree = "<group>";
@@ -559,11 +562,12 @@
 				560250801A1E0A93008E4BD6 /* TagObserverTests.swift in Sources */,
 				56A88EC81A066EC40055E40A /* RenderableTests.swift in Sources */,
 				564717311A18EAE600E383F9 /* FilterTests.swift in Sources */,
-				563AE1AA19FBE47A0028C6C1 /* GRMustacheTests.swift in Sources */,
 				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
 				5698D0271A1626240039D564 /* TraversableTests.swift in Sources */,
 				56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */,
+				56C8D6DE1A1F19AE00F106F8 /* ReadMeTests.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,
+				56C8D6E11A1F1A4700F106F8 /* ValueTests.swift in Sources */,
 				5674F3751A1CC7B8000CE8CB /* NSFormatterTests.swift in Sources */,
 				56FC9C8E1A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift in Sources */,
 				56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */,

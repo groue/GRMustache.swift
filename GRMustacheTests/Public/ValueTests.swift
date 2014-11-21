@@ -1,144 +1,19 @@
 //
-//  GRMustacheTests.swift
-//  GRMustacheTests
+//  ValueTests.swift
+//  GRMustache
 //
-//  Created by Gwendal Roué on 25/10/2014.
+//  Created by Gwendal Roué on 21/11/2014.
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
 import XCTest
 import GRMustache
 
-class GRMustacheTests: XCTestCase {
-    
-    //    override func setUp() {
-    //        super.setUp()
-    //        // Put setup code here. This method is called before the invocation of each test method in the class.
-    //    }
-    //
-    //    override func tearDown() {
-    //        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    //        super.tearDown()
-    //    }
-    //
-    //    func testExample() {
-    //        // This is an example of a functional test case.
-    //        XCTAssert(true, "Pass")
-    //    }
-    //
-    //    func testPerformanceExample() {
-    //        // This is an example of a performance test case.
-    //        self.measureBlock() {
-    //            // Put the code you want to measure the time of here.
-    //        }
-    //    }
-    
-    func testSwiftVariableInterpolation() {
-        var error: NSError?
-        let repository = TemplateRepository()
-        if let template = repository.template(string: "<{{name}}>", error: &error) {
-            let data = Value(["name": "Arthur"])
-            if let rendering = template.render(data, error: &error) {
-                XCTAssertEqual(rendering, "<Arthur>", "")
-            } else {
-                XCTFail("\(error!)")
-            }
-        } else {
-            XCTFail("\(error!)")
-        }
-    }
-    
-    func testObjCVariableInterpolation() {
-        var error: NSError?
-        let repository = TemplateRepository()
-        if let template = repository.template(string: "<{{name}}>", error: &error) {
-            let data = Value(["name": "Arthur"])
-            if let rendering = template.render(data, error: &error) {
-                XCTAssertEqual(rendering, "<Arthur>", "")
-            } else {
-                XCTFail("\(error!)")
-            }
-        } else {
-            XCTFail("\(error!)")
-        }
-    }
-    
-    func testPartial() {
-        var error: NSError?
-        let repository = TemplateRepository(templates: ["partial": "{{name}}"])
-        if let template = repository.template(string: "<{{>partial}}>", error: &error) {
-            let data = Value(["name": "Arthur"])
-            if let rendering = template.render(data, error: &error) {
-                XCTAssertEqual(rendering, "<Arthur>", "")
-            } else {
-                XCTFail("\(error!)")
-            }
-        } else {
-            XCTFail("\(error!)")
-        }
-    }
-    
-    func testReadmeExample1() {
-        let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = Template(named: "example1", bundle: testBundle)!
-        let value = Value([
-            "name": "Chris",
-            "value": 10000.0,
-            "taxed_value": 10000 - (10000 * 0.4),
-            "in_ca": true
-            ])
-        let rendering = template.render(value)!
-        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
-    }
-    
-    func testReadmeExample2() {
-        // Define the `pluralize` filter.
-        //
-        // {{# pluralize(count) }}...{{/ }} renders the plural form of the
-        // section content if the `count` argument is greater than 1.
-        
-        let pluralizeFilter = { (count: Int?) -> (Value) in
-            
-            // Return a block that performs custom rendering:
-            
-            return Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-                
-                // Pluralize the section inner content if needed:
-                
-                if count! > 1 {
-                    return tag.innerTemplateString + "s"  // naive
-                } else {
-                    return tag.innerTemplateString
-                }
-            })
-        }
-        
-        
-        // Register the pluralize filter for all Mustache renderings:
-        
-        Configuration.defaultConfiguration.extendBaseContextWithValue(Value(pluralizeFilter), forKey: "pluralize")
-        
-        
-        // I have 3 cats.
-        
-        let testBundle = NSBundle(forClass: GRMustacheTests.self)
-        let template = Template(named: "example2", bundle: testBundle)!
-        let value = Value(["cats": ["Kitty", "Pussy", "Melba"]])
-        let rendering = template.render(value)!
-        XCTAssertEqual(rendering, "I have 3 cats.")
-        
-        Configuration.defaultConfiguration = Configuration()
-    }
-    
-    func testReadmeExample3() {
-        let user = ReadmeExample3User(name: "Arthur")
-        let rendering = Template(string:"Hello {{name}}!")!.render(Value(user))!
-        XCTAssertEqual(rendering, "Hello Arthur!")
-    }
-    
+class ValueTests: XCTestCase {
+
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from Value.
-
+        
         // A single protocol that is wrapped in a MustacheCluster
         struct CustomValue1: MustacheTraversable {
             let name: String
@@ -170,7 +45,7 @@ class GRMustacheTests: XCTestCase {
             init(name: String) {
                 self.name = name
             }
-
+            
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
             }
@@ -280,7 +155,7 @@ class GRMustacheTests: XCTestCase {
                 return Value("other")
             }
         }
-
+        
         let filter2 = { (value: CustomValue2?) -> (Value?) in
             if let value = value {
                 return Value(value.name)
@@ -288,7 +163,7 @@ class GRMustacheTests: XCTestCase {
                 return Value("other")
             }
         }
-
+        
         let filter3 = { (value: CustomValue3?) -> (Value?) in
             if let value = value {
                 return Value(value.name)
@@ -339,20 +214,5 @@ class GRMustacheTests: XCTestCase {
         let rendering4 = template.render(value4)!
         XCTAssertEqual(rendering4, "custom4,other")
     }
-}
 
-struct ReadmeExample3User {
-    let name: String
 }
-
-extension ReadmeExample3User: MustacheTraversable {
-    func valueForMustacheIdentifier(identifier: String) -> Value? {
-        switch identifier {
-        case "name":
-            return Value(name)
-        default:
-            return nil
-        }
-    }
-}
-
