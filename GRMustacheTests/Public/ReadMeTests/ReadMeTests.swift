@@ -68,8 +68,8 @@ class ReadMeTests: XCTestCase {
         struct ReadmeExample3User: MustacheInspectable {
             let name: String
             
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
-                switch identifier {
+            func valueForMustacheKey(key: String) -> Value? {
+                switch key {
                 case "name":
                     return Value(name)
                 default:

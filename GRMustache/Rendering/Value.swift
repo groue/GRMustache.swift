@@ -65,7 +65,7 @@ public protocol MustacheFilter: MustacheWrappable {
 }
 
 public protocol MustacheInspectable: MustacheWrappable {
-    func valueForMustacheIdentifier(identifier: String) -> Value?
+    func valueForMustacheKey(key: String) -> Value?
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
@@ -619,7 +619,7 @@ extension Value {
                 return Value()
             }
         case .ClusterValue(let cluster):
-            if let value = cluster.mustacheInspectable?.valueForMustacheIdentifier(identifier) {
+            if let value = cluster.mustacheInspectable?.valueForMustacheKey(identifier) {
                 return value
             } else {
                 return Value()

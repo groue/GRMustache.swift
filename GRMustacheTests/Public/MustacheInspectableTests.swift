@@ -13,11 +13,11 @@ class TraversableTests: XCTestCase {
  
     func testTraversable() {
         class T: MustacheInspectable {
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
-                if identifier == "self" {
+            func valueForMustacheKey(key: String) -> Value? {
+                if key == "self" {
                     return Value(self)
                 } else {
-                    return Value(identifier)
+                    return Value(key)
                 }
             }
         }

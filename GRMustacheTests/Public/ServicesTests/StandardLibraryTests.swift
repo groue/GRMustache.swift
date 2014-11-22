@@ -14,7 +14,7 @@ class StandardLibraryTests: XCTestCase {
     func testStandardLibraryHasLocalizer() {
         // From Value
         let standardLibrary = StandardLibrary()
-        XCTAssertNotNil(standardLibrary.valueForMustacheIdentifier("localize")!.object() as Localizer?)
+        XCTAssertNotNil(standardLibrary.valueForMustacheKey("localize")!.object() as Localizer?)
         
         // From Context
         let context = Context(Value(standardLibrary))

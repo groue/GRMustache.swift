@@ -362,8 +362,8 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
         }
     }
     
-    public func valueForMustacheIdentifier(identifier: String) -> Value? {
-        switch identifier {
+    public func valueForMustacheKey(key: String) -> Value? {
+        switch key {
         case "length":
             return Value(countElements(self))
         default:

@@ -17,7 +17,7 @@ class ValueTests: XCTestCase {
         // A single protocol that is wrapped in a MustacheCluster
         struct CustomValue1: MustacheInspectable {
             let name: String
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }
@@ -25,7 +25,7 @@ class ValueTests: XCTestCase {
         // Two protocols that are wrapped in a MustacheCluster
         struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
             func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
@@ -46,7 +46,7 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }
@@ -64,7 +64,7 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }
@@ -96,7 +96,7 @@ class ValueTests: XCTestCase {
         // A single protocol that is wrapped in a MustacheCluster
         struct CustomValue1: MustacheInspectable {
             let name: String
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }
@@ -104,7 +104,7 @@ class ValueTests: XCTestCase {
         // Two protocols that are wrapped in a MustacheCluster
         struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
             func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
@@ -125,7 +125,7 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }
@@ -143,7 +143,7 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheIdentifier(identifier: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
         }

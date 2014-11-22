@@ -43,8 +43,8 @@ struct User {
 // Let Mustache dig into it, using the `MustacheInspectable` protocol:
 
 extension User: MustacheInspectable {
-    func valueForMustacheIdentifier(identifier: String) -> Value? {
-        switch identifier {
+    func valueForMustacheKey(key: String) -> Value? {
+        switch key {
         case "name":
             return Value(name)
         default:

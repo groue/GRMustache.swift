@@ -61,7 +61,7 @@ public class StandardLibrary: MustacheInspectable {
         self.items = items
     }
     
-    public func valueForMustacheIdentifier(identifier: String) -> Value? {
-        return items[identifier]
+    public func valueForMustacheKey(key: String) -> Value? {
+        return items[key]
     }
 }
