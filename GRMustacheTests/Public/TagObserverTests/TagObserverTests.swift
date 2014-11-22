@@ -228,4 +228,55 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.object() as Int?)!, 3)
     }
+    
+    func testTagObserverObservesRenderedString() {
+        var recordedRendering: String?
+        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) in
+            recordedRendering = rendering
+        }
+        let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
+        let value = Value(["value": "<>"])
+        
+        var template = Template(string: "-{{value}}-")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "-&lt;&gt;-")
+        XCTAssertEqual(recordedRendering!, "&lt;&gt;")
+        
+        template = Template(string: "-{{{value}}}-")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "-<>-")
+        XCTAssertEqual(recordedRendering!, "<>")
+    }
+    
+    func testTagObserverObservesRenderingFailure() {
+        var failedRendering = false
+        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) in
+            failedRendering = (rendering == nil)
+        }
+        let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
+        
+        var template = Template(string: "-{{.}}-")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        failedRendering = true
+        var rendering = template.render(Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            return nil
+        }))
+        XCTAssertEqual(rendering!, "--")
+        XCTAssertFalse(failedRendering)
+        
+        template = Template(string: "-{{.}}-")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        failedRendering = false
+        var error: NSError?
+        rendering = template.render(Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            outError.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
+            return nil
+        }), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, "TagObserverError")
+        XCTAssertEqual(error!.code, 1)
+        XCTAssertTrue(failedRendering)
+    }
 }
