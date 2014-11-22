@@ -39,7 +39,7 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "---")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
     }
@@ -52,7 +52,7 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "---")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
     }
@@ -98,7 +98,7 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "<{{#false}}{{not_rendered}}{{/false}}>")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<>")
         XCTAssertEqual(preRenderingTagType!, TagType.Section)
@@ -127,7 +127,7 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "<{{#foo}}{{bar}}{{/foo}}>")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<observer>")
         XCTAssertEqual(countElements(preRenderingValues), 2)
@@ -160,7 +160,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        var rendering = template.render(Value())!
+        var rendering = template.render()!
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
@@ -178,7 +178,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value())!
+        rendering = template.render()!
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)

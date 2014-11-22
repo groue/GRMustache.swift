@@ -18,7 +18,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
         
-        var rendering = template.render(Value())!
+        var rendering = template.render()!
         XCTAssertEqual(rendering, "Arthur")
         
         rendering = template.render(Value(["name": "Bobby"]))!
@@ -42,7 +42,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "delegate")
     }
 }

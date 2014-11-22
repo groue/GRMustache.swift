@@ -650,7 +650,7 @@ extension Value {
             return cluster.mustacheBool
         }
     }
-
+    
     public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
         let tag = tag
         switch type {

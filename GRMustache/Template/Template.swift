@@ -68,7 +68,7 @@ public class Template: MustacheRenderable {
         }
     }
     
-    public func render(value: Value, error outError: NSErrorPointer = nil) -> String? {
+    public func render(_ value: Value = Value(), error outError: NSErrorPointer = nil) -> String? {
         let context = baseContext.contextByAddingValue(value)
         var contentType: ContentType = .Text
         return render(context, contentType: &contentType, error: outError)

@@ -29,12 +29,12 @@ class ContextTests: XCTestCase {
     func testContextWithValueConstructor() {
         let template = Template(string: "{{foo}}")!
         
-        var rendering = template.render(Value())!
+        var rendering = template.render()!
         XCTAssertEqual(rendering, "")
         
         let value = Value(["foo": "bar"])
         template.baseContext = Context(value)
-        rendering = template.render(Value())!
+        rendering = template.render()!
         XCTAssertEqual(rendering, "bar")
     }
     
@@ -56,7 +56,7 @@ class ContextTests: XCTestCase {
         let template = Template(string: "{{success}}")!
         let tagObserver = CustomTagObserver()
         template.baseContext = Context(tagObserver)
-        template.render(Value())
+        template.render()
         XCTAssertTrue(tagObserver.success)
     }
     

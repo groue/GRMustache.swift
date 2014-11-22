@@ -32,7 +32,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         Configuration.defaultConfiguration.baseContext = Context(Value(["foo": "success"]))
         
         let template = Template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -41,7 +41,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         
         let template = Template(string: "{{uppercase(foo)}}")!
         var error: NSError?
-        let rendering = template.render(Value(), error: &error)
+        let rendering = template.render(error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError); // no such filter
     }
@@ -51,7 +51,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         
         let template = Template(string: "{{foo}}")!
         template.baseContext = Context(Value(["foo": "success"]))
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -60,7 +60,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         
         let repository = TemplateRepository()
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -72,7 +72,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         repository.configuration = configuration
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -81,7 +81,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         repository.configuration.baseContext = Context(Value(["foo": "success"]))
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -95,7 +95,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         repository.configuration = configuration
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -106,7 +106,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         repository.configuration.baseContext = Context(Value(["foo": "success"]))
         
         let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -120,7 +120,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         let template = repository.template(string: "{{foo}}")!
         template.baseContext = Context(Value(["foo": "success"]))
         
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     
@@ -131,7 +131,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         let template = repository.template(string: "{{foo}}")!
         template.baseContext = Context(Value(["foo": "success"]))
         
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
     }
     

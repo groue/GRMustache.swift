@@ -52,7 +52,7 @@ class LocalizerTests: XCTestCase {
     
     func testDefaultLocalizerAsRenderable() {
         let template = Template(string: "{{#localize}}...{{/}}")!
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(rendering, "...")
     }
     
@@ -74,14 +74,14 @@ class LocalizerTests: XCTestCase {
         var template = Template(string: "{{#localize}}%d{{/}}")!
         // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
         template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>)]))
-        var rendering = template.render(Value())!
+        var rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%d", value: nil, table: nil), "ha ha percent d %d")
         XCTAssertEqual(rendering, "ha ha percent d %d")
         
         template = Template(string: "{{#localize}}%@{{/}}")!
         // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
         template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>)]))
-        rendering = template.render(Value())!
+        rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%@", value: nil, table: nil), "ha ha percent @ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@")
     }
@@ -115,7 +115,7 @@ class LocalizerTests: XCTestCase {
         let template = Template(string: "{{#localize}}bar{{/}}")!
         // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
         template.baseContext = template.baseContext.contextByAddingValue(Value(["localize": Value(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>)]))
-        let rendering = template.render(Value())!
+        let rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
