@@ -34,14 +34,11 @@ GRMustache can render pure Swift objects, with a little help:
 
 ```swift
 // Define a pure Swift object:
-
 struct User {
     let name: String
 }
 
-
 // Let Mustache dig into it, using the `MustacheInspectable` protocol:
-
 extension User: MustacheInspectable {
     func valueForMustacheKey(key: String) -> Value? {
         switch key {
@@ -54,7 +51,6 @@ extension User: MustacheInspectable {
 }
 
 // Hello Arthur!
-
 let templateString = "Hello {{name}}!"
 let user = User(name: "Arthur")
 let rendering = Template(string: templateString)!.render(Value(user))!
