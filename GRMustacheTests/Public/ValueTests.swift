@@ -15,7 +15,7 @@ class ValueTests: XCTestCase {
         // Test that one can extract a custom value from Value.
         
         // A single protocol that is wrapped in a MustacheCluster
-        struct CustomValue1: MustacheTraversable {
+        struct CustomValue1: MustacheInspectable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -23,7 +23,7 @@ class ValueTests: XCTestCase {
         }
         
         // Two protocols that are wrapped in a MustacheCluster
-        struct CustomValue2: MustacheTraversable, MustacheRenderable {
+        struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -37,7 +37,7 @@ class ValueTests: XCTestCase {
         struct CustomValue3: MustacheCluster {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: MustacheTraversable? = nil
+            var mustacheInspectable: MustacheInspectable? = nil
             let mustacheFilter: MustacheFilter? = nil
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheRenderable: MustacheRenderable? = nil
@@ -52,10 +52,10 @@ class ValueTests: XCTestCase {
         }
         
         // A cluster that wraps itself
-        struct CustomValue4: MustacheCluster, MustacheTraversable {
+        struct CustomValue4: MustacheCluster, MustacheInspectable {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: MustacheTraversable? { return self }
+            var mustacheInspectable: MustacheInspectable? { return self }
             let mustacheFilter: MustacheFilter? = nil
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheRenderable: MustacheRenderable? = nil
@@ -94,7 +94,7 @@ class ValueTests: XCTestCase {
         // Test that one can define a filter taking a CustomValue as an argument.
         
         // A single protocol that is wrapped in a MustacheCluster
-        struct CustomValue1: MustacheTraversable {
+        struct CustomValue1: MustacheInspectable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -102,7 +102,7 @@ class ValueTests: XCTestCase {
         }
         
         // Two protocols that are wrapped in a MustacheCluster
-        struct CustomValue2: MustacheTraversable, MustacheRenderable {
+        struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value()
@@ -116,7 +116,7 @@ class ValueTests: XCTestCase {
         struct CustomValue3: MustacheCluster {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: MustacheTraversable? = nil
+            var mustacheInspectable: MustacheInspectable? = nil
             let mustacheFilter: MustacheFilter? = nil
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheRenderable: MustacheRenderable? = nil
@@ -131,10 +131,10 @@ class ValueTests: XCTestCase {
         }
         
         // A cluster that wraps itself
-        struct CustomValue4: MustacheCluster, MustacheTraversable {
+        struct CustomValue4: MustacheCluster, MustacheInspectable {
             let name: String
             let mustacheBool = true
-            var mustacheTraversable: MustacheTraversable? { return self }
+            var mustacheInspectable: MustacheInspectable? { return self }
             let mustacheFilter: MustacheFilter? = nil
             let mustacheTagObserver: MustacheTagObserver? = nil
             let mustacheRenderable: MustacheRenderable? = nil

@@ -65,7 +65,7 @@ class ReadMeTests: XCTestCase {
     
     func testReadmeExample3() {
         
-        struct ReadmeExample3User: MustacheTraversable {
+        struct ReadmeExample3User: MustacheInspectable {
             let name: String
             
             func valueForMustacheIdentifier(identifier: String) -> Value? {

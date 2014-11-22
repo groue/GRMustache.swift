@@ -284,7 +284,7 @@ class RenderableTests: XCTestCase {
     }
 
     func testRenderableObjectDoesNotAutomaticallyEntersVariableContextStack() {
-        class TestedRenderable: MustacheRenderable, MustacheTraversable {
+        class TestedRenderable: MustacheRenderable, MustacheInspectable {
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value("value")
             }
@@ -298,7 +298,7 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectDoesNotAutomaticallyEntersSectionContextStack() {
-        class TestedRenderable: MustacheRenderable, MustacheTraversable {
+        class TestedRenderable: MustacheRenderable, MustacheInspectable {
             func valueForMustacheIdentifier(identifier: String) -> Value? {
                 return Value("value")
             }

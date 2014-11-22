@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public class StandardLibrary: MustacheTraversable {
+public class StandardLibrary: MustacheInspectable {
     
     private let items: [String: Value]
     

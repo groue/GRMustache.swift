@@ -90,8 +90,8 @@ class EachFilter: MustacheFilter {
         
         var mustacheBool: Bool { return value.mustacheBool }
         var mustacheFilter: MustacheFilter? { return (value.object() as MustacheCluster?)?.mustacheFilter }
+        var mustacheInspectable: MustacheInspectable? { return (value.object() as MustacheCluster?)?.mustacheInspectable }
         var mustacheTagObserver: MustacheTagObserver? { return (value.object() as MustacheCluster?)?.mustacheTagObserver }
-        var mustacheTraversable: MustacheTraversable? { return (value.object() as MustacheCluster?)?.mustacheTraversable }
         var mustacheRenderable: MustacheRenderable? { return self }
         
         func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {

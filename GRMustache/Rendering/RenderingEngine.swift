@@ -278,8 +278,8 @@ class RenderingEngine: TemplateASTVisitor {
 extension Bool: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self }
-    public var mustacheTraversable: MustacheTraversable? { return nil }
     public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
@@ -301,8 +301,8 @@ extension Bool: MustacheCluster, MustacheRenderable {
 extension Int: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0 }
-    public var mustacheTraversable: MustacheTraversable? { return nil }
     public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
@@ -324,8 +324,8 @@ extension Int: MustacheCluster, MustacheRenderable {
 extension Double: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0.0 }
-    public var mustacheTraversable: MustacheTraversable? { return nil }
     public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
@@ -344,11 +344,11 @@ extension Double: MustacheCluster, MustacheRenderable {
     }
 }
 
-extension String: MustacheCluster, MustacheRenderable, MustacheTraversable {
+extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     
     public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheTraversable: MustacheTraversable? { return self }
     public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheInspectable: MustacheInspectable? { return self }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
