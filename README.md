@@ -51,9 +51,9 @@ extension User: MustacheInspectable {
 }
 
 // Hello Arthur!
-let templateString = "Hello {{name}}!"
 let user = User(name: "Arthur")
-let rendering = Template(string: templateString)!.render(Value(user))!
+let template = Template(string: "Hello {{name}}!")!
+let rendering = template.render(Value(user))!
 ```
 
 
