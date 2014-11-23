@@ -295,6 +295,62 @@ extension Value {
         }))
     }
     
+    public convenience init(_ block: (Value, RenderingInfo) -> (Rendering)) {
+        self.init( { (value: Value) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(value, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: ([Value], RenderingInfo) -> (Rendering)) {
+        self.init( { (arguments: [Value]) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(arguments, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (AnyObject?, RenderingInfo) -> (Rendering)) {
+        self.init( { (object: AnyObject?) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(object, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init<T: MustacheWrappable>(_ block: (T?, RenderingInfo) -> (Rendering)) {
+        self.init( { (object: T?) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(object, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (Int?, RenderingInfo) -> (Rendering)) {
+        self.init( { (int: Int?) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(int, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (Double?, RenderingInfo) -> (Rendering)) {
+        self.init( { (double: Double?) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(double, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (String?, RenderingInfo) -> (Rendering)) {
+        self.init( { (string: String?) -> (Value?) in
+            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
+                return block(string, renderingInfo)
+            })
+        })
+    }
+    
     private struct BlockFilter: MustacheFilter {
         let block: (Value, NSErrorPointer) -> (Value?)
         
@@ -327,15 +383,15 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (renderingInfo: RenderingInfo) -> (Rendering)) {
+    public convenience init(_ block: (RenderingInfo) -> (Rendering)) {
         self.init(BlockRenderable(block: block))
     }
     
     private struct BlockRenderable: MustacheRenderable {
-        let block: (renderingInfo: RenderingInfo) -> Rendering
+        let block: (RenderingInfo) -> Rendering
         
         func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
-            return block(renderingInfo: renderingInfo)
+            return block(renderingInfo)
         }
     }
 }
