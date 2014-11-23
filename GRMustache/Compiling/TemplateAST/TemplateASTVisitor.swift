@@ -6,11 +6,16 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
+enum TemplateASTVisitResult {
+    case Error(NSError)
+    case Success
+}
+
 protocol TemplateASTVisitor {
-    func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool
-    func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool
-    func visit(partialNode: PartialNode, error outError: NSErrorPointer) -> Bool
-    func visit(variableTag: VariableTag, error outError: NSErrorPointer) -> Bool
-    func visit(sectionTag: SectionTag, error outError: NSErrorPointer) -> Bool
-    func visit(textNode: TextNode, error outError: NSErrorPointer) -> Bool
+    func visit(inheritablePartialNode: InheritablePartialNode) -> TemplateASTVisitResult
+    func visit(inheritableSectionNode: InheritableSectionNode) -> TemplateASTVisitResult
+    func visit(partialNode: PartialNode) -> TemplateASTVisitResult
+    func visit(variableTag: VariableTag) -> TemplateASTVisitResult
+    func visit(sectionTag: SectionTag) -> TemplateASTVisitResult
+    func visit(textNode: TextNode) -> TemplateASTVisitResult
 }

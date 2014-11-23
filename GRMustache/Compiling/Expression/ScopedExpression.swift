@@ -15,8 +15,8 @@ class ScopedExpression: Expression {
         self.identifier = identifier
     }
     
-    override func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
-        return visitor.visit(self, error: outError)
+    override func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {
+        return visitor.visit(self)
     }
     
     override func isEqual(expression: Expression) -> Bool {

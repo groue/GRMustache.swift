@@ -6,9 +6,14 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
+enum ExpressionVisitResult {
+    case Error(NSError)
+    case Success
+}
+
 protocol ExpressionVisitor {
-    func visit(expression: FilteredExpression, error outError: NSErrorPointer) -> Bool
-    func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool
-    func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool
-    func visit(expression: ScopedExpression, error outError: NSErrorPointer) -> Bool
+    func visit(expression: FilteredExpression) -> ExpressionVisitResult
+    func visit(expression: IdentifierExpression) -> ExpressionVisitResult
+    func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult
+    func visit(expression: ScopedExpression) -> ExpressionVisitResult
 }

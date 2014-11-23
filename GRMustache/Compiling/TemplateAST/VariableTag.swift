@@ -29,8 +29,8 @@ class VariableTag: MustacheExpressionTag, TemplateASTNode {
         self.token = token
     }
     
-    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool {
-        return visitor.visit(self, error: outError)
+    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {
+        return visitor.visit(self)
     }
     
     func render(context: Context) -> Rendering {

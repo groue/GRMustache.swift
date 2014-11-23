@@ -16,89 +16,98 @@ class ExpressionInvocation: ExpressionVisitor {
         self.expression = expression
     }
     
-    func invokeWithContext(context: Context, error outError: NSErrorPointer) -> Bool {
+    enum InvocationResult {
+        case Error(NSError)
+        case Success(Value)
+    }
+    func invokeWithContext(context: Context) -> InvocationResult {
         self.context = context
-        return expression.acceptExpressionVisitor(self, error: outError)
+        switch expression.acceptExpressionVisitor(self) {
+        case .Success:
+            return .Success(value)
+        case .Error(let error):
+            return .Error(error)
+        }
     }
     
     
     // MARK: - ExpressionVisitor
     
-    func visit(expression: FilteredExpression, error outError: NSErrorPointer) -> Bool {
-        if !expression.filterExpression.acceptExpressionVisitor(self, error: outError) {
-            return false
+    func visit(expression: FilteredExpression) -> ExpressionVisitResult {
+        let filterResult = expression.filterExpression.acceptExpressionVisitor(self)
+        switch filterResult {
+        case .Error:
+            return filterResult
+        case .Success:
+            break
         }
         let filterValue = value
         
-        if !expression.argumentExpression.acceptExpressionVisitor(self, error: outError) {
-            return false
+        let argumentResult = expression.argumentExpression.acceptExpressionVisitor(self)
+        switch argumentResult {
+        case .Error:
+            return argumentResult
+        case .Success:
+            break
         }
         let argumentValue = value
         
         if filterValue.isEmpty {
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
-            }
-            return false
+            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"]))
         } else if let filter: MustacheFilter = filterValue.object() {
-            return visit(filter, argumentValue: argumentValue, curried: expression.curried, error: outError)
+            return visit(filter, argumentValue: argumentValue, curried: expression.curried)
         } else {
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
-            }
-            return false
+            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"]))
         }
     }
     
-    func visit(expression: IdentifierExpression, error outError: NSErrorPointer) -> Bool {
+    func visit(expression: IdentifierExpression) -> ExpressionVisitResult {
         value = context![expression.identifier]
-        return true
+        return .Success
     }
     
-    func visit(expression: ImplicitIteratorExpression, error outError: NSErrorPointer) -> Bool {
+    func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult {
         value = context!.topMustacheValue
-        return true
+        return .Success
     }
     
-    func visit(expression: ScopedExpression, error outError: NSErrorPointer) -> Bool {
-        if !expression.baseExpression.acceptExpressionVisitor(self, error: outError) {
-            return false
+    func visit(expression: ScopedExpression) -> ExpressionVisitResult {
+        let baseResult = expression.baseExpression.acceptExpressionVisitor(self)
+        switch baseResult {
+        case .Error:
+            return baseResult
+        case .Success:
+            value = value[expression.identifier]
+            return .Success
         }
-        value = value[expression.identifier]
-        return true
     }
     
     
     // MARK: - Private
     
-    private func visit(filter: MustacheFilter, argumentValue: Value, curried: Bool, error outError: NSErrorPointer) -> Bool {
+    private func visit(filter: MustacheFilter, argumentValue: Value, curried: Bool) -> ExpressionVisitResult {
         if curried {
             if let curriedFilter = filter.mustacheFilterByApplyingArgument(argumentValue) {
                 value = Value(curriedFilter)
+                return .Success
             } else {
-                if outError != nil {
-                    outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-                }
-                return false
+                return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"]))
             }
         } else {
             var filterError: NSError? = nil
             if let filterResult = filter.transformedMustacheValue(argumentValue, error: &filterError) {
                 value = filterResult
+                return .Success
             } else if let filterError = filterError {
-                if outError != nil {
-                    outError.memory = filterError
-                }
-                return false
+                return .Error(filterError)
             } else {
                 // MustacheFilter result is nil, but filter error is not set.
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
-                
                 value = Value()
+                return .Success
             }
         }
-        return true
     }
     
 }

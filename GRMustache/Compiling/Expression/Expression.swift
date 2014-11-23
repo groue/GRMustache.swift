@@ -7,7 +7,7 @@
 //
 
 class Expression: Equatable {
-    func acceptExpressionVisitor(visitor: ExpressionVisitor, error outError: NSErrorPointer) -> Bool {
+    func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {
         fatalError("Subclass must override")
     }
     

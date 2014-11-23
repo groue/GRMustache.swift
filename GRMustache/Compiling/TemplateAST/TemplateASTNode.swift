@@ -7,6 +7,6 @@
 //
 
 protocol TemplateASTNode: class {
-    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor, error outError: NSErrorPointer) -> Bool
+    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode
 }

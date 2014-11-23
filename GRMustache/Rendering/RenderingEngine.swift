@@ -50,11 +50,12 @@ class RenderingEngine: TemplateASTVisitor {
     
     func render(templateAST: TemplateAST) -> Rendering {
         buffer = ""
-        var error: NSError?
-        if !visit(templateAST, error: &error) {
-            return .Error(error!)
+        switch visit(templateAST) {
+        case .Error(let error):
+            return .Error(error)
+        default:
+            return .Success(buffer!, contentType)
         }
-        return .Success(buffer!, contentType)
     }
     
     
@@ -138,12 +139,12 @@ class RenderingEngine: TemplateASTVisitor {
     
     // MARK: - TemplateASTVisitor
     
-    func visit(templateAST: TemplateAST, error outError: NSErrorPointer) -> Bool {
+    func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
         let ASTContentType = templateAST.contentType
         
         if contentType == ASTContentType {
             RenderingEngine.pushCurrentContentType(ASTContentType)
-            let result = visit(templateAST.nodes, error: outError)
+            let result = visit(templateAST.nodes)
             RenderingEngine.popCurrentContentType()
             return result
         } else {
@@ -152,10 +153,7 @@ class RenderingEngine: TemplateASTVisitor {
             let rendering = renderingEngine.render(templateAST)
             switch rendering {
             case .Error(let error):
-                if outError != nil {
-                    outError.memory = error
-                }
-                return false
+                return .Error(error)
             case .Success(let string, let renderingContentType):
                 switch (contentType, renderingContentType) {
                 case (.HTML, .Text):
@@ -163,60 +161,67 @@ class RenderingEngine: TemplateASTVisitor {
                 default:
                     buffer = buffer! + string
                 }
-                return true
+                return .Success
             }
         }
     }
     
-    func visit(inheritablePartialNode: InheritablePartialNode, error outError: NSErrorPointer) -> Bool {
+    func visit(inheritablePartialNode: InheritablePartialNode) -> TemplateASTVisitResult {
         let originalContext = context
         context = context.contextByAddingInheritablePartialNode(inheritablePartialNode)
-        let success = visit(inheritablePartialNode.partialNode, error: outError)
+        let result = visit(inheritablePartialNode.partialNode)
         context = originalContext
-        return success
+        return result
     }
     
-    func visit(inheritableSectionNode: InheritableSectionNode, error outError: NSErrorPointer) -> Bool {
-        return visit(inheritableSectionNode.templateAST, error: outError)
+    func visit(inheritableSectionNode: InheritableSectionNode) -> TemplateASTVisitResult {
+        return visit(inheritableSectionNode.templateAST)
     }
     
-    func visit(partialNode: PartialNode, error outError: NSErrorPointer) -> Bool {
-        return visit(partialNode.templateAST, error: outError)
+    func visit(partialNode: PartialNode) -> TemplateASTVisitResult {
+        return visit(partialNode.templateAST)
     }
     
-    func visit(variableTag: VariableTag, error outError: NSErrorPointer) -> Bool {
-        return visit(variableTag, escapesHTML: variableTag.escapesHTML, error: outError)
+    func visit(variableTag: VariableTag) -> TemplateASTVisitResult {
+        return visit(variableTag, escapesHTML: variableTag.escapesHTML)
     }
     
-    func visit(sectionTag: SectionTag, error outError: NSErrorPointer) -> Bool {
-        return visit(sectionTag, escapesHTML: true, error: outError)
+    func visit(sectionTag: SectionTag) -> TemplateASTVisitResult {
+        return visit(sectionTag, escapesHTML: true)
     }
     
-    func visit(textNode: TextNode, error outError: NSErrorPointer) -> Bool {
+    func visit(textNode: TextNode) -> TemplateASTVisitResult {
         buffer = buffer! + textNode.text
-        return true
+        return .Success
     }
     
     
     // MARK: - Private
     
-    private func visit(nodes: [TemplateASTNode], error outError: NSErrorPointer) -> Bool {
+    private func visit(nodes: [TemplateASTNode]) -> TemplateASTVisitResult {
         for node in nodes {
             let node = context.resolveTemplateASTNode(node)
-            if !node.acceptTemplateASTVisitor(self, error: outError) {
-                return false
+            let result = node.acceptTemplateASTVisitor(self)
+            switch result {
+            case .Error:
+                return result
+            default:
+                break
             }
         }
-        return true
+        return .Success
     }
     
-    private func visit(tag: MustacheExpressionTag, escapesHTML: Bool, error outError: NSErrorPointer) -> Bool {
+    private func visit(tag: MustacheExpressionTag, escapesHTML: Bool) -> TemplateASTVisitResult {
         
         // Evaluate expression
         
         let expressionInvocation = ExpressionInvocation(expression: tag.expression)
-        if expressionInvocation.invokeWithContext(context, error: outError) {
-            var value = expressionInvocation.value
+        let invocationResult = expressionInvocation.invokeWithContext(context)
+        switch invocationResult {
+        case .Error(let error):
+            return .Error(error)
+        case .Success(var value):
             
             let tagObserverStack = context.tagObserverStack
             for tagObserver in tagObserverStack {
@@ -251,10 +256,7 @@ class RenderingEngine: TemplateASTVisitor {
                     tagObserver.mustacheTag(tag, didRender:nil, forValue: value)
                 }
                 
-                if outError != nil {
-                    outError.memory = error
-                }
-                return false
+                return .Error(error)
             case .Success(var string, let renderingContentType):
                 switch (contentType, renderingContentType, escapesHTML) {
                 case (.HTML, .Text, true):
@@ -269,10 +271,8 @@ class RenderingEngine: TemplateASTVisitor {
                     tagObserver.mustacheTag(tag, didRender:string, forValue: value)
                 }
                 
-                return true
+                return .Success
             }
-        } else {
-            return false
         }
     }
 }

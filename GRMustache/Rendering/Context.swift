@@ -136,8 +136,15 @@ public class Context {
         var empty = false
         if let expression = parser.parse(string, empty: &empty, error: outError) {
             let invocation = ExpressionInvocation(expression: expression)
-            if invocation.invokeWithContext(self, error: outError) {
-                return invocation.value
+            let invocationResult = invocation.invokeWithContext(self)
+            switch invocationResult {
+            case .Error(let error):
+                if outError != nil {
+                    outError.memory = error
+                }
+                return nil
+            case .Success(let value):
+                return value
             }
         }
         return nil
