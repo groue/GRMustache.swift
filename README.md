@@ -72,7 +72,7 @@ Forget the strict minimalism of the genuine Mustache language: GRMustache ships 
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralizeFilter = { (count: Int?, renderingInfo: RenderingInfo) -> Rendering in
+let pluralize = { (count: Int?, renderingInfo: RenderingInfo) -> Rendering in
     
     // Pluralize the section inner content if needed:
     var string = renderingInfo.tag.innerTemplateString
@@ -86,7 +86,7 @@ let pluralizeFilter = { (count: Int?, renderingInfo: RenderingInfo) -> Rendering
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContextWithValue(Value(pluralizeFilter), forKey: "pluralize")
+Configuration.defaultConfiguration.extendBaseContextWithValue(Value(pluralize), forKey: "pluralize")
 
 
 // I have 3 cats.
