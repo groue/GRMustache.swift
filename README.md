@@ -76,7 +76,7 @@ let pluralizeFilter = { (count: Int?) -> (Value) in
     
     // Return a block that performs custom rendering:
     
-    return Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+    return Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
         
         // Pluralize the section inner content if needed:
         
