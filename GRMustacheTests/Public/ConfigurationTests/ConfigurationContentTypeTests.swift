@@ -42,9 +42,8 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testDefaultConfigurationContentTypeHTMLHasTemplateRenderHTML() {
-        // Templates tell if they render HTML or text via their
-        // render(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
-        // method.
+        // Templates tell if they render HTML or Text via their
+        // MustacheRenderable mustacheRender(RenderingInfo) method.
         //
         // There is no public way to build a RenderingInfo.
         //
@@ -53,25 +52,26 @@ class ConfigurationContentTypeTests: XCTestCase {
         Configuration.defaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = testedTemplate.render(renderingInfo, contentType: contentType, error:error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = testedTemplate.mustacheRender(renderingInfo)
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.HTML)
+        XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasTemplateRenderText() {
-        // Templates tell if they render HTML or text via their
-        // render(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
-        // method.
+        // Templates tell if they render HTML or Text via their
+        // MustacheRenderable mustacheRender(RenderingInfo) method.
         //
         // There is no public way to build a RenderingInfo.
         //
@@ -80,95 +80,105 @@ class ConfigurationContentTypeTests: XCTestCase {
         Configuration.defaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = testedTemplate.render(renderingInfo, contentType: contentType, error:error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = testedTemplate.mustacheRender(renderingInfo)
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.Text)
+        XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasSectionTagRenderHTML() {
         Configuration.defaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = tag.renderContent(renderingInfo, contentType: contentType, error: error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = renderingInfo.render()
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.HTML)
+        XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasSectionTagRenderText() {
         Configuration.defaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = tag.renderContent(renderingInfo, contentType: contentType, error: error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = renderingInfo.render()
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.Text)
+        XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasVariableTagRenderHTML() {
         Configuration.defaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = tag.renderContent(renderingInfo, contentType: contentType, error: error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = renderingInfo.render()
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.HTML)
+        XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasVariableTagRenderText() {
         Configuration.defaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
-        var templateContentType: ContentType = .HTML
-        var templateContentTypeDefined = false
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            let rendering = tag.renderContent(renderingInfo, contentType: contentType, error: error)
-            templateContentType = contentType.memory
-            templateContentTypeDefined = true
-            return nil
+        var testedContentType: ContentType?
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            let rendering = renderingInfo.render()
+            switch rendering {
+            case .Success(let string, let contentType):
+                testedContentType = contentType
+            default:
+                break
+            }
+            return rendering
         }
         
         let template = Template(string: "{{.}}")!
         template.render(Value(renderable))
-        XCTAssertTrue(templateContentTypeDefined)
-        XCTAssertEqual(templateContentType, ContentType.Text)
+        XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testPragmaContentTypeTextOverridesDefaultConfiguration() {

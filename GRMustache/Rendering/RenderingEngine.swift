@@ -7,20 +7,35 @@
 //
 
 public struct RenderingInfo {
+    public let tag: Tag
     public let context: Context
     let enumerationItem: Bool
     
     public func renderingInfoByExtendingContextWithValue(value: Value) -> RenderingInfo {
-        return RenderingInfo(context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
+        return RenderingInfo(tag: tag, context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
     }
     
     public func renderingInfoByExtendingContextWithTagObserver(tagObserver: MustacheTagObserver) -> RenderingInfo {
-        return RenderingInfo(context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
+        return RenderingInfo(tag: tag, context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
     }
     
     func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
-        return RenderingInfo(context: context, enumerationItem: true)
+        return RenderingInfo(tag: tag, context: context, enumerationItem: true)
     }
+    
+    public func render(_ context: Context? = nil) -> Rendering {
+        return tag.render(context ?? self.context)
+    }
+}
+
+public enum ContentType {
+    case Text
+    case HTML
+}
+
+public enum Rendering {
+    case Error(NSError)
+    case Success(String, ContentType)
 }
 
 class RenderingEngine: TemplateASTVisitor {
@@ -33,15 +48,13 @@ class RenderingEngine: TemplateASTVisitor {
         self.context = context
     }
     
-    func render(templateAST: TemplateAST, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    func render(templateAST: TemplateAST) -> Rendering {
         buffer = ""
-        if !visit(templateAST, error: outError) {
-            return nil
+        var error: NSError?
+        if !visit(templateAST, error: &error) {
+            return .Error(error!)
         }
-        if outContentType != nil {
-            outContentType.memory = contentType
-        }
-        return buffer!
+        return .Success(buffer!, contentType)
     }
     
     
@@ -136,17 +149,21 @@ class RenderingEngine: TemplateASTVisitor {
         } else {
             // Render separately
             let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
-            var renderingContentType: ContentType = .Text
-            if let rendering = renderingEngine.render(templateAST, contentType: &renderingContentType, error: outError) {
+            let rendering = renderingEngine.render(templateAST)
+            switch rendering {
+            case .Error(let error):
+                if outError != nil {
+                    outError.memory = error
+                }
+                return false
+            case .Success(let string, let renderingContentType):
                 switch (contentType, renderingContentType) {
                 case (.HTML, .Text):
-                    buffer = buffer! + escapeHTML(rendering)
+                    buffer = buffer! + escapeHTML(string)
                 default:
-                    buffer = buffer! + rendering
+                    buffer = buffer! + string
                 }
                 return true
-            } else {
-                return false
             }
         }
     }
@@ -206,64 +223,53 @@ class RenderingEngine: TemplateASTVisitor {
                 value = tagObserver.mustacheTag(tag, willRenderValue: value)
             }
             
-            let renderingInfo = RenderingInfo(context: context, enumerationItem: false)
-            var rendering: String?
-            var renderingContentType: ContentType = .Text   // Default .Text, so that we assume unsafe rendering from users who do not explicitly set it.
-            var renderingError: NSError? = nil              // Default nil, so that we assume success from users who do not explicitly set it.
+            let renderingInfo = RenderingInfo(tag: tag, context: context, enumerationItem: false)
+            var rendering: Rendering
             switch tag.type {
             case .Variable:
-                rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                rendering = value.render(renderingInfo)
             case .Section:
                 let boolValue = value.mustacheBool
                 if tag.inverted {
                     if boolValue {
-                        rendering = ""
-                        renderingContentType = .Text
+                        rendering = .Success("", .Text)
                     } else {
-                        rendering = tag.renderContent(renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                        rendering = renderingInfo.render()
                     }
                 } else {
                     if boolValue {
-                        rendering = value.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: &renderingContentType, error: &renderingError)
+                        rendering = value.render(renderingInfo)
                     } else {
-                        rendering = ""
-                        renderingContentType = .Text
+                        rendering = .Success("", .Text)
                     }
                 }
             }
             
-            if rendering == nil && renderingError == nil {
-                // Rendering is nil, but rendering error is not set.
-                // Assume a rendering object coded by a lazy programmer, whose
-                // intention is to render nothing.
-                rendering = ""
-            }
-            
-            if let rendering = rendering {
-                var rendering = rendering
-                switch (contentType, renderingContentType, escapesHTML) {
-                case (.HTML, .Text, true):
-                    rendering = escapeHTML(rendering)
-                default:
-                    break
-                }
-                
-                buffer = buffer! + rendering
-                
-                for tagObserver in tagObserverStack.reverse() {
-                    tagObserver.mustacheTag(tag, didRender:rendering, forValue: value)
-                }
-                
-                return true
-            } else {
+            switch rendering {
+            case .Error(let error):
                 for tagObserver in tagObserverStack.reverse() {
                     tagObserver.mustacheTag(tag, didRender:nil, forValue: value)
                 }
                 
                 if outError != nil {
-                    outError.memory = renderingError!
+                    outError.memory = error
                 }
                 return false
+            case .Success(var string, let renderingContentType):
+                switch (contentType, renderingContentType, escapesHTML) {
+                case (.HTML, .Text, true):
+                    string = escapeHTML(string)
+                default:
+                    break
+                }
+                
+                buffer = buffer! + string
+                
+                for tagObserver in tagObserverStack.reverse() {
+                    tagObserver.mustacheTag(tag, didRender:string, forValue: value)
+                }
+                
+                return true
             }
         } else {
             return false
@@ -283,16 +289,15 @@ extension Bool: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch tag.type {
+    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+        switch renderingInfo.tag.type {
         case .Variable:
-            return "\(self)"
+            return .Success("\(self)", .Text)
         case .Section:
             if renderingInfo.enumerationItem {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)))
             } else {
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render()
             }
         }
     }
@@ -306,16 +311,15 @@ extension Int: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch tag.type {
+    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+        switch renderingInfo.tag.type {
         case .Variable:
-            return "\(self)"
+            return .Success("\(self)", .Text)
         case .Section:
             if renderingInfo.enumerationItem {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)))
             } else {
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render()
             }
         }
     }
@@ -329,16 +333,15 @@ extension Double: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch tag.type {
+    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+        switch renderingInfo.tag.type {
         case .Variable:
-            return "\(self)"
+            return .Success("\(self)", .Text)
         case .Section:
             if renderingInfo.enumerationItem {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)))
             } else {
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render()
             }
         }
     }
@@ -352,13 +355,12 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        switch tag.type {
+    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+        switch renderingInfo.tag.type {
         case .Variable:
-            return self
+            return .Success(self, .Text)
         case .Section:
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)))
         }
     }
     

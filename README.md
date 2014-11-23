@@ -80,11 +80,12 @@ let pluralizeFilter = { (count: Int?) -> (Value) in
         
         // Pluralize the section inner content if needed:
         
+        var string = renderingInfo.tag.innerTemplateString
         if count! > 1 {
-            return tag.innerTemplateString + "s"  // naive
-        } else {
-            return tag.innerTemplateString
+            string = string + "s"  // naive
         }
+        
+        return .Success(string, .Text)
     })
 }
 

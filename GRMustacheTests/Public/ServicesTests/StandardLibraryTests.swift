@@ -23,9 +23,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
-        let renderable = Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            contentType.memory = .Text
-            return "<"
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<", .Text)
         })
         
         var template = Template(string: "{{# HTML.escape }}{{ object }}{{/ }}")!
@@ -39,9 +38,8 @@ class StandardLibraryTests: XCTestCase {
     
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
-        let renderable = Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            contentType.memory = .HTML
-            return "<br>"
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<br>", .HTML)
         })
         
         var template = Template(string: "{{# HTML.escape }}{{ object }}{{/ }}")!
@@ -54,8 +52,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryJavascriptEscapeDoesEscapeRenderable() {
-        let renderable = Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            return "\"double quotes\" and 'single quotes'"
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("\"double quotes\" and 'single quotes'", .Text)
         })
         let template = Template(string: "{{# javascript.escape }}{{ object }}{{/ }}")!
         let rendering = template.render(Value(["object": renderable]))!
@@ -63,8 +61,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryURLEscapeDoesEscapeRenderingObjects() {
-        let renderable = Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
-            return "&"
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .Text)
         })
         let template = Template(string: "{{# URL.escape }}{{ object }}{{/ }}")!
         let rendering = template.render(Value(["object": renderable]))!

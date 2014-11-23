@@ -257,22 +257,12 @@ class TagObserverTests: XCTestCase {
         }
         let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
         
-        var template = Template(string: "-{{.}}-")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
-        failedRendering = true
-        var rendering = template.render(Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return nil
-        }))
-        XCTAssertEqual(rendering!, "--")
-        XCTAssertFalse(failedRendering)
-        
-        template = Template(string: "-{{.}}-")!
+        let template = Template(string: "-{{.}}-")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
         failedRendering = false
         var error: NSError?
-        rendering = template.render(Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outError.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
-            return nil
+        let rendering = template.render(Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Error(NSError(domain: "TagObserverError", code: 1, userInfo: nil))
         }), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, "TagObserverError")

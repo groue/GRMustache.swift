@@ -28,8 +28,8 @@ class ValueTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                return nil
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+                return .Success("", .Text)
             }
         }
         
@@ -107,8 +107,8 @@ class ValueTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                return nil
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+                return .Success("", .Text)
             }
         }
         

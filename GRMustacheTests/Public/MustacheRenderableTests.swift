@@ -12,94 +12,64 @@ import GRMustache
 class RenderableTests: XCTestCase {
 
     func testRenderablePerformsVariableRendering() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "---"
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("---", .Text)
         }
         let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
     func testRenderablePerformsSectionRendering() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "---"
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("---", .Text)
         }
         let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
-    func testRenderableObjectExplicitHTMLRenderingOfEscapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "&"
+    func testRenderableObjectHTMLRenderingOfEscapedVariableTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .HTML)
         }
         let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
-    func testRenderableObjectExplicitHTMLRenderingOfUnescapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "&"
+    func testRenderableObjectHTMLRenderingOfUnescapedVariableTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .HTML)
         }
         let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
-    func testRenderableObjectExplicitTextRenderingOfEscapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "&"
+    func testRenderableObjectTextRenderingOfEscapedVariableTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .Text)
         }
         let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
-    func testRenderableObjectExplicitTextRenderingOfUnescapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "&"
+    func testRenderableObjectTextRenderingOfUnescapedVariableTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .Text)
         }
         let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
-    func testRenderableObjectImplicitTextRenderingOfEscapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "&"
-        }
-        let rendering = Template(string: "{{.}}")!.render(Value(renderable))!
-        XCTAssertEqual(rendering, "&amp;")
-    }
-    
-    func testRenderableObjectImplicitTextRenderingOfUnescapedVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "&"
-        }
-        let rendering = Template(string: "{{{.}}}")!.render(Value(renderable))!
-        XCTAssertEqual(rendering, "&")
-    }
-    
-    func testRenderableObjectExplicitHTMLRenderingOfSectionTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "&"
+    func testRenderableObjectHTMLRenderingOfSectionTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .HTML)
         }
         let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
-    func testRenderableObjectExplicitTextRenderingOfSectionTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "&"
-        }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
-        XCTAssertEqual(rendering, "&amp;")
-    }
-    
-    func testRenderableObjectImplicitTextRenderingOfSectionTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "&"
+    func testRenderableObjectTextRenderingOfSectionTag() {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("&", .Text)
         }
         let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "&amp;")
@@ -107,9 +77,8 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanSetErrorFromVariableTag() {
         let errorDomain = "ClusterTests"
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
-            return nil
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Error(NSError(domain: errorDomain, code: 0, userInfo: nil))
         }
         var error: NSError?
         let rendering = Template(string: "{{.}}")!.render(Value(renderable), error: &error)
@@ -119,9 +88,8 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanSetErrorFromSectionTag() {
         let errorDomain = "ClusterTests"
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outError.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
-            return nil
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Error(NSError(domain: errorDomain, code: 0, userInfo: nil))
         }
         var error: NSError?
         let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable), error: &error)
@@ -129,32 +97,16 @@ class RenderableTests: XCTestCase {
         XCTAssertEqual(error!.domain, errorDomain)
     }
     
-    func testRenderableObjectCanRenderNilWithoutSettingErrorFromVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return nil
-        }
-        let rendering = Template(string: "<{{.}}>")!.render(Value(renderable))!
-        XCTAssertEqual(rendering, "<>")
-    }
-    
-    func testRenderableObjectCanRenderNilWithoutSettingErrorFromSectionTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return nil
-        }
-        let rendering = Template(string: "<{{#.}}{{/.}}>")!.render(Value(renderable))!
-        XCTAssertEqual(rendering, "<>")
-    }
-    
     func testRenderableObjectCanAccessVariableTagType() {
         var variableTagDetections = 0
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            switch tag.type {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            switch renderingInfo.tag.type {
             case .Variable:
                 ++variableTagDetections
             default:
                 break
             }
-            return nil
+            return .Success("", .Text)
         }
         Template(string: "{{.}}")!.render(Value(renderable))
         XCTAssertEqual(variableTagDetections, 1)
@@ -162,14 +114,14 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessSectionTagType() {
         var sectionTagDetections = 0
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            switch tag.type {
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            switch renderingInfo.tag.type {
             case .Section:
                 ++sectionTagDetections
             default:
                 break
             }
-            return nil
+            return .Success("", .Text)
         }
         Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(sectionTagDetections, 1)
@@ -177,9 +129,9 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessInnerTemplateStringFromSectionTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = tag.innerTemplateString
-            return nil
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return .Success("", .Text)
         }
         Template(string: "{{#.}}{{subject}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
@@ -187,9 +139,9 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanAccessInnerTemplateStringFromExtensionSectionTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = tag.innerTemplateString
-            return nil
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return .Success("", .Text)
         }
         Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
@@ -197,76 +149,92 @@ class RenderableTests: XCTestCase {
 
     func testRenderableObjectCanAccessInnerTemplateStringFromVariableTag() {
         var innerTemplateString: String? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            innerTemplateString = tag.innerTemplateString
-            return nil
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            innerTemplateString = renderingInfo.tag.innerTemplateString
+            return .Success("", .Text)
         }
         Template(string: "{{.}}")!.render(Value(renderable))
         XCTAssertEqual(innerTemplateString!, "")
     }
     
     func testRenderableObjectCanAccessRenderedContentFromSectionTag() {
-        var renderedContent: String? = nil
-        var renderedContentType: ContentType? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
-            renderedContentType = outContentType.memory
-            return nil
+        var tagRendering: Rendering = .Success("failure", .Text)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            tagRendering = renderingInfo.render()
+            return tagRendering
         }
+        
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         Template(string: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
-        XCTAssertEqual(renderedContent!, "-=-")
-        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+        
+        switch tagRendering {
+        case .Error:
+            XCTFail()
+        case .Success(let renderedContent, let renderedContentType):
+            XCTAssertEqual(renderedContent, "-=-")
+            XCTAssertEqual(renderedContentType, ContentType.HTML)
+        }
     }
     
     func testRenderableObjectCanAccessRenderedContentFromExtensionSectionTag() {
-        var renderedContent: String? = nil
-        var renderedContentType: ContentType? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
-            renderedContentType = outContentType.memory
-            return nil
+        var tagRendering: Rendering = .Success("failure", .Text)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            tagRendering = renderingInfo.render()
+            return tagRendering
         }
+        
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         Template(string: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
-        XCTAssertEqual(renderedContent!, "-=-")
-        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+        
+        switch tagRendering {
+        case .Error:
+            XCTFail()
+        case .Success(let renderedContent, let renderedContentType):
+            XCTAssertEqual(renderedContent, "-=-")
+            XCTAssertEqual(renderedContentType, ContentType.HTML)
+        }
     }
     
     func testRenderableObjectCanAccessRenderedContentFromEscapedVariableTag() {
-        var renderedContent: String? = nil
-        var renderedContentType: ContentType? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
-            renderedContentType = outContentType.memory
-            return nil
+        var tagRendering: Rendering = .Success("failure", .Text)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            tagRendering = renderingInfo.render()
+            return tagRendering
         }
+        
         Template(string: "{{.}}")!.render(Value(renderable))
-        XCTAssertEqual(renderedContent!, "")
-        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+        
+        switch tagRendering {
+        case .Error:
+            XCTFail()
+        case .Success(let renderedContent, let renderedContentType):
+            XCTAssertEqual(renderedContent, "")
+            XCTAssertEqual(renderedContentType, ContentType.HTML)
+        }
     }
     
     func testRenderableObjectCanAccessRenderedContentFromUnescapedVariableTag() {
-        var renderedContent: String? = nil
-        var renderedContentType: ContentType? = nil
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-            renderedContent = tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
-            renderedContentType = outContentType.memory
-            return nil
+        var tagRendering: Rendering = .Success("failure", .Text)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            tagRendering = renderingInfo.render()
+            return tagRendering
         }
+        
         Template(string: "{{{.}}}")!.render(Value(renderable))
-        XCTAssertEqual(renderedContent!, "")
-        XCTAssertEqual(renderedContentType!, ContentType.HTML)
+        
+        switch tagRendering {
+        case .Error:
+            XCTFail()
+        case .Success(let renderedContent, let renderedContentType):
+            XCTAssertEqual(renderedContent, "")
+            XCTAssertEqual(renderedContentType, ContentType.HTML)
+        }
     }
     
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
         let altTemplate = Template(string:"{{subject}}")!
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return altTemplate.mustacheRender(renderingInfo)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
@@ -275,8 +243,8 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
         let altTemplate = Template(string:"{{subject}}")!
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return altTemplate.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return altTemplate.mustacheRender(renderingInfo)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let rendering = Template(string: "{{#renderable}}{{/renderable}}")!.render(value)!
@@ -288,8 +256,8 @@ class RenderableTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value("value")
             }
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                return Template(string:"key:{{key}}")!.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+                return Template(string:"key:{{key}}")!.mustacheRender(renderingInfo)
             }
         }
         let value = Value(["renderable": Value(TestedRenderable())])
@@ -302,9 +270,8 @@ class RenderableTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value("value")
             }
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+                return renderingInfo.render()
             }
         }
         let value = Value(["renderable": Value(TestedRenderable())])
@@ -313,10 +280,10 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(["subject2": Value("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
-            return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+            return template.mustacheRender(renderingInfo)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
@@ -324,10 +291,8 @@ class RenderableTests: XCTestCase {
     }
     
     func testRenderableObjectCanExtendValueContextStackInSectionTag() {
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(["subject2": Value("+++")]))
-            // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(["subject2": Value("+++")])))
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = Template(string: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!.render(value)!
@@ -337,10 +302,10 @@ class RenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInVariableTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
                 let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
                 let template = Template(string: "{{subject}}{{subject}}")!
-                return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+                return template.mustacheRender(renderingInfo)
             }
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 ++tagWillRenderCount
@@ -359,10 +324,8 @@ class RenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInSectionTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
-                // TODO: "tag.renderContent(renderingInfo" is not a nice API.
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+                return renderingInfo.render(renderingInfo.context.contextByAddingTagObserver(self))
             }
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 ++tagWillRenderCount
@@ -393,8 +356,8 @@ class RenderableTests: XCTestCase {
             }
         }
         
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return renderingInfo.render()
         }
         
         let template = Template(string: "{{#renderable}}{{subject}}{{/renderable}}")!
@@ -419,9 +382,9 @@ class RenderableTests: XCTestCase {
             }
         }
         
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
             let template = Template(string: "{{subject}}")!
-            return template.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+            return template.mustacheRender(renderingInfo)
         }
         
         let template = Template(string: "{{renderable}}")!
@@ -446,9 +409,9 @@ class RenderableTests: XCTestCase {
             }
         }
         
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
             let template = Template(string: "{{subject}}")!
-            return template.render(renderingInfo, contentType: outContentType, error: outError)
+            return template.mustacheRender(renderingInfo)
         }
         
         let template = Template(string: "{{#renderable}}{{/renderable}}")!
@@ -459,11 +422,11 @@ class RenderableTests: XCTestCase {
     }
     
     func testArrayOfRenderableObjectsInSectionTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "1"
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("1", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "2"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("2", .Text)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(value)!
@@ -471,91 +434,59 @@ class RenderableTests: XCTestCase {
     }
     
     func testArrayOfRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "1"
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("1", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "2"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("2", .Text)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "12")
     }
     
-    func testArrayOfExplicitHTMLRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<1>"
+    func testArrayOfHTMLRenderableObjectsInEscapedVariableTag() {
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .HTML)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .HTML)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
-    func testArrayOfExplicitHTMLRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<1>"
+    func testArrayOfHTMLRenderableObjectsInUnescapedVariableTag() {
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .HTML)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .HTML)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
-    func testArrayOfExplicitTextRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<1>"
+    func testArrayOfTextRenderableObjectsInEscapedVariableTag() {
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .Text)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
     
-    func testArrayOfExplicitTextRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<1>"
+    func testArrayOfTextRenderableObjectsInUnescapedVariableTag() {
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<2>"
-        }
-        let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template(string: "{{{items}}}")!.render(value)!
-        XCTAssertEqual(rendering, "<1><2>")
-    }
-    
-    func testArrayOfImplicitTextRenderableObjectsInEscapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "<1>"
-        }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "<2>"
-        }
-        let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
-        let rendering = Template(string: "{{items}}")!.render(value)!
-        XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
-    }
-    
-    func testArrayOfImplicitTextRenderableObjectsInUnescapedVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "<1>"
-        }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .Text)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         let rendering = Template(string: "{{{items}}}")!.render(value)!
@@ -563,13 +494,11 @@ class RenderableTests: XCTestCase {
     }
     
     func testArrayOfInconsistentContentTypeRenderableObjectsInVariableTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<1>"
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .HTML)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         var error: NSError?
@@ -580,13 +509,11 @@ class RenderableTests: XCTestCase {
     }
     
     func testArrayOfInconsistentContentTypeRenderableObjectsInSectionTag() {
-        let renderable1 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .Text
-            return "<1>"
+        let renderable1 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<1>", .Text)
         }
-        let renderable2 = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
-            outContentType.memory = .HTML
-            return "<2>"
+        let renderable2 = { (renderingInfo: RenderingInfo) -> (Rendering) in
+            return .Success("<2>", .HTML)
         }
         let value = Value(["items": Value([Value(renderable1), Value(renderable2)])])
         var error: NSError?
@@ -618,9 +545,9 @@ class RenderableTests: XCTestCase {
             "partial": "{{subject}}",
         ]
         let repository = TemplateRepository(templates: templates)
-        let renderable = { (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
             let altTemplate = Template(string: "{{>partial}}")!
-            return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+            return altTemplate.mustacheRender(renderingInfo)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let template = repository.template(named: "template")!
@@ -637,9 +564,9 @@ class RenderableTests: XCTestCase {
             "partial": "partial2"])
         let value = Value([
             "template2": Value(repository2.template(named: "template2")!),
-            "renderable": Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
                 let altTemplate = Template(string: "{{>partial}}")!
-                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.mustacheRender(renderingInfo)
             })])
         let template = repository1.template(named: "template1")!
         let rendering = template.render(value)!
@@ -649,9 +576,9 @@ class RenderableTests: XCTestCase {
     func testRenderableObjectInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
         let value = Value([
             "object": Value("&"),
-            "renderable": Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.mustacheRender(renderingInfo)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{renderable}}")!
@@ -662,9 +589,9 @@ class RenderableTests: XCTestCase {
     func testRenderableObjectInheritTextContentTypeOfCurrentlyRenderedTemplate() {
         let value = Value([
             "object": Value("&"),
-            "renderable": Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.mustacheRender(renderingInfo)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{renderable}}")!
@@ -678,9 +605,9 @@ class RenderableTests: XCTestCase {
             "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderable }}"])
         let value = Value([
             "value": Value("&"),
-            "renderable": Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+            "renderable": Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
                 let altTemplate = Template(string: "{{ value }}")!
-                return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+                return altTemplate.mustacheRender(renderingInfo)
             })])
         let template = repository.template(named: "templateHTML")!
         let rendering = template.render(value)!
@@ -694,9 +621,9 @@ class RenderableTests: XCTestCase {
             "templateText": "{{ renderable }}"])
         repository2.configuration.contentType = .Text
         
-        let renderableValue = Value({ (tag: Tag, renderingInfo: RenderingInfo, outContentType: ContentTypePointer, outError: NSErrorPointer) -> (String?) in
+        let renderableValue = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
             let altTemplate = Template(string: "{{{ value }}}")!
-            return altTemplate.render(renderingInfo, contentType: outContentType, error: outError)
+            return altTemplate.mustacheRender(renderingInfo)
         })
         let value = Value([
             "value": Value("&"),

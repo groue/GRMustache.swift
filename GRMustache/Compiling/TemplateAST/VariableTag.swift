@@ -33,11 +33,8 @@ class VariableTag: MustacheExpressionTag, TemplateASTNode {
         return visitor.visit(self, error: outError)
     }
     
-    func renderContent(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        if outContentType != nil {
-            outContentType.memory = contentType
-        }
-        return ""
+    func render(context: Context) -> Rendering {
+        return .Success("", contentType)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

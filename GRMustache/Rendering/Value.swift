@@ -69,7 +69,7 @@ public protocol MustacheInspectable: MustacheWrappable {
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
-    func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String?
+    func mustacheRender(renderingInfo: RenderingInfo) -> Rendering
 }
 
 public protocol MustacheTagObserver: MustacheWrappable {
@@ -327,15 +327,15 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?)) {
+    public convenience init(_ block: (renderingInfo: RenderingInfo) -> (Rendering)) {
         self.init(BlockRenderable(block: block))
     }
     
     private struct BlockRenderable: MustacheRenderable {
-        let block: (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?)
+        let block: (renderingInfo: RenderingInfo) -> Rendering
         
-        func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-            return block(tag: tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+        func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+            return block(renderingInfo: renderingInfo)
         }
     }
 }
@@ -651,131 +651,105 @@ extension Value {
         }
     }
     
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        let tag = tag
+    public func render(renderingInfo: RenderingInfo) -> Rendering {
+        let tag = renderingInfo.tag
         switch type {
         case .None:
             switch tag.type {
             case .Variable:
-                return ""
+                return .Success("", .Text)
             case .Section:
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context)
             }
         case .DictionaryValue(let dictionary):
             switch tag.type {
             case .Variable:
-                return "\(dictionary)"
-
+                return .Success("\(dictionary)", .Text)
             case .Section:
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
             }
         case .ArrayValue(let array):
             if renderingInfo.enumerationItem {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
             } else {
                 var buffer = ""
                 var contentType: ContentType?
-                var empty = true
                 let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
                 for item in array {
-                    empty = false
-                    var itemContentType: ContentType = .Text
-                    if let itemRendering = item.renderForMustacheTag(tag, renderingInfo: enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
+                    let itemRendering = item.render(enumerationRenderingInfo)
+                    switch itemRendering {
+                    case .Error:
+                        return itemRendering
+                    case .Success(let string, let itemContentType):
                         if contentType == nil {
                             contentType = itemContentType
-                            buffer = buffer + itemRendering
+                            buffer += string
                         } else if contentType == itemContentType {
-                            buffer = buffer + itemRendering
+                            buffer += string
                         } else {
-                            if outError != nil {
-                                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
+                            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"]))
                         }
-                    } else {
-                        return nil
                     }
                 }
-
-                if empty {
+                
+                if let contentType = contentType {
+                    return .Success(buffer, contentType)
+                } else {
                     switch tag.type {
                     case .Variable:
-                        if outContentType != nil {
-                            outContentType.memory = .Text
-                        }
-                        return ""
+                        return .Success("", .Text)
                     case .Section:
-                        return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                        return renderingInfo.render(renderingInfo.context)
                     }
-                } else {
-                    if outContentType != nil {
-                        outContentType.memory = contentType!
-                    }
-                    return buffer
                 }
             }
         case .SetValue(let set):
             if renderingInfo.enumerationItem {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
             } else {
                 var buffer = ""
                 var contentType: ContentType?
-                var empty = true
                 let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
                 for item in set {
-                    empty = false
-                    var itemContentType: ContentType = .Text
-                    if let itemRendering = Value(item).renderForMustacheTag(tag, renderingInfo: enumerationRenderingInfo, contentType: &itemContentType, error: outError) {
+                    let itemRendering = Value(item).render(enumerationRenderingInfo)
+                    switch itemRendering {
+                    case .Error:
+                        return itemRendering
+                    case .Success(let string, let itemContentType):
                         if contentType == nil {
                             contentType = itemContentType
-                            buffer = buffer + itemRendering
+                            buffer += string
                         } else if contentType == itemContentType {
-                            buffer = buffer + itemRendering
+                            buffer += string
                         } else {
-                            if outError != nil {
-                                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
+                            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"]))
                         }
-                    } else {
-                        return nil
                     }
                 }
 
-                if empty {
+                if let contentType = contentType {
+                    return .Success(buffer, contentType)
+                } else {
                     switch tag.type {
                     case .Variable:
-                        if outContentType != nil {
-                            outContentType.memory = .Text
-                        }
-                        return ""
+                        return .Success("", .Text)
                     case .Section:
-                        return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                        return renderingInfo.render(renderingInfo.context)
                     }
-                } else {
-                    if outContentType != nil {
-                        outContentType.memory = contentType!
-                    }
-                    return buffer
                 }
             }
         case .AnyObjectValue(let object):
             switch tag.type {
             case .Variable:
-                return "\(object)"
+                return .Success("\(object)", .Text)
             case .Section:
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
-                return renderable.renderForMustacheTag(tag, renderingInfo: renderingInfo, contentType: outContentType, error: outError)
+                return renderable.mustacheRender(renderingInfo)
             } else {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(self)
-                return tag.renderContent(renderingInfo, contentType: outContentType, error: outError)
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
             }
         }
     }

@@ -34,15 +34,16 @@ class ReadMeTests: XCTestCase {
             
             // Return a block that performs custom rendering:
             
-            return Value({ (tag: Tag, renderingInfo: RenderingInfo, contentType: ContentTypePointer, error: NSErrorPointer) -> (String?) in
+            return Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
                 
                 // Pluralize the section inner content if needed:
                 
+                var string = renderingInfo.tag.innerTemplateString
                 if count! > 1 {
-                    return tag.innerTemplateString + "s"  // naive
-                } else {
-                    return tag.innerTemplateString
+                    string = string + "s"  // naive
                 }
+                
+                return .Success(string, .Text)
             })
         }
         

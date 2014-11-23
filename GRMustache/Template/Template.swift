@@ -69,30 +69,32 @@ public class Template: MustacheRenderable {
     }
     
     public func render(_ value: Value = Value(), error outError: NSErrorPointer = nil) -> String? {
-        let context = baseContext.contextByAddingValue(value)
-        var contentType: ContentType = .Text
-        return render(context, contentType: &contentType, error: outError)
-    }
-    
-    public func render(renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return render(renderingInfo.context, contentType: outContentType, error: outError)
+        let rendering = render(baseContext.contextByAddingValue(value))
+        switch rendering {
+        case .Error(let error):
+            if outError != nil {
+                outError.memory = error
+            }
+            return nil
+        case .Success(let string, let _):
+            return string
+        }
     }
     
     
     // MARK: - MustacheRenderable
     
-    // TODO: make this one not public
-    public func renderForMustacheTag(tag: Tag, renderingInfo: RenderingInfo, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
-        return render(renderingInfo.context, contentType: outContentType, error: outError)
+    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+        return render(renderingInfo.context)
     }
     
     
     // MARK: - Private
     
-    private func render(context: Context, contentType outContentType: ContentTypePointer, error outError: NSErrorPointer) -> String? {
+    private func render(context: Context) -> Rendering {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         RenderingEngine.pushCurrentTemplateRepository(repository)
-        let rendering = renderingEngine.render(templateAST, contentType: outContentType, error: outError)
+        let rendering = renderingEngine.render(templateAST)
         RenderingEngine.popCurrentTemplateRepository()
         return rendering
     }
