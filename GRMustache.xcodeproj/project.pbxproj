@@ -453,12 +453,12 @@
 			children = (
 				56FC9C831A17CD0C0020AAF8 /* ConfigurationTests */,
 				56FC9C881A17CD0C0020AAF8 /* ContextTests */,
+				56C8D6E21A1F1AD800F106F8 /* DocumentationTests */,
 				56FC9C8F1A189F960020AAF8 /* FilterTests */,
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				5698D0261A1626240039D564 /* MustacheInspectableTests.swift */,
 				56A88EC71A066EC40055E40A /* MustacheRenderableTests.swift */,
-				56C8D6E21A1F1AD800F106F8 /* ReadMeTests */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
 				5602507E1A1E0A82008E4BD6 /* TagObserverTests */,
 				56B4019D1A1F643B002D5CD7 /* TagTests */,
@@ -476,14 +476,14 @@
 			path = GRMustacheSuite;
 			sourceTree = "<group>";
 		};
-		56C8D6E21A1F1AD800F106F8 /* ReadMeTests */ = {
+		56C8D6E21A1F1AD800F106F8 /* DocumentationTests */ = {
 			isa = PBXGroup;
 			children = (
 				56C8D6E31A1F1AD800F106F8 /* ReadMeExample1.mustache */,
 				56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */,
 				56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */,
 			);
-			path = ReadMeTests;
+			path = DocumentationTests;
 			sourceTree = "<group>";
 		};
 		56FC9C831A17CD0C0020AAF8 /* ConfigurationTests */ = {
