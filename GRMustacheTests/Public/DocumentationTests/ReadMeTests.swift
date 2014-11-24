@@ -34,7 +34,7 @@ class ReadMeTests: XCTestCase {
             
             // Pluralize the section inner content if needed:
             var string = renderingInfo.tag.innerTemplateString
-            if count! > 1 {
+            if count > 1 {
                 string = string + "s"  // naive
             }
             
