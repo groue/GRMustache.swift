@@ -33,9 +33,9 @@ class SectionTag: MustacheExpressionTag, TemplateASTNode {
         return visitor.visit(self)
     }
     
-    func render(context: Context) -> Rendering {
+    func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.render(templateAST)
+        return renderingEngine.render(templateAST, error: error)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

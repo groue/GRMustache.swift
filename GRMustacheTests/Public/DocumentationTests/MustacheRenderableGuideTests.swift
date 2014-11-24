@@ -12,12 +12,12 @@ import GRMustache
 class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample1() {
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch renderingInfo.tag.type {
             case .Variable:
-                return .Success("I'm rendering a {{ variable }} tag.", .Text)
+                return Rendering("I'm rendering a {{ variable }} tag.")
             case .Section:
-                return .Success("I'm rendering a {{# section }}...{{/ }} tag.", .Text)
+                return Rendering("I'm rendering a {{# section }}...{{/ }} tag.")
             }
         }
         
@@ -29,8 +29,8 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample2() {
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            return .Success("Arthur & Cie", .Text)
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("Arthur & Cie")
         }
         
         let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Value(renderable))!
@@ -38,14 +38,9 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample3() {
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Error:
-                return rendering
-            case .Success(let string, let contentType):
-                return .Success("<strong>\(string)</strong>", contentType)
-            }
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render()!
+            return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
         let value = Value([
@@ -56,14 +51,9 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample4() {
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Error:
-                return rendering
-            case .Success(let string, let contentType):
-                return .Success(string + string, contentType)
-            }
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render()!
+            return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
         let value = Value(["twice": Value(renderable)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(value)!
@@ -71,9 +61,9 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
 
     func textExample5() {
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "<a href=\"{{url}}\">\(renderingInfo.tag.innerTemplateString)</a>")!
-            return template.mustacheRender(renderingInfo)
+            return template.mustacheRender(renderingInfo, error: error)
         }
         // TODO: avoid this `as [String: Value]` cast
         let value = Value([

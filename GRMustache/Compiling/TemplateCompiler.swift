@@ -17,36 +17,36 @@ class TemplateCompiler: TemplateTokenConsumer {
         self.templateID = templateID
     }
     
-    func templateAST(error outError: NSErrorPointer) -> TemplateAST? {
+    func templateAST(#error: NSErrorPointer) -> TemplateAST? {
         switch(state) {
         case .Compiling(let compilationState):
             switch compilationState.currentScope.type {
             case .Root:
                 return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
-                if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
+                if error != nil {
+                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InvertedSection(openingToken: let openingToken, expression: _):
-                if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
+                if error != nil {
+                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InheritablePartial(openingToken: let openingToken, partialName: _):
-                if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
+                if error != nil {
+                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             case .InheritableSection(openingToken: let openingToken, inheritableSectionName: _):
-                if outError != nil {
-                    outError.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
+                if error != nil {
+                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
             }
-        case .Error(let error):
-            if outError != nil {
-                outError.memory = error
+        case .Error(let compilationError):
+            if error != nil {
+                error.memory = compilationError
             }
             return nil
         }
@@ -459,39 +459,39 @@ class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
+    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(inheritableSectionName) == 0 {
-            if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Missing inheritable section name")
+            if error != nil {
+                error.memory = parseErrorAtToken(token, description: "Missing inheritable section name")
             }
-            outEmpty = true
+            empty = true
             return nil
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
-            if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Invalid inheritable section name")
+            if error != nil {
+                error.memory = parseErrorAtToken(token, description: "Invalid inheritable section name")
             }
-            outEmpty = false
+            empty = false
             return nil
         }
         return inheritableSectionName
     }
     
-    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> String? {
+    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if countElements(partialName) == 0 {
-            if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Missing template name")
+            if error != nil {
+                error.memory = parseErrorAtToken(token, description: "Missing template name")
             }
-            outEmpty = true
+            empty = true
             return nil
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
-            if outError != nil {
-                outError.memory = parseErrorAtToken(token, description: "Invalid template name")
+            if error != nil {
+                error.memory = parseErrorAtToken(token, description: "Invalid template name")
             }
-            outEmpty = false
+            empty = false
             return nil
         }
         return partialName

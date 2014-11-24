@@ -131,16 +131,16 @@ public class Context {
         }
     }
     
-    public func valueForMustacheExpression(string: String, error outError: NSErrorPointer = nil) -> Value? {
+    public func valueForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Value? {
         let parser = ExpressionParser()
         var empty = false
-        if let expression = parser.parse(string, empty: &empty, error: outError) {
+        if let expression = parser.parse(string, empty: &empty, error: error) {
             let invocation = ExpressionInvocation(expression: expression)
             let invocationResult = invocation.invokeWithContext(self)
             switch invocationResult {
-            case .Error(let error):
-                if outError != nil {
-                    outError.memory = error
+            case .Error(let invocationError):
+                if error != nil {
+                    error.memory = invocationError
                 }
                 return nil
             case .Success(let value):

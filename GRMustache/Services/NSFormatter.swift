@@ -28,19 +28,19 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
     
     // MARK: - MustacheRenderable
     
-    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch renderingInfo.tag.type {
         case .Variable:
             // {{ formatter }}
             // Behave as a regular object: render self's description
-            return .Success("\(self)", .Text)
+            return Rendering("\(self)")
         case .Section:
             // {{# formatter }}...{{/ formatter }}
             // {{^ formatter }}...{{/ formatter }}
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return renderingInfo.render(renderingInfo.context.contextByAddingTagObserver(self))
+            return renderingInfo.render(renderingInfo.context.contextByAddingTagObserver(self), error: error)
         }
     }
     

@@ -11,12 +11,12 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
     
     // MARK: - MustacheRenderable
     
-    func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+    func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch renderingInfo.tag.type {
         case .Variable:
-            return .Success("\(self)", .Text)
+            return Rendering("\(self)")
         case .Section:
-            return renderingInfo.render(renderingInfo.context.contextByAddingTagObserver(self))
+            return renderingInfo.render(renderingInfo.context.contextByAddingTagObserver(self), error: error)
         }
     }
 
@@ -47,13 +47,11 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Value({ (renderingInfo: RenderingInfo) -> Rendering in
-                let rendering = value.render(renderingInfo)
-                switch rendering {
-                case .Error:
-                    return rendering
-                case .Success(let string, let contentType):
-                    return .Success(escapeHTML(string), contentType)
+            return Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                if let rendering = value.render(renderingInfo, error: error) {
+                    return Rendering(escapeHTML(rendering.string), rendering.contentType)
+                } else {
+                    return nil
                 }
             })
         case .Section:

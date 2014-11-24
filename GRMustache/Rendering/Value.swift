@@ -69,7 +69,7 @@ public protocol MustacheInspectable: MustacheWrappable {
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
-    func mustacheRender(renderingInfo: RenderingInfo) -> Rendering
+    func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?
 }
 
 public protocol MustacheTagObserver: MustacheWrappable {
@@ -246,7 +246,7 @@ extension Value {
     }
     
     public convenience init(_ block: (AnyObject?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let object:AnyObject = value.object() {
                 return block(object)
             } else {
@@ -256,7 +256,7 @@ extension Value {
     }
     
     public convenience init<T: MustacheWrappable>(_ block: (T?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let object:T = value.object() {
                 return block(object)
             } else {
@@ -266,7 +266,7 @@ extension Value {
     }
     
     public convenience init<T: NSObjectProtocol>(_ block: (T?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let object:T = value.object() {
                 return block(object)
             } else {
@@ -276,7 +276,7 @@ extension Value {
     }
     
     public convenience init(_ block: (Int?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let int = value.toInt() {
                 return block(int)
             } else {
@@ -286,7 +286,7 @@ extension Value {
     }
     
     public convenience init(_ block: (Double?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let double = value.toDouble() {
                 return block(double)
             } else {
@@ -296,7 +296,7 @@ extension Value {
     }
     
     public convenience init(_ block: (String?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             if let string = value.toString() {
                 return block(string)
             } else {
@@ -339,66 +339,66 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (Value, RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (Value, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (value: Value) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(value, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(value, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init(_ block: ([Value], RenderingInfo) -> Rendering) {
+    public convenience init(_ block: ([Value], renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (arguments: [Value]) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(arguments, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(arguments, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (AnyObject?, RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (AnyObject?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: AnyObject?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(object, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init<T: MustacheWrappable>(_ block: (T?, RenderingInfo) -> Rendering) {
+    public convenience init<T: MustacheWrappable>(_ block: (T?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: T?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(object, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init<T: NSObjectProtocol>(_ block: (T?, RenderingInfo) -> Rendering) {
+    public convenience init<T: NSObjectProtocol>(_ block: (T?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: T?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(object, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (Int?, RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (Int?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (int: Int?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(int, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(int, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (Double?, RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (Double?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (double: Double?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(double, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(double, renderingInfo: renderingInfo, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (String?, RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (String?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (string: String?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
-                return block(string, renderingInfo)
+            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(string, renderingInfo: renderingInfo, error: error)
             })
         })
     }
@@ -410,15 +410,15 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (RenderingInfo) -> Rendering) {
+    public convenience init(_ block: (RenderingInfo, NSErrorPointer) -> Rendering?) {
         self.init(BlockRenderable(block: block))
     }
     
     private struct BlockRenderable: MustacheRenderable {
-        let block: (RenderingInfo) -> Rendering
+        let block: (RenderingInfo, NSErrorPointer) -> Rendering?
         
-        func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
-            return block(renderingInfo)
+        func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            return block(renderingInfo, error)
         }
     }
 }
@@ -738,105 +738,107 @@ extension Value {
         }
     }
     
-    public func render(renderingInfo: RenderingInfo) -> Rendering {
+    public func render(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         let tag = renderingInfo.tag
         switch type {
         case .None:
             switch tag.type {
             case .Variable:
-                return .Success("", .Text)
+                return Rendering("")
             case .Section:
-                return renderingInfo.render(renderingInfo.context)
+                return renderingInfo.render(renderingInfo.context, error: error)
             }
         case .DictionaryValue(let dictionary):
             switch tag.type {
             case .Variable:
-                return .Success("\(dictionary)", .Text)
+                return Rendering("\(dictionary)")
             case .Section:
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
             }
         case .ArrayValue(let array):
             if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
                 let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
                 for item in array {
-                    let itemRendering = item.render(enumerationRenderingInfo)
-                    switch itemRendering {
-                    case .Error:
-                        return itemRendering
-                    case .Success(let string, let itemContentType):
+                    if let itemRendering = item.render(enumerationRenderingInfo, error: error) {
                         if contentType == nil {
-                            contentType = itemContentType
-                            buffer += string
-                        } else if contentType == itemContentType {
-                            buffer += string
+                            contentType = itemRendering.contentType
+                            buffer += itemRendering.string
+                        } else if contentType == itemRendering.contentType {
+                            buffer += itemRendering.string
                         } else {
-                            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"]))
+                            if error != nil {
+                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                            }
+                            return nil
                         }
+                    } else {
+                        return nil
                     }
                 }
                 
                 if let contentType = contentType {
-                    return .Success(buffer, contentType)
+                    return Rendering(buffer, contentType)
                 } else {
                     switch tag.type {
                     case .Variable:
-                        return .Success("", .Text)
+                        return Rendering("")
                     case .Section:
-                        return renderingInfo.render(renderingInfo.context)
+                        return renderingInfo.render(renderingInfo.context, error: error)
                     }
                 }
             }
         case .SetValue(let set):
             if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
                 let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
                 for item in set {
-                    let itemRendering = Value(item).render(enumerationRenderingInfo)
-                    switch itemRendering {
-                    case .Error:
-                        return itemRendering
-                    case .Success(let string, let itemContentType):
+                    if let itemRendering = Value(item).render(enumerationRenderingInfo, error: error) {
                         if contentType == nil {
-                            contentType = itemContentType
-                            buffer += string
-                        } else if contentType == itemContentType {
-                            buffer += string
+                            contentType = itemRendering.contentType
+                            buffer += itemRendering.string
+                        } else if contentType == itemRendering.contentType {
+                            buffer += itemRendering.string
                         } else {
-                            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"]))
+                            if error != nil {
+                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                            }
+                            return nil
                         }
+                    } else {
+                        return nil
                     }
                 }
 
                 if let contentType = contentType {
-                    return .Success(buffer, contentType)
+                    return Rendering(buffer, contentType)
                 } else {
                     switch tag.type {
                     case .Variable:
-                        return .Success("", .Text)
+                        return Rendering("")
                     case .Section:
-                        return renderingInfo.render(renderingInfo.context)
+                        return renderingInfo.render(renderingInfo.context, error: error)
                     }
                 }
             }
         case .AnyObjectValue(let object):
             switch tag.type {
             case .Variable:
-                return .Success("\(object)", .Text)
+                return Rendering("\(object)")
             case .Section:
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
-                return renderable.mustacheRender(renderingInfo)
+                return renderable.mustacheRender(renderingInfo, error: error)
             } else {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self))
+                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
             }
         }
     }

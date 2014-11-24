@@ -8,7 +8,7 @@
 
 class ExpressionParser {
     
-    func parse(string: String, inout empty outEmpty: Bool, error outError: NSErrorPointer) -> Expression? {
+    func parse(string: String, inout empty outEmpty: Bool, error: NSErrorPointer) -> Expression? {
         
         enum State {
             case Error(String)
@@ -278,14 +278,14 @@ class ExpressionParser {
         switch state {
         case .Empty:
             outEmpty = true
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
             }
             return nil
         case .Error(let description):
             outEmpty = false
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
             }
             return nil
         case .Valid(expression: let validExpression):

@@ -17,7 +17,7 @@ public protocol Tag: Printable {
     var type: TagType { get }
     var innerTemplateString: String { get }
     var inverted: Bool { get } // this should be internal
-    func render(context: Context) -> Rendering // this should be internal
+    func render(context: Context, error: NSErrorPointer) -> Rendering? // this should be internal
 }
 
 protocol MustacheExpressionTag: Tag {

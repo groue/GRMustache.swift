@@ -28,8 +28,8 @@ class ValueTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
-            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
-                return .Success("", .Text)
+            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                return Rendering("")
             }
         }
         
@@ -111,8 +111,8 @@ class ValueTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value()
             }
-            func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
-                return .Success("", .Text)
+            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                return Rendering("")
             }
         }
         

@@ -53,13 +53,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = testedTemplate.mustacheRender(renderingInfo)
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = testedTemplate.mustacheRender(renderingInfo, error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }
@@ -81,13 +78,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = testedTemplate.mustacheRender(renderingInfo)
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = testedTemplate.mustacheRender(renderingInfo, error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }
@@ -102,13 +96,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render(error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }
@@ -123,13 +114,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render(error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }
@@ -144,13 +132,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render(error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }
@@ -165,13 +150,10 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
-            let rendering = renderingInfo.render()
-            switch rendering {
-            case .Success(let string, let contentType):
-                testedContentType = contentType
-            default:
-                break
+        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = renderingInfo.render(error: error)
+            if let rendering = rendering {
+                testedContentType = rendering.contentType
             }
             return rendering
         }

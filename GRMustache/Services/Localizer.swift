@@ -36,7 +36,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     
     // MARK: - MustacheRenderable
     
-    public func mustacheRender(renderingInfo: RenderingInfo) -> Rendering {
+    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         
         /**
         * Perform a first rendering of the section tag, that will turn variable
@@ -56,12 +56,8 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         
         // Render the localizable format, being notified of tag rendering
         let context = renderingInfo.context.contextByAddingTagObserver(self)
-        let localizableFormatRendering = renderingInfo.render(context)
-        
-        switch localizableFormatRendering {
-        case .Error(let error):
-            return localizableFormatRendering
-        case .Success(let localizableFormat, let localizableFormatContentType):
+        var error: NSError?
+        if let localizableFormatRendering = renderingInfo.render(context, error: &error) {
             
             /**
             * Perform a second rendering that will fill our formatArguments array with
@@ -79,7 +75,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             formatArguments = []
             
             // Fill formatArguments
-            renderingInfo.render(context)
+            renderingInfo.render(context, error: nil)
             
             
             /**
@@ -88,7 +84,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             
             var rendering: Rendering
             if formatArguments!.isEmpty {
-                rendering = .Success(localizedStringForKey(localizableFormat), localizableFormatContentType)
+                rendering = Rendering(localizedStringForKey(localizableFormatRendering.string), localizableFormatRendering.contentType)
             } else {
                 /**
                 * When rendering {{#localize}}%d {{name}}{{/localize}},
@@ -102,15 +98,17 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
                 * The format string will then be "%%d %@".
                 */
                 
-                var localizableFormat = localizableFormat.stringByReplacingOccurrencesOfString("%", withString: "%%")
+                var localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%")
                 localizableFormat = localizableFormat.stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
                 let localizedFormat = localizedStringForKey(localizableFormat)
                 let localizedRendering = stringWithFormat(format: localizedFormat, argumentsArray: formatArguments!)
-                rendering = .Success(localizedRendering, localizableFormatContentType)
+                rendering = Rendering(localizedRendering, localizableFormatRendering.contentType)
             }
             
             formatArguments = nil
             return rendering
+        } else {
+            return nil
         }
     }
     

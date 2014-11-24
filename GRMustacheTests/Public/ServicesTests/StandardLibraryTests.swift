@@ -23,8 +23,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
-            return .Success("<", .Text)
+        let renderable = Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("<")
         })
         
         var template = Template(string: "{{# HTML.escape }}{{ object }}{{/ }}")!
@@ -38,8 +38,8 @@ class StandardLibraryTests: XCTestCase {
     
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
-            return .Success("<br>", .HTML)
+        let renderable = Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("<br>", .HTML)
         })
         
         var template = Template(string: "{{# HTML.escape }}{{ object }}{{/ }}")!
@@ -52,8 +52,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryJavascriptEscapeDoesEscapeRenderable() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
-            return .Success("\"double quotes\" and 'single quotes'", .Text)
+        let renderable = Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("\"double quotes\" and 'single quotes'")
         })
         let template = Template(string: "{{# javascript.escape }}{{ object }}{{/ }}")!
         let rendering = template.render(Value(["object": renderable]))!
@@ -61,8 +61,8 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryURLEscapeDoesEscapeRenderingObjects() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
-            return .Success("&", .Text)
+        let renderable = Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("&")
         })
         let template = Template(string: "{{# URL.escape }}{{ object }}{{/ }}")!
         let rendering = template.render(Value(["object": renderable]))!

@@ -10,7 +10,7 @@ public typealias TemplateID = String
 
 public protocol TemplateRepositoryDataSource {
     func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
-    func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String?
+    func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String?
 }
 
 public class TemplateRepository {
@@ -43,36 +43,36 @@ public class TemplateRepository {
         dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
     }
     
-    public func template(#string: String, error outError: NSErrorPointer = nil) -> Template? {
-        return self.template(string: string, contentType: configuration.contentType, error: outError)
+    public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
+        return self.template(string: string, contentType: configuration.contentType, error: error)
     }
     
-    public func template(named name: String, error outError: NSErrorPointer = nil) -> Template? {
-        if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: outError) {
+    public func template(named name: String, error: NSErrorPointer = nil) -> Template? {
+        if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: error) {
             return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func template(#string: String, contentType: ContentType, error outError: NSErrorPointer) -> Template? {
-        if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: outError) {
+    func template(#string: String, contentType: ContentType, error: NSErrorPointer) -> Template? {
+        if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
             return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
         } else {
             return nil
         }
     }
     
-    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
+    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID, inRepository: self) {
             if let templateAST = templateASTForTemplateID[templateID] {
                 return templateAST
             } else {
-                var error: NSError?
-                if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &error) {
+                var dataSourceError: NSError?
+                if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &dataSourceError) {
                     let templateAST = TemplateAST()
                     templateASTForTemplateID[templateID] = templateAST
-                    if let compiledAST = self.templateAST(string: templateString, contentType: configuration.contentType, templateID: templateID, error: outError) {
+                    if let compiledAST = self.templateAST(string: templateString, contentType: configuration.contentType, templateID: templateID, error: error) {
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
                     } else {
@@ -80,28 +80,28 @@ public class TemplateRepository {
                         return nil
                     }
                 } else {
-                    if error == nil {
-                        error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+                    if dataSourceError == nil {
+                        dataSourceError = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
                     }
-                    if outError != nil {
-                        outError.memory = error
+                    if error != nil {
+                        error.memory = dataSourceError
                     }
                     return nil
                 }
             }
         } else {
-            if outError != nil {
-                outError.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
             }
             return nil
         }
     }
     
-    func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error outError: NSErrorPointer) -> TemplateAST? {
+    func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
         let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
         parser.parse(string, templateID: templateID)
-        return compiler.templateAST(error: outError)
+        return compiler.templateAST(error: error)
     }
     
     
@@ -118,7 +118,7 @@ public class TemplateRepository {
             return name
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
+        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
             return templates[templateID]
         }
     }
@@ -167,8 +167,8 @@ public class TemplateRepository {
             return templateDirectoryPath.stringByAppendingPathComponent(templateFilename).stringByStandardizingPath
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
-            return NSString(contentsOfFile: templateID, encoding: encoding, error: outError)
+        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
+            return NSString(contentsOfFile: templateID, encoding: encoding, error: error)
         }
     }
     
@@ -216,8 +216,8 @@ public class TemplateRepository {
             return NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!.absoluteString
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
-            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: outError)
+        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
+            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: error)
         }
     }
     
@@ -255,8 +255,8 @@ public class TemplateRepository {
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error outError: NSErrorPointer) -> String? {
-            return NSString(contentsOfFile: templateID, encoding: encoding, error: outError)
+        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
+            return NSString(contentsOfFile: templateID, encoding: encoding, error: error)
         }
     }
 }
