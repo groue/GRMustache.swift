@@ -33,7 +33,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     }
     
     func testFilteredExpression() {
-        let filterValue = Value({ (string: String?) -> (Value) in
+        let filterValue = Value({ (string: String?) -> Value in
             return Value(string!.uppercaseString)
         })
         let context = Context(Value(["name": Value("success"), "f": filterValue]))

@@ -225,28 +225,28 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (Value, NSErrorPointer) -> (Value?)) {
+    public convenience init(_ block: (Value, NSErrorPointer) -> Value?) {
         self.init(BlockFilter(block: block))
     }
     
-    public convenience init(_ block: (Value) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> (Value?) in
+    public convenience init(_ block: (Value) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
             return block(value)
         }))
     }
     
-    public convenience init(_ block: ([Value], NSErrorPointer) -> (Value?)) {
+    public convenience init(_ block: ([Value], NSErrorPointer) -> Value?) {
         self.init(BlockVariadicFilter(arguments: [], block: block))
     }
     
-    public convenience init(_ block: ([Value]) -> (Value?)) {
-        self.init(BlockVariadicFilter(arguments: [], block: { (arguments: [Value], error: NSErrorPointer) -> (Value?) in
+    public convenience init(_ block: ([Value]) -> Value?) {
+        self.init(BlockVariadicFilter(arguments: [], block: { (arguments: [Value], error: NSErrorPointer) -> Value? in
             return block(arguments)
         }))
     }
     
-    public convenience init(_ block: (AnyObject?) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+    public convenience init(_ block: (AnyObject?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
             if let object:AnyObject = value.object() {
                 return block(object)
             } else {
@@ -255,9 +255,9 @@ extension Value {
         }))
     }
     
-    public convenience init<T: MustacheWrappable>(_ block: (T?) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
-            if let object = Value.wrappableFromCluster(value.object() as MustacheCluster?) as? T {
+    public convenience init<T: MustacheWrappable>(_ block: (T?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+            if let object:T = value.object() {
                 return block(object)
             } else {
                 return block(nil)
@@ -265,8 +265,18 @@ extension Value {
         }))
     }
     
-    public convenience init(_ block: (Int?) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+    public convenience init<T: NSObjectProtocol>(_ block: (T?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
+            if let object:T = value.object() {
+                return block(object)
+            } else {
+                return block(nil)
+            }
+        }))
+    }
+    
+    public convenience init(_ block: (Int?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
             if let int = value.toInt() {
                 return block(int)
             } else {
@@ -275,8 +285,8 @@ extension Value {
         }))
     }
     
-    public convenience init(_ block: (Double?) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+    public convenience init(_ block: (Double?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
             if let double = value.toDouble() {
                 return block(double)
             } else {
@@ -285,8 +295,8 @@ extension Value {
         }))
     }
     
-    public convenience init(_ block: (String?) -> (Value?)) {
-        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> (Value?) in
+    public convenience init(_ block: (String?) -> Value?) {
+        self.init(BlockFilter(block: { (value: Value, outError: NSErrorPointer) -> Value? in
             if let string = value.toString() {
                 return block(string)
             } else {
@@ -295,64 +305,8 @@ extension Value {
         }))
     }
     
-    public convenience init(_ block: (Value, RenderingInfo) -> (Rendering)) {
-        self.init( { (value: Value) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(value, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init(_ block: ([Value], RenderingInfo) -> (Rendering)) {
-        self.init( { (arguments: [Value]) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(arguments, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (AnyObject?, RenderingInfo) -> (Rendering)) {
-        self.init( { (object: AnyObject?) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(object, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init<T: MustacheWrappable>(_ block: (T?, RenderingInfo) -> (Rendering)) {
-        self.init( { (object: T?) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(object, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (Int?, RenderingInfo) -> (Rendering)) {
-        self.init( { (int: Int?) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(int, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (Double?, RenderingInfo) -> (Rendering)) {
-        self.init( { (double: Double?) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(double, renderingInfo)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (String?, RenderingInfo) -> (Rendering)) {
-        self.init( { (string: String?) -> (Value?) in
-            return Value( { (renderingInfo: RenderingInfo) -> (Rendering) in
-                return block(string, renderingInfo)
-            })
-        })
-    }
-    
     private struct BlockFilter: MustacheFilter {
-        let block: (Value, NSErrorPointer) -> (Value?)
+        let block: (Value, NSErrorPointer) -> Value?
         
         func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
             return nil
@@ -365,7 +319,7 @@ extension Value {
     
     private struct BlockVariadicFilter: MustacheFilter {
         let arguments: [Value]
-        let block: ([Value], NSErrorPointer) -> (Value?)
+        let block: ([Value], NSErrorPointer) -> Value?
         
         func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
             return BlockVariadicFilter(arguments: arguments + [argument], block: block)
@@ -378,12 +332,85 @@ extension Value {
 }
 
 
+
+
+// =============================================================================
+// MARK: - MustacheFilter + MustacheRenderable Convenience Initializers
+
+extension Value {
+    
+    public convenience init(_ block: (Value, RenderingInfo) -> Rendering) {
+        self.init( { (value: Value) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(value, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: ([Value], RenderingInfo) -> Rendering) {
+        self.init( { (arguments: [Value]) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(arguments, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (AnyObject?, RenderingInfo) -> Rendering) {
+        self.init( { (object: AnyObject?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(object, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init<T: MustacheWrappable>(_ block: (T?, RenderingInfo) -> Rendering) {
+        self.init( { (object: T?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(object, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init<T: NSObjectProtocol>(_ block: (T?, RenderingInfo) -> Rendering) {
+        self.init( { (object: T?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(object, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (Int?, RenderingInfo) -> Rendering) {
+        self.init( { (int: Int?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(int, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (Double?, RenderingInfo) -> Rendering) {
+        self.init( { (double: Double?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(double, renderingInfo)
+            })
+        })
+    }
+    
+    public convenience init(_ block: (String?, RenderingInfo) -> Rendering) {
+        self.init( { (string: String?) -> Value in
+            return Value( { (renderingInfo: RenderingInfo) -> Rendering in
+                return block(string, renderingInfo)
+            })
+        })
+    }
+}
+
+
 // =============================================================================
 // MARK: - MustacheRenderable Convenience Initializers
 
 extension Value {
     
-    public convenience init(_ block: (RenderingInfo) -> (Rendering)) {
+    public convenience init(_ block: (RenderingInfo) -> Rendering) {
         self.init(BlockRenderable(block: block))
     }
     
@@ -600,6 +627,10 @@ extension Value {
     
     public func object<T: MustacheWrappable>() -> T? {
         return Value.wrappableFromCluster(object() as MustacheCluster?) as? T
+    }
+    
+    public func object<T: NSObjectProtocol>() -> T? {
+        return (object() as AnyObject?) as? T
     }
     
 }

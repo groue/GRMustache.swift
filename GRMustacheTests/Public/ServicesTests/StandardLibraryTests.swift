@@ -23,7 +23,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
             return .Success("<", .Text)
         })
         
@@ -38,7 +38,7 @@ class StandardLibraryTests: XCTestCase {
     
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
             return .Success("<br>", .HTML)
         })
         
@@ -52,7 +52,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryJavascriptEscapeDoesEscapeRenderable() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
             return .Success("\"double quotes\" and 'single quotes'", .Text)
         })
         let template = Template(string: "{{# javascript.escape }}{{ object }}{{/ }}")!
@@ -61,7 +61,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryURLEscapeDoesEscapeRenderingObjects() {
-        let renderable = Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = Value({ (renderingInfo: RenderingInfo) -> Rendering in
             return .Success("&", .Text)
         })
         let template = Template(string: "{{# URL.escape }}{{ object }}{{/ }}")!

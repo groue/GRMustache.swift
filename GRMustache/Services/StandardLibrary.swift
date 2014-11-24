@@ -13,15 +13,15 @@ public class StandardLibrary: MustacheInspectable {
     public init() {
         var items: [String: Value] = [:]
         
-        items["capitalized"] = Value({ (string: String?) -> (Value) in
+        items["capitalized"] = Value({ (string: String?) -> Value in
             return Value(string?.capitalizedString)
         })
         
-        items["lowercase"] = Value({ (string: String?) -> (Value) in
+        items["lowercase"] = Value({ (string: String?) -> Value in
             return Value(string?.lowercaseString)
         })
         
-        items["uppercase"] = Value({ (string: String?) -> (Value) in
+        items["uppercase"] = Value({ (string: String?) -> Value in
             return Value(string?.uppercaseString)
         })
         
@@ -30,7 +30,7 @@ public class StandardLibrary: MustacheInspectable {
         
         items["each"] = Value(EachFilter())
         
-        items["isBlank"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
+        items["isBlank"] = Value({ (value: Value) -> Value in
             if let int: Int = value.object() {
                 return Value(false)
             } else if let double: Double = value.object() {
@@ -42,7 +42,7 @@ public class StandardLibrary: MustacheInspectable {
             }
         })
         
-        items["isEmpty"] = Value({ (value: Value, error: NSErrorPointer) -> (Value?) in
+        items["isEmpty"] = Value({ (value: Value) -> Value in
             if let int: Int = value.object() {
                 return Value(false)
             } else if let double: Double = value.object() {

@@ -152,7 +152,7 @@ class TagObserverTests: XCTestCase {
         }
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: nil)
         
-        let filter = { (string: String?) -> (Value) in
+        let filter = { (string: String?) -> Value in
             return Value(string?.uppercaseString)
         }
         
@@ -261,7 +261,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
         failedRendering = false
         var error: NSError?
-        let rendering = template.render(Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+        let rendering = template.render(Value({ (renderingInfo: RenderingInfo) -> Rendering in
             return .Error(NSError(domain: "TagObserverError", code: 1, userInfo: nil))
         }), error: &error)
         XCTAssertNil(rendering)

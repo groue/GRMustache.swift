@@ -47,7 +47,7 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Value({ (renderingInfo: RenderingInfo) -> (Rendering) in
+            return Value({ (renderingInfo: RenderingInfo) -> Rendering in
                 let rendering = value.render(renderingInfo)
                 switch rendering {
                 case .Error:

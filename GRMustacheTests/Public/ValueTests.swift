@@ -73,21 +73,25 @@ class ValueTests: XCTestCase {
         let custom2 = CustomValue2(name: "custom2")
         let custom3 = CustomValue3(name: "custom3")
         let custom4 = CustomValue4(name: "custom4")
+        let custom5 = NSDate()
         
         let value1: Value = Value(custom1)
         let value2: Value = Value(custom2)
         let value3: Value = Value(custom3)
         let value4: Value = Value(custom4)
+        let value5: Value = Value(custom5)
         
         let extractedCustom1: CustomValue1 = value1.object()!
         let extractedCustom2: CustomValue2 = value2.object()!
         let extractedCustom3: CustomValue3 = value3.object()!
         let extractedCustom4: CustomValue4 = value4.object()!
+        let extractedCustom5: NSDate = value5.object()!
         
         XCTAssertEqual(extractedCustom1.name, "custom1")
         XCTAssertEqual(extractedCustom2.name, "custom2")
         XCTAssertEqual(extractedCustom3.name, "custom3")
         XCTAssertEqual(extractedCustom4.name, "custom4")
+        XCTAssertEqual(extractedCustom5, custom5)
     }
     
     func testCustomValueFilter() {
@@ -148,7 +152,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter1 = { (value: CustomValue1?) -> (Value?) in
+        let filter1 = { (value: CustomValue1?) -> Value in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -156,7 +160,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter2 = { (value: CustomValue2?) -> (Value?) in
+        let filter2 = { (value: CustomValue2?) -> Value in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -164,7 +168,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter3 = { (value: CustomValue3?) -> (Value?) in
+        let filter3 = { (value: CustomValue3?) -> Value in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -172,9 +176,17 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter4 = { (value: CustomValue4?) -> (Value?) in
+        let filter4 = { (value: CustomValue4?) -> Value in
             if let value = value {
                 return Value(value.name)
+            } else {
+                return Value("other")
+            }
+        }
+        
+        let filter5 = { (value: NSDate?) -> Value in
+            if let value = value {
+                return Value("custom5")
             } else {
                 return Value("other")
             }
@@ -190,11 +202,12 @@ class ValueTests: XCTestCase {
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
         
+        // TODO: avoid this `as [String: Value]` cast
         let value2 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue2(name: "custom2")),
             "f": Value(filter2)
-            ])
+            ] as [String: Value])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
@@ -206,13 +219,23 @@ class ValueTests: XCTestCase {
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
         
+        // TODO: avoid this `as [String: Value]` cast
         let value4 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue4(name: "custom4")),
             "f": Value(filter4)
-            ])
+            ] as [String: Value])
         let rendering4 = template.render(value4)!
         XCTAssertEqual(rendering4, "custom4,other")
+        
+        // TODO: avoid this `as [String: Value]` cast
+        let value5 = Value([
+            "string": Value("success"),
+            "custom": Value(NSDate()),
+            "f": Value(filter5)
+            ] as [String: Value])
+        let rendering5 = template.render(value5)!
+        XCTAssertEqual(rendering5, "custom5,other")
     }
 
 }

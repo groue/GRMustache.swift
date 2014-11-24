@@ -14,10 +14,10 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let value = Value([
             "name": Value("Name"),
-            "uppercase": Value({ (string: String?) -> (Value) in
+            "uppercase": Value({ (string: String?) -> Value in
                 return Value(string?.uppercaseString)
             }),
-            "prefix": Value({ (string: String?) -> (Value) in
+            "prefix": Value({ (string: String?) -> Value in
                 return Value("prefix\(string!)")
             })
             ])
@@ -34,7 +34,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (value: Value) -> (Value) in
+            "f": Value({ (value: Value) -> Value in
                 return value
             })
             ])
@@ -44,7 +44,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (_: Value) -> (Value) in
+            "f": Value({ (_: Value) -> Value in
                 return Value(["name": "filterName"])
             })
             ])
@@ -54,7 +54,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (_: Value) -> (Value) in
+            "f": Value({ (_: Value) -> Value in
                 return Value(true)
             })
             ])
@@ -67,7 +67,7 @@ class FilterTests: XCTestCase {
         let value = Value([
             "test": Value("success"),
             "filtered": Value(["test": "failure"]),
-            "filter": Value({ (_: Value) -> (Value) in
+            "filter": Value({ (_: Value) -> Value in
                 return Value(true)
             })
             ] as [String: Value])
@@ -79,7 +79,7 @@ class FilterTests: XCTestCase {
     func testFilterNameSpace() {
         let value = Value([
             "x": Value(1),
-            "math": Value(["double": Value({ (x: Int?) -> (Value) in
+            "math": Value(["double": Value({ (x: Int?) -> Value in
                 return Value((x ?? 0) * 2)
             })])
             ])
@@ -89,22 +89,23 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
+        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "prefix": Value("prefix"),
             "value": Value("value"),
-            "f": Value({ (string1: String?) -> (Value) in
-                return Value({ (string2: String?) -> (Value) in
+            "f": Value({ (string1: String?) -> Value in
+                return Value({ (string2: String?) -> Value in
                     return Value("\(string1!)\(string2!)")
                 })
             })
-            ])
+            ] as [String: Value])
         let template = Template(string:"{{f(prefix)(value)}}")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "prefixvalue")
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let value = Value({ (_: Value) -> (Value) in
+        let value = Value({ (_: Value) -> Value in
             return Value("filter")
         })
         let template = Template(string:"{{.(a)}}")!
@@ -115,7 +116,7 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let value = Value([
             "name": Value("Name"),
-            "replace": Value({ (_: Value) -> (Value) in
+            "replace": Value({ (_: Value) -> Value in
                 return Value("replace")
             })
         ])

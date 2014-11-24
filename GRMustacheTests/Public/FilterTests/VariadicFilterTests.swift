@@ -12,7 +12,7 @@ import GRMustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = Value({ (args: [Value]) -> (Value) in
+        let filter = Value({ (args: [Value]) -> Value in
             return Value(",".join(args.map { $0.toString() ?? "" }))
         })
         // TODO: avoid this `as [String: Value]` cast
@@ -28,9 +28,9 @@ class VariadicFilterTests: XCTestCase {
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = Value({ (args: [Value]) -> (Value) in
+        let filter = Value({ (args: [Value]) -> Value in
             let joined = ",".join(args.map { $0.toString() ?? "" })
-            return Value({ (value: Value) -> (Value) in
+            return Value({ (value: Value) -> Value in
                 return Value(joined + "+" + (value.toString() ?? ""))
             })
         })
@@ -47,7 +47,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = Value({ (args: [Value]) -> (Value) in
+        let filter = Value({ (args: [Value]) -> Value in
             return Value(["foo": "bar"])
         })
         let value = Value(["f": filter])
@@ -57,7 +57,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = Value({ (args: [Value]) -> (Value) in
+        let filter = Value({ (args: [Value]) -> Value in
             return Value(["foo": "bar"])
         })
         let value = Value(["f": filter])
@@ -67,7 +67,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = Value({ (args: [Value]) -> (Value) in
+        let filter = Value({ (args: [Value]) -> Value in
             return Value(args)
         })
         // TODO: avoid this `as [String: Value]` cast
@@ -83,7 +83,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = Value({ (args: [Value]) -> (Value?) in
+        let filter = Value({ (args: [Value]) -> Value? in
             return args.first
         })
         // TODO: avoid this `as [String: Value]` cast
@@ -98,7 +98,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = Value({ (args: [Value]) -> (Value?) in
+        let filter = Value({ (args: [Value]) -> Value? in
             return nil
         })
         let value = Value(["f": filter])
@@ -109,7 +109,7 @@ class VariadicFilterTests: XCTestCase {
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let value = Value([
-            "f": Value({ (arguments: [Value]) -> (Value) in
+            "f": Value({ (arguments: [Value]) -> Value in
                 var result = ""
                 for argument in arguments {
                     if let dictionary: [String: Value] = argument.object() {

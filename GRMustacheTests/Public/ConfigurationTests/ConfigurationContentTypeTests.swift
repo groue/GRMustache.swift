@@ -53,7 +53,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = testedTemplate.mustacheRender(renderingInfo)
             switch rendering {
             case .Success(let string, let contentType):
@@ -81,7 +81,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = testedTemplate.mustacheRender(renderingInfo)
             switch rendering {
             case .Success(let string, let contentType):
@@ -102,7 +102,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = renderingInfo.render()
             switch rendering {
             case .Success(let string, let contentType):
@@ -123,7 +123,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = renderingInfo.render()
             switch rendering {
             case .Success(let string, let contentType):
@@ -144,7 +144,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = renderingInfo.render()
             switch rendering {
             case .Success(let string, let contentType):
@@ -165,7 +165,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo) -> (Rendering) in
+        let renderable = { (renderingInfo: RenderingInfo) -> Rendering in
             let rendering = renderingInfo.render()
             switch rendering {
             case .Success(let string, let contentType):
