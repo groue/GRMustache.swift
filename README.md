@@ -80,7 +80,7 @@ let pluralize = { (count: Int?, renderingInfo: RenderingInfo, error: NSErrorPoin
         string = string + "s"  // naive
     }
     
-    return .Success(string, .Text)
+    return Rendering(string)
 }
 
 
