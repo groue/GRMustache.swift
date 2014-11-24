@@ -263,6 +263,7 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
         let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            // TODO: renderingInfoByExtendingContextWithValue is not nice API
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(["subject2": Value("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
             return template.mustacheRender(renderingInfo, error: error)

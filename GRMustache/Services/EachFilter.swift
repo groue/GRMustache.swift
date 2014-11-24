@@ -104,6 +104,7 @@ class EachFilter: MustacheFilter {
             if let key = key {
                 position["@key"] = Value(key)
             }
+            // TODO: renderingInfoByExtendingContextWithValue is not nice API
             let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(position))
             return value.render(renderingInfo, error: error)
         }

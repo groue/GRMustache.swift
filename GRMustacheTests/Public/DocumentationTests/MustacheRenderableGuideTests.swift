@@ -79,22 +79,71 @@ class MustacheRenderableGuideTests: XCTestCase {
         let repository = TemplateRepository(templates: [
             "movieLink": "<a href=\"{{url}}\">{{title}}</a>",
             "personLink": "<a href=\"{{url}}\">{{name}}</a>"])
-        // TODO: avoid those `as [String: Value]` and `as [Value]` casts
-        let value = Value([
-            "items": Value([
-                Value([
-                    "title": Value("Citizen Kane"),
-                    "url": Value("/movies/321"),
-                    "link": Value(repository.template(named: "movieLink")!)
-                    ] as [String: Value]),
-                Value([
-                    "name": Value("Orson Welles"),
-                    "url": Value("/people/123"),
-                    "link": Value(repository.template(named: "personLink")!)
-                    ] as [String: Value]),
-                ] as [Value])
+        // TODO: avoid those `as [String: Value]` casts
+        let item1 = Value([
+            "title": Value("Citizen Kane"),
+            "url": Value("/movies/321"),
+            "link": Value(repository.template(named: "movieLink")!)
             ] as [String: Value])
+        let item2 = Value([
+            "name": Value("Orson Welles"),
+            "url": Value("/people/123"),
+            "link": Value(repository.template(named: "personLink")!)
+            ] as [String: Value])
+        let value = Value(["items": Value([item1, item2])])
         let rendering = Template(string: "{{#items}}{{link}}{{/items}}")!.render(value)!
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
+    }
+    
+    // TODO: make it run
+    func testExample7() {
+        struct Person: MustacheRenderable, MustacheInspectable {
+            let firstName: String
+            let lastName: String
+            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
+                // TODO: renderingInfoByExtendingContextWithValue is not nice API
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
+                return template.mustacheRender(renderingInfo, error: error)
+            }
+            func valueForMustacheKey(key: String) -> Value? {
+                switch key {
+                case "firstName":
+                    return Value(firstName)
+                case "lastName":
+                    return Value(lastName)
+                default:
+                    return nil
+                }
+            }
+        }
+        
+        struct Movie: MustacheRenderable, MustacheInspectable {
+            let title: String
+            let director: Person
+            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
+                // TODO: renderingInfoByExtendingContextWithValue is not nice API
+                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
+                return template.mustacheRender(renderingInfo, error: error)
+            }
+            func valueForMustacheKey(key: String) -> Value? {
+                switch key {
+                case "title":
+                    return Value(title)
+                case "director":
+                    return Value(director)
+                default:
+                    return nil
+                }
+            }
+        }
+        
+        let director = Person(firstName: "Orson", lastName: "Welles")
+        let movie = Movie(title:"Citizen Kane", director: director)
+        
+        let template = Template(string: "{{ movie }}")!
+        let rendering = template.render(Value(["movie": Value(movie)]))!
+        XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
 }
