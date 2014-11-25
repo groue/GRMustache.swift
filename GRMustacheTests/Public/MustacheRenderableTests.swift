@@ -1,5 +1,5 @@
 //
-//  RenderableTests.swift
+//  MustacheRenderableTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 02/11/2014.
@@ -9,7 +9,7 @@
 import XCTest
 import GRMustache
 
-class RenderableTests: XCTestCase {
+class MustacheRenderableTests: XCTestCase {
 
     func testRenderablePerformsVariableRendering() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in

@@ -1,5 +1,5 @@
 //
-//  TraversableTests.swift
+//  MustacheInspectableTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 14/11/2014.
@@ -9,9 +9,9 @@
 import XCTest
 import GRMustache
 
-class TraversableTests: XCTestCase {
+class MustacheInspectableTests: XCTestCase {
  
-    func testTraversable() {
+    func testInspectable() {
         class T: MustacheInspectable {
             func valueForMustacheKey(key: String) -> Value? {
                 if key == "self" {
