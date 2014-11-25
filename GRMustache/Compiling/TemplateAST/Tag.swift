@@ -8,18 +8,32 @@
 
 import Foundation
 
+// For some reason, declaring a Type enum inside the Tag class prevents
+// variables to be declared as Tag.Type.
+// So let's use a `TagType` type instead.
 public enum TagType {
     case Variable
     case Section
 }
-
-public protocol Tag: Printable {
-    var type: TagType { get }
-    var innerTemplateString: String { get }
-    var inverted: Bool { get } // this should be internal
-    func render(context: Context, error: NSErrorPointer) -> Rendering? // this should be internal
-}
-
-protocol MustacheExpressionTag: Tag {
-    var expression: Expression { get }
+    
+public class Tag: Printable {
+    public let type: TagType
+    public let innerTemplateString: String
+    var inverted: Bool
+    var expression: Expression
+    
+    init(type: TagType, innerTemplateString: String, inverted: Bool, expression: Expression) {
+        self.type = type
+        self.innerTemplateString = innerTemplateString
+        self.inverted = inverted
+        self.expression = expression
+    }
+    
+    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
+        fatalError("Subclass must override")
+    }
+    
+    public var description: String {
+        fatalError("Subclass must override")
+    }
 }

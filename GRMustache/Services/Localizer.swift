@@ -36,7 +36,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     
     // MARK: - MustacheRenderable
     
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         
         /**
         * Perform a first rendering of the section tag, that will turn variable
@@ -55,9 +55,9 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = renderingInfo.context.contextByAddingTagObserver(self)
+        let context = info.context.contextByAddingTagObserver(self)
         var error: NSError?
-        if let localizableFormatRendering = renderingInfo.render(context, error: &error) {
+        if let localizableFormatRendering = info.tag.render(context, error: &error) {
             
             /**
             * Perform a second rendering that will fill our formatArguments array with
@@ -75,7 +75,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             formatArguments = []
             
             // Fill formatArguments
-            renderingInfo.render(context, error: nil)
+            info.tag.render(context)
             
             
             /**
@@ -120,7 +120,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         case .Variable:
             // {{ value }}
             //
-            // We behave as stated in renderForMustacheTag(tag:,renderingInfo:,contentType:,error:)
+            // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments == nil {
                 return Value(Placeholder.string)
@@ -143,7 +143,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         case .Variable:
             // {{ value }}
             //
-            // We behave as stated in renderForMustacheTag(tag:,renderingInfo:,contentType:,error:)
+            // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments != nil {
                 if let rendering = rendering {

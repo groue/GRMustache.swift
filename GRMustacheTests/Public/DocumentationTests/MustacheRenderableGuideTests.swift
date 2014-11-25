@@ -12,8 +12,8 @@ import GRMustache
 class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample1() {
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch renderingInfo.tag.type {
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
             case .Variable:
                 return Rendering("I'm rendering a {{ variable }} tag.")
             case .Section:
@@ -29,7 +29,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample2() {
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("Arthur & Cie")
         }
         
@@ -38,8 +38,8 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample3() {
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render()!
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context)!
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
@@ -51,8 +51,8 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample4() {
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render()!
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
         let value = Value(["twice": Value(renderable)])
@@ -61,9 +61,9 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
 
     func textExample5() {
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let template = Template(string: "<a href=\"{{url}}\">\(renderingInfo.tag.innerTemplateString)</a>")!
-            return template.mustacheRender(renderingInfo, error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
+            return template.mustacheRender(info, error: error)
         }
         // TODO: avoid this `as [String: Value]` cast
         let value = Value([
@@ -99,9 +99,9 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Person: MustacheRenderable, MustacheInspectable {
             let firstName: String
             let lastName: String
-            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                let context = renderingInfo.context.contextByAddingValue(Value(self))
+                let context = info.context.contextByAddingValue(Value(self))
                 return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
@@ -119,9 +119,9 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Movie: MustacheRenderable, MustacheInspectable {
             let title: String
             let director: Person
-            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                let context = renderingInfo.context.contextByAddingValue(Value(self))
+                let context = info.context.contextByAddingValue(Value(self))
                 return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
@@ -145,16 +145,13 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func testExample8() {
-        let listFilter = { (value: Value, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let listFilter = { (value: Value, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let items: [Value] = value.object()!
             var buffer = "<ul>"
             for item in items {
-                let itemContext = renderingInfo.context.contextByAddingValue(item)
-                if let itemRendering = renderingInfo.tag.render(itemContext, error: error) {
-                    buffer += "<li>\(itemRendering.string)</li>"
-                } else {
-                    return nil
-                }
+                let itemContext = info.context.contextByAddingValue(item)
+                let itemRendering = info.tag.render(itemContext)!
+                buffer += "<li>\(itemRendering.string)</li>"
             }
             buffer += "</ul>"
             return Rendering(buffer, .HTML)

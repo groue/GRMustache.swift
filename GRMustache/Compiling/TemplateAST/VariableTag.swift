@@ -6,15 +6,19 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class VariableTag: MustacheExpressionTag, TemplateASTNode {
+class VariableTag: Tag, TemplateASTNode {
     let token: TemplateToken
-    let expression: Expression
     let contentType: ContentType
     let escapesHTML: Bool
-    var type: TagType { return .Variable }
-    let innerTemplateString = ""
-    let inverted = true
-    var description: String {
+    
+    init(expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) {
+        self.escapesHTML = escapesHTML
+        self.contentType = contentType
+        self.token = token
+        super.init(type: .Variable, innerTemplateString: "", inverted: false, expression: expression)
+    }
+    
+    override var description: String {
         if let templateID = token.templateID {
             return "\(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)"
         } else {
@@ -22,19 +26,12 @@ class VariableTag: MustacheExpressionTag, TemplateASTNode {
         }
     }
     
-    init(expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) {
-        self.escapesHTML = escapesHTML
-        self.contentType = contentType
-        self.expression = expression
-        self.token = token
+    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
+        return Rendering("", contentType)
     }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {
         return visitor.visit(self)
-    }
-    
-    func render(context: Context, error: NSErrorPointer) -> Rendering? {
-        return Rendering("", contentType)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

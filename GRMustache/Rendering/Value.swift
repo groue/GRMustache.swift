@@ -69,7 +69,7 @@ public protocol MustacheInspectable: MustacheWrappable {
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
-    func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?
+    func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 }
 
 public protocol MustacheTagObserver: MustacheWrappable {
@@ -339,66 +339,66 @@ extension Value {
 
 extension Value {
     
-    public convenience init(_ block: (Value, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: (Value, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (value: Value) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(value, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(value, info: info, error: error)
             })
         })
     }
     
-    public convenience init(_ block: ([Value], renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: ([Value], info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (arguments: [Value]) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(arguments, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(arguments, info: info, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (AnyObject?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: (AnyObject?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: AnyObject?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, info: info, error: error)
             })
         })
     }
     
-    public convenience init<T: MustacheWrappable>(_ block: (T?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init<T: MustacheWrappable>(_ block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: T?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, info: info, error: error)
             })
         })
     }
     
-    public convenience init<T: NSObjectProtocol>(_ block: (T?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init<T: NSObjectProtocol>(_ block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (object: T?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(object, info: info, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (Int?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: (Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (int: Int?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(int, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(int, info: info, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (Double?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: (Double?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (double: Double?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(double, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(double, info: info, error: error)
             })
         })
     }
     
-    public convenience init(_ block: (String?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
+    public convenience init(_ block: (String?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
         self.init( { (string: String?) -> Value in
-            return Value( { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(string, renderingInfo: renderingInfo, error: error)
+            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return block(string, info: info, error: error)
             })
         })
     }
@@ -417,8 +417,8 @@ extension Value {
     private struct BlockRenderable: MustacheRenderable {
         let block: (RenderingInfo, NSErrorPointer) -> Rendering?
         
-        func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-            return block(renderingInfo, error)
+        func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            return block(info, error)
         }
     }
 }
@@ -738,30 +738,30 @@ extension Value {
         }
     }
     
-    public func render(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        let tag = renderingInfo.tag
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        let tag = info.tag
         switch type {
         case .None:
             switch tag.type {
             case .Variable:
                 return Rendering("")
             case .Section:
-                return renderingInfo.render(renderingInfo.context, error: error)
+                return info.tag.render(info.context, error: error)
             }
         case .DictionaryValue(let dictionary):
             switch tag.type {
             case .Variable:
                 return Rendering("\(dictionary)")
             case .Section:
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.contextByAddingValue(self), error: error)
             }
         case .ArrayValue(let array):
-            if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
+            if info.enumerationItem {
+                return info.tag.render(info.context.contextByAddingValue(self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
-                let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
+                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in array {
                     if let itemRendering = item.render(enumerationRenderingInfo, error: error) {
                         if contentType == nil {
@@ -787,17 +787,17 @@ extension Value {
                     case .Variable:
                         return Rendering("")
                     case .Section:
-                        return renderingInfo.render(renderingInfo.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
             }
         case .SetValue(let set):
-            if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
+            if info.enumerationItem {
+                return info.tag.render(info.context.contextByAddingValue(self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
-                let enumerationRenderingInfo = renderingInfo.renderingInfoBySettingEnumerationItem()
+                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in set {
                     if let itemRendering = Value(item).render(enumerationRenderingInfo, error: error) {
                         if contentType == nil {
@@ -823,7 +823,7 @@ extension Value {
                     case .Variable:
                         return Rendering("")
                     case .Section:
-                        return renderingInfo.render(renderingInfo.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
             }
@@ -832,13 +832,13 @@ extension Value {
             case .Variable:
                 return Rendering("\(object)")
             case .Section:
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.contextByAddingValue(self), error: error)
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
-                return renderable.mustacheRender(renderingInfo, error: error)
+                return renderable.mustacheRender(info, error: error)
             } else {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.contextByAddingValue(self), error: error)
             }
         }
     }

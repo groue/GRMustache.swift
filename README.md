@@ -72,10 +72,10 @@ Forget the strict minimalism of the genuine Mustache language: GRMustache ships 
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = { (count: Int?, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+let pluralize = { (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
     
     // Pluralize the section inner content if needed:
-    var string = renderingInfo.tag.innerTemplateString
+    var string = info.tag.innerTemplateString
     if count > 1 {
         string = string + "s"  // naive
     }

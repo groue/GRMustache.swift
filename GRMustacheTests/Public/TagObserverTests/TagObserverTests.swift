@@ -261,7 +261,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
         failedRendering = false
         var error: NSError?
-        let rendering = template.render(Value({ (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let rendering = template.render(Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
             return nil
         }), error: &error)

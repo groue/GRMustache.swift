@@ -88,8 +88,8 @@ public class Template: MustacheRenderable {
     // MARK: - MustacheRenderable
     
     // TODO: make this method internal
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
-        return render(renderingInfo.context, error: error)
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
+        return render(info.context, error: error)
     }
     
 }

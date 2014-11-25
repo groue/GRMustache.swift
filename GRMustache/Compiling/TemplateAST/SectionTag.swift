@@ -6,14 +6,17 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class SectionTag: MustacheExpressionTag, TemplateASTNode {
+class SectionTag: Tag, TemplateASTNode {
     let openingToken: TemplateToken
-    let expression: Expression
     let templateAST: TemplateAST
-    let inverted: Bool
-    let type: TagType = .Section
-    let innerTemplateString: String
-    var description: String {
+    
+    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
+        self.templateAST = templateAST
+        self.openingToken = openingToken
+        super.init(type: .Section, innerTemplateString: innerTemplateString, inverted: inverted, expression: expression)
+    }
+    
+    override var description: String {
         if let templateID = openingToken.templateID {
             return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber) of template \(templateID)"
         } else {
@@ -21,21 +24,13 @@ class SectionTag: MustacheExpressionTag, TemplateASTNode {
         }
     }
     
-    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
-        self.expression = expression
-        self.inverted = inverted
-        self.templateAST = templateAST
-        self.openingToken = openingToken
-        self.innerTemplateString = innerTemplateString
+    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
+        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
+        return renderingEngine.render(templateAST, error: error)
     }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {
         return visitor.visit(self)
-    }
-    
-    func render(context: Context, error: NSErrorPointer) -> Rendering? {
-        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.render(templateAST, error: error)
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {

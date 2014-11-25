@@ -53,8 +53,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.mustacheRender(renderingInfo, error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = testedTemplate.mustacheRender(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -78,8 +78,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.mustacheRender(renderingInfo, error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = testedTemplate.mustacheRender(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -96,8 +96,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render(error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -114,8 +114,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render(error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -132,8 +132,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render(error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -150,8 +150,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = renderingInfo.render(error: error)
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }

@@ -14,10 +14,6 @@ public struct RenderingInfo {
     func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
         return RenderingInfo(tag: tag, context: context, enumerationItem: true)
     }
-    
-    public func render(_ context: Context? = nil, error: NSErrorPointer = nil) -> Rendering? {
-        return tag.render(context ?? self.context, error: error)
-    }
 }
 
 public enum ContentType {
@@ -211,7 +207,7 @@ class RenderingEngine: TemplateASTVisitor {
         return .Success
     }
     
-    private func visit(tag: MustacheExpressionTag, escapesHTML: Bool) -> TemplateASTVisitResult {
+    private func visit(tag: Tag, escapesHTML: Bool) -> TemplateASTVisitResult {
         
         // Evaluate expression
         
@@ -227,23 +223,23 @@ class RenderingEngine: TemplateASTVisitor {
                 value = tagObserver.mustacheTag(tag, willRenderValue: value)
             }
             
-            let renderingInfo = RenderingInfo(tag: tag, context: context, enumerationItem: false)
+            let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
             var error: NSError?
             var rendering: Rendering?
             switch tag.type {
             case .Variable:
-                rendering = value.render(renderingInfo, error: &error)
+                rendering = value.render(info, error: &error)
             case .Section:
                 let boolValue = value.mustacheBool
                 if tag.inverted {
                     if boolValue {
                         rendering = Rendering("")
                     } else {
-                        rendering = renderingInfo.render(error: &error)
+                        rendering = info.tag.render(info.context, error: &error)
                     }
                 } else {
                     if boolValue {
-                        rendering = value.render(renderingInfo, error: &error)
+                        rendering = value.render(info, error: &error)
                     } else {
                         rendering = Rendering("")
                     }
@@ -289,15 +285,15 @@ extension Bool: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch renderingInfo.tag.type {
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)), error: error)
+            if info.enumerationItem {
+                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
             } else {
-                return renderingInfo.render(error: error)
+                return info.tag.render(info.context, error: error)
             }
         }
     }
@@ -311,15 +307,15 @@ extension Int: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch renderingInfo.tag.type {
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)), error: error)
+            if info.enumerationItem {
+                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
             } else {
-                return renderingInfo.render(error: error)
+                return info.tag.render(info.context, error: error)
             }
         }
     }
@@ -333,15 +329,15 @@ extension Double: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch renderingInfo.tag.type {
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            if renderingInfo.enumerationItem {
-                return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)), error: error)
+            if info.enumerationItem {
+                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
             } else {
-                return renderingInfo.render(error: error)
+                return info.tag.render(info.context, error: error)
             }
         }
     }
@@ -355,12 +351,12 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch renderingInfo.tag.type {
+    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        switch info.tag.type {
         case .Variable:
             return Rendering(self)
         case .Section:
-            return renderingInfo.render(renderingInfo.context.contextByAddingValue(Value(self)), error: error)
+            return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
         }
     }
     
