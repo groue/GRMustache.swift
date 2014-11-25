@@ -8,16 +8,8 @@
 
 public struct RenderingInfo {
     public let tag: Tag
-    public let context: Context
+    public var context: Context
     let enumerationItem: Bool
-    
-    public func renderingInfoByExtendingContextWithValue(value: Value) -> RenderingInfo {
-        return RenderingInfo(tag: tag, context: context.contextByAddingValue(value), enumerationItem: enumerationItem)
-    }
-    
-    public func renderingInfoByExtendingContextWithTagObserver(tagObserver: MustacheTagObserver) -> RenderingInfo {
-        return RenderingInfo(tag: tag, context: context.contextByAddingTagObserver(tagObserver), enumerationItem: enumerationItem)
-    }
     
     func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
         return RenderingInfo(tag: tag, context: context, enumerationItem: true)

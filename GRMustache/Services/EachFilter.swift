@@ -94,7 +94,7 @@ class EachFilter: MustacheFilter {
         var mustacheTagObserver: MustacheTagObserver? { return (value.object() as MustacheCluster?)?.mustacheTagObserver }
         var mustacheRenderable: MustacheRenderable? { return self }
         
-        func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        func mustacheRender(var renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
             var position: [String: Value] = [:]
             position["@index"] = Value(index)
             position["@indexPlusOne"] = Value(index + 1)
@@ -104,8 +104,7 @@ class EachFilter: MustacheFilter {
             if let key = key {
                 position["@key"] = Value(key)
             }
-            // TODO: renderingInfoByExtendingContextWithValue is not nice API
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(position))
+            renderingInfo.context = renderingInfo.context.contextByAddingValue(Value(position))
             return value.render(renderingInfo, error: error)
         }
     }

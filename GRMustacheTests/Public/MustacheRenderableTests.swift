@@ -263,10 +263,9 @@ class RenderableTests: XCTestCase {
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
         let renderable = { (renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            // TODO: renderingInfoByExtendingContextWithValue is not nice API
-            let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(["subject2": Value("+++")]))
+            let context = renderingInfo.context.contextByAddingValue(Value(["subject2": Value("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
-            return template.mustacheRender(renderingInfo, error: error)
+            return template.render(context, error: error)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
@@ -285,8 +284,8 @@ class RenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInVariableTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithTagObserver(self)
+            func mustacheRender(var renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                renderingInfo.context = renderingInfo.context.contextByAddingTagObserver(self)
                 let template = Template(string: "{{subject}}{{subject}}")!
                 return template.mustacheRender(renderingInfo, error: error)
             }

@@ -76,21 +76,20 @@ public class Template: MustacheRenderable {
         }
     }
     
-    
-    // MARK: - MustacheRenderable
-    
-    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
-        return render(renderingInfo.context, error: error)
-    }
-    
-    
-    // MARK: - Private
-    
-    private func render(context: Context, error: NSErrorPointer) -> Rendering? {
+    public func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         RenderingEngine.pushCurrentTemplateRepository(repository)
         let rendering = renderingEngine.render(templateAST, error: error)
         RenderingEngine.popCurrentTemplateRepository()
         return rendering
     }
+    
+    
+    // MARK: - MustacheRenderable
+    
+    // TODO: make this method internal
+    public func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
+        return render(renderingInfo.context, error: error)
+    }
+    
 }

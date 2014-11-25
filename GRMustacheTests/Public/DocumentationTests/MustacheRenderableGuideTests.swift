@@ -95,16 +95,14 @@ class MustacheRenderableGuideTests: XCTestCase {
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
     }
     
-    // TODO: make it run
     func testExample7() {
         struct Person: MustacheRenderable, MustacheInspectable {
             let firstName: String
             let lastName: String
             func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                // TODO: renderingInfoByExtendingContextWithValue is not nice API
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-                return template.mustacheRender(renderingInfo, error: error)
+                let context = renderingInfo.context.contextByAddingValue(Value(self))
+                return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
                 switch key {
@@ -123,9 +121,8 @@ class MustacheRenderableGuideTests: XCTestCase {
             let director: Person
             func mustacheRender(renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                // TODO: renderingInfoByExtendingContextWithValue is not nice API
-                let renderingInfo = renderingInfo.renderingInfoByExtendingContextWithValue(Value(self))
-                return template.mustacheRender(renderingInfo, error: error)
+                let context = renderingInfo.context.contextByAddingValue(Value(self))
+                return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
                 switch key {
