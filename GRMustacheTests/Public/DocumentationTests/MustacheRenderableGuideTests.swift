@@ -143,4 +143,35 @@ class MustacheRenderableGuideTests: XCTestCase {
         let rendering = template.render(Value(["movie": Value(movie)]))!
         XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
+    
+    func testExample8() {
+        let listFilter = { (value: Value, renderingInfo: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let items: [Value] = value.object()!
+            var buffer = "<ul>"
+            for item in items {
+                let itemContext = renderingInfo.context.contextByAddingValue(item)
+                if let itemRendering = renderingInfo.tag.render(itemContext, error: error) {
+                    buffer += "<li>\(itemRendering.string)</li>"
+                } else {
+                    return nil
+                }
+            }
+            buffer += "</ul>"
+            return Rendering(buffer, .HTML)
+        }
+        
+        let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
+        template.baseContext = template.baseContext.contextByAddingValue(Value(["list": Value(listFilter)]))
+        
+        let item1 = Value([
+            "url": "http://mustache.github.io",
+            "title": "Mustache"])
+        let item2 = Value([
+            "url": "http://github.com/groue/GRMustache.swift",
+            "title": "GRMustache.swift"])
+        let value = Value(["nav": Value([item1, item2])])
+        
+        let rendering = template.render(value)!
+        XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")
+    }
 }
