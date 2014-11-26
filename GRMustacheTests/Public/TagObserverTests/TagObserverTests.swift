@@ -359,4 +359,28 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(willRender2)
     }
     
+    func testTagDelegateCanProcessMustacheRenderable() {
+        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            return Value({ (info, error) -> Rendering? in
+                let rendering = value.render(info, error: error)!
+                return Rendering(rendering.string.uppercaseString, rendering.contentType)
+            })
+            }, didRenderBlock: nil)
+        
+        var object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return Rendering("&you")
+            }
+        var value = Value(["object": Value(object), "observer": Value(tagObserver)])
+        var template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
+        var rendering = template.render(value)!
+        XCTAssertEqual(rendering, "&amp;YOU")
+        
+        object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                return Rendering("&you", .HTML)
+            }
+        value = Value(["object": Value(object), "observer": Value(tagObserver)])
+        template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
+        rendering = template.render(value)!
+        XCTAssertEqual(rendering, "&YOU")
+    }
 }
