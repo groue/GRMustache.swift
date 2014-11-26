@@ -131,6 +131,8 @@
 		56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
 		56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */; };
 		56B4B2161A25BCB700BD4F8F /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */; };
+		56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */; };
+		56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */; };
 		56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
 		56BA49211A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
 		56BD79401A0E381900937A76 /* Value.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BD793F1A0E381900937A76 /* Value.swift */; };
@@ -230,6 +232,7 @@
 		56B4019E1A1F643B002D5CD7 /* TagTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TagTests.mustache; sourceTree = "<group>"; };
 		56B4019F1A1F643B002D5CD7 /* TagTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagTests.swift; sourceTree = "<group>"; };
 		56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateTests.swift; sourceTree = "<group>"; };
+		56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryTests.swift; sourceTree = "<group>"; };
 		56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableGuideTests.swift; sourceTree = "<group>"; };
 		56BD793F1A0E381900937A76 /* Value.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Value.swift; sourceTree = "<group>"; };
 		56BF06571A063DC800926BEB /* URLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEscape.swift; sourceTree = "<group>"; };
@@ -500,6 +503,14 @@
 			path = TemplateTests;
 			sourceTree = "<group>";
 		};
+		56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */ = {
+			isa = PBXGroup;
+			children = (
+				56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */,
+			);
+			path = TemplateRepositoryTests;
+			sourceTree = "<group>";
+		};
 		56BF069B1A064FE900926BEB /* Public */ = {
 			isa = PBXGroup;
 			children = (
@@ -515,6 +526,7 @@
 				5602507E1A1E0A82008E4BD6 /* TagObserverTests */,
 				56B4019D1A1F643B002D5CD7 /* TagTests */,
 				56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */,
+				56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */,
 				56B4B2131A25BC4200BD4F8F /* TemplateTests */,
 			);
 			path = Public;
@@ -818,6 +830,7 @@
 				564717311A18EAE600E383F9 /* FilterTests.swift in Sources */,
 				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
 				56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
+				56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */,
 				56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */,
 				5698D0271A1626240039D564 /* MustacheInspectableTests.swift in Sources */,
@@ -890,6 +903,7 @@
 				568A8DFA1A20CBCD005C9CB4 /* VariadicFilterTests.swift in Sources */,
 				568A8E021A20CBE3005C9CB4 /* ReadMeTests.swift in Sources */,
 				56BA49211A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
+				56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				568A8DF91A20CBCD005C9CB4 /* FilterTests.swift in Sources */,
 				56B4B2161A25BCB700BD4F8F /* TemplateTests.swift in Sources */,
 				568A8DF41A20CBC4005C9CB4 /* ConfigurationContentTypeTests.swift in Sources */,

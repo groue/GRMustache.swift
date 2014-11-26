@@ -15,32 +15,29 @@ public protocol TemplateRepositoryDataSource {
 
 public class TemplateRepository {
     public var configuration: Configuration
-    public var dataSource: TemplateRepositoryDataSource?
+    public let dataSource: TemplateRepositoryDataSource?
     private var templateASTForTemplateID: [TemplateID: TemplateAST]
     
-    public init() {
+    public init(dataSource: TemplateRepositoryDataSource? = nil) {
         configuration = Configuration.defaultConfiguration
         templateASTForTemplateID = [:]
+        self.dataSource = dataSource
     }
     
     convenience public init(templates: [String: String]) {
-        self.init()
-        dataSource = DictionaryDataSource(templates: templates)
+        self.init(dataSource: DictionaryDataSource(templates: templates))
     }
     
     convenience public init(directoryPath: String, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init()
-        dataSource = DirectoryDataSource(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
+        self.init(dataSource: DirectoryDataSource(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding))
     }
     
     convenience public init(baseURL: NSURL, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init()
-        dataSource = URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
+        self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
     
     convenience public init(bundle: NSBundle?, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init()
-        dataSource = BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding)
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
     }
     
     public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
@@ -53,6 +50,10 @@ public class TemplateRepository {
         } else {
             return nil
         }
+    }
+    
+    public func reloadTemplates() {
+        templateASTForTemplateID.removeAll()
     }
     
     func template(#string: String, contentType: ContentType, error: NSErrorPointer) -> Template? {
