@@ -64,7 +64,7 @@ class ContextTests: XCTestCase {
         var context = Context()
         XCTAssertTrue(context.topMustacheValue.isEmpty)
         
-        context = context.contextByAddingValue(Value("object"))
+        context = context.extendedContext(value: Value("object"))
         XCTAssertEqual((context.topMustacheValue.object()! as String), "object")
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
@@ -76,10 +76,10 @@ class ContextTests: XCTestCase {
             func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
             }
         }
-        context = context.contextByAddingTagObserver(CustomTagObserver())
+        context = context.extendedContext(tagObserver: CustomTagObserver())
         XCTAssertEqual(context.topMustacheValue.object()! as String, "object")
 
-        context = context.contextByAddingValue(Value("object2"))
+        context = context.extendedContext(value: Value("object2"))
         XCTAssertEqual(context.topMustacheValue.object()! as String, "object2")
     }
     

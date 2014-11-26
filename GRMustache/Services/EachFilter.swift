@@ -104,7 +104,7 @@ class EachFilter: MustacheFilter {
             if let key = key {
                 position["@key"] = Value(key)
             }
-            info.context = info.context.contextByAddingValue(Value(position))
+            info.context = info.context.extendedContext(value: Value(position))
             return value.render(info, error: error)
         }
     }

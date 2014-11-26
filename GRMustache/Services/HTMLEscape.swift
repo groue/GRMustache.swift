@@ -16,7 +16,7 @@ class HTMLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.contextByAddingTagObserver(self), error: error)
+            return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
         }
     }
 

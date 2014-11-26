@@ -21,15 +21,15 @@ public struct Configuration {
     
     public static var defaultConfiguration = Configuration()
     
-    public mutating func extendBaseContextWithValue(value: Value) {
-        baseContext = baseContext.contextByAddingValue(value)
+    public mutating func extendBaseContext(# value: Value) {
+        baseContext = baseContext.extendedContext(value: value)
     }
     
-    public mutating func extendBaseContextWithValue(value: Value, forKey key: String) {
-        baseContext = baseContext.contextByAddingValue(Value([key: value]))
+    public mutating func extendBaseContext(# key: String, value: Value) {
+        baseContext = baseContext.extendedContext(value: Value([key: value]))
     }
     
-    public mutating func extendBaseContextWithTagObserver(tagObserver: MustacheTagObserver) {
-        baseContext = baseContext.contextByAddingTagObserver(tagObserver)
+    public mutating func extendBaseContext(# tagObserver: MustacheTagObserver) {
+        baseContext = baseContext.extendedContext(tagObserver: tagObserver)
     }
 }

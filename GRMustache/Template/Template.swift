@@ -69,7 +69,7 @@ public class Template: MustacheRenderable {
     }
     
     public func render(_ value: Value = Value(), error: NSErrorPointer = nil) -> String? {
-        if let rendering = render(baseContext.contextByAddingValue(value), error: error) {
+        if let rendering = render(baseContext.extendedContext(value: value), error: error) {
             return rendering.string
         } else {
             return nil

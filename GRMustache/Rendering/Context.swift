@@ -65,7 +65,7 @@ public class Context {
         self.init(type: .TagObserverType(tagObserver: tagObserver, parent: Context()))
     }
     
-    public func contextByAddingValue(value: Value) -> Context {
+    public func extendedContext(# value: Value) -> Context {
         if value.isEmpty {
             return self
         } else {
@@ -73,11 +73,11 @@ public class Context {
         }
     }
     
-    func contextByAddingInheritablePartialNode(inheritablePartialNode: InheritablePartialNode) -> Context {
+    func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
         return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self))
     }
     
-    public func contextByAddingTagObserver(tagObserver: MustacheTagObserver) -> Context {
+    public func extendedContext(# tagObserver: MustacheTagObserver) -> Context {
         return Context(type: .TagObserverType(tagObserver: tagObserver, parent: self))
     }
     

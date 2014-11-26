@@ -38,7 +38,7 @@ class TagObserverTests: XCTestCase {
             }, didRenderBlock: nil)
         
         let template = Template(string: "---")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         let rendering = template.render()!
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
@@ -51,7 +51,7 @@ class TagObserverTests: XCTestCase {
         })
         
         let template = Template(string: "---")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         let rendering = template.render()!
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
@@ -74,7 +74,7 @@ class TagObserverTests: XCTestCase {
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: didRenderBlock)
         
         let template = Template(string: "---{{foo}}---")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         let rendering = template.render(Value(["foo": "value"]))!
         
         XCTAssertEqual(rendering, "---1---")
@@ -97,7 +97,7 @@ class TagObserverTests: XCTestCase {
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: didRenderBlock)
         
         let template = Template(string: "<{{#false}}{{not_rendered}}{{/false}}>")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<>")
@@ -126,7 +126,7 @@ class TagObserverTests: XCTestCase {
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: didRenderBlock)
         
         let template = Template(string: "<{{#foo}}{{bar}}{{/foo}}>")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<observer>")
@@ -157,7 +157,7 @@ class TagObserverTests: XCTestCase {
         }
         
         var template = Template(string: "{{subject}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         var rendering = template.render()!
@@ -166,7 +166,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(renderedValue!.isEmpty)
         
         template = Template(string: "{{subject}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["subject": "foo"]))!
@@ -175,7 +175,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual((renderedValue!.object() as String?)!, "foo")
         
         template = Template(string: "{{subject.foo}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render()!
@@ -184,7 +184,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(renderedValue!.isEmpty)
         
         template = Template(string: "{{subject.foo}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["subject": "foo"]))!
@@ -193,7 +193,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(renderedValue!.isEmpty)
         
         template = Template(string: "{{subject.foo}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["subject": ["foo": "bar"]]))!
@@ -202,7 +202,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual((renderedValue!.object() as String?)!, "bar")
         
         template = Template(string: "{{filter(subject)}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["filter": Value(filter)]))!
@@ -211,7 +211,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertTrue(renderedValue!.isEmpty)
         
         template = Template(string: "{{filter(subject)}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
@@ -220,7 +220,7 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual((renderedValue!.object() as String?)!, "FOO")
         
         template = Template(string: "{{filter(subject).length}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
         rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
@@ -238,13 +238,13 @@ class TagObserverTests: XCTestCase {
         let value = Value(["value": "<>"])
         
         var template = Template(string: "-{{value}}-")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         var rendering = template.render(value)!
         XCTAssertEqual(rendering, "-&lt;&gt;-")
         XCTAssertEqual(recordedRendering!, "&lt;&gt;")
         
         template = Template(string: "-{{{value}}}-")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "-<>-")
         XCTAssertEqual(recordedRendering!, "<>")
@@ -258,7 +258,7 @@ class TagObserverTests: XCTestCase {
         let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
         
         let template = Template(string: "-{{.}}-")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         failedRendering = false
         var error: NSError?
         let rendering = template.render(Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -321,7 +321,7 @@ class TagObserverTests: XCTestCase {
         })
         
         let template = Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver1)
+        template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver1)
         let value = Value([
             "observer2": Value(tagObserver2),
             "observer3": Value(tagObserver3),

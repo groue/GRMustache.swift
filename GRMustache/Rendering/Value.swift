@@ -753,11 +753,11 @@ extension Value {
             case .Variable:
                 return Rendering("\(dictionary)")
             case .Section:
-                return info.tag.render(info.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.extendedContext(value: self), error: error)
             }
         case .ArrayValue(let array):
             if info.enumerationItem {
-                return info.tag.render(info.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.extendedContext(value: self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
@@ -793,7 +793,7 @@ extension Value {
             }
         case .SetValue(let set):
             if info.enumerationItem {
-                return info.tag.render(info.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.extendedContext(value: self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
@@ -832,13 +832,13 @@ extension Value {
             case .Variable:
                 return Rendering("\(object)")
             case .Section:
-                return info.tag.render(info.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.extendedContext(value: self), error: error)
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
                 return renderable.mustacheRender(info, error: error)
             } else {
-                return info.tag.render(info.context.contextByAddingValue(self), error: error)
+                return info.tag.render(info.context.extendedContext(value: self), error: error)
             }
         }
     }

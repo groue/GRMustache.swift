@@ -55,7 +55,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.contextByAddingTagObserver(self)
+        let context = info.context.extendedContext(tagObserver: self)
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             

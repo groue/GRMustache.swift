@@ -13,7 +13,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.extendBaseContextWithValue(Value(["name": "Arthur"]))
+        configuration.extendBaseContext(value: Value(["name": "Arthur"]))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
@@ -38,7 +38,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
             }
         }
         var configuration = Configuration()
-        configuration.extendBaseContextWithTagObserver(TestedTagObserver())
+        configuration.extendBaseContext(tagObserver: TestedTagObserver())
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!

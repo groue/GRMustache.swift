@@ -40,7 +40,7 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.contextByAddingTagObserver(self), error: error)
+            return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
         }
     }
     

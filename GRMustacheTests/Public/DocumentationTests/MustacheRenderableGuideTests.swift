@@ -101,7 +101,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let lastName: String
             func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                let context = info.context.contextByAddingValue(Value(self))
+                let context = info.context.extendedContext(value: Value(self))
                 return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
@@ -121,7 +121,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let director: Person
             func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                let context = info.context.contextByAddingValue(Value(self))
+                let context = info.context.extendedContext(value: Value(self))
                 return template.render(context, error: error)
             }
             func valueForMustacheKey(key: String) -> Value? {
@@ -149,7 +149,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let items: [Value] = value.object()!
             var buffer = "<ul>"
             for item in items {
-                let itemContext = info.context.contextByAddingValue(item)
+                let itemContext = info.context.extendedContext(value: item)
                 let itemRendering = info.tag.render(itemContext)!
                 buffer += "<li>\(itemRendering.string)</li>"
             }
@@ -158,7 +158,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
-        template.baseContext = template.baseContext.contextByAddingValue(Value(["list": Value(listFilter)]))
+        template.baseContext = template.baseContext.extendedContext(value: Value(["list": Value(listFilter)]))
         
         let item1 = Value([
             "url": "http://mustache.github.io",

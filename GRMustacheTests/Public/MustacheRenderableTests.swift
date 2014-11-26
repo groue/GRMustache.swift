@@ -263,7 +263,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let context = info.context.contextByAddingValue(Value(["subject2": Value("+++")]))
+            let context = info.context.extendedContext(value: Value(["subject2": Value("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
             return template.render(context, error: error)
         }
@@ -274,7 +274,7 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectCanExtendValueContextStackInSectionTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context.contextByAddingValue(Value(["subject2": Value("+++")])), error: error)
+            return info.tag.render(info.context.extendedContext(value: Value(["subject2": Value("+++")])), error: error)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = Template(string: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!.render(value)!
@@ -285,7 +285,7 @@ class MustacheRenderableTests: XCTestCase {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
             func mustacheRender(var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-                info.context = info.context.contextByAddingTagObserver(self)
+                info.context = info.context.extendedContext(tagObserver: self)
                 let template = Template(string: "{{subject}}{{subject}}")!
                 return template.mustacheRender(info, error: error)
             }
@@ -307,7 +307,7 @@ class MustacheRenderableTests: XCTestCase {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
             func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-                return info.tag.render(info.context.contextByAddingTagObserver(self), error: error)
+                return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
             }
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 ++tagWillRenderCount
@@ -343,7 +343,7 @@ class MustacheRenderableTests: XCTestCase {
         }
         
         let template = Template(string: "{{#renderable}}{{subject}}{{/renderable}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(TestedTagObserver())
+        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")
@@ -370,7 +370,7 @@ class MustacheRenderableTests: XCTestCase {
         }
         
         let template = Template(string: "{{renderable}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(TestedTagObserver())
+        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")
@@ -397,7 +397,7 @@ class MustacheRenderableTests: XCTestCase {
         }
         
         let template = Template(string: "{{#renderable}}{{/renderable}}")!
-        template.baseContext = template.baseContext.contextByAddingTagObserver(TestedTagObserver())
+        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
         let value = Value(["renderable": Value(renderable), "subject": Value("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")

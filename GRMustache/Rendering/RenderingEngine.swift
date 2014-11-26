@@ -163,7 +163,7 @@ class RenderingEngine: TemplateASTVisitor {
     
     func visit(inheritablePartialNode: InheritablePartialNode) -> TemplateASTVisitResult {
         let originalContext = context
-        context = context.contextByAddingInheritablePartialNode(inheritablePartialNode)
+        context = context.extendedContext(inheritablePartialNode: inheritablePartialNode)
         let result = visit(inheritablePartialNode.partialNode)
         context = originalContext
         return result
@@ -291,7 +291,7 @@ extension Bool: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -313,7 +313,7 @@ extension Int: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -335,7 +335,7 @@ extension Double: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -356,7 +356,7 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
         case .Variable:
             return Rendering(self)
         case .Section:
-            return info.tag.render(info.context.contextByAddingValue(Value(self)), error: error)
+            return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
         }
     }
     
