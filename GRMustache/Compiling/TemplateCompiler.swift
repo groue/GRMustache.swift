@@ -498,7 +498,12 @@ class TemplateCompiler: TemplateTokenConsumer {
     }
     
     private func parseErrorAtToken(token: TemplateToken, description: String) -> NSError {
-        let userInfo = [NSLocalizedDescriptionKey: "Parse error at line \(token.lineNumber): \(description)"]
-        return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: userInfo)
+        var localizedDescription: String
+        if let templateID = templateID {
+            localizedDescription = "Parse error at line \(token.lineNumber) of template \(templateID): \(description)"
+        } else {
+            localizedDescription = "Parse error at line \(token.lineNumber): \(description)"
+        }
+        return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
     }
 }

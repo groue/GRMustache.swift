@@ -8,6 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		560250801A1E0A93008E4BD6 /* TagObserverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */; };
+		560ABACB1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */; };
+		560ABACC1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */; };
+		560ABAD21A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */; };
+		560ABAD31A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */; };
+		560ABAD41A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */; };
+		560ABAD51A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */; };
+		560ABAD61A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACF1A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache */; };
+		560ABAD71A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACF1A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache */; };
+		560ABAD81A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */; };
+		560ABAD91A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */; };
+		560ABADA1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */; };
+		560ABADB1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */; };
 		561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
 		561646981A23C21B00F8ADE0 /* Person.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646951A23C12B00F8ADE0 /* Person.mustache */; };
 		561646991A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
@@ -162,6 +174,12 @@
 
 /* Begin PBXFileReference section */
 		5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagObserverTests.swift; sourceTree = "<group>"; };
+		560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFromMethodsTests.swift; sourceTree = "<group>"; };
+		560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_compilerError.mustache; sourceTree = "<group>"; };
+		560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_compilerErrorWrapper.mustache; sourceTree = "<group>"; };
+		560ABACF1A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_parserError.mustache; sourceTree = "<group>"; };
+		560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_parserErrorWrapper.mustache; sourceTree = "<group>"; };
+		560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests.mustache; sourceTree = "<group>"; };
 		561646931A23C11400F8ADE0 /* Movie.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Movie.mustache; sourceTree = "<group>"; };
 		561646951A23C12B00F8ADE0 /* Person.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Person.mustache; sourceTree = "<group>"; };
 		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
@@ -275,6 +293,19 @@
 				5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */,
 			);
 			path = TagObserverTests;
+			sourceTree = "<group>";
+		};
+		560AC8831A26035A00DCD374 /* TemplateFromMethodsTests */ = {
+			isa = PBXGroup;
+			children = (
+				560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */,
+				560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */,
+				560ABACF1A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache */,
+				560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */,
+				560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */,
+				560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */,
+			);
+			path = TemplateFromMethodsTests;
 			sourceTree = "<group>";
 		};
 		5622F1F31A02E98F00B5D3F8 /* Services */ = {
@@ -464,6 +495,7 @@
 			isa = PBXGroup;
 			children = (
 				56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */,
+				560AC8831A26035A00DCD374 /* TemplateFromMethodsTests */,
 			);
 			path = TemplateTests;
 			sourceTree = "<group>";
@@ -690,7 +722,12 @@
 			files = (
 				56BF06C31A06500500926BEB /* GRMustacheSuite in Resources */,
 				561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */,
+				560ABAD61A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */,
+				560ABADA1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */,
+				560ABAD41A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */,
 				5685DAB41A1A2029003E583B /* LocalizerTestsBundle in Resources */,
+				560ABAD21A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */,
+				560ABAD81A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */,
 				5629A7C71A1F676600D41F7C /* TagTests_wrapper.mustache in Resources */,
 				56C8D6E61A1F1AD800F106F8 /* ReadMeExample1.mustache in Resources */,
 				56B401A01A1F643B002D5CD7 /* TagTests.mustache in Resources */,
@@ -712,7 +749,12 @@
 			files = (
 				568A8E001A20CBE3005C9CB4 /* ReadMeExample1.mustache in Resources */,
 				561646991A23C21B00F8ADE0 /* Movie.mustache in Resources */,
+				560ABAD71A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */,
+				560ABADB1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */,
+				560ABAD51A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */,
 				568A8E011A20CBE3005C9CB4 /* ReadMeExample2.mustache in Resources */,
+				560ABAD31A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */,
+				560ABAD91A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */,
 				568A8E091A20CBF7005C9CB4 /* TagTests.mustache in Resources */,
 				568A8E081A20CBF7005C9CB4 /* TagTests_wrapper.mustache in Resources */,
 				568A8E031A20CBEC005C9CB4 /* LocalizerTestsBundle in Resources */,
@@ -787,6 +829,7 @@
 				56FC9C8E1A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift in Sources */,
 				56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */,
 				56FC9C8D1A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift in Sources */,
+				560ABACB1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */,
 				56A0B4671A19D95A008A719F /* ContextTests.swift in Sources */,
 				56BF06C51A0650B400926BEB /* FoundationCollectionTests.swift in Sources */,
 				56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */,
@@ -858,6 +901,7 @@
 				568A8E0A1A20CBFB005C9CB4 /* TagTests.swift in Sources */,
 				568A8DF71A20CBC9005C9CB4 /* ContextTests.swift in Sources */,
 				568A8DF51A20CBC4005C9CB4 /* ConfigurationExtendBaseContextTests.swift in Sources */,
+				560ABACC1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */,
 				568A8DFB1A20CBD1005C9CB4 /* FoundationCollectionTests.swift in Sources */,
 				568A8DF81A20CBC9005C9CB4 /* ContextValueForMustacheExpressionTests.swift in Sources */,
 				568A8DFD1A20CBD9005C9CB4 /* GRMustacheSuiteTests.swift in Sources */,

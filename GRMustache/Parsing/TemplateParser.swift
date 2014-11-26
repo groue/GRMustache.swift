@@ -204,7 +204,7 @@ class TemplateParser {
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { countElements($0) > 0 }
                     if (newDelimiters.count != 2) {
-                        failWithParseError(lineNumber: lineNumber, description: "Invalid set delimiters tag")
+                        failWithParseError(lineNumber: lineNumber, templateID: templateID, description: "Invalid set delimiters tag")
                         return;
                     }
                     
@@ -237,7 +237,7 @@ class TemplateParser {
                 return
             }
         case .Tag, .UnescapedTag, .SetDelimitersTag:
-            failWithParseError(lineNumber: startLineNumber, description: "Unclosed Mustache tag")
+            failWithParseError(lineNumber: startLineNumber, templateID: templateID, description: "Unclosed Mustache tag")
             return
         }
     }
@@ -287,9 +287,14 @@ class TemplateParser {
         }
     }
     
-    private func failWithParseError(#lineNumber: Int, description: String) {
-        let userInfo = [NSLocalizedDescriptionKey: "Parse error at line \(lineNumber): \(description)"]
-        var error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: userInfo)
+    private func failWithParseError(#lineNumber: Int, templateID: TemplateID?, description: String) {
+        var localizedDescription: String
+        if let templateID = templateID {
+            localizedDescription = "Parse error at line \(lineNumber) of template \(templateID): \(description)"
+        } else {
+            localizedDescription = "Parse error at line \(lineNumber): \(description)"
+        }
+        var error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
         tokenConsumer.parser(self, didFailWithError: error)
     }
 }
