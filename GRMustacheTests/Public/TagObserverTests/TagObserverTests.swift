@@ -35,7 +35,7 @@ class TagObserverTests: XCTestCase {
         let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
             success = false
             return value
-        }, didRenderBlock: nil)
+            }, didRenderBlock: nil)
         
         let template = Template(string: "---")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
@@ -48,7 +48,7 @@ class TagObserverTests: XCTestCase {
         var success = true
         let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
             success = false
-            })
+        })
         
         let template = Template(string: "---")!
         template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver)
@@ -269,5 +269,72 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual(error!.domain, "TagObserverError")
         XCTAssertEqual(error!.code, 1)
         XCTAssertTrue(failedRendering)
+    }
+    
+    func testTagObserverOrdering() {
+        var willRenderIndex = 0
+        var didRenderIndex = 0
+        
+        var willRenderIndex1 = 0
+        var didRenderIndex1 = 0
+        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            if value.toString() == "observed" {
+                willRenderIndex1 = willRenderIndex
+                willRenderIndex++
+            }
+            return value
+            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+                if value.toString() == "observed" {
+                    didRenderIndex1 = didRenderIndex
+                    didRenderIndex++
+                }
+        })
+        
+        var willRenderIndex2 = 0
+        var didRenderIndex2 = 0
+        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            if value.toString() == "observed" {
+                willRenderIndex2 = willRenderIndex
+                willRenderIndex++
+            }
+            return value
+            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+                if value.toString() == "observed" {
+                    didRenderIndex2 = didRenderIndex
+                    didRenderIndex++
+                }
+        })
+        
+        var willRenderIndex3 = 0
+        var didRenderIndex3 = 0
+        let tagObserver3 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            if value.toString() == "observed" {
+                willRenderIndex3 = willRenderIndex
+                willRenderIndex++
+            }
+            return value
+            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+                if value.toString() == "observed" {
+                    didRenderIndex3 = didRenderIndex
+                    didRenderIndex++
+                }
+        })
+        
+        let template = Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")!
+        template.baseContext = template.baseContext.contextByAddingTagObserver(tagObserver1)
+        let value = Value([
+            "observer2": Value(tagObserver2),
+            "observer3": Value(tagObserver3),
+            "observed": Value("observed")
+            ])
+        template.render(value)
+        
+        XCTAssertEqual(willRenderIndex1, 2)
+        XCTAssertEqual(willRenderIndex2, 1)
+        XCTAssertEqual(willRenderIndex3, 0)
+        
+        XCTAssertEqual(didRenderIndex1, 0)
+        XCTAssertEqual(didRenderIndex2, 1)
+        XCTAssertEqual(didRenderIndex3, 2)
     }
 }
