@@ -337,4 +337,26 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual(didRenderIndex2, 1)
         XCTAssertEqual(didRenderIndex3, 2)
     }
+    
+    func testArrayOfTagDelegatesInSectionTag() {
+        var willRender1 = false
+        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            willRender1 = true
+            return value
+            }, didRenderBlock: nil)
+        
+        var willRender2 = false
+        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+            willRender2 = true
+            return value
+            }, didRenderBlock: nil)
+        
+        let template = Template(string: "{{#items}}{{.}}{{/items}}")!
+        let value = Value(["items": Value([Value(tagObserver1), Value(tagObserver2)])])
+        template.render(value)
+        
+        XCTAssertTrue(willRender1)
+        XCTAssertTrue(willRender2)
+    }
+    
 }
