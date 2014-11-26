@@ -7,8 +7,8 @@
 //
 
 public class Template: MustacheRenderable {
-    private let repository: TemplateRepository
     private let templateAST: TemplateAST
+    public let repository: TemplateRepository
     public var baseContext: Context
     
     init(repository: TemplateRepository, templateAST: TemplateAST, baseContext: Context) {
