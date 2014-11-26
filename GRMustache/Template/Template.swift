@@ -68,6 +68,18 @@ public class Template: MustacheRenderable {
         }
     }
     
+    public func extendBaseContext(# value: Value) {
+        baseContext = baseContext.extendedContext(value: value)
+    }
+    
+    public func extendBaseContext(# key: String, value: Value) {
+        baseContext = baseContext.extendedContext(value: Value([key: value]))
+    }
+    
+    public func extendBaseContext(# tagObserver: MustacheTagObserver) {
+        baseContext = baseContext.extendedContext(tagObserver: tagObserver)
+    }
+    
     public func render(_ value: Value = Value(), error: NSErrorPointer = nil) -> String? {
         if let rendering = render(baseContext.extendedContext(value: value), error: error) {
             return rendering.string

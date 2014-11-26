@@ -16,4 +16,34 @@ class TemplateTests: XCTestCase {
         let template = repo.template(string:"")!
         XCTAssertTrue(template.repository === repo)
     }
+    
+    func testTemplateExtendBaseContextWithValue() {
+        let template = Template(string: "{{name}}")!
+        template.extendBaseContext(value: Value(["name": "Arthur"]))
+        
+        var rendering = template.render()!
+        XCTAssertEqual(rendering, "Arthur")
+        
+        rendering = template.render(Value(["name": "Bobby"]))!
+        XCTAssertEqual(rendering, "Bobby")
+    }
+    
+    func testTemplateExtendBaseContextWithProtectedValue() {
+        // TODO: import test from GRMustache
+    }
+    
+    func testTemplateExtendBaseContextWithTagObserver() {
+        class TestedTagObserver: MustacheTagObserver {
+            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+                return Value("observer")
+            }
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value) {
+            }
+        }
+
+        let template = Template(string: "{{name}}")!
+        template.extendBaseContext(tagObserver: TestedTagObserver())
+        let rendering = template.render()!
+        XCTAssertEqual(rendering, "observer")
+    }
 }
