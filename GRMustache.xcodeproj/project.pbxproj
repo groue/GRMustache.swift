@@ -133,6 +133,10 @@
 		56B4B2161A25BCB700BD4F8F /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */; };
 		56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */; };
 		56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */; };
+		56B4B21C1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */; };
+		56B4B21D1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */; };
+		56B4B21F1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */; };
+		56B4B2201A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */; };
 		56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
 		56BA49211A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
 		56BD79401A0E381900937A76 /* Value.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BD793F1A0E381900937A76 /* Value.swift */; };
@@ -233,6 +237,8 @@
 		56B4019F1A1F643B002D5CD7 /* TagTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagTests.swift; sourceTree = "<group>"; };
 		56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateTests.swift; sourceTree = "<group>"; };
 		56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryTests.swift; sourceTree = "<group>"; };
+		56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryDataSourceTests.swift; sourceTree = "<group>"; };
+		56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryDictionaryTests.swift; sourceTree = "<group>"; };
 		56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheRenderableGuideTests.swift; sourceTree = "<group>"; };
 		56BD793F1A0E381900937A76 /* Value.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Value.swift; sourceTree = "<group>"; };
 		56BF06571A063DC800926BEB /* URLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = URLEscape.swift; sourceTree = "<group>"; };
@@ -506,6 +512,8 @@
 		56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */ = {
 			isa = PBXGroup;
 			children = (
+				56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */,
+				56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */,
 				56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */,
 			);
 			path = TemplateRepositoryTests;
@@ -829,6 +837,7 @@
 				56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */,
 				564717311A18EAE600E383F9 /* FilterTests.swift in Sources */,
 				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
+				56B4B21C1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */,
 				56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
 				56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */,
@@ -847,6 +856,7 @@
 				56BF06C51A0650B400926BEB /* FoundationCollectionTests.swift in Sources */,
 				56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */,
 				56C8D6DC1A1DCB9500F106F8 /* StandardLibraryTests.swift in Sources */,
+				56B4B21F1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */,
 				5685DAB61A1A2074003E583B /* LocalizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -902,6 +912,7 @@
 				568A8DFE1A20CBDD005C9CB4 /* MustacheInspectableTests.swift in Sources */,
 				568A8DFA1A20CBCD005C9CB4 /* VariadicFilterTests.swift in Sources */,
 				568A8E021A20CBE3005C9CB4 /* ReadMeTests.swift in Sources */,
+				56B4B21D1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */,
 				56BA49211A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
 				56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				568A8DF91A20CBCD005C9CB4 /* FilterTests.swift in Sources */,
@@ -920,6 +931,7 @@
 				568A8DF81A20CBC9005C9CB4 /* ContextValueForMustacheExpressionTests.swift in Sources */,
 				568A8DFD1A20CBD9005C9CB4 /* GRMustacheSuiteTests.swift in Sources */,
 				568A8E061A20CBF0005C9CB4 /* StandardLibraryTests.swift in Sources */,
+				56B4B2201A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */,
 				568A8E041A20CBF0005C9CB4 /* LocalizerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

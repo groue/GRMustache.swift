@@ -10,7 +10,30 @@ import XCTest
 import GRMustache
 
 class TemplateRepositoryTests: XCTestCase {
+    
+    func testTemplateRepositoryWithoutDataSourceCanNotLoadPartialTemplate() {
+        let repo = TemplateRepository()
+        
+        var error: NSError? = nil
+        var template = repo.template(named:"partial", error: &error)
+        XCTAssertNil(template)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+        
+        error = nil
+        template = repo.template(string:"{{>partial}}", error: &error)
+        XCTAssertNil(template)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+    }
 
+    func testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate() {
+        let repo = TemplateRepository()
+        let template = repo.template(string:"{{.}}")!
+        let rendering = template.render(Value("success"))!
+        XCTAssertEqual(rendering, "success")
+    }
+    
     func testTemplateInstancesAreNotReused() {
         let templates = ["name": "value: {{ value }}"]
         let repo = TemplateRepository(templates: templates)
@@ -66,92 +89,5 @@ class TemplateRepositoryTests: XCTestCase {
         rendering = template.render()!
         XCTAssertEqual(rendering, "bazqux")
     }
-    
-    func testDataSource() {
-        class TestedDataSource: TemplateRepositoryDataSource {
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
-                return name
-            }
-            func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-                switch templateID {
-                case "not_found":
-                    return nil
-                case "error":
-                    if error != nil {
-                        error.memory = NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
-                    }
-                    return nil
-                default:
-                    return templateID
-                }
-            }
-        }
         
-        let repo = TemplateRepository(dataSource: TestedDataSource())
-        
-        var error: NSError?
-        var template = repo.template(named: "foo")
-        var rendering = template?.render()
-        XCTAssertEqual(rendering!, "foo")
-        
-        template = repo.template(string: "{{>foo}}")
-        rendering = template?.render()
-        XCTAssertEqual(rendering!, "foo")
-        
-        template = repo.template(string: "{{>not_found}}", error: &error)
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
-        
-        template = repo.template(string: "{{>error}}", error: &error)
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, "TestedDataSource")
-    }
-    
-    func testTemplateRepositoryWithDictionary() {
-        let templates = [
-            "a": "A{{>b}}",
-            "b": "B{{>c}}",
-            "c": "C"]
-        let repo = TemplateRepository(templates: templates)
-        
-        var error: NSError?
-        var template = repo.template(named: "not_found", error: &error)
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
-        
-        template = repo.template(string: "{{>not_found}}", error: &error)
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
-
-        template = repo.template(named: "a")
-        var rendering = template!.render()!
-        XCTAssertEqual(rendering, "ABC")
-        
-        template = repo.template(string: "{{>a}}")
-        rendering = template!.render()!
-        XCTAssertEqual(rendering, "ABC")
-    }
-    
-    func testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation() {
-        // This behavior is different from objective-C GRMustache.
-        //
-        // Here we basically test that String and Dictionary are Swift structs,
-        // that is, copied when stored in another object. Mutating the original
-        // object has no effect on the stored object.
-        
-        var templateString = "foo"
-        var templates = ["a": templateString]
-        
-        let repo = TemplateRepository(templates: templates)
-        
-        templateString += "{{> bar }}"
-        templates["bar"] = "bar"
-        
-        let template = repo.template(named: "a")!
-        let rendering = template.render()!
-        XCTAssertEqual(rendering, "foo")
-    }
 }
