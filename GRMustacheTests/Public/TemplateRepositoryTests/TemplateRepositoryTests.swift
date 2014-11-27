@@ -107,4 +107,31 @@ class TemplateRepositoryTests: XCTestCase {
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, "TestedDataSource")
     }
+    
+    func testTemplateRepositoryWithDictionary() {
+        let templates = [
+            "a": "A{{>b}}",
+            "b": "B{{>c}}",
+            "c": "C"]
+        let repo = TemplateRepository(templates: templates)
+        
+        var error: NSError?
+        var template = repo.template(named: "not_found", error: &error)
+        XCTAssertNil(template)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+        
+        template = repo.template(string: "{{>not_found}}", error: &error)
+        XCTAssertNil(template)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+
+        template = repo.template(named: "a")
+        var rendering = template!.render()!
+        XCTAssertEqual(rendering, "ABC")
+        
+        template = repo.template(string: "{{>a}}")
+        rendering = template!.render()!
+        XCTAssertEqual(rendering, "ABC")
+    }
 }
