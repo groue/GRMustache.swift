@@ -20,6 +20,22 @@
 		560ABAD91A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */; };
 		560ABADA1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */; };
 		560ABADB1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */; };
+		560ABADC1A275260009A004A /* TemplateRepositoryBundleTests in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2251A27091900BD4F8F /* TemplateRepositoryBundleTests */; };
+		560ABADD1A275260009A004A /* TemplateRepositoryBundleTests_partial in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2261A27091900BD4F8F /* TemplateRepositoryBundleTests_partial */; };
+		560ABADE1A275260009A004A /* TemplateRepositoryBundleTests_partial.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2271A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache */; };
+		560ABADF1A275260009A004A /* TemplateRepositoryBundleTests_partial.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
+		560ABAE01A275260009A004A /* TemplateRepositoryBundleTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2291A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache */; };
+		560ABAE11A275260009A004A /* TemplateRepositoryBundleTests.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
+		560ABAE41A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABAE31A27539B009A004A /* TemplateRepositoryURLTests.swift */; };
+		560ABAE51A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABAE31A27539B009A004A /* TemplateRepositoryURLTests.swift */; };
+		560ABAE71A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABAE61A2753AC009A004A /* TemplateRepositoryPathTests.swift */; };
+		560ABAE81A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABAE61A2753AC009A004A /* TemplateRepositoryPathTests.swift */; };
+		560ABB691A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */; };
+		560ABB6A1A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */; };
+		560ABB6B1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */; };
+		560ABB6C1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */; };
+		560ABB6D1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */; };
+		560ABB6E1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */; };
 		561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
 		561646981A23C21B00F8ADE0 /* Person.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646951A23C12B00F8ADE0 /* Person.mustache */; };
 		561646991A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
@@ -140,17 +156,11 @@
 		56B4B2231A27077800BD4F8F /* TemplateRepositoryBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2221A27077800BD4F8F /* TemplateRepositoryBundleTests.swift */; };
 		56B4B2241A27077800BD4F8F /* TemplateRepositoryBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2221A27077800BD4F8F /* TemplateRepositoryBundleTests.swift */; };
 		56B4B22C1A27091900BD4F8F /* TemplateRepositoryBundleTests in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2251A27091900BD4F8F /* TemplateRepositoryBundleTests */; };
-		56B4B22D1A27091900BD4F8F /* TemplateRepositoryBundleTests in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2251A27091900BD4F8F /* TemplateRepositoryBundleTests */; };
 		56B4B22E1A27091900BD4F8F /* TemplateRepositoryBundleTests_partial in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2261A27091900BD4F8F /* TemplateRepositoryBundleTests_partial */; };
-		56B4B22F1A27091900BD4F8F /* TemplateRepositoryBundleTests_partial in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2261A27091900BD4F8F /* TemplateRepositoryBundleTests_partial */; };
 		56B4B2301A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2271A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache */; };
-		56B4B2311A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2271A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache */; };
-		56B4B2321A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
-		56B4B2331A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
+		56B4B2321A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
 		56B4B2341A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2291A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache */; };
-		56B4B2351A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2291A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache */; };
-		56B4B2361A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
-		56B4B2371A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
+		56B4B2361A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
 		56B4B2381A27091900BD4F8F /* TemplateRepositoryBundleTestsResources in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22B1A27091900BD4F8F /* TemplateRepositoryBundleTestsResources */; };
 		56B4B2391A27091900BD4F8F /* TemplateRepositoryBundleTestsResources in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22B1A27091900BD4F8F /* TemplateRepositoryBundleTestsResources */; };
 		56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
@@ -169,6 +179,7 @@
 		56CC2C9B1A000C6D00CBD45A /* ImplicitIteratorExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2C9A1A000C6D00CBD45A /* ImplicitIteratorExpression.swift */; };
 		56CC2C9E1A000CEB00CBD45A /* FilteredExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2C9D1A000CEB00CBD45A /* FilteredExpression.swift */; };
 		56CC2CA11A000EE400CBD45A /* ScopedExpression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */; };
+		56CD9F661A275980001BABA4 /* FilterTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56CD9F651A275980001BABA4 /* FilterTests.mustache */; };
 		56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */; };
 		56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */; };
 		56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
@@ -202,6 +213,11 @@
 		560ABACF1A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_parserError.mustache; sourceTree = "<group>"; };
 		560ABAD01A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_parserErrorWrapper.mustache; sourceTree = "<group>"; };
 		560ABAD11A260A42009A004A /* TemplateFromMethodsTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests.mustache; sourceTree = "<group>"; };
+		560ABAE31A27539B009A004A /* TemplateRepositoryURLTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryURLTests.swift; sourceTree = "<group>"; };
+		560ABAE61A2753AC009A004A /* TemplateRepositoryPathTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepositoryPathTests.swift; sourceTree = "<group>"; };
+		560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests; sourceTree = "<group>"; };
+		560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_ISOLatin1; sourceTree = "<group>"; };
+		560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_UTF8; sourceTree = "<group>"; };
 		561646931A23C11400F8ADE0 /* Movie.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Movie.mustache; sourceTree = "<group>"; };
 		561646951A23C12B00F8ADE0 /* Person.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Person.mustache; sourceTree = "<group>"; };
 		5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibrary.swift; sourceTree = "<group>"; };
@@ -278,6 +294,7 @@
 		56CC2C9A1A000C6D00CBD45A /* ImplicitIteratorExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImplicitIteratorExpression.swift; sourceTree = "<group>"; };
 		56CC2C9D1A000CEB00CBD45A /* FilteredExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilteredExpression.swift; sourceTree = "<group>"; };
 		56CC2CA01A000EE400CBD45A /* ScopedExpression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ScopedExpression.swift; sourceTree = "<group>"; };
+		56CD9F651A275980001BABA4 /* FilterTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FilterTests.mustache; sourceTree = "<group>"; };
 		56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationBaseContextTests.swift; sourceTree = "<group>"; };
 		56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationContentTypeTests.swift; sourceTree = "<group>"; };
 		56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationExtendBaseContextTests.swift; sourceTree = "<group>"; };
@@ -326,6 +343,18 @@
 				5602507F1A1E0A93008E4BD6 /* TagObserverTests.swift */,
 			);
 			path = TagObserverTests;
+			sourceTree = "<group>";
+		};
+		560ABAE21A275378009A004A /* TemplateRepositoryFileSystemTests */ = {
+			isa = PBXGroup;
+			children = (
+				560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */,
+				560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */,
+				560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */,
+				560ABAE31A27539B009A004A /* TemplateRepositoryURLTests.swift */,
+				560ABAE61A2753AC009A004A /* TemplateRepositoryPathTests.swift */,
+			);
+			path = TemplateRepositoryFileSystemTests;
 			sourceTree = "<group>";
 		};
 		560AC8831A26035A00DCD374 /* TemplateFromMethodsTests */ = {
@@ -539,6 +568,7 @@
 				56B4B2211A27076900BD4F8F /* TemplateRepositoryBundleTests */,
 				56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */,
 				56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */,
+				560ABAE21A275378009A004A /* TemplateRepositoryFileSystemTests */,
 				56B4B2181A26459C00BD4F8F /* TemplateRepositoryTests.swift */,
 			);
 			path = TemplateRepositoryTests;
@@ -627,6 +657,7 @@
 			children = (
 				564717301A18EAE600E383F9 /* FilterTests.swift */,
 				56FC9C901A189FA70020AAF8 /* VariadicFilterTests.swift */,
+				56CD9F651A275980001BABA4 /* FilterTests.mustache */,
 			);
 			path = FilterTests;
 			sourceTree = "<group>";
@@ -773,6 +804,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56CD9F661A275980001BABA4 /* FilterTests.mustache in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -780,8 +812,12 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56B4B2361A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Resources */,
+				560ABB691A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */,
+				56B4B2321A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Resources */,
 				56BF06C31A06500500926BEB /* GRMustacheSuite in Resources */,
 				561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */,
+				560ABB6D1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */,
 				560ABAD61A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */,
 				560ABADA1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */,
 				560ABAD41A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */,
@@ -797,6 +833,7 @@
 				56B4B22C1A27091900BD4F8F /* TemplateRepositoryBundleTests in Resources */,
 				56B401A01A1F643B002D5CD7 /* TagTests.mustache in Resources */,
 				561646981A23C21B00F8ADE0 /* Person.mustache in Resources */,
+				560ABB6B1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */,
 				56C8D6E71A1F1AD800F106F8 /* ReadMeExample2.mustache in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -813,22 +850,27 @@
 			buildActionMask = 2147483647;
 			files = (
 				568A8E001A20CBE3005C9CB4 /* ReadMeExample1.mustache in Resources */,
+				560ABB6A1A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */,
 				561646991A23C21B00F8ADE0 /* Movie.mustache in Resources */,
 				560ABAD71A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */,
+				560ABAE01A275260009A004A /* TemplateRepositoryBundleTests.mustache in Resources */,
+				560ABB6E1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */,
+				560ABAE11A275260009A004A /* TemplateRepositoryBundleTests.text in Resources */,
+				560ABADF1A275260009A004A /* TemplateRepositoryBundleTests_partial.text in Resources */,
 				560ABADB1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */,
 				560ABAD51A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */,
+				560ABADC1A275260009A004A /* TemplateRepositoryBundleTests in Resources */,
 				568A8E011A20CBE3005C9CB4 /* ReadMeExample2.mustache in Resources */,
+				560ABADE1A275260009A004A /* TemplateRepositoryBundleTests_partial.mustache in Resources */,
 				56B4B2391A27091900BD4F8F /* TemplateRepositoryBundleTestsResources in Resources */,
 				560ABAD31A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */,
 				560ABAD91A260A42009A004A /* TemplateFromMethodsTests_parserErrorWrapper.mustache in Resources */,
-				56B4B22F1A27091900BD4F8F /* TemplateRepositoryBundleTests_partial in Resources */,
+				560ABADD1A275260009A004A /* TemplateRepositoryBundleTests_partial in Resources */,
 				568A8E091A20CBF7005C9CB4 /* TagTests.mustache in Resources */,
 				568A8E081A20CBF7005C9CB4 /* TagTests_wrapper.mustache in Resources */,
-				56B4B2311A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache in Resources */,
-				56B4B2351A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache in Resources */,
-				56B4B22D1A27091900BD4F8F /* TemplateRepositoryBundleTests in Resources */,
 				568A8E031A20CBEC005C9CB4 /* LocalizerTestsBundle in Resources */,
 				5616469A1A23C21B00F8ADE0 /* Person.mustache in Resources */,
+				560ABB6C1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */,
 				568A8DFC1A20CBD4005C9CB4 /* GRMustacheSuite in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -885,17 +927,17 @@
 			files = (
 				560250801A1E0A93008E4BD6 /* TagObserverTests.swift in Sources */,
 				56A88EC81A066EC40055E40A /* MustacheRenderableTests.swift in Sources */,
-				56B4B2361A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Sources */,
-				56B4B2321A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Sources */,
 				564717311A18EAE600E383F9 /* FilterTests.swift in Sources */,
 				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
 				56B4B21C1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */,
 				56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
 				56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */,
+				560ABAE41A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */,
 				56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */,
 				56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */,
 				5698D0271A1626240039D564 /* MustacheInspectableTests.swift in Sources */,
 				56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */,
+				560ABAE71A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,
 				56C8D6E81A1F1AD800F106F8 /* ReadMeTests.swift in Sources */,
 				56C8D6E11A1F1A4700F106F8 /* ValueTests.swift in Sources */,
@@ -963,17 +1005,17 @@
 			files = (
 				568A8E071A20CBF4005C9CB4 /* TagObserverTests.swift in Sources */,
 				568A8DFE1A20CBDD005C9CB4 /* MustacheInspectableTests.swift in Sources */,
-				56B4B2371A27091900BD4F8F /* TemplateRepositoryBundleTests.text in Sources */,
-				56B4B2331A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Sources */,
 				568A8DFA1A20CBCD005C9CB4 /* VariadicFilterTests.swift in Sources */,
 				568A8E021A20CBE3005C9CB4 /* ReadMeTests.swift in Sources */,
 				56B4B21D1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */,
 				56BA49211A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
 				56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */,
+				560ABAE51A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */,
 				568A8DF91A20CBCD005C9CB4 /* FilterTests.swift in Sources */,
 				56B4B2161A25BCB700BD4F8F /* TemplateTests.swift in Sources */,
 				568A8DF41A20CBC4005C9CB4 /* ConfigurationContentTypeTests.swift in Sources */,
 				568A8DF61A20CBC4005C9CB4 /* ConfigurationTagDelimitersTests.swift in Sources */,
+				560ABAE81A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */,
 				568A8DFF1A20CBDD005C9CB4 /* MustacheRenderableTests.swift in Sources */,
 				568A8E051A20CBF0005C9CB4 /* NSFormatterTests.swift in Sources */,
 				568A8E0B1A20CBFE005C9CB4 /* ValueTests.swift in Sources */,

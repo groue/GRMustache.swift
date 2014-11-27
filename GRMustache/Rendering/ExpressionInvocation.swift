@@ -8,7 +8,7 @@
 
 class ExpressionInvocation: ExpressionVisitor {
     private let expression: Expression
-    var value: Value
+    private var value: Value
     private var context: Context?
     
     init (expression: Expression) {
