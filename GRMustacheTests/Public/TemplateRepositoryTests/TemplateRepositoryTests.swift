@@ -134,4 +134,24 @@ class TemplateRepositoryTests: XCTestCase {
         rendering = template!.render()!
         XCTAssertEqual(rendering, "ABC")
     }
+    
+    func testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation() {
+        // This behavior is different from objective-C GRMustache.
+        //
+        // Here we basically test that String and Dictionary are Swift structs,
+        // that is, copied when stored in another object. Mutating the original
+        // object has no effect on the stored object.
+        
+        var templateString = "foo"
+        var templates = ["a": templateString]
+        
+        let repo = TemplateRepository(templates: templates)
+        
+        templateString += "{{> bar }}"
+        templates["bar"] = "bar"
+        
+        let template = repo.template(named: "a")!
+        let rendering = template.render()!
+        XCTAssertEqual(rendering, "foo")
+    }
 }
