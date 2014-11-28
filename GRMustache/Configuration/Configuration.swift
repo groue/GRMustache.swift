@@ -25,10 +25,6 @@ public struct Configuration {
         baseContext = baseContext.extendedContext(value: value)
     }
     
-    public mutating func extendBaseContext(# key: String, value: Value) {
-        baseContext = baseContext.extendedContext(value: Value([key: value]))
-    }
-    
     public mutating func extendBaseContext(# tagObserver: MustacheTagObserver) {
         baseContext = baseContext.extendedContext(tagObserver: tagObserver)
     }
