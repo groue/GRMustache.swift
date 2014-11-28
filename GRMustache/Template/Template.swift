@@ -14,6 +14,14 @@ public class Template: MustacheRenderable {
     /**
         Parses a template string, and returns a template.
         
+        Since templates usually compile fine, you don't have to explicitly
+        perform any error handling:
+        
+        ::
+        
+          let template = Template(string: ...)!
+          let rendering = template.render(...)!
+    
         :param: string The template string
         :param: error  If there is an error loading or parsing template and
                        partials, upon return contains an NSError object that
@@ -36,6 +44,14 @@ public class Template: MustacheRenderable {
     
     /**
         Parses a template file, and returns a template.
+        
+        Since templates usually compile fine, you don't have to explicitly
+        perform any error handling:
+        
+        ::
+        
+          let template = Template(path: ...)!
+          let rendering = template.render(...)!
     
         :param: path     The path of the template.
         :param: encoding The encoding of the template file.
@@ -60,6 +76,14 @@ public class Template: MustacheRenderable {
     
     /**
         Parses a template file, and returns a template.
+        
+        Since templates usually compile fine, you don't have to explicitly
+        perform any error handling:
+        
+        ::
+        
+          let template = Template(URL: ...)!
+          let rendering = template.render(...)!
     
         :param: URL      The URL of the template.
         :param: encoding The encoding of template file.
@@ -82,10 +106,17 @@ public class Template: MustacheRenderable {
         }
     }
     
-    
     /**
         Parses a template resource identified by the specified name and file
         extension, and returns a template.
+        
+        Since templates usually compile fine, you don't have to explicitly
+        perform any error handling:
+        
+        ::
+        
+          let template = Template(named: ...)!
+          let rendering = template.render(...)!
     
         :param: name               The name of a bundle resource.
         :param: bundle             The bundle where to look for the template
