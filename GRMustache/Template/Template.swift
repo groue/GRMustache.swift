@@ -22,6 +22,14 @@ public class Template: MustacheRenderable {
       let template = Template(string: ...)!
       let rendering = template.render(...)!
     
+    Eventual partial tags refer to resources with extension ``.mustache`` stored
+    in the main bundle:
+    
+    ::
+    
+      // Uses `partial.mustache` resource from the main bundle
+      let template = Template(string: "...{{>partial}}...")!
+    
     :param: string The template string
     :param: error  If there is an error loading or parsing template and
                    partials, upon return contains an NSError object that
@@ -52,6 +60,14 @@ public class Template: MustacheRenderable {
     
       let template = Template(path: ...)!
       let rendering = template.render(...)!
+    
+    Eventual partial tags in the template refer to sibling template files using
+    the same extension.
+    
+    ::
+    
+      // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
+      let template = Template(path: "/path/to/template.txt")!
     
     :param: path     The path of the template.
     :param: encoding The encoding of the template file.
@@ -85,6 +101,14 @@ public class Template: MustacheRenderable {
       let template = Template(URL: ...)!
       let rendering = template.render(...)!
     
+    Eventual partial tags in the template refer to sibling templates using
+    the same extension.
+    
+    ::
+    
+      // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
+      let template = Template(URL: "file://path/to/template.txt")!
+    
     :param: URL      The URL of the template.
     :param: encoding The encoding of template file.
     :param: error    If there is an error loading or parsing template and
@@ -117,6 +141,14 @@ public class Template: MustacheRenderable {
     
       let template = Template(named: ...)!
       let rendering = template.render(...)!
+    
+    Eventual partial tags in the template refer to template resources using
+    the same extension.
+    
+    ::
+    
+      // `{{>partial}}` in `template.mustache` resouce loads `partial.mustache`:
+      let template = Template(named: "template")!
     
     :param: name               The name of a bundle resource.
     :param: bundle             The bundle where to look for the template
