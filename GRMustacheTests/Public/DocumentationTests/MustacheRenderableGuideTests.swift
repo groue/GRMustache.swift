@@ -63,7 +63,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     func textExample5() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
-            return template.mustacheRender(info, error: error)
+            return template.render(info.context, error: error)
         }
         // TODO: avoid this `as [String: Value]` cast
         let value = Value([
@@ -99,7 +99,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Person: MustacheRenderable, MustacheInspectable {
             let firstName: String
             let lastName: String
-            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
                 let context = info.context.extendedContext(value: Value(self))
                 return template.render(context, error: error)
@@ -119,7 +119,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Movie: MustacheRenderable, MustacheInspectable {
             let title: String
             let director: Person
-            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
                 let context = info.context.extendedContext(value: Value(self))
                 return template.render(context, error: error)

@@ -11,7 +11,7 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
     
     // MARK: - MustacheRenderable
     
-    func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")

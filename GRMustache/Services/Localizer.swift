@@ -36,7 +36,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     
     // MARK: - MustacheRenderable
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         
         /**
         * Perform a first rendering of the section tag, that will turn variable

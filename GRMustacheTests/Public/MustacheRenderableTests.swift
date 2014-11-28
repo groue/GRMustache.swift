@@ -216,7 +216,7 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
         let altTemplate = Template(string:"{{subject}}")!
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return altTemplate.mustacheRender(info, error: error)
+            return altTemplate.render(info, error: error)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
@@ -226,7 +226,7 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
         let altTemplate = Template(string:"{{subject}}")!
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return altTemplate.mustacheRender(info, error: error)
+            return altTemplate.render(info, error: error)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let rendering = Template(string: "{{#renderable}}{{/renderable}}")!.render(value)!
@@ -238,8 +238,8 @@ class MustacheRenderableTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value("value")
             }
-            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-                return Template(string:"key:{{key}}")!.mustacheRender(info, error: error)
+            func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                return Template(string:"key:{{key}}")!.render(info, error: error)
             }
         }
         let value = Value(["renderable": Value(TestedRenderable())])
@@ -252,7 +252,7 @@ class MustacheRenderableTests: XCTestCase {
             func valueForMustacheKey(key: String) -> Value? {
                 return Value("value")
             }
-            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return info.tag.render(info.context, error: error)
             }
         }
@@ -284,10 +284,10 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInVariableTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func mustacheRender(var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-                info.context = info.context.extendedContext(tagObserver: self)
+            func render(var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+                let context = info.context.extendedContext(tagObserver: self)
                 let template = Template(string: "{{subject}}{{subject}}")!
-                return template.mustacheRender(info, error: error)
+                return template.render(context, error: error)
             }
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
                 ++tagWillRenderCount
@@ -306,7 +306,7 @@ class MustacheRenderableTests: XCTestCase {
     func testRenderableObjectCanExtendTagObserverStackInSectionTag() {
         class TestedRenderable: MustacheRenderable, MustacheTagObserver {
             var tagWillRenderCount = 0
-            func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+            func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
             }
             func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
@@ -366,7 +366,7 @@ class MustacheRenderableTests: XCTestCase {
         
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "{{subject}}")!
-            return template.mustacheRender(info, error: error)
+            return template.render(info.context, error: error)
         }
         
         let template = Template(string: "{{renderable}}")!
@@ -393,7 +393,7 @@ class MustacheRenderableTests: XCTestCase {
         
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "{{subject}}")!
-            return template.mustacheRender(info, error: error)
+            return template.render(info.context, error: error)
         }
         
         let template = Template(string: "{{#renderable}}{{/renderable}}")!
@@ -529,7 +529,7 @@ class MustacheRenderableTests: XCTestCase {
         let repository = TemplateRepository(templates: templates)
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{>partial}}")!
-            return altTemplate.mustacheRender(info, error: error)
+            return altTemplate.render(info, error: error)
         }
         let value = Value(["renderable": Value(renderable), "subject": Value("-")])
         let template = repository.template(named: "template")!
@@ -548,7 +548,7 @@ class MustacheRenderableTests: XCTestCase {
             "template2": Value(repository2.template(named: "template2")!),
             "renderable": Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{>partial}}")!
-                return altTemplate.mustacheRender(info, error: error)
+                return altTemplate.render(info, error: error)
             })])
         let template = repository1.template(named: "template1")!
         let rendering = template.render(value)!
@@ -560,7 +560,7 @@ class MustacheRenderableTests: XCTestCase {
             "object": Value("&"),
             "renderable": Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.mustacheRender(info, error: error)
+                return altTemplate.render(info, error: error)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{renderable}}")!
@@ -573,7 +573,7 @@ class MustacheRenderableTests: XCTestCase {
             "object": Value("&"),
             "renderable": Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.mustacheRender(info, error: error)
+                return altTemplate.render(info, error: error)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{renderable}}")!
@@ -589,7 +589,7 @@ class MustacheRenderableTests: XCTestCase {
             "value": Value("&"),
             "renderable": Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ value }}")!
-                return altTemplate.mustacheRender(info, error: error)
+                return altTemplate.render(info, error: error)
             })])
         let template = repository.template(named: "templateHTML")!
         let rendering = template.render(value)!
@@ -605,7 +605,7 @@ class MustacheRenderableTests: XCTestCase {
         
         let renderableValue = Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{{ value }}}")!
-            return altTemplate.mustacheRender(info, error: error)
+            return altTemplate.render(info, error: error)
         })
         let value = Value([
             "value": Value("&"),

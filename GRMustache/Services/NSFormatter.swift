@@ -28,7 +28,7 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
     
     // MARK: - MustacheRenderable
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             // {{ formatter }}

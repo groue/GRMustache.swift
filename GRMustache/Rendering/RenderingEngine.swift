@@ -285,7 +285,7 @@ extension Bool: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
@@ -307,7 +307,7 @@ extension Int: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
@@ -329,7 +329,7 @@ extension Double: MustacheCluster, MustacheRenderable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
@@ -351,7 +351,7 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
     
-    public func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering(self)

@@ -43,7 +43,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     
     func testDefaultConfigurationContentTypeHTMLHasTemplateRenderHTML() {
         // Templates tell if they render HTML or Text via their
-        // MustacheRenderable mustacheRender(RenderingInfo) method.
+        // MustacheRenderable render(RenderingInfo) method.
         //
         // There is no public way to build a RenderingInfo.
         //
@@ -54,7 +54,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.mustacheRender(info, error: error)
+            let rendering = testedTemplate.render(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -68,7 +68,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     
     func testDefaultConfigurationContentTypeTextHasTemplateRenderText() {
         // Templates tell if they render HTML or Text via their
-        // MustacheRenderable mustacheRender(RenderingInfo) method.
+        // MustacheRenderable render(RenderingInfo) method.
         //
         // There is no public way to build a RenderingInfo.
         //
@@ -79,7 +79,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.mustacheRender(info, error: error)
+            let rendering = testedTemplate.render(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }

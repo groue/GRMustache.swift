@@ -69,7 +69,7 @@ public protocol MustacheInspectable: MustacheWrappable {
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
-    func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering?
+    func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 }
 
 public protocol MustacheTagObserver: MustacheWrappable {
@@ -417,7 +417,7 @@ extension Value {
     private struct BlockRenderable: MustacheRenderable {
         let block: (RenderingInfo, NSErrorPointer) -> Rendering?
         
-        func mustacheRender(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
             return block(info, error)
         }
     }
@@ -836,7 +836,7 @@ extension Value {
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
-                return renderable.mustacheRender(info, error: error)
+                return renderable.render(info, error: error)
             } else {
                 return info.tag.render(info.context.extendedContext(value: self), error: error)
             }
