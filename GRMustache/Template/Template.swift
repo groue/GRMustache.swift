@@ -163,7 +163,7 @@ public class Template: MustacheRenderable {
     
     :returns: The created template
     */
-    public convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
+    public convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         if let templateAST = repository.templateAST(named: name, relativeToTemplateID: nil, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)

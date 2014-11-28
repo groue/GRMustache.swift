@@ -28,15 +28,15 @@ public class TemplateRepository {
         self.init(dataSource: DictionaryDataSource(templates: templates))
     }
     
-    convenience public init(directoryPath: String, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: DirectoryDataSource(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding))
     }
     
-    convenience public init(baseURL: NSURL, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+    convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
     
-    convenience public init(bundle: NSBundle?, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+    convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
     }
     
@@ -126,10 +126,10 @@ public class TemplateRepository {
     
     private class DirectoryDataSource: TemplateRepositoryDataSource {
         let directoryPath: String
-        let templateExtension: String
+        let templateExtension: String?
         let encoding: NSStringEncoding
         
-        init(directoryPath: String, templateExtension: String, encoding: NSStringEncoding) {
+        init(directoryPath: String, templateExtension: String?, encoding: NSStringEncoding) {
             self.directoryPath = directoryPath
             self.templateExtension = templateExtension
             self.encoding = encoding
@@ -150,11 +150,12 @@ public class TemplateRepository {
             }
             
             let templateFilename: String = {
-                if self.templateExtension.isEmpty {
-                    return normalizedName
-                } else {
-                    return normalizedName.stringByAppendingPathExtension(self.templateExtension)!
+                if let templateExtension = self.templateExtension {
+                    if !templateExtension.isEmpty {
+                        return normalizedName.stringByAppendingPathExtension(templateExtension)!
+                    }
                 }
+                return normalizedName
             }()
             
             let templateDirectoryPath: String = {
@@ -175,10 +176,10 @@ public class TemplateRepository {
     
     private class URLDataSource: TemplateRepositoryDataSource {
         let baseURL: NSURL
-        let templateExtension: String
+        let templateExtension: String?
         let encoding: NSStringEncoding
         
-        init(baseURL: NSURL, templateExtension: String, encoding: NSStringEncoding) {
+        init(baseURL: NSURL, templateExtension: String?, encoding: NSStringEncoding) {
             self.baseURL = baseURL
             self.templateExtension = templateExtension
             self.encoding = encoding
@@ -199,11 +200,12 @@ public class TemplateRepository {
             }
             
             let templateFilename: String = {
-                if self.templateExtension.isEmpty {
-                    return normalizedName
-                } else {
-                    return normalizedName.stringByAppendingPathExtension(self.templateExtension)!
+                if let templateExtension = self.templateExtension {
+                    if !templateExtension.isEmpty {
+                        return normalizedName.stringByAppendingPathExtension(templateExtension)!
+                    }
                 }
+                return normalizedName
                 }()
             
             let templateBaseURL: NSURL = {
@@ -224,10 +226,10 @@ public class TemplateRepository {
     
     private class BundleDataSource: TemplateRepositoryDataSource {
         let bundle: NSBundle
-        let templateExtension: String
+        let templateExtension: String?
         let encoding: NSStringEncoding
         
-        init(bundle: NSBundle, templateExtension: String, encoding: NSStringEncoding) {
+        init(bundle: NSBundle, templateExtension: String?, encoding: NSStringEncoding) {
             self.bundle = bundle
             self.templateExtension = templateExtension
             self.encoding = encoding
