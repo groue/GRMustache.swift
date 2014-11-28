@@ -215,7 +215,13 @@ class RenderingEngine: TemplateASTVisitor {
         let invocationResult = expressionInvocation.invokeWithContext(context)
         switch invocationResult {
         case .Error(let error):
-            return .Error(error)
+            var userInfo = error.userInfo ?? [:]
+            if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description): \(originalLocalizedDescription)"
+            } else {
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description)"
+            }
+            return .Error(NSError(domain: error.domain, code: error.code, userInfo: userInfo))
         case .Success(var value):
             
             let tagObserverStack = context.tagObserverStack

@@ -160,4 +160,38 @@ class FilterTests: XCTestCase {
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
+    
+    // TODO: port this test to Objective-C GRMustache
+    func testMissingFilterErrorDescriptionContainsLineNumber() {
+        let template = Template(string: "\n{{f(x)}}")!
+        var error: NSError?
+        let rendering = template.render(error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        XCTAssertTrue(error!.localizedDescription.rangeOfString("Missing filter") != nil)
+        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
+    }
+    
+    // TODO: port this test to Objective-C GRMustache
+    func testMissingFilterErrorDescriptionContainsTemplatePath() {
+        // TODO
+    }
+    
+    // TODO: port this test to Objective-C GRMustache
+    func testNotAFilterErrorDescriptionContainsLineNumber() {
+        let template = Template(string: "\n{{f(x)}}")!
+        var error: NSError?
+        let rendering = template.render(Value(["f": "foo"]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        XCTAssertTrue(error!.localizedDescription.rangeOfString("Not a filter") != nil)
+        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
+    }
+    
+    // TODO: port this test to Objective-C GRMustache
+    func testNotAFilterErrorDescriptionContainsTemplatePath() {
+        // TODO
+    }
 }
