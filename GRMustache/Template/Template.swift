@@ -12,22 +12,22 @@
 public class Template: MustacheRenderable {
     
     /**
-        Parses a template string, and returns a template.
-        
-        Since templates usually compile fine, you don't have to explicitly
-        perform any error handling:
-        
-        ::
-        
-          let template = Template(string: ...)!
-          let rendering = template.render(...)!
+    Parses a template string, and returns a template.
     
-        :param: string The template string
-        :param: error  If there is an error loading or parsing template and
-                       partials, upon return contains an NSError object that
-                       describes the problem.
-        
-        :returns: The created template
+    Since templates usually compile fine, you don't have to explicitly perform
+    any error handling:
+    
+    ::
+    
+      let template = Template(string: ...)!
+      let rendering = template.render(...)!
+    
+    :param: string The template string
+    :param: error  If there is an error loading or parsing template and
+                   partials, upon return contains an NSError object that
+                   describes the problem.
+    
+    :returns: The created template
     */
     public convenience init?(string: String, error: NSErrorPointer = nil) {
         let repository = RenderingEngine.currentTemplateRepository() ?? TemplateRepository(bundle: nil)
@@ -43,23 +43,23 @@ public class Template: MustacheRenderable {
     }
     
     /**
-        Parses a template file, and returns a template.
-        
-        Since templates usually compile fine, you don't have to explicitly
-        perform any error handling:
-        
-        ::
-        
-          let template = Template(path: ...)!
-          let rendering = template.render(...)!
+    Parses a template file, and returns a template.
     
-        :param: path     The path of the template.
-        :param: encoding The encoding of the template file.
-        :param: error    If there is an error loading or parsing template and
-                        partials, upon return contains an NSError object that
-                        describes the problem.
+    Since templates usually compile fine, you don't have to explicitly perform
+    any error handling:
     
-        :returns: The created template
+    ::
+    
+      let template = Template(path: ...)!
+      let rendering = template.render(...)!
+    
+    :param: path     The path of the template.
+    :param: encoding The encoding of the template file.
+    :param: error    If there is an error loading or parsing template and
+                     partials, upon return contains an NSError object that
+                     describes the problem.
+    
+    :returns: The created template
     */
     public convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
@@ -75,23 +75,23 @@ public class Template: MustacheRenderable {
     }
     
     /**
-        Parses a template file, and returns a template.
-        
-        Since templates usually compile fine, you don't have to explicitly
-        perform any error handling:
-        
-        ::
-        
-          let template = Template(URL: ...)!
-          let rendering = template.render(...)!
+    Parses a template file, and returns a template.
     
-        :param: URL      The URL of the template.
-        :param: encoding The encoding of template file.
-        :param: error    If there is an error loading or parsing template and
-                         partials, upon return contains an NSError object that
-                         describes the problem.
+    Since templates usually compile fine, you don't have to explicitly perform
+    any error handling:
     
-        :returns: The created template
+    ::
+    
+      let template = Template(URL: ...)!
+      let rendering = template.render(...)!
+    
+    :param: URL      The URL of the template.
+    :param: encoding The encoding of template file.
+    :param: error    If there is an error loading or parsing template and
+                     partials, upon return contains an NSError object that
+                     describes the problem.
+    
+    :returns: The created template
     */
     public convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(baseURL: URL.URLByDeletingLastPathComponent!, templateExtension: URL.pathExtension, encoding: encoding)
@@ -107,29 +107,29 @@ public class Template: MustacheRenderable {
     }
     
     /**
-        Parses a template resource identified by the specified name and file
-        extension, and returns a template.
-        
-        Since templates usually compile fine, you don't have to explicitly
-        perform any error handling:
-        
-        ::
-        
-          let template = Template(named: ...)!
-          let rendering = template.render(...)!
+    Parses a template resource identified by the specified name and file
+    extension, and returns a template.
     
-        :param: name               The name of a bundle resource.
-        :param: bundle             The bundle where to look for the template
-                                   resource. If nil, the main bundle is used.
-        :param: templateExtension  If extension is an empty string or nil, the
-                                   extension is assumed not to exist and the
-                                   template file should exactly matches name.
-        :param: encoding           The encoding of template resource.
-        :param: error              If there is an error loading or parsing
-                                   template and partials, upon return contains
-                                   an NSError object that describes the problem.
+    Since templates usually compile fine, you don't have to explicitly perform
+    any error handling:
     
-        :returns: The created template
+    ::
+    
+      let template = Template(named: ...)!
+      let rendering = template.render(...)!
+    
+    :param: name               The name of a bundle resource.
+    :param: bundle             The bundle where to look for the template
+                               resource. If nil, the main bundle is used.
+    :param: templateExtension  If extension is an empty string or nil, the
+                               extension is assumed not to exist and the
+                               template file should exactly matches name.
+    :param: encoding           The encoding of template resource.
+    :param: error              If there is an error loading or parsing template
+                               and partials, upon return contains an NSError
+                               object that describes the problem.
+    
+    :returns: The created template
     */
     public convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
@@ -146,6 +146,16 @@ public class Template: MustacheRenderable {
     
     // MARK: - Rendering Templates
     
+    /**
+    Renders a template with a context stack initialized with the provided value
+    on top of the base context.
+    
+    :param: context A rendering context.
+    :param: error   If there is an error rendering the tag, upon return contains
+                    an NSError object that describes the problem.
+    
+    :returns: The rendered string
+    */
     public func render(_ value: Value = Value(), error: NSErrorPointer = nil) -> String? {
         if let rendering = render(baseContext.extendedContext(value: value), error: error) {
             return rendering.string
@@ -154,6 +164,22 @@ public class Template: MustacheRenderable {
         }
     }
     
+    /**
+    Returns the rendering of the receiver, given a rendering context.
+    
+    This method does not return a String, but a Rendering value that wraps both
+    the rendered string and its content type (HTML or Text). It is intended to
+    be used when you want to perform custom rendering through the
+    MustacheRenderable protocol.
+    
+    :param: context A rendering context.
+    :param: error   If there is an error rendering the tag, upon return contains
+                    an NSError object that describes the problem.
+    
+    :returns: The template rendering
+    
+    :see: MustacheRenderable
+    */
     public func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         RenderingEngine.pushCurrentTemplateRepository(repository)
@@ -166,13 +192,13 @@ public class Template: MustacheRenderable {
     // MARK: - Configuring Templates
     
     /**
-        The template's base context: all rendering start from this context.
-        
-        Its default value comes from the configuration of the template
-        repository this template comes from. Unless specified otherwize, this
-        base context contains the standard library.
-        
-        :see: repository
+    The template's base context: all rendering start from this context.
+    
+    Its default value comes from the configuration of the template
+    repository this template comes from. Unless specified otherwize, this
+    base context contains the standard library.
+    
+    :see: repository
     */
     public var baseContext: Context
     
@@ -188,38 +214,36 @@ public class Template: MustacheRenderable {
     // MARK: - Accessing Sibling Templates
     
     /**
-        The template repository that issued the receiver.
+    The template repository that issued the receiver.
     
-        All templates belong a template repository:
+    All templates belong a template repository:
     
-        - Templates returned by ``init(string:, error:)`` have a template
-        repository that loads templates and partials stored as resources in
-        the main bundle, with extension ".mustache", encoded in UTF8.
+    - Templates returned by ``init(string:, error:)`` have a template repository
+      that loads templates and partials stored as resources in the main bundle,
+      with extension ".mustache", encoded in UTF8.
     
-        - Templates returned by ``init(path:, error:)`` have a template
-        repository that loads templates and partials stored in the directory
-        of the receiver, with the same file extension ".mustache", encoded in
-        UTF8.
+    - Templates returned by ``init(path:, error:)`` have a template repository
+      that loads templates and partials stored in the directory of the receiver,
+      with the same file extension ".mustache", encoded in UTF8.
     
-        - Templates returned by ``init(URL:, error:)`` have a template
-        repository that loads templates and partials stored in the directory
-        of the receiver, with the same file extension ".mustache", encoded in
-        UTF8.
+    - Templates returned by ``init(URL:, error:)`` have a template repository
+      that loads templates and partials stored in the directory of the receiver,
+      with the same file extension ".mustache", encoded in UTF8.
     
-        - Templates returned by ``init(named:, bundle:, templateExtension:, encoding:, error:)``
-        have a template repository that loads templates and partials stored as
-        resources in the specified bundle, with extension ".mustache", encoded
-        in UTF8.
+    - Templates returned by ``init(named:, bundle:, templateExtension:, encoding:, error:)``
+      have a template repository that loads templates and partials stored as
+      resources in the specified bundle, with extension ".mustache", encoded in
+      UTF8.
     
-        - Templates returned by ``TemplateRepository.template(named:, error:)``
-        and `TemplateRepository.template(string:, :error:)` belong to
-        the invoked repository.
+    - Templates returned by ``TemplateRepository.template(named:, error:)`` and
+      `TemplateRepository.template(string:, :error:)` belong to the invoked
+      repository.
     
-        :see: TemplateRepository
-        :see: init(string:, error:)
-        :see: init(path:, error:)
-        :see: init(URL:, error:)
-        :see: init(named:, bundle:, templateExtension:, encoding:, error:)
+    :see: TemplateRepository
+    :see: init(string:, error:)
+    :see: init(path:, error:)
+    :see: init(URL:, error:)
+    :see: init(named:, bundle:, templateExtension:, encoding:, error:)
     */
     public let repository: TemplateRepository
     
