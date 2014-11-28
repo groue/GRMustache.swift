@@ -615,4 +615,20 @@ class MustacheRenderableTests: XCTestCase {
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "&|&amp;")
     }
+    
+    func testArrayOfRenderableObjectsInSectionTagDoesNotNeedExplicitInvocation() {
+        let renderable1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context)!
+            return Rendering("[1:\(rendering.string)]", rendering.contentType)
+        }
+        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            let rendering = info.tag.render(info.context)!
+            return Rendering("[2:\(rendering.string)]", rendering.contentType)
+        }
+        let renderables = [Value(renderable1), Value(renderable2), Value(true), Value(false)]
+        let template = Template(string: "{{#items}}---{{/items}},{{#items}}{{#.}}---{{/.}}{{/items}}")!
+        let rendering = template.render(Value(["items":Value(renderables)]))!
+        XCTAssertEqual(rendering, "[1:---][2:---]------,[1:---][2:---]---")
+    }
+
 }
