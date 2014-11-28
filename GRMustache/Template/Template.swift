@@ -182,9 +182,9 @@ public class Template: MustacheRenderable {
     Renders a template with a context stack initialized with the provided value
     on top of the base context.
     
-    :param: context A rendering context.
-    :param: error   If there is an error rendering the tag, upon return contains
-                    an NSError object that describes the problem.
+    :param: value A value used for evaluating Mustache tags
+    :param: error If there is an error rendering the tag, upon return contains
+                  an NSError object that describes the problem.
     
     :returns: The rendered string
     */
@@ -204,7 +204,7 @@ public class Template: MustacheRenderable {
     be used when you want to perform custom rendering through the
     MustacheRenderable protocol.
     
-    :param: context A rendering context.
+    :param: context A rendering context
     :param: error   If there is an error rendering the tag, upon return contains
                     an NSError object that describes the problem.
     
