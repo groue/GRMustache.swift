@@ -12,7 +12,7 @@ import GRMustache
 class EachFilterTests: XCTestCase {
 
     func testEachFilterTriggersRenderableItemsInArray() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering in
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
@@ -23,7 +23,7 @@ class EachFilterTests: XCTestCase {
     }
 
     func testEachFilterTriggersRenderableItemsInDictionary() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering in
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
