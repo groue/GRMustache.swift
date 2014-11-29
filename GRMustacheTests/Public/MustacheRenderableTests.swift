@@ -11,7 +11,7 @@ import GRMustache
 
 class MustacheRenderableTests: XCTestCase {
 
-    func testRenderablePerformsVariableRendering() {
+    func testRenderableInVariableTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
@@ -19,12 +19,20 @@ class MustacheRenderableTests: XCTestCase {
         XCTAssertEqual(rendering, "---")
     }
     
-    func testRenderablePerformsSectionRendering() {
+    func testRenderableInSectionTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
         let rendering = Template(string: "{{#.}}{{/.}}")!.render(Value(renderable))!
         XCTAssertEqual(rendering, "---")
+    }
+    
+    func testRenderableInInvertedSectionTag() {
+        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Rendering("---")
+        }
+        let rendering = Template(string: "{{^.}}{{/.}}")!.render(Value(renderable))!
+        XCTAssertEqual(rendering, "")
     }
     
     func testRenderableObjectHTMLRenderingOfEscapedVariableTag() {
