@@ -36,7 +36,7 @@ class NSFormatterTests: XCTestCase {
         
         // test filtering a string
         let template = Template(string: "{{ percent(string) }}")!
-        let value = Value(["string": Value("foo"), "percent": Value(percentFormatter)])
+        let value = Value(["string": Value("foo"), "percent": Value(percentFormatter)] as [String: Value])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "")
     }
@@ -58,7 +58,7 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
         let template = Template(string: "{{# percent }}{{ value }}{{/ percent }}")!
-        let value = Value(["value": Value("foo"), "percent": Value(percentFormatter)])
+        let value = Value(["value": Value("foo"), "percent": Value(percentFormatter)] as [String: Value])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "foo")
     }

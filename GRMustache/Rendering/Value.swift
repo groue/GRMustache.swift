@@ -112,15 +112,20 @@ public class Value {
         self.init(type: .None)
     }
     
-    // TODO: find a way to prevent the Value(Value) construct
-    public convenience init!(_ value: Value) {
-        self.init(type: value.type)
-    }
-    
     public convenience init(_ object: AnyObject?) {
         if let object: AnyObject = object {
-            if object is NSNull {
+            if let value = object as? Value {
+                self.init(type: value.type)
+                
+            } else if let dictionary = object as? [String: Value] {
+                self.init(type: .DictionaryValue(dictionary))
+                
+            } else if let array = object as? [Value] {
+                self.init(type: .ArrayValue(array))
+                
+            } else if object is NSNull {
                 self.init()
+                
             } else if let number = object as? NSNumber {
                 let objCType = number.objCType
                 let str = String.fromCString(objCType)
@@ -134,17 +139,13 @@ public class Value {
                 default:
                     fatalError("Not implemented yet")
                 }
+                
             } else if let string = object as? NSString {
                 self.init(string as String)
-            } else if let dictionary = object as? NSDictionary {
-                var canonicalDictionary: [String: Value] = [:]
-                dictionary.enumerateKeysAndObjectsUsingBlock({ (key, value, _) -> Void in
-                    canonicalDictionary["\(key)"] = Value(value)
-                })
-                self.init(canonicalDictionary)
-            } else if let enumerable = object as? NSFastEnumeration {
-                if let enumerableObject = object as? NSObjectProtocol {
-                    if enumerableObject.respondsToSelector("objectAtIndexedSubscript:") {
+                
+            } else if let object = object as? NSObjectProtocol {
+                if let enumerable = object as? NSFastEnumeration {
+                    if object.respondsToSelector("objectAtIndexedSubscript:") {
                         // Array
                         var array: [Value] = []
                         let generator = NSFastGenerator(enumerable)
@@ -155,7 +156,19 @@ public class Value {
                                 break
                             }
                         }
-                        self.init(array)
+                        self.init(type: .ArrayValue(array))
+                    } else if object.respondsToSelector("objectForKeyedSubscript:") {
+                        // Dictionary
+                        var dictionary: [String: Value] = [:]
+                        let generator = NSFastGenerator(enumerable)
+                        while true {
+                            if let key = generator.next() as? String {
+                                dictionary[key] = Value((object as AnyObject)[key])
+                            } else {
+                                break
+                            }
+                        }
+                        self.init(type: .DictionaryValue(dictionary))
                     } else {
                         // Set
                         var set = NSMutableSet()
@@ -170,53 +183,21 @@ public class Value {
                         self.init(type: .SetValue(set))
                     }
                 } else {
-                    // Assume Array
-                    var array: [Value] = []
-                    let generator = NSFastGenerator(enumerable)
-                    while true {
-                        if let item: AnyObject = generator.next() {
-                            array.append(Value(item))
-                        } else {
-                            break
-                        }
-                    }
-                    self.init(array)
+                    self.init(type: .AnyObjectValue(object))
                 }
+                
             } else {
-                self.init(type: .AnyObjectValue(object))
+                fatalError("Not implemented")
             }
         } else {
             self.init()
         }
     }
     
-    public convenience init(_ dictionary: [String: Value]) {
-        self.init(type: .DictionaryValue(dictionary))
-    }
-    
-    public convenience init(_ array: [Value]) {
-        self.init(type: .ArrayValue(array))
-    }
-
     private class func wrappableFromCluster(cluster: MustacheCluster?) -> MustacheWrappable? {
         return cluster?.mustacheFilter ?? cluster?.mustacheInspectable ?? cluster?.mustacheRenderable ?? cluster?.mustacheTagObserver ?? cluster
     }
     
-}
-
-
-// =============================================================================
-// MARK: - Dictionary Convenience Initializers
-
-extension Value {
-    
-    public convenience init(_ dictionary: [String: AnyObject]) {
-        var mustacheDictionary: [String: Value] = [:]
-        for (key, value) in dictionary {
-            mustacheDictionary[key] = Value(value)
-        }
-        self.init(mustacheDictionary)
-    }
 }
 
 
