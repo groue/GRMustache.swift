@@ -13,15 +13,15 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
     
     // MARK: - MustacheFilter
     
-    public func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
+    public func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
         return nil
     }
     
-    public func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        if let object: AnyObject = value.object() {
-            return Value(self.stringForObjectValue(object))
+    public func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
+        if let object: AnyObject = box.value() {
+            return Box(self.stringForObjectValue(object))
         } else {
-            return Value()
+            return Box()
         }
     }
     
@@ -47,12 +47,12 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
     
     // MARK: - MustacheTagObserver
     
-    public func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+    public func mustacheTag(tag: Tag, willRender box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
             
-            if let object: AnyObject = value.object() {
+            if let object: AnyObject = box.value() {
                 // NSFormatter documentation for stringForObjectValue: states:
                 //
                 // > First test the passed-in object to see if it’s of the correct
@@ -63,19 +63,19 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
                 // it untouched.
                 
                 if let formatted = self.stringForObjectValue(object) {
-                    return Value(formatted)
+                    return Box(formatted)
                 }
             }
-            return value
+            return box
             
         case .Section:
             // {{# value }}
             // {{^ value }}
-            return value
+            return box
         }
     }
     
-    public func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+    public func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
         
     }
 }

@@ -12,10 +12,10 @@ import GRMustache
 class TagObserverTests: XCTestCase {
     
     struct TestedTagObserver: MustacheTagObserver {
-        let willRenderBlock: ((tag: Tag, value: Value) -> Value)?
-        let didRenderBlock: ((tag: Tag, rendering: String?, value: Value) -> Void)?
+        let willRenderBlock: ((tag: Tag, box: Box) -> Box)?
+        let didRenderBlock: ((tag: Tag, rendering: String?, box: Box) -> Void)?
         
-        func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+        func mustacheTag(tag: Tag, willRender box: Box) -> Box {
             if let block = willRenderBlock {
                 return block(tag: tag, value: value)
             } else {
@@ -23,7 +23,7 @@ class TagObserverTests: XCTestCase {
             }
         }
         
-        func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value) {
+        func mustacheTag(tag: Tag, didRender rendering: String?, forValue box: Box) {
             if let block = didRenderBlock {
                 block(tag: tag, rendering: rendering, value: value)
             }
@@ -32,7 +32,7 @@ class TagObserverTests: XCTestCase {
     
     func testMustacheTagWillRenderIsNotTriggeredByText() {
         var success = true
-        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             success = false
             return value
             }, didRenderBlock: nil)
@@ -46,7 +46,7 @@ class TagObserverTests: XCTestCase {
     
     func testMustacheTagDidRenderIsNotTriggeredByText() {
         var success = true
-        let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+        let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: { (tag: Tag, rendering: String?, box: Box) in
             success = false
         })
         
@@ -58,16 +58,16 @@ class TagObserverTests: XCTestCase {
     }
     
     func testVariableTagObserver() {
-        var preRenderingValue: Value?
+        var preRenderingValue: Box?
         var preRenderingTagType: TagType?
-        var postRenderingValue: Value?
+        var postRenderingValue: Box?
         var postRenderingTagType: TagType?
-        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+        let willRenderBlock = { (tag: Tag, box: Box) -> Box in
             preRenderingValue = value
             preRenderingTagType = tag.type
-            return Value(1)
+            return Box(1)
         }
-        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) -> Void in
+        let didRenderBlock = { (tag: Tag, rendering: String?, box: Box) -> Void in
             postRenderingValue = value
             postRenderingTagType = tag.type
         }
@@ -75,23 +75,23 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "---{{foo}}---")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
-        let rendering = template.render(Value(["foo": "value"]))!
+        let rendering = template.render(Box(["foo": "value"]))!
         
         XCTAssertEqual(rendering, "---1---")
         XCTAssertEqual(preRenderingTagType!, TagType.Variable)
         XCTAssertEqual(postRenderingTagType!, TagType.Variable)
-        XCTAssertEqual((preRenderingValue?.object() as String?)!, "value")
-        XCTAssertEqual((postRenderingValue?.object() as Int?)!, 1)
+        XCTAssertEqual((preRenderingValue?.value() as String?)!, "value")
+        XCTAssertEqual((postRenderingValue?.value() as Int?)!, 1)
     }
     
     func testSectionTagObserver() {
         var preRenderingTagType: TagType?
         var postRenderingTagType: TagType?
-        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+        let willRenderBlock = { (tag: Tag, box: Box) -> Box in
             preRenderingTagType = tag.type
             return value
         }
-        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) -> Void in
+        let didRenderBlock = { (tag: Tag, rendering: String?, box: Box) -> Void in
             postRenderingTagType = tag.type
         }
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: didRenderBlock)
@@ -106,20 +106,20 @@ class TagObserverTests: XCTestCase {
     }
     
     func testMultipleTagsObserver() {
-        var preRenderingValues: [Value] = []
+        var preRenderingValues: [Box] = []
         var preRenderingTagTypes: [TagType] = []
-        var postRenderingValues: [Value] = []
+        var postRenderingValues: [Box] = []
         var postRenderingTagTypes: [TagType] = []
-        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+        let willRenderBlock = { (tag: Tag, box: Box) -> Box in
             preRenderingValues.append(value)
             preRenderingTagTypes.append(tag.type)
             if countElements(preRenderingValues) == 1 {
-                return Value(true)
+                return Box(true)
             } else {
-                return Value("observer")
+                return Box("observer")
             }
         }
-        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) -> Void in
+        let didRenderBlock = { (tag: Tag, rendering: String?, box: Box) -> Void in
             postRenderingValues.append(value)
             postRenderingTagTypes.append(tag.type)
         }
@@ -134,8 +134,8 @@ class TagObserverTests: XCTestCase {
         XCTAssertEqual(countElements(postRenderingValues), 2)
         XCTAssertTrue(preRenderingValues[0].isEmpty)
         XCTAssertTrue(preRenderingValues[1].isEmpty)
-        XCTAssertEqual((postRenderingValues[0].object() as String?)!, "observer")
-        XCTAssertEqual((postRenderingValues[1].object() as Bool?)!, true)
+        XCTAssertEqual((postRenderingValues[0].value() as String?)!, "observer")
+        XCTAssertEqual((postRenderingValues[1].value() as Bool?)!, true)
         XCTAssertEqual(preRenderingTagTypes[0], TagType.Section)
         XCTAssertEqual(preRenderingTagTypes[1], TagType.Variable)
         XCTAssertEqual(postRenderingTagTypes[0], TagType.Variable)
@@ -144,16 +144,16 @@ class TagObserverTests: XCTestCase {
     
     func testObserverInterpretsRenderedValue() {
         var willRenderCount = 0;
-        var renderedValue: Value? = nil
-        let willRenderBlock = { (tag: Tag, value: Value) -> Value in
+        var renderedValue: Box? = nil
+        let willRenderBlock = { (tag: Tag, box: Box) -> Box in
             ++willRenderCount
             renderedValue = value
             return value
         }
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: nil)
         
-        let filter = { (string: String?, error: NSErrorPointer) -> Value? in
-            return Value(string?.uppercaseString)
+        let filter = { (string: String?, error: NSErrorPointer) -> Box? in
+            return Box(string?.uppercaseString)
         }
         
         var template = Template(string: "{{subject}}")!
@@ -169,10 +169,10 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": "foo"]))!
+        rendering = template.render(Box(["subject": "foo"]))!
         XCTAssertEqual(rendering, "foo")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual((renderedValue!.object() as String?)!, "foo")
+        XCTAssertEqual((renderedValue!.value() as String?)!, "foo")
         
         template = Template(string: "{{subject.foo}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
@@ -187,7 +187,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": "foo"]))!
+        rendering = template.render(Box(["subject": "foo"]))!
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
@@ -196,16 +196,16 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": ["foo": "bar"]]))!
+        rendering = template.render(Box(["subject": ["foo": "bar"]]))!
         XCTAssertEqual(rendering, "bar")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual((renderedValue!.object() as String?)!, "bar")
+        XCTAssertEqual((renderedValue!.value() as String?)!, "bar")
         
         template = Template(string: "{{filter(subject)}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["filter": FilterValue(filter)]))!
+        rendering = template.render(Box(["filter": BoxedFilter(filter)]))!
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
@@ -214,28 +214,28 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": Value("foo"), "filter": FilterValue(filter)]))!
+        rendering = template.render(Box(["subject": Box("foo"), "filter": BoxedFilter(filter)]))!
         XCTAssertEqual(rendering, "FOO")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual((renderedValue!.object() as String?)!, "FOO")
+        XCTAssertEqual((renderedValue!.value() as String?)!, "FOO")
         
         template = Template(string: "{{filter(subject).length}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": Value("foo"), "filter": FilterValue(filter)]))!
+        rendering = template.render(Box(["subject": Box("foo"), "filter": BoxedFilter(filter)]))!
         XCTAssertEqual(rendering, "3")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual((renderedValue!.object() as Int?)!, 3)
+        XCTAssertEqual((renderedValue!.value() as Int?)!, 3)
     }
     
     func testTagObserverObservesRenderedString() {
         var recordedRendering: String?
-        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) in
+        let didRenderBlock = { (tag: Tag, rendering: String?, box: Box) in
             recordedRendering = rendering
         }
         let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
-        let value = Value(["value": "<>"])
+        let value = Box(["value": "<>"])
         
         var template = Template(string: "-{{value}}-")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
@@ -252,7 +252,7 @@ class TagObserverTests: XCTestCase {
     
     func testTagObserverObservesRenderingFailure() {
         var failedRendering = false
-        let didRenderBlock = { (tag: Tag, rendering: String?, value: Value) in
+        let didRenderBlock = { (tag: Tag, rendering: String?, box: Box) in
             failedRendering = (rendering == nil)
         }
         let tagObserver = TestedTagObserver(willRenderBlock: nil, didRenderBlock: didRenderBlock)
@@ -261,7 +261,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         failedRendering = false
         var error: NSError?
-        let rendering = template.render(RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let rendering = template.render(BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
             return nil
         }), error: &error)
@@ -277,13 +277,13 @@ class TagObserverTests: XCTestCase {
         
         var willRenderIndex1 = 0
         var didRenderIndex1 = 0
-        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             if value.toString() == "observed" {
                 willRenderIndex1 = willRenderIndex
                 willRenderIndex++
             }
             return value
-            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+            }, didRenderBlock: { (tag: Tag, rendering: String?, box: Box) in
                 if value.toString() == "observed" {
                     didRenderIndex1 = didRenderIndex
                     didRenderIndex++
@@ -292,13 +292,13 @@ class TagObserverTests: XCTestCase {
         
         var willRenderIndex2 = 0
         var didRenderIndex2 = 0
-        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             if value.toString() == "observed" {
                 willRenderIndex2 = willRenderIndex
                 willRenderIndex++
             }
             return value
-            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+            }, didRenderBlock: { (tag: Tag, rendering: String?, box: Box) in
                 if value.toString() == "observed" {
                     didRenderIndex2 = didRenderIndex
                     didRenderIndex++
@@ -307,13 +307,13 @@ class TagObserverTests: XCTestCase {
         
         var willRenderIndex3 = 0
         var didRenderIndex3 = 0
-        let tagObserver3 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver3 = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             if value.toString() == "observed" {
                 willRenderIndex3 = willRenderIndex
                 willRenderIndex++
             }
             return value
-            }, didRenderBlock: { (tag: Tag, rendering: String?, value: Value) in
+            }, didRenderBlock: { (tag: Tag, rendering: String?, box: Box) in
                 if value.toString() == "observed" {
                     didRenderIndex3 = didRenderIndex
                     didRenderIndex++
@@ -322,10 +322,10 @@ class TagObserverTests: XCTestCase {
         
         let template = Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver1)
-        let value = Value([
-            "observer2": Value(tagObserver2),
-            "observer3": Value(tagObserver3),
-            "observed": Value("observed")
+        let value = Box([
+            "observer2": Box(tagObserver2),
+            "observer3": Box(tagObserver3),
+            "observed": Box("observed")
             ])
         template.render(value)
         
@@ -340,19 +340,19 @@ class TagObserverTests: XCTestCase {
     
     func testArrayOfTagDelegatesInSectionTag() {
         var willRender1 = false
-        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver1 = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             willRender1 = true
             return value
             }, didRenderBlock: nil)
         
         var willRender2 = false
-        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
+        let tagObserver2 = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
             willRender2 = true
             return value
             }, didRenderBlock: nil)
         
         let template = Template(string: "{{#items}}{{.}}{{/items}}")!
-        let value = Value(["items": Value([Value(tagObserver1), Value(tagObserver2)])])
+        let value = Box(["items": Box([Box(tagObserver1), Box(tagObserver2)])])
         template.render(value)
         
         XCTAssertTrue(willRender1)
@@ -360,8 +360,8 @@ class TagObserverTests: XCTestCase {
     }
     
     func testTagDelegateCanProcessMustacheRenderable() {
-        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
-            return RenderableValue({ (info, error) -> Rendering? in
+        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Box in
+            return BoxedRenderable({ (info, error) -> Rendering? in
                 let rendering = value.render(info, error: error)!
                 return Rendering(rendering.string.uppercaseString, rendering.contentType)
             })
@@ -370,7 +370,7 @@ class TagObserverTests: XCTestCase {
         var object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 return Rendering("&you")
             }
-        var value = Value(["object": RenderableValue(object), "observer": Value(tagObserver)])
+        var value = Box(["object": BoxedRenderable(object), "observer": Box(tagObserver)])
         var template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
         var rendering = template.render(value)!
         XCTAssertEqual(rendering, "&amp;YOU")
@@ -378,7 +378,7 @@ class TagObserverTests: XCTestCase {
         object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 return Rendering("&you", .HTML)
             }
-        value = Value(["object": RenderableValue(object), "observer": Value(tagObserver)])
+        value = Box(["object": BoxedRenderable(object), "observer": Box(tagObserver)])
         template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "&YOU")

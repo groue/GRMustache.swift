@@ -13,17 +13,17 @@ class MustacheInspectableTests: XCTestCase {
  
     func testInspectable() {
         class T: MustacheInspectable {
-            func valueForMustacheKey(key: String) -> Value? {
+            func valueForMustacheKey(key: String) -> Box? {
                 if key == "self" {
-                    return Value(self)
+                    return Box(self)
                 } else {
-                    return Value(key)
+                    return Box(key)
                 }
             }
         }
         
         let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Value(T()))!
+        let rendering = template.render(Box(T()))!
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

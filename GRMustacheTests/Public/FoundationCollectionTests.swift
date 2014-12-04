@@ -11,9 +11,9 @@ import GRMustache;
 
 class FoundationCollectionTests: XCTestCase {
     
-    var arrayValue: Value!
-    var setValue: Value!
-    var orderedSetValue: Value!
+    var arrayValue: Box!
+    var setValue: Box!
+    var orderedSetValue: Box!
     
     override func setUp() {
         arrayValue = {
@@ -21,21 +21,21 @@ class FoundationCollectionTests: XCTestCase {
             array.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(array, forKey: "collection")
-            return Value(data)
+            return Box(data)
         }()
         setValue = {
             var set = NSMutableSet()
             set.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(set, forKey: "collection")
-            return Value(data)
+            return Box(data)
             }()
         orderedSetValue = {
             var orderedSet = NSMutableOrderedSet()
             orderedSet.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(orderedSet, forKey: "collection")
-            return Value(data)
+            return Box(data)
             }()
     }
     

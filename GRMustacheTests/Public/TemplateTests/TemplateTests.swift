@@ -19,12 +19,12 @@ class TemplateTests: XCTestCase {
     
     func testTemplateExtendBaseContextWithValue() {
         let template = Template(string: "{{name}}")!
-        template.extendBaseContext(value: Value(["name": "Arthur"]))
+        template.extendBaseContext(box: Box(["name": "Arthur"]))
         
         var rendering = template.render()!
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(Value(["name": "Bobby"]))!
+        rendering = template.render(Box(["name": "Bobby"]))!
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -34,10 +34,10 @@ class TemplateTests: XCTestCase {
     
     func testTemplateExtendBaseContextWithTagObserver() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
-                return Value("observer")
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+                return Box("observer")
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value) {
+            func mustacheTag(tag: Tag, didRender rendering: String?, forValue box: Box) {
             }
         }
 

@@ -12,41 +12,41 @@ import GRMustache
 class ContextValueForMustacheExpressionTests: XCTestCase {
 
     func testImplicitIteratorExpression() {
-        let context = Context(Value("success"))
-        let value = context.valueForMustacheExpression(".")!
-        let string: String! = value.object()
+        let context = Context(Box("success"))
+        let box = context.boxedValueForMustacheExpression(".")!
+        let string: String! = box.value()
         XCTAssertEqual(string, "success")
     }
     
     func testIdentifierExpression() {
-        let context = Context(Value(["name": "success"]))
-        let value = context.valueForMustacheExpression("name")!
-        let string: String! = value.object()
+        let context = Context(Box(["name": "success"]))
+        let box = context.boxedValueForMustacheExpression("name")!
+        let string: String! = box.value()
         XCTAssertEqual(string, "success")
     }
     
     func testScopedExpression() {
-        let context = Context(Value(["a": ["name": "success"]]))
-        let value = context.valueForMustacheExpression("a.name")!
-        let string: String! = value.object()
+        let context = Context(Box(["a": ["name": "success"]]))
+        let box = context.boxedValueForMustacheExpression("a.name")!
+        let string: String! = box.value()
         XCTAssertEqual(string, "success")
     }
     
     func testFilteredExpression() {
-        let filterValue = FilterValue({ (string: String?, error: NSErrorPointer) -> Value in
-            return Value(string!.uppercaseString)
+        let filterValue = BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box in
+            return Box(string!.uppercaseString)
         })
-        let context = Context(Value(["name": Value("success"), "f": filterValue]))
-        let value = context.valueForMustacheExpression("f(name)")!
-        let string: String! = value.object()
+        let context = Context(Box(["name": Box("success"), "f": filterValue]))
+        let box = context.boxedValueForMustacheExpression("f(name)")!
+        let string: String! = box.value()
         XCTAssertEqual(string, "SUCCESS")
     }
 
     func testParseError() {
         let context = Context()
         var error: NSError? = nil
-        let value = context.valueForMustacheExpression("a.", error: &error)
-        XCTAssertNil(value)
+        let box = context.boxedValueForMustacheExpression("a.", error: &error)
+        XCTAssertNil(box)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)  // Invalid expression
     }
@@ -54,8 +54,8 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     func testRenderingError() {
         let context = Context()
         var error: NSError? = nil
-        let value = context.valueForMustacheExpression("f(x)", error: &error)
-        XCTAssertNil(value)
+        let box = context.boxedValueForMustacheExpression("f(x)", error: &error)
+        XCTAssertNil(box)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)  // Missing filter
     }

@@ -226,7 +226,7 @@ class RenderingEngine: TemplateASTVisitor {
             
             let tagObserverStack = context.tagObserverStack
             for tagObserver in tagObserverStack {
-                value = tagObserver.mustacheTag(tag, willRenderValue: value)
+                value = tagObserver.mustacheTag(tag, willRender: value)
             }
             
             let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
@@ -286,7 +286,7 @@ class RenderingEngine: TemplateASTVisitor {
 extension Bool: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self }
-    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -297,7 +297,7 @@ extension Bool: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -308,7 +308,7 @@ extension Bool: MustacheCluster, MustacheRenderable {
 extension Int: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -319,7 +319,7 @@ extension Int: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -330,7 +330,7 @@ extension Int: MustacheCluster, MustacheRenderable {
 extension Double: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0.0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -341,7 +341,7 @@ extension Double: MustacheCluster, MustacheRenderable {
             return Rendering("\(self)")
         case .Section:
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
+                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
             } else {
                 return info.tag.render(info.context, error: error)
             }
@@ -352,7 +352,7 @@ extension Double: MustacheCluster, MustacheRenderable {
 extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     
     public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
+    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return self }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -362,14 +362,14 @@ extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
         case .Variable:
             return Rendering(self)
         case .Section:
-            return info.tag.render(info.context.extendedContext(value: Value(self)), error: error)
+            return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
         }
     }
     
-    public func valueForMustacheKey(key: String) -> Value? {
+    public func valueForMustacheKey(key: String) -> Box? {
         switch key {
         case "length":
-            return Value(countElements(self))
+            return Box(countElements(self))
         default:
             return nil
         }

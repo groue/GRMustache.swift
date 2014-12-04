@@ -16,11 +16,11 @@ class TagTests: XCTestCase {
         init() {
             tagDescription = nil
         }
-        func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+        func mustacheTag(tag: Tag, willRender box: Box) -> Box {
             tagDescription = tag.description
             return value
         }
-        func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value) {
+        func mustacheTag(tag: Tag, didRender rendering: String?, forValue box: Box) {
         }
     }
     

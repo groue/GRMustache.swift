@@ -13,7 +13,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.extendBaseContext(value: Value(["name": "Arthur"]))
+        configuration.extendBaseContext(box: Box(["name": "Arthur"]))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
@@ -21,7 +21,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         var rendering = template.render()!
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(Value(["name": "Bobby"]))!
+        rendering = template.render(Box(["name": "Bobby"]))!
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -31,10 +31,10 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
     
     func testConfigurationExtendBaseContextWithTagObserver() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
-                return Value("delegate")
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+                return Box("delegate")
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         var configuration = Configuration()

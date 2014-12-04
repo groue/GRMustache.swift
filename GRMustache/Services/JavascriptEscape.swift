@@ -23,22 +23,20 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
     
     // MARK: - MustacheFilter
     
-    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-        return nil
-    }
-    
-    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        if let string = value.toString() {
-            return Value(escapeJavascript(string))
-        } else {
-            return Value()
+    func filterFunction() -> MustacheFilterFunction {
+        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+            if let string = argument.toString() {
+                return Box(JavascriptEscape.escapeJavascript(string))
+            } else {
+                return Box()
+            }
         }
     }
     
     
     // MARK: - MustacheTagObserver
     
-    func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+    func mustacheTag(tag: Tag, willRender box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -47,25 +45,25 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if let rendering = value.render(info, error: error) {
-                    return Rendering(self.escapeJavascript(rendering.string), rendering.contentType)
+            return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                if let rendering = box.render(info, error: error) {
+                    return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
                 } else {
                     return nil
                 }
             })
         case .Section:
-            return value
+            return box
         }
     }
     
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+    func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
     }
     
     
     // MARK: - private
     
-    private func escapeJavascript(string: String) -> String {
+    private class func escapeJavascript(string: String) -> String {
         // This table comes from https://github.com/django/django/commit/8c4a525871df19163d5bfdf5939eff33b544c2e2#django/template/defaultfilters.py
         //
         // Quoting Malcolm Tredinnick:

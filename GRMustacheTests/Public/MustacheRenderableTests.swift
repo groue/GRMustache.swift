@@ -15,7 +15,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -23,7 +23,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -31,7 +31,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{^.}}{{/.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{^.}}{{/.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "")
     }
     
@@ -39,7 +39,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -47,7 +47,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{{.}}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{{.}}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -55,7 +55,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -63,7 +63,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{{.}}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{{.}}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -71,7 +71,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -79,7 +79,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(RenderableValue(renderable))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(BoxedRenderable(renderable))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -90,7 +90,7 @@ class MustacheRenderableTests: XCTestCase {
             return nil
         }
         var error: NSError?
-        let rendering = Template(string: "{{.}}")!.render(RenderableValue(renderable), error: &error)
+        let rendering = Template(string: "{{.}}")!.render(BoxedRenderable(renderable), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
@@ -102,7 +102,7 @@ class MustacheRenderableTests: XCTestCase {
             return nil
         }
         var error: NSError?
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(RenderableValue(renderable), error: &error)
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(BoxedRenderable(renderable), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
@@ -118,7 +118,7 @@ class MustacheRenderableTests: XCTestCase {
             }
             return Rendering("")
         }
-        Template(string: "{{.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{.}}")!.render(BoxedRenderable(renderable))
         XCTAssertEqual(variableTagDetections, 1)
     }
     
@@ -133,7 +133,7 @@ class MustacheRenderableTests: XCTestCase {
             }
             return Rendering("")
         }
-        Template(string: "{{#.}}{{/.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{#.}}{{/.}}")!.render(BoxedRenderable(renderable))
         XCTAssertEqual(sectionTagDetections, 1)
     }
     
@@ -143,7 +143,7 @@ class MustacheRenderableTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{#.}}{{subject}}{{/.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{#.}}{{subject}}{{/.}}")!.render(BoxedRenderable(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
@@ -153,7 +153,7 @@ class MustacheRenderableTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(BoxedRenderable(renderable))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
 
@@ -163,7 +163,7 @@ class MustacheRenderableTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{.}}")!.render(BoxedRenderable(renderable))
         XCTAssertEqual(innerTemplateString!, "")
     }
     
@@ -174,7 +174,7 @@ class MustacheRenderableTests: XCTestCase {
             return tagRendering
         }
         
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("-")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("-")])
         Template(string: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
         
         XCTAssertEqual(tagRendering!.string, "-=-")
@@ -188,7 +188,7 @@ class MustacheRenderableTests: XCTestCase {
             return tagRendering
         }
         
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("-")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("-")])
         Template(string: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
         
         XCTAssertEqual(tagRendering!.string, "-=-")
@@ -202,7 +202,7 @@ class MustacheRenderableTests: XCTestCase {
             return tagRendering
         }
         
-        Template(string: "{{.}}")!.render(RenderableValue(renderable))
+        Template(string: "{{.}}")!.render(BoxedRenderable(renderable))
         
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -215,7 +215,7 @@ class MustacheRenderableTests: XCTestCase {
             return tagRendering
         }
         
-        Template(string: "{{{.}}}")!.render(RenderableValue(renderable))
+        Template(string: "{{{.}}}")!.render(BoxedRenderable(renderable))
         
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -226,7 +226,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return altTemplate.render(info, error: error)
         }
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("-")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("-")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "-")
     }
@@ -236,55 +236,55 @@ class MustacheRenderableTests: XCTestCase {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return altTemplate.render(info, error: error)
         }
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("-")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("-")])
         let rendering = Template(string: "{{#renderable}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "-")
     }
 
     func testRenderableObjectDoesNotAutomaticallyEntersVariableContextStack() {
         class TestedRenderable: MustacheRenderable, MustacheInspectable {
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value("value")
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box("value")
             }
             func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return Template(string:"key:{{key}}")!.render(info, error: error)
             }
         }
-        let value = Value(["renderable": Value(TestedRenderable())])
+        let value = Box(["renderable": Box(TestedRenderable())])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRenderableObjectDoesNotAutomaticallyEntersSectionContextStack() {
         class TestedRenderable: MustacheRenderable, MustacheInspectable {
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value("value")
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box("value")
             }
             func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return info.tag.render(info.context, error: error)
             }
         }
-        let value = Value(["renderable": Value(TestedRenderable())])
+        let value = Box(["renderable": Box(TestedRenderable())])
         let rendering = Template(string: "{{#renderable}}key:{{key}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRenderableObjectCanExtendValueContextStackInVariableTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let context = info.context.extendedContext(value: Value(["subject2": Value("+++")]))
+            let context = info.context.extendedContext(box: Box(["subject2": Box("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
             return template.render(context, error: error)
         }
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("---")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("---")])
         let rendering = Template(string: "{{renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "---+++")
     }
     
     func testRenderableObjectCanExtendValueContextStackInSectionTag() {
         let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context.extendedContext(value: Value(["subject2": Value("+++")])), error: error)
+            return info.tag.render(info.context.extendedContext(box: Box(["subject2": Box("+++")])), error: error)
         }
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("---")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("---")])
         let rendering = Template(string: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!.render(value)!
         XCTAssertEqual(rendering, "---+++")
     }
@@ -297,15 +297,15 @@ class MustacheRenderableTests: XCTestCase {
                 let template = Template(string: "{{subject}}{{subject}}")!
                 return template.render(context, error: error)
             }
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 ++tagWillRenderCount
                 return value
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         let renderable = TestedRenderable()
-        let value = Value(["renderable": Value(renderable), "subject": Value("-")])
+        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
         let rendering = Template(string: "{{subject}}{{renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
@@ -317,15 +317,15 @@ class MustacheRenderableTests: XCTestCase {
             func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
             }
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 ++tagWillRenderCount
                 return value
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         let renderable = TestedRenderable()
-        let value = Value(["renderable": Value(renderable), "subject": Value("-")])
+        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
         let rendering = Template(string: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(renderable.tagWillRenderCount, 2)
@@ -333,16 +333,16 @@ class MustacheRenderableTests: XCTestCase {
     
     func testRenderableObjectTriggersTagObserverCallbacks() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
                     return value
                 default:
-                    return Value("delegate")
+                    return Box("delegate")
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         
@@ -352,23 +352,23 @@ class MustacheRenderableTests: XCTestCase {
         
         let template = Template(string: "{{#renderable}}{{subject}}{{/renderable}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("---")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")
     }
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromVariableTag() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
                     return value
                 default:
-                    return Value("delegate")
+                    return Box("delegate")
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         
@@ -379,23 +379,23 @@ class MustacheRenderableTests: XCTestCase {
         
         let template = Template(string: "{{renderable}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("---")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")
     }
     
     func testRenderableObjectTriggersTagObserverCallbacksInAnotherTemplateFromSectionTag() {
         class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
                     return value
                 default:
-                    return Value("delegate")
+                    return Box("delegate")
                 }
             }
             
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
         
@@ -406,7 +406,7 @@ class MustacheRenderableTests: XCTestCase {
         
         let template = Template(string: "{{#renderable}}{{/renderable}}")!
         template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("---")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("---")])
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "delegate")
     }
@@ -418,7 +418,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("2")
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(value)!
         XCTAssertEqual(rendering, "12")
     }
@@ -430,7 +430,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("2")
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "12")
     }
@@ -442,7 +442,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
@@ -454,7 +454,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
@@ -466,7 +466,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>")
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{items}}")!.render(value)!
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
@@ -478,7 +478,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>")
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         let rendering = Template(string: "{{{items}}}")!.render(value)!
         XCTAssertEqual(rendering, "<1><2>")
     }
@@ -490,7 +490,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         var error: NSError?
         let rendering = Template(string: "{{items}}")!.render(value, error: &error)
         XCTAssertNil(rendering)
@@ -505,7 +505,7 @@ class MustacheRenderableTests: XCTestCase {
         let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let value = Value(["items": Value([RenderableValue(renderable1), RenderableValue(renderable2)])])
+        let value = Box(["items": Box([BoxedRenderable(renderable1), BoxedRenderable(renderable2)])])
         var error: NSError?
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(value, error: &error)
         XCTAssertNil(rendering)
@@ -516,7 +516,7 @@ class MustacheRenderableTests: XCTestCase {
     func testTemplateAsRenderableObject() {
         let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
         let template = repository.template(named: "partial")!
-        let value = Value(["partial": Value(template), "subject": Value("---")])
+        let value = Box(["partial": Box(template), "subject": Box("---")])
         let rendering = Template(string: "{{partial}}")!.render(value)!
         XCTAssertEqual(rendering, "---")
     }
@@ -524,7 +524,7 @@ class MustacheRenderableTests: XCTestCase {
     func testTemplateAsRenderableObjectInNotHTMLEscaped() {
         let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
         let template = repository.template(named: "partial")!
-        let value = Value(["partial": Value(template), "subject": Value("---")])
+        let value = Box(["partial": Box(template), "subject": Box("---")])
         let rendering = Template(string: "{{partial}}")!.render(value)!
         XCTAssertEqual(rendering, "<--->")
     }
@@ -539,7 +539,7 @@ class MustacheRenderableTests: XCTestCase {
             let altTemplate = Template(string: "{{>partial}}")!
             return altTemplate.render(info, error: error)
         }
-        let value = Value(["renderable": RenderableValue(renderable), "subject": Value("-")])
+        let value = Box(["renderable": BoxedRenderable(renderable), "subject": Box("-")])
         let template = repository.template(named: "template")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "-")
@@ -552,9 +552,9 @@ class MustacheRenderableTests: XCTestCase {
         let repository2 = TemplateRepository(templates: [
             "template2": "{{ renderable }}",
             "partial": "partial2"])
-        let value = Value([
-            "template2": Value(repository2.template(named: "template2")!),
-            "renderable": RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let value = Box([
+            "template2": Box(repository2.template(named: "template2")!),
+            "renderable": BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{>partial}}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -564,9 +564,9 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
-        let value = Value([
-            "object": Value("&"),
-            "renderable": RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let value = Box([
+            "object": Box("&"),
+            "renderable": BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -577,9 +577,9 @@ class MustacheRenderableTests: XCTestCase {
     }
     
     func testRenderableObjectInheritTextContentTypeOfCurrentlyRenderedTemplate() {
-        let value = Value([
-            "object": Value("&"),
-            "renderable": RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let value = Box([
+            "object": Box("&"),
+            "renderable": BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -593,9 +593,9 @@ class MustacheRenderableTests: XCTestCase {
         let repository = TemplateRepository(templates: [
             "templateHTML": "{{ renderable }}|{{> templateText }}",
             "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderable }}"])
-        let value = Value([
-            "value": Value("&"),
-            "renderable": RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let value = Box([
+            "value": Box("&"),
+            "renderable": BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ value }}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -611,13 +611,13 @@ class MustacheRenderableTests: XCTestCase {
             "templateText": "{{ renderable }}"])
         repository2.configuration.contentType = .Text
         
-        let renderableValue = RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderableValue = BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{{ value }}}")!
             return altTemplate.render(info, error: error)
         })
-        let value = Value([
-            "value": Value("&"),
-            "templateText": Value(repository2.template(named: "templateText")!),
+        let value = Box([
+            "value": Box("&"),
+            "templateText": Box(repository2.template(named: "templateText")!),
             "renderable": renderableValue])
         let template = repository1.template(named: "templateHTML")!
         let rendering = template.render(value)!
@@ -633,9 +633,9 @@ class MustacheRenderableTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering("[2:\(rendering.string)]", rendering.contentType)
         }
-        let renderables = [RenderableValue(renderable1), RenderableValue(renderable2), Value(true), Value(false)]
+        let renderables = [BoxedRenderable(renderable1), BoxedRenderable(renderable2), Box(true), Box(false)]
         let template = Template(string: "{{#items}}---{{/items}},{{#items}}{{#.}}---{{/.}}{{/items}}")!
-        let rendering = template.render(Value(["items":Value(renderables)]))!
+        let rendering = template.render(Box(["items":Box(renderables)]))!
         XCTAssertEqual(rendering, "[1:---][2:---]------,[1:---][2:---]---")
     }
 

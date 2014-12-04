@@ -8,104 +8,100 @@
 
 class EachFilter: MustacheFilter {
     
-    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-        return nil
-    }
-    
-    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        if value.isEmpty {
-            return value
-        } else if let dictionary: [String: Value] = value.object() {
-            return transformedDictionary(dictionary)
-        } else if let array: [Value] = value.object() {
-            return transformedSequence(array)
-        } else if let set = value.object() as? NSSet {
-            return transformedSet(set)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+    func filterFunction() -> MustacheFilterFunction {
+        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+            if argument.isEmpty {
+                return argument
+            } else if let dictionary: [String: Box] = argument.value() {
+                return transformedDictionary(dictionary)
+            } else if let array: [Box] = argument.value() {
+                return transformedSequence(array)
+            } else if let set = argument.value() as? NSSet {
+                return transformedSet(set)
+            } else {
+                if error != nil {
+                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+                }
+                return nil
             }
-            return nil
         }
     }
     
-    private func transformedSequence<T: CollectionType where T.Generator.Element == Value, T.Index: Comparable, T.Index.Distance == Int>(collection: T) -> Value {
-        var mustacheValues: [Value] = []
-        let start = collection.startIndex
-        let end = collection.endIndex
-        var i = start
-        while i < end {
-            let value = collection[i]
-            let index = distance(start, i)
-            let last = i.successor() == end
-            let replacementValue = ReplacementValue(value: value, index: index, key: nil, last: last)
-            mustacheValues.append(Value(replacementValue))
-            i = i.successor()
-        }
-        return Value(mustacheValues)
-    }
-    
-    private func transformedSet(set: NSSet) -> Value {
-        var mustacheValues: [Value] = []
-        let count = set.count
-        var index = 0
-        for item in set {
-            let value = Value(item)
-            let last = index == count
-            let replacementValue = ReplacementValue(value: value, index: index, key: nil, last: last)
-            mustacheValues.append(Value(replacementValue))
-            ++index
-        }
-        return Value(mustacheValues)
-    }
-    
-    private func transformedDictionary(dictionary: [String: Value]) -> Value {
-        var mustacheValues: [Value] = []
-        let start = dictionary.startIndex
-        let end = dictionary.endIndex
-        var i = start
-        while i < end {
-            let (key, value) = dictionary[i]
-            let index = distance(start, i)
-            let last = i.successor() == end
-            let replacementValue = ReplacementValue(value: value, index: index, key: key, last: last)
-            mustacheValues.append(Value(replacementValue))
-            i = i.successor()
-        }
-        return Value(mustacheValues)
-    }
-    
-    private class ReplacementValue: MustacheCluster, MustacheRenderable {
-        let value: Value
+    private class Item: MustacheCluster, MustacheRenderable {
+        let box: Box
         let index: Int
         let last: Bool
         let key: String?
         
-        init(value: Value, index: Int, key: String?, last: Bool) {
-            self.value = value
+        init(box: Box, index: Int, key: String?, last: Bool) {
+            self.box = box
             self.index = index
             self.key = key
             self.last = last
         }
         
-        var mustacheBool: Bool { return value.mustacheBool }
-        var mustacheFilter: MustacheFilter? { return (value.object() as MustacheCluster?)?.mustacheFilter }
-        var mustacheInspectable: MustacheInspectable? { return (value.object() as MustacheCluster?)?.mustacheInspectable }
-        var mustacheTagObserver: MustacheTagObserver? { return (value.object() as MustacheCluster?)?.mustacheTagObserver }
+        var mustacheBool: Bool { return box.mustacheBool }
+        var mustacheFilterFunction: MustacheFilterFunction? { return (box.value() as MustacheCluster?)?.mustacheFilterFunction }
+        var mustacheInspectable: MustacheInspectable? { return (box.value() as MustacheCluster?)?.mustacheInspectable }
+        var mustacheTagObserver: MustacheTagObserver? { return (box.value() as MustacheCluster?)?.mustacheTagObserver }
         var mustacheRenderable: MustacheRenderable? { return self }
         
         func render(var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-            var position: [String: Value] = [:]
-            position["@index"] = Value(index)
-            position["@indexPlusOne"] = Value(index + 1)
-            position["@indexIsEven"] = Value(index % 2 == 0)
-            position["@first"] = Value(index == 0)
-            position["@last"] = Value(last)
+            var position: [String: Box] = [:]
+            position["@index"] = Box(index)
+            position["@indexPlusOne"] = Box(index + 1)
+            position["@indexIsEven"] = Box(index % 2 == 0)
+            position["@first"] = Box(index == 0)
+            position["@last"] = Box(last)
             if let key = key {
-                position["@key"] = Value(key)
+                position["@key"] = Box(key)
             }
-            info.context = info.context.extendedContext(value: Value(position))
-            return value.render(info, error: error)
+            info.context = info.context.extendedContext(box: Box(position))
+            return box.render(info, error: error)
         }
     }
 }
+
+private func transformedSequence<T: CollectionType where T.Generator.Element == Box, T.Index: Comparable, T.Index.Distance == Int>(collection: T) -> Box {
+    var mustacheBoxes: [Box] = []
+    let start = collection.startIndex
+    let end = collection.endIndex
+    var i = start
+    while i < end {
+        let box = collection[i]
+        let index = distance(start, i)
+        let last = i.successor() == end
+        mustacheBoxes.append(Box(EachFilter.Item(box: box, index: index, key: nil, last: last)))
+        i = i.successor()
+    }
+    return Box(mustacheBoxes)
+}
+
+private func transformedSet(set: NSSet) -> Box {
+    var mustacheBoxes: [Box] = []
+    let count = set.count
+    var index = 0
+    for item in set {
+        let box = Box(item)
+        let last = index == count
+        mustacheBoxes.append(Box(EachFilter.Item(box: box, index: index, key: nil, last: last)))
+        ++index
+    }
+    return Box(mustacheBoxes)
+}
+
+private func transformedDictionary(dictionary: [String: Box]) -> Box {
+    var mustacheBoxes: [Box] = []
+    let start = dictionary.startIndex
+    let end = dictionary.endIndex
+    var i = start
+    while i < end {
+        let (key, box) = dictionary[i]
+        let index = distance(start, i)
+        let last = i.successor() == end
+        mustacheBoxes.append(Box(EachFilter.Item(box: box, index: index, key: key, last: last)))
+        i = i.successor()
+    }
+    return Box(mustacheBoxes)
+}
+

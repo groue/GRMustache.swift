@@ -12,23 +12,23 @@
 public class Context {
     private enum Type {
         case Root
-        case ValueType(value: Value, parent: Context)
+        case BoxType(box: Box, parent: Context)
         case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
         case TagObserverType(tagObserver: MustacheTagObserver, parent: Context)
     }
     
     private let type: Type
     
-    public var topMustacheValue: Value {
+    public var topBoxedValue: Box {
         switch type {
         case .Root:
-            return Value()
-        case .ValueType(value: let value, parent: _):
-            return value
+            return Box()
+        case .BoxType(box: let box, parent: _):
+            return box
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.topMustacheValue
+            return parent.topBoxedValue
         case .TagObserverType(tagObserver: _, parent: let parent):
-            return parent.topMustacheValue
+            return parent.topBoxedValue
         }
     }
     
@@ -36,8 +36,8 @@ public class Context {
         switch type {
         case .Root:
             return []
-        case .ValueType(value: let value, parent: let parent):
-            if let tagObserver: MustacheTagObserver = value.object() {
+        case .BoxType(box: let box, parent: let parent):
+            if let tagObserver: MustacheTagObserver = box.value() {
                 return [tagObserver] + parent.tagObserverStack
             } else {
                 return parent.tagObserverStack
@@ -57,19 +57,19 @@ public class Context {
         self.init(type: .Root)
     }
     
-    public convenience init(_ value: Value) {
-        self.init(type: .ValueType(value: value, parent: Context()))
+    public convenience init(_ box: Box) {
+        self.init(type: .BoxType(box: box, parent: Context()))
     }
     
     public convenience init(_ tagObserver: MustacheTagObserver) {
         self.init(type: .TagObserverType(tagObserver: tagObserver, parent: Context()))
     }
     
-    public func extendedContext(# value: Value) -> Context {
-        if value.isEmpty {
+    public func extendedContext(# box: Box) -> Context {
+        if box.isEmpty {
             return self
         } else {
-            return Context(type: .ValueType(value: value, parent: self))
+            return Context(type: .BoxType(box: box, parent: self))
         }
     }
     
@@ -88,7 +88,7 @@ public class Context {
             switch context.type {
             case .Root:
                 return node
-            case .ValueType(value: _, parent: let parent):
+            case .BoxType(box: _, parent: let parent):
                 context = parent
             case .InheritablePartialNodeType(inheritablePartialNode: let inheritablePartialNode, parent: let parent):
                 let templateAST = inheritablePartialNode.partialNode.templateAST
@@ -113,16 +113,16 @@ public class Context {
         }
     }
     
-    public subscript(identifier: String) -> Value {
+    public subscript(identifier: String) -> Box {
         switch type {
         case .Root:
-            return Value()
-        case .ValueType(value: let value, parent: let parent):
-            let innerValue = value[identifier]
-            if innerValue.isEmpty {
+            return Box()
+        case .BoxType(box: let box, parent: let parent):
+            let innerBox = box[identifier]
+            if innerBox.isEmpty {
                 return parent[identifier]
             } else {
-                return innerValue
+                return innerBox
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
             return parent[identifier]
@@ -131,7 +131,7 @@ public class Context {
         }
     }
     
-    public func valueForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Value? {
+    public func boxedValueForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Box? {
         let parser = ExpressionParser()
         var empty = false
         if let expression = parser.parse(string, empty: &empty, error: error) {
@@ -143,8 +143,8 @@ public class Context {
                     error.memory = invocationError
                 }
                 return nil
-            case .Success(let value):
-                return value
+            case .Success(let box):
+                return box
             }
         }
         return nil
@@ -156,8 +156,8 @@ extension Context: DebugPrintable {
         switch type {
         case .Root:
             return "Context.Root"
-        case .ValueType(value: let value, parent: let parent):
-            return "Context.ValueType(\(value)):\(parent.debugDescription)"
+        case .BoxType(box: let box, parent: let parent):
+            return "Context.BoxType(\(box)):\(parent.debugDescription)"
         case .InheritablePartialNodeType(inheritablePartialNode: let node, parent: let parent):
             return "Context.InheritablePartialNodeType(\(node)):\(parent.debugDescription)"
         case .TagObserverType(tagObserver: let tagObserver, parent: let parent):

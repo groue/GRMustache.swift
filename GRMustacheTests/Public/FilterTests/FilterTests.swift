@@ -12,13 +12,13 @@ import GRMustache
 class FilterTests: XCTestCase {
     
     func testFilterCanChain() {
-        let value = Value([
-            "name": Value("Name"),
-            "uppercase": FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-                return Value(string?.uppercaseString)
+        let value = Box([
+            "name": Box("Name"),
+            "uppercase": BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+                return Box(string?.uppercaseString)
             }),
-            "prefix": FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-                return Value("prefix\(string!)")
+            "prefix": BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+                return Box("prefix\(string!)")
             })
             ])
         let template = Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")!
@@ -28,34 +28,34 @@ class FilterTests: XCTestCase {
     
     func testScopedValueAreExtractedOutOfAFilterExpression() {
         let template = Template(string:"<{{f(object).name}}> {{#f(object)}}<{{name}}>{{/f(object)}}")!
-        var value: Value
+        var box: Box
         var rendering: String
         
-        value = Value([
-            "object": Value(["name": "objectName"]),
-            "name": Value("rootName"),
-            "f": FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
+        value = Box([
+            "object": Box(["name": "objectName"]),
+            "name": Box("rootName"),
+            "f": BoxedFilter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return value
             })
             ])
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "<objectName> <objectName>")
         
-        value = Value([
-            "object": Value(["name": "objectName"]),
-            "name": Value("rootName"),
-            "f": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
-                return Value(["name": "filterName"])
+        value = Box([
+            "object": Box(["name": "objectName"]),
+            "name": Box("rootName"),
+            "f": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
+                return Box(["name": "filterName"])
             })
             ])
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "<filterName> <filterName>")
         
-        value = Value([
-            "object": Value(["name": "objectName"]),
-            "name": Value("rootName"),
-            "f": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
-                return Value(true)
+        value = Box([
+            "object": Box(["name": "objectName"]),
+            "name": Box("rootName"),
+            "f": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
+                return Box(true)
             })
             ])
         rendering = template.render(value)!
@@ -63,11 +63,11 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterArgumentsDoNotEnterSectionContextStack() {
-        let value = Value([
-            "test": Value("success"),
-            "filtered": Value(["test": "failure"]),
-            "filter": FilterValue({ (_: Value, _: NSErrorPointer) -> Value? in
-                return Value(true)
+        let value = Box([
+            "test": Box("success"),
+            "filtered": Box(["test": "failure"]),
+            "filter": BoxedFilter({ (_: Box, _: NSErrorPointer) -> Box? in
+                return Box(true)
             })])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
         let rendering = template.render(value)!
@@ -75,12 +75,12 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterNameSpace() {
-        let doubleFilter = FilterValue({ (x: Int?, error: NSErrorPointer) -> Value? in
-            return Value((x ?? 0) * 2)
+        let doubleFilter = BoxedFilter({ (x: Int?, error: NSErrorPointer) -> Box? in
+            return Box((x ?? 0) * 2)
         })
-        let value = Value([
-            "x": Value(1),
-            "math": Value(["double": doubleFilter])
+        let value = Box([
+            "x": Box(1),
+            "math": Box(["double": doubleFilter])
             ])
         let template = Template(string:"{{ math.double(x) }}")!
         let rendering = template.render(value)!
@@ -88,14 +88,14 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        let filterValue = FilterValue({ (string1: String?, error: NSErrorPointer) -> Value? in
-            return FilterValue({ (string2: String?, error: NSErrorPointer) -> Value? in
-                    return Value("\(string1!)\(string2!)")
+        let filterValue = BoxedFilter({ (string1: String?, error: NSErrorPointer) -> Box? in
+            return BoxedFilter({ (string2: String?, error: NSErrorPointer) -> Box? in
+                    return Box("\(string1!)\(string2!)")
                 })
             })
-        let value = Value([
-            "prefix": Value("prefix"),
-            "value": Value("value"),
+        let value = Box([
+            "prefix": Box("prefix"),
+            "value": Box("value"),
             "f": filterValue])
         let template = Template(string:"{{f(prefix)(value)}}")!
         let rendering = template.render(value)!
@@ -103,8 +103,8 @@ class FilterTests: XCTestCase {
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let value = FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
-            return Value("filter")
+        let value = BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
+            return Box("filter")
         })
         let template = Template(string:"{{.(a)}}")!
         let rendering = template.render(value)!
@@ -112,10 +112,10 @@ class FilterTests: XCTestCase {
     }
     
     func testMissingFilterError() {
-        let value = Value([
-            "name": Value("Name"),
-            "replace": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
-                return Value("replace")
+        let value = Box([
+            "name": Box("Name"),
+            "replace": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
+                return Box("replace")
             })
         ])
         
@@ -146,7 +146,7 @@ class FilterTests: XCTestCase {
     }
     
     func testNotAFilterError() {
-        let value = Value([
+        let value = Box([
             "name": "Name",
             "filter": "filter"
             ])
@@ -180,7 +180,7 @@ class FilterTests: XCTestCase {
     func testNotAFilterErrorDescriptionContainsLineNumber() {
         let template = Template(string: "\n{{f(x)}}")!
         var error: NSError?
-        let rendering = template.render(Value(["f": "foo"]), error: &error)
+        let rendering = template.render(Box(["f": "foo"]), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)

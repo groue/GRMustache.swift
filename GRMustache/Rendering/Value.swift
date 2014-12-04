@@ -1,5 +1,5 @@
 //
-//  Value.swift
+//  Box.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 08/11/2014.
@@ -46,7 +46,7 @@ public protocol MustacheCluster: MustacheWrappable {
     :returns: An optional filter object that should be applied when the object
     is involved in a filter expression such as `object(...)`.
     */
-    var mustacheFilter: MustacheFilter? { get }
+    var mustacheFilter: MustacheFilterFunction? { get }
     
     /**
     TODO
@@ -59,13 +59,13 @@ public protocol MustacheCluster: MustacheWrappable {
     var mustacheRenderable: MustacheRenderable? { get }
 }
 
+public typealias MustacheFilterFunction = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
 public protocol MustacheFilter: MustacheWrappable {
-    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter?
-    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value?
+    func filterFunction() -> MustacheFilterFunction
 }
 
 public protocol MustacheInspectable: MustacheWrappable {
-    func valueForMustacheKey(key: String) -> Value?
+    func valueForMustacheKey(key: String) -> Box?
 }
 
 public protocol MustacheRenderable: MustacheWrappable {
@@ -73,22 +73,22 @@ public protocol MustacheRenderable: MustacheWrappable {
 }
 
 public protocol MustacheTagObserver: MustacheWrappable {
-    func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value
+    func mustacheTag(tag: Tag, willRender box: Box) -> Box
     
     // If rendering is nil then an error has occurred.
-    func mustacheTag(tag: Tag, didRender rendering: String?, forValue value: Value)
+    func mustacheTag(tag: Tag, didRender box: Box, asString: String?)
 }
 
 
 // =============================================================================
-// MARK: - Value
+// MARK: - Box
 
-public class Value {
+public class Box {
     private enum Type {
         case None
         case AnyObjectValue(AnyObject)
-        case DictionaryValue([String: Value])
-        case ArrayValue([Value])
+        case DictionaryValue([String: Box])
+        case ArrayValue([Box])
         case SetValue(NSSet)
         case ClusterValue(MustacheCluster)
     }
@@ -114,13 +114,13 @@ public class Value {
     
     public convenience init(_ object: AnyObject?) {
         if let object: AnyObject = object {
-            if let value = object as? Value {
+            if let value = object as? Box {
                 self.init(type: value.type)
                 
-            } else if let dictionary = object as? [String: Value] {
+            } else if let dictionary = object as? [String: Box] {
                 self.init(type: .DictionaryValue(dictionary))
                 
-            } else if let array = object as? [Value] {
+            } else if let array = object as? [Box] {
                 self.init(type: .ArrayValue(array))
                 
             } else if object is NSNull {
@@ -147,11 +147,11 @@ public class Value {
                 if let enumerable = object as? NSFastEnumeration {
                     if object.respondsToSelector("objectAtIndexedSubscript:") {
                         // Array
-                        var array: [Value] = []
+                        var array: [Box] = []
                         let generator = NSFastGenerator(enumerable)
                         while true {
                             if let item: AnyObject = generator.next() {
-                                array.append(Value(item))
+                                array.append(Box(item))
                             } else {
                                 break
                             }
@@ -159,11 +159,11 @@ public class Value {
                         self.init(type: .ArrayValue(array))
                     } else if object.respondsToSelector("objectForKeyedSubscript:") {
                         // Dictionary
-                        var dictionary: [String: Value] = [:]
+                        var dictionary: [String: Box] = [:]
                         let generator = NSFastGenerator(enumerable)
                         while true {
                             if let key = generator.next() as? String {
-                                dictionary[key] = Value((object as AnyObject)[key])
+                                dictionary[key] = Box((object as AnyObject)[key])
                             } else {
                                 break
                             }
@@ -205,24 +205,22 @@ public class Value {
 // MARK: - MustacheFilter Factory Methods
 
 private struct BlockFilter: MustacheFilter {
-    let block: (Value, NSErrorPointer) -> Value?
-    
-    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-        return nil
-    }
-    
-    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        return block(value, error)
+    let block: (Box, NSErrorPointer) -> Box?
+
+    func filterFunction() -> MustacheFilterFunction {
+        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+            return self.block(argument, error)
+        }
     }
 }
 
-public func FilterValue(block: (Value, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: block))
+public func BoxedFilter(block: (Box, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: block))
 }
 
-public func FilterValue(block: (AnyObject?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let object:AnyObject = value.object() {
+public func BoxedFilter(block: (AnyObject?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (box: Box, error: NSErrorPointer) -> Box? in
+        if let object:AnyObject = box.value() {
             return block(object, error)
         } else {
             return block(nil, error)
@@ -230,9 +228,9 @@ public func FilterValue(block: (AnyObject?, NSErrorPointer) -> Value?) -> Value 
     }))
 }
 
-public func FilterValue<T: MustacheWrappable>(block: (T?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let object:T = value.object() {
+public func BoxedFilter<T: MustacheWrappable>(block: (T?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (argument: Box, error: NSErrorPointer) -> Box? in
+        if let object:T = argument.value() {
             return block(object, error)
         } else {
             return block(nil, error)
@@ -240,9 +238,9 @@ public func FilterValue<T: MustacheWrappable>(block: (T?, NSErrorPointer) -> Val
     }))
 }
 
-public func FilterValue<T: NSObjectProtocol>(block: (T?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let object:T = value.object() {
+public func BoxedFilter<T: NSObjectProtocol>(block: (T?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (argument: Box, error: NSErrorPointer) -> Box? in
+        if let object:T = argument.value() {
             return block(object, error)
         } else {
             return block(nil, error)
@@ -250,9 +248,9 @@ public func FilterValue<T: NSObjectProtocol>(block: (T?, NSErrorPointer) -> Valu
     }))
 }
 
-public func FilterValue(block: (Int?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let int = value.toInt() {
+public func BoxedFilter(block: (Int?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (argument: Box, error: NSErrorPointer) -> Box? in
+        if let int = argument.toInt() {
             return block(int, error)
         } else {
             return block(nil, error)
@@ -260,9 +258,9 @@ public func FilterValue(block: (Int?, NSErrorPointer) -> Value?) -> Value {
     }))
 }
 
-public func FilterValue(block: (Double?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let double = value.toDouble() {
+public func BoxedFilter(block: (Double?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (argument: Box, error: NSErrorPointer) -> Box? in
+        if let double = argument.toDouble() {
             return block(double, error)
         } else {
             return block(nil, error)
@@ -270,9 +268,9 @@ public func FilterValue(block: (Double?, NSErrorPointer) -> Value?) -> Value {
     }))
 }
 
-public func FilterValue(block: (String?, NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        if let string = value.toString() {
+public func BoxedFilter(block: (String?, NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockFilter(block: { (argument: Box, error: NSErrorPointer) -> Box? in
+        if let string = argument.toString() {
             return block(string, error)
         } else {
             return block(nil, error)
@@ -281,54 +279,56 @@ public func FilterValue(block: (String?, NSErrorPointer) -> Value?) -> Value {
 }
 
 private struct BlockVariadicFilter: MustacheFilter {
-    let arguments: [Value]
-    let block: ([Value], NSErrorPointer) -> Value?
+    let arguments: [Box]
+    let block: ([Box], NSErrorPointer) -> Box?
     
-    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-        return BlockVariadicFilter(arguments: arguments + [argument], block: block)
-    }
-    
-    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-        return block(arguments + [value], error)
+    func filterFunction() -> MustacheFilterFunction {
+        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+            if partialApplication {
+                return Box(BlockVariadicFilter(arguments: self.arguments + [argument], block: self.block))
+            } else {
+                return self.block(self.arguments + [argument], error)
+            }
+        }
     }
 }
 
-public func VariadicFilterValue(block: ([Value], NSErrorPointer) -> Value?) -> Value {
-    return Value(BlockVariadicFilter(arguments: [], block: block))
+public func BoxedVariadicFilter(block: ([Box], NSErrorPointer) -> Box?) -> Box {
+    return Box(BlockVariadicFilter(arguments: [], block: block))
 }
 
 
 // =============================================================================
 // MARK: - MustacheFilter + MustacheRenderable Factory Methods
 
-public func FilterValue(block: (Value, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return block(value, info: info, error: error)
+public func BoxedFilter(block: (Box, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(box, info: info, error: error)
         })
     })
 }
 
-public func FilterValue(block: ([Value], info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return VariadicFilterValue({ (arguments: [Value], error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+public func BoxedFilter(block: ([Box], info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedVariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return block(arguments, info: info, error: error)
         })
     })
 }
 
-public func FilterValue(block: (AnyObject?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return FilterValue({ (object: AnyObject?, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+public func BoxedFilter(block: (AnyObject?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedFilter({ (object: AnyObject?, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return block(object, info: info, error: error)
         })
     })
 }
 
-public func FilterValue<T: MustacheWrappable>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if let object:T = value.object() {
+public func BoxedFilter<T: MustacheWrappable>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return Box(BlockFilter(block: { (box: Box, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            if let object:T = box.value() {
                 return block(object, info: info, error: error)
             } else {
                 return block(nil, info: info, error: error)
@@ -337,10 +337,10 @@ public func FilterValue<T: MustacheWrappable>(block: (T?, info: RenderingInfo, e
     }))
 }
 
-public func FilterValue<T: NSObjectProtocol>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if let object:T = value.object() {
+public func BoxedFilter<T: NSObjectProtocol>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return Box(BlockFilter(block: { (box: Box, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            if let object:T = box.value() {
                 return block(object, info: info, error: error)
             } else {
                 return block(nil, info: info, error: error)
@@ -349,25 +349,25 @@ public func FilterValue<T: NSObjectProtocol>(block: (T?, info: RenderingInfo, er
     }))
 }
 
-public func FilterValue(block: (Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return FilterValue({ (int: Int?, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+public func BoxedFilter(block: (Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedFilter({ (int: Int?, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return block(int, info: info, error: error)
         })
     })
 }
 
-public func FilterValue(block: (Double?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return FilterValue({ (double: Double?, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+public func BoxedFilter(block: (Double?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedFilter({ (double: Double?, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return block(double, info: info, error: error)
         })
     })
 }
 
-public func FilterValue(block: (String?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
-    return FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+public func BoxedFilter(block: (String?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Box {
+    return BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+        return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return block(string, info: info, error: error)
         })
     })
@@ -385,15 +385,15 @@ private struct BlockRenderable: MustacheRenderable {
     }
 }
 
-public func RenderableValue(block: (RenderingInfo, NSErrorPointer) -> Rendering?) -> Value {
-    return Value(BlockRenderable(block: block))
+public func BoxedRenderable(block: (RenderingInfo, NSErrorPointer) -> Rendering?) -> Box {
+    return Box(BlockRenderable(block: block))
 }
 
 
 // =============================================================================
 // MARK: - MustacheCluster Convenience Initializers
 
-extension Value {
+extension Box {
     
     public convenience init(_ object: protocol<MustacheCluster>) { self.init(type: .ClusterValue(object)) }
     public convenience init(_ object: protocol<MustacheCluster, MustacheFilter>) { self.init(object as MustacheCluster) }
@@ -459,18 +459,18 @@ extension Value {
 
 
 // =============================================================================
-// MARK: - Value unwrapping
+// MARK: - Box unwrapping
 
-extension Value {
+extension Box {
     
-    public func object() -> AnyObject? {
+    public func value() -> AnyObject? {
         switch type {
         case .AnyObjectValue(let object):
             return object
         case .DictionaryValue(let dictionary):
             var result = NSMutableDictionary()
             for (key, item) in dictionary {
-                if let object:AnyObject = item.object() {
+                if let object:AnyObject = item.value() {
                     result[key] = object
                 }
             }
@@ -478,7 +478,7 @@ extension Value {
         case .ArrayValue(let array):
             var result = NSMutableArray()
             for item in array {
-                if let object:AnyObject = item.object() {
+                if let object:AnyObject = item.value() {
                     result.addObject(object)
                 }
             }
@@ -487,13 +487,13 @@ extension Value {
             return set
         case .ClusterValue(let cluster):
             // The four types declared as Clusters in RenderingEngine.swift
-            if let bool: Bool = object() {
+            if let bool: Bool = value() {
                 return bool
-            } else if let int: Int = object() {
+            } else if let int: Int = value() {
                 return int
-            } else if let double: Double = object() {
+            } else if let double: Double = value() {
                 return double
-            } else if let string: String = object() {
+            } else if let string: String = value() {
                 return string
             } else {
                 return nil
@@ -503,7 +503,7 @@ extension Value {
         }
     }
     
-    public func object() -> MustacheCluster? {
+    public func value() -> MustacheCluster? {
         switch type {
         case .ClusterValue(let cluster):
             return cluster
@@ -512,7 +512,7 @@ extension Value {
         }
     }
     
-    public func object() -> [String: Value]? {
+    public func value() -> [String: Box]? {
         switch type {
         case .DictionaryValue(let dictionary):
             return dictionary
@@ -521,7 +521,7 @@ extension Value {
         }
     }
     
-    public func object() -> [Value]? {
+    public func value() -> [Box]? {
         switch type {
         case .ArrayValue(let array):
             return array
@@ -531,9 +531,9 @@ extension Value {
     }
     
     public func toInt() -> Int? {
-        if let int: Int = object() {
+        if let int: Int = value() {
             return int
-        } else if let double: Double = object() {
+        } else if let double: Double = value() {
             return Int(double)
         } else {
             return nil
@@ -541,9 +541,9 @@ extension Value {
     }
     
     public func toDouble() -> Double? {
-        if let int: Int = object() {
+        if let int: Int = value() {
             return Double(int)
-        } else if let double: Double = object() {
+        } else if let double: Double = value() {
             return double
         } else {
             return nil
@@ -573,30 +573,30 @@ extension Value {
 // =============================================================================
 // MARK: - Convenience value unwrapping
 
-extension Value {
+extension Box {
 
-    public func object() -> MustacheFilter? {
-        return (object() as MustacheCluster?)?.mustacheFilter
+    public func value() -> MustacheFilter? {
+        return (value() as MustacheCluster?)?.mustacheFilter
     }
     
-    public func object() -> MustacheInspectable? {
-        return (object() as MustacheCluster?)?.mustacheInspectable
+    public func value() -> MustacheInspectable? {
+        return (value() as MustacheCluster?)?.mustacheInspectable
     }
     
-    public func object() -> MustacheRenderable? {
-        return (object() as MustacheCluster?)?.mustacheRenderable
+    public func value() -> MustacheRenderable? {
+        return (value() as MustacheCluster?)?.mustacheRenderable
     }
     
-    public func object() -> MustacheTagObserver? {
-        return (object() as MustacheCluster?)?.mustacheTagObserver
+    public func value() -> MustacheTagObserver? {
+        return (value() as MustacheCluster?)?.mustacheTagObserver
     }
     
     public func object<T: MustacheWrappable>() -> T? {
-        return Value.wrappableFromCluster(object() as MustacheCluster?) as? T
+        return Box.wrappableFromCluster(value() as MustacheCluster?) as? T
     }
     
     public func object<T: NSObjectProtocol>() -> T? {
-        return (object() as AnyObject?) as? T
+        return (value() as AnyObject?) as? T
     }
     
 }
@@ -605,22 +605,22 @@ extension Value {
 // =============================================================================
 // MARK: - DebugPrintable
 
-extension Value: DebugPrintable {
+extension Box: DebugPrintable {
     
     public var debugDescription: String {
         switch type {
         case .None:
-            return "Value.None"
+            return "Box.None"
         case .AnyObjectValue(let object):
-            return "Value.AnyObjectValue(\(object))"
+            return "Box.AnyObjectValue(\(object))"
         case .DictionaryValue(let dictionary):
-            return "Value.DictionaryValue(\(dictionary.debugDescription))"
+            return "Box.DictionaryValue(\(dictionary.debugDescription))"
         case .ArrayValue(let array):
-            return "Value.ArrayValue(\(array.debugDescription))"
+            return "Box.ArrayValue(\(array.debugDescription))"
         case .SetValue(let set):
-            return "Value.SetValue(\(set))"
+            return "Box.SetValue(\(set))"
         case .ClusterValue(let cluster):
-            return "Value.ClusterValue(\(cluster))"
+            return "Box.ClusterValue(\(cluster))"
         }
     }
 }
@@ -629,53 +629,53 @@ extension Value: DebugPrintable {
 // =============================================================================
 // MARK: - Key extraction
 
-extension Value {
+extension Box {
     
-    subscript(identifier: String) -> Value {
+    subscript(identifier: String) -> Box {
         switch type {
         case .None:
-            return Value()
+            return Box()
         case .AnyObjectValue(let object):
-            return Value(object.valueForKey?(identifier))
+            return Box(object.valueForKey?(identifier))
         case .DictionaryValue(let dictionary):
             if let mustacheValue = dictionary[identifier] {
                 return mustacheValue
             } else {
-                return Value()
+                return Box()
             }
         case .ArrayValue(let array):
             switch identifier {
             case "count":
-                return Value(countElements(array))
+                return Box(countElements(array))
             case "firstObject":
                 if let first = array.first {
                     return first
                 } else {
-                    return Value()
+                    return Box()
                 }
             case "lastObject":
                 if let last = array.last {
                     return last
                 } else {
-                    return Value()
+                    return Box()
                 }
             default:
-                return Value()
+                return Box()
             }
         case .SetValue(let set):
             switch identifier {
             case "count":
-                return Value(set.count)
+                return Box(set.count)
             case "anyObject":
-                return Value(set.anyObject())
+                return Box(set.anyObject())
             default:
-                return Value()
+                return Box()
             }
         case .ClusterValue(let cluster):
             if let value = cluster.mustacheInspectable?.valueForMustacheKey(identifier) {
                 return value
             } else {
-                return Value()
+                return Box()
             }
         }
     }
@@ -685,7 +685,7 @@ extension Value {
 // =============================================================================
 // MARK: - Rendering
 
-extension Value {
+extension Box {
 
     var mustacheBool: Bool {
         switch type {
@@ -719,11 +719,11 @@ extension Value {
             case .Variable:
                 return Rendering("\(dictionary)")
             case .Section:
-                return info.tag.render(info.context.extendedContext(value: self), error: error)
+                return info.tag.render(info.context.extendedContext(box: self), error: error)
             }
         case .ArrayValue(let array):
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(value: self), error: error)
+                return info.tag.render(info.context.extendedContext(box: self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
@@ -759,13 +759,13 @@ extension Value {
             }
         case .SetValue(let set):
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(value: self), error: error)
+                return info.tag.render(info.context.extendedContext(box: self), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in set {
-                    if let itemRendering = Value(item).render(enumerationRenderingInfo, error: error) {
+                    if let itemRendering = Box(item).render(enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = itemRendering.contentType
                             buffer += itemRendering.string
@@ -798,13 +798,13 @@ extension Value {
             case .Variable:
                 return Rendering("\(object)")
             case .Section:
-                return info.tag.render(info.context.extendedContext(value: self), error: error)
+                return info.tag.render(info.context.extendedContext(box: self), error: error)
             }
         case .ClusterValue(let cluster):
             if let renderable = cluster.mustacheRenderable {
                 return renderable.render(info, error: error)
             } else {
-                return info.tag.render(info.context.extendedContext(value: self), error: error)
+                return info.tag.render(info.context.extendedContext(box: self), error: error)
             }
         }
     }

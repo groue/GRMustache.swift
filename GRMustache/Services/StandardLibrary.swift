@@ -8,60 +8,60 @@
 
 public class StandardLibrary: MustacheInspectable {
     
-    private let items: [String: Value]
+    private let items: [String: Box]
     
     public init() {
-        var items: [String: Value] = [:]
+        var items: [String: Box] = [:]
         
-        items["capitalized"] = FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-            return Value(string?.capitalizedString)
+        items["capitalized"] = BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+            return Box(string?.capitalizedString)
         })
         
-        items["lowercase"] = FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-            return Value(string?.lowercaseString)
+        items["lowercase"] = BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+            return Box(string?.lowercaseString)
         })
         
-        items["uppercase"] = FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
-            return Value(string?.uppercaseString)
+        items["uppercase"] = BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+            return Box(string?.uppercaseString)
         })
         
-        // TODO: test that Value contains the correct object type
-        items["localize"] = Value(Localizer(bundle: nil, table: nil))
+        // TODO: test that Box contains the correct object type
+        items["localize"] = Box(Localizer(bundle: nil, table: nil))
         
-        items["each"] = Value(EachFilter())
+        items["each"] = Box(EachFilter())
         
-        items["isBlank"] = FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
-            if let int: Int = value.object() {
-                return Value(false)
-            } else if let double: Double = value.object() {
-                return Value(false)
-            } else if let string: String = value.object() {
-                return Value(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
+        items["isBlank"] = BoxedFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+            if let int: Int = box.value() {
+                return Box(false)
+            } else if let double: Double = box.value() {
+                return Box(false)
+            } else if let string: String = box.value() {
+                return Box(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
             } else {
-                return Value(!value.mustacheBool)
+                return Box(!box.mustacheBool)
             }
         })
         
-        items["isEmpty"] = FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
-            if let int: Int = value.object() {
-                return Value(false)
-            } else if let double: Double = value.object() {
-                return Value(false)
+        items["isEmpty"] = BoxedFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+            if let int: Int = box.value() {
+                return Box(false)
+            } else if let double: Double = box.value() {
+                return Box(false)
             } else {
-                return Value(!value.mustacheBool)
+                return Box(!box.mustacheBool)
             }
         })
         
-        items["HTML"] = Value(["escape": Value(HTMLEscape())])
+        items["HTML"] = Box(["escape": Box(HTMLEscape())])
         
-        items["URL"] = Value(["escape": Value(URLEscape())])
+        items["URL"] = Box(["escape": Box(URLEscape())])
         
-        items["javascript"] = Value(["escape": Value(JavascriptEscape())])
+        items["javascript"] = Box(["escape": Box(JavascriptEscape())])
         
         self.items = items
     }
     
-    public func valueForMustacheKey(key: String) -> Value? {
+    public func valueForMustacheKey(key: String) -> Box? {
         return items[key]
     }
 }

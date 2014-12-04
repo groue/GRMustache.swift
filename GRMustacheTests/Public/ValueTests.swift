@@ -12,21 +12,21 @@ import GRMustache
 class ValueTests: XCTestCase {
 
     func testCustomValueExtraction() {
-        // Test that one can extract a custom value from Value.
+        // Test that one can extract a custom value from Box.
         
         // A single protocol that is wrapped in a MustacheCluster
         struct CustomValue1: MustacheInspectable {
             let name: String
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
         // Two protocols that are wrapped in a MustacheCluster
         struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
             func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return Rendering("")
@@ -46,8 +46,8 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
@@ -64,8 +64,8 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
@@ -75,17 +75,17 @@ class ValueTests: XCTestCase {
         let custom4 = CustomValue4(name: "custom4")
         let custom5 = NSDate()
         
-        let value1: Value = Value(custom1)
-        let value2: Value = Value(custom2)
-        let value3: Value = Value(custom3)
-        let value4: Value = Value(custom4)
-        let value5: Value = Value(custom5)
+        let value1: Box = Box(custom1)
+        let value2: Box = Box(custom2)
+        let value3: Box = Box(custom3)
+        let value4: Box = Box(custom4)
+        let value5: Box = Box(custom5)
         
-        let extractedCustom1: CustomValue1 = value1.object()!
-        let extractedCustom2: CustomValue2 = value2.object()!
-        let extractedCustom3: CustomValue3 = value3.object()!
-        let extractedCustom4: CustomValue4 = value4.object()!
-        let extractedCustom5: NSDate = value5.object()!
+        let extractedCustom1: CustomValue1 = value1.value()!
+        let extractedCustom2: CustomValue2 = value2.value()!
+        let extractedCustom3: CustomValue3 = value3.value()!
+        let extractedCustom4: CustomValue4 = value4.value()!
+        let extractedCustom5: NSDate = value5.value()!
         
         XCTAssertEqual(extractedCustom1.name, "custom1")
         XCTAssertEqual(extractedCustom2.name, "custom2")
@@ -100,16 +100,16 @@ class ValueTests: XCTestCase {
         // A single protocol that is wrapped in a MustacheCluster
         struct CustomValue1: MustacheInspectable {
             let name: String
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
         // Two protocols that are wrapped in a MustacheCluster
         struct CustomValue2: MustacheInspectable, MustacheRenderable {
             let name: String
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
             func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
                 return Rendering("")
@@ -129,8 +129,8 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
@@ -147,87 +147,87 @@ class ValueTests: XCTestCase {
                 self.name = name
             }
             
-            func valueForMustacheKey(key: String) -> Value? {
-                return Value()
+            func valueForMustacheKey(key: String) -> Box? {
+                return Box()
             }
         }
         
-        let filter1 = { (value: CustomValue1?, error: NSErrorPointer) -> Value? in
+        let filter1 = { (value: CustomValue1?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Value(value.name)
+                return Box(value.name)
             } else {
-                return Value("other")
+                return Box("other")
             }
         }
         
-        let filter2 = { (value: CustomValue2?, error: NSErrorPointer) -> Value? in
+        let filter2 = { (value: CustomValue2?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Value(value.name)
+                return Box(value.name)
             } else {
-                return Value("other")
+                return Box("other")
             }
         }
         
-        let filter3 = { (value: CustomValue3?, error: NSErrorPointer) -> Value? in
+        let filter3 = { (value: CustomValue3?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Value(value.name)
+                return Box(value.name)
             } else {
-                return Value("other")
+                return Box("other")
             }
         }
         
-        let filter4 = { (value: CustomValue4?, error: NSErrorPointer) -> Value? in
+        let filter4 = { (value: CustomValue4?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Value(value.name)
+                return Box(value.name)
             } else {
-                return Value("other")
+                return Box("other")
             }
         }
         
-        let filter5 = { (value: NSDate?, error: NSErrorPointer) -> Value? in
+        let filter5 = { (value: NSDate?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Value("custom5")
+                return Box("custom5")
             } else {
-                return Value("other")
+                return Box("other")
             }
         }
         
         let template = Template(string:"{{f(custom)}},{{f(string)}}")!
         
-        let value1 = Value([
-            "string": Value("success"),
-            "custom": Value(CustomValue1(name: "custom1")),
-            "f": FilterValue(filter1)
+        let value1 = Box([
+            "string": Box("success"),
+            "custom": Box(CustomValue1(name: "custom1")),
+            "f": BoxedFilter(filter1)
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
         
-        let value2 = Value([
-            "string": Value("success"),
-            "custom": Value(CustomValue2(name: "custom2")),
-            "f": FilterValue(filter2)])
+        let value2 = Box([
+            "string": Box("success"),
+            "custom": Box(CustomValue2(name: "custom2")),
+            "f": BoxedFilter(filter2)])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
-        let value3 = Value([
-            "string": Value("success"),
-            "custom": Value(CustomValue3(name: "custom3")),
-            "f": FilterValue(filter3)
+        let value3 = Box([
+            "string": Box("success"),
+            "custom": Box(CustomValue3(name: "custom3")),
+            "f": BoxedFilter(filter3)
             ])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
         
-        let value4 = Value([
-            "string": Value("success"),
-            "custom": Value(CustomValue4(name: "custom4")),
-            "f": FilterValue(filter4)])
+        let value4 = Box([
+            "string": Box("success"),
+            "custom": Box(CustomValue4(name: "custom4")),
+            "f": BoxedFilter(filter4)])
         let rendering4 = template.render(value4)!
         XCTAssertEqual(rendering4, "custom4,other")
         
-        let value5 = Value([
-            "string": Value("success"),
-            "custom": Value(NSDate()),
-            "f": FilterValue(filter5)])
+        let value5 = Box([
+            "string": Box("success"),
+            "custom": Box(NSDate()),
+            "f": BoxedFilter(filter5)])
         let rendering5 = template.render(value5)!
         XCTAssertEqual(rendering5, "custom5,other")
     }

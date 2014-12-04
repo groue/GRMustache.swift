@@ -188,8 +188,8 @@ public class Template: MustacheRenderable {
     
     :returns: The rendered string
     */
-    public func render(_ value: Value = Value(), error: NSErrorPointer = nil) -> String? {
-        if let rendering = render(baseContext.extendedContext(value: value), error: error) {
+    public func render(_ box: Box = Box(), error: NSErrorPointer = nil) -> String? {
+        if let rendering = render(baseContext.extendedContext(box: box), error: error) {
             return rendering.string
         } else {
             return nil
@@ -234,8 +234,8 @@ public class Template: MustacheRenderable {
     */
     public var baseContext: Context
     
-    public func extendBaseContext(# value: Value) {
-        baseContext = baseContext.extendedContext(value: value)
+    public func extendBaseContext(# box: Box) {
+        baseContext = baseContext.extendedContext(box: box)
     }
     
     public func extendBaseContext(# tagObserver: MustacheTagObserver) {

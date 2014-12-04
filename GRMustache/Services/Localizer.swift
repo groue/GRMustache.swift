@@ -21,15 +21,15 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     
     // MARK: - MustacheFilter
     
-    public func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
+    public func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
         return nil
     }
     
-    public func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
+    public func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
         if let string = value.toString() {
-            return Value(localizedStringForKey(string))
+            return Box(localizedStringForKey(string))
         } else {
-            return Value()
+            return Box()
         }
     }
     
@@ -115,7 +115,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     
     // MARK: - MustacheTagObserver
     
-    public func mustacheTag(tag: Tag, willRenderValue value: Value) -> Value {
+    public func mustacheTag(tag: Tag, willRender box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -123,7 +123,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments == nil {
-                return Value(Placeholder.string)
+                return Box(Placeholder.string)
             } else {
                 return value
             }
@@ -138,7 +138,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         }
     }
     
-    public func mustacheTag(tag: Tag, didRender rendering: String?, forValue: Value) {
+    public func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
         switch tag.type {
         case .Variable:
             // {{ value }}
