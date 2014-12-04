@@ -47,7 +47,7 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = value.render(info, error: error) {
                     return Rendering(self.escapeJavascript(rendering.string), rendering.contentType)
                 } else {

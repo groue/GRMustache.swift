@@ -152,7 +152,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter1 = { (value: CustomValue1?) -> Value in
+        let filter1 = { (value: CustomValue1?, error: NSErrorPointer) -> Value? in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -160,7 +160,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter2 = { (value: CustomValue2?) -> Value in
+        let filter2 = { (value: CustomValue2?, error: NSErrorPointer) -> Value? in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -168,7 +168,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter3 = { (value: CustomValue3?) -> Value in
+        let filter3 = { (value: CustomValue3?, error: NSErrorPointer) -> Value? in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -176,7 +176,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter4 = { (value: CustomValue4?) -> Value in
+        let filter4 = { (value: CustomValue4?, error: NSErrorPointer) -> Value? in
             if let value = value {
                 return Value(value.name)
             } else {
@@ -184,7 +184,7 @@ class ValueTests: XCTestCase {
             }
         }
         
-        let filter5 = { (value: NSDate?) -> Value in
+        let filter5 = { (value: NSDate?, error: NSErrorPointer) -> Value? in
             if let value = value {
                 return Value("custom5")
             } else {
@@ -197,43 +197,37 @@ class ValueTests: XCTestCase {
         let value1 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue1(name: "custom1")),
-            "f": Value(filter1)
+            "f": FilterValue(filter1)
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
         
-        // TODO: avoid this `as [String: Value]` cast
         let value2 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue2(name: "custom2")),
-            "f": Value(filter2)
-            ] as [String: Value])
+            "f": FilterValue(filter2)])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
         let value3 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue3(name: "custom3")),
-            "f": Value(filter3)
+            "f": FilterValue(filter3)
             ])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
         
-        // TODO: avoid this `as [String: Value]` cast
         let value4 = Value([
             "string": Value("success"),
             "custom": Value(CustomValue4(name: "custom4")),
-            "f": Value(filter4)
-            ] as [String: Value])
+            "f": FilterValue(filter4)])
         let rendering4 = template.render(value4)!
         XCTAssertEqual(rendering4, "custom4,other")
         
-        // TODO: avoid this `as [String: Value]` cast
         let value5 = Value([
             "string": Value("success"),
             "custom": Value(NSDate()),
-            "f": Value(filter5)
-            ] as [String: Value])
+            "f": FilterValue(filter5)])
         let rendering5 = template.render(value5)!
         XCTAssertEqual(rendering5, "custom5,other")
     }

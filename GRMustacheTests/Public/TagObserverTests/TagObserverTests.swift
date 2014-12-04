@@ -152,7 +152,7 @@ class TagObserverTests: XCTestCase {
         }
         let tagObserver = TestedTagObserver(willRenderBlock: willRenderBlock, didRenderBlock: nil)
         
-        let filter = { (string: String?) -> Value in
+        let filter = { (string: String?, error: NSErrorPointer) -> Value? in
             return Value(string?.uppercaseString)
         }
         
@@ -205,7 +205,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["filter": Value(filter)]))!
+        rendering = template.render(Value(["filter": FilterValue(filter)]))!
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
@@ -214,7 +214,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
+        rendering = template.render(Value(["subject": Value("foo"), "filter": FilterValue(filter)]))!
         XCTAssertEqual(rendering, "FOO")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.object() as String?)!, "FOO")
@@ -223,7 +223,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Value(["subject": Value("foo"), "filter": Value(filter)]))!
+        rendering = template.render(Value(["subject": Value("foo"), "filter": FilterValue(filter)]))!
         XCTAssertEqual(rendering, "3")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.object() as Int?)!, 3)
@@ -261,7 +261,7 @@ class TagObserverTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(tagObserver: tagObserver)
         failedRendering = false
         var error: NSError?
-        let rendering = template.render(Value({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let rendering = template.render(RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
             return nil
         }), error: &error)
@@ -361,7 +361,7 @@ class TagObserverTests: XCTestCase {
     
     func testTagDelegateCanProcessMustacheRenderable() {
         let tagObserver = TestedTagObserver(willRenderBlock: { (tag, value) -> Value in
-            return Value({ (info, error) -> Rendering? in
+            return RenderableValue({ (info, error) -> Rendering? in
                 let rendering = value.render(info, error: error)!
                 return Rendering(rendering.string.uppercaseString, rendering.contentType)
             })
@@ -370,7 +370,7 @@ class TagObserverTests: XCTestCase {
         var object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 return Rendering("&you")
             }
-        var value = Value(["object": Value(object), "observer": Value(tagObserver)])
+        var value = Value(["object": RenderableValue(object), "observer": Value(tagObserver)])
         var template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
         var rendering = template.render(value)!
         XCTAssertEqual(rendering, "&amp;YOU")
@@ -378,7 +378,7 @@ class TagObserverTests: XCTestCase {
         object = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 return Rendering("&you", .HTML)
             }
-        value = Value(["object": Value(object), "observer": Value(tagObserver)])
+        value = Value(["object": RenderableValue(object), "observer": Value(tagObserver)])
         template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
         rendering = template.render(value)!
         XCTAssertEqual(rendering, "&YOU")

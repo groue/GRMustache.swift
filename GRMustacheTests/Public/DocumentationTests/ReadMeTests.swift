@@ -44,7 +44,7 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Configuration.defaultConfiguration.extendBaseContext(value: Value(["pluralize": Value(pluralizeFilter)]))
+        Configuration.defaultConfiguration.extendBaseContext(value: Value(["pluralize": FilterValue(pluralizeFilter)]))
         
         
         // I have 3 cats.

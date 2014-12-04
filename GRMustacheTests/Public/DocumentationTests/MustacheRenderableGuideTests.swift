@@ -21,10 +21,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        var rendering = Template(string: "{{.}}")!.render(Value(renderable))!
+        var rendering = Template(string: "{{.}}")!.render(RenderableValue(renderable))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
         
-        rendering = Template(string: "{{#.}}{{/}}")!.render(Value(renderable))!
+        rendering = Template(string: "{{#.}}{{/}}")!.render(RenderableValue(renderable))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
     
@@ -33,7 +33,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             return Rendering("Arthur & Cie")
         }
         
-        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Value(renderable))!
+        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(RenderableValue(renderable))!
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
     
@@ -44,7 +44,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let value = Value([
-            "strong": Value(renderable),
+            "strong": RenderableValue(renderable),
             "name": Value("Arthur")])
         let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(value)!
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
@@ -55,7 +55,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let value = Value(["twice": Value(renderable)])
+        let value = Value(["twice": RenderableValue(renderable)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(value)!
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
@@ -65,12 +65,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
             return template.render(info.context, error: error)
         }
-        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
-            "link": Value(renderable),
+            "link": RenderableValue(renderable),
             "name": Value("Arthur"),
-            "url": Value("/people/123")]
-            as [String: Value])
+            "url": Value("/people/123")])
         let rendering = Template(string: "{{# link }}{{ name }}{{/ link }}")!.render(value)!
         XCTAssertEqual(rendering, "<a href=\"/people/123\">Arthur</a>")
     }
@@ -79,17 +77,16 @@ class MustacheRenderableGuideTests: XCTestCase {
         let repository = TemplateRepository(templates: [
             "movieLink": "<a href=\"{{url}}\">{{title}}</a>",
             "personLink": "<a href=\"{{url}}\">{{name}}</a>"])
-        // TODO: avoid those `as [String: Value]` casts
+        let link1 = Value(repository.template(named: "movieLink")!)
         let item1 = Value([
             "title": Value("Citizen Kane"),
             "url": Value("/movies/321"),
-            "link": Value(repository.template(named: "movieLink")!)
-            ] as [String: Value])
+            "link": link1])
+        let link2 = Value(repository.template(named: "personLink")!)
         let item2 = Value([
             "name": Value("Orson Welles"),
             "url": Value("/people/123"),
-            "link": Value(repository.template(named: "personLink")!)
-            ] as [String: Value])
+            "link": link2])
         let value = Value(["items": Value([item1, item2])])
         let rendering = Template(string: "{{#items}}{{link}}{{/items}}")!.render(value)!
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
@@ -158,7 +155,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(value: Value(["list": Value(listFilter)]))
+        template.baseContext = template.baseContext.extendedContext(value: Value(["list": FilterValue(listFilter)]))
         
         let item1 = Value([
             "url": "http://mustache.github.io",

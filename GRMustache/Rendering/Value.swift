@@ -202,206 +202,191 @@ public class Value {
 
 
 // =============================================================================
-// MARK: - MustacheFilter Convenience Initializers
+// MARK: - MustacheFilter Factory Methods
 
-extension Value {
+private struct BlockFilter: MustacheFilter {
+    let block: (Value, NSErrorPointer) -> Value?
     
-    public convenience init(_ block: (Value, NSErrorPointer) -> Value?) {
-        self.init(BlockFilter(block: block))
+    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
+        return nil
     }
     
-    public convenience init(_ block: (Value) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            return block(value)
-        }))
-    }
-    
-    public convenience init(_ block: ([Value], NSErrorPointer) -> Value?) {
-        self.init(BlockVariadicFilter(arguments: [], block: block))
-    }
-    
-    public convenience init(_ block: ([Value]) -> Value?) {
-        self.init(BlockVariadicFilter(arguments: [], block: { (arguments: [Value], error: NSErrorPointer) -> Value? in
-            return block(arguments)
-        }))
-    }
-    
-    public convenience init(_ block: (AnyObject?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let object:AnyObject = value.object() {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: MustacheWrappable>(_ block: (T?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let object:T = value.object() {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init<T: NSObjectProtocol>(_ block: (T?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let object:T = value.object() {
-                return block(object)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init(_ block: (Int?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let int = value.toInt() {
-                return block(int)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init(_ block: (Double?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let double = value.toDouble() {
-                return block(double)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    public convenience init(_ block: (String?) -> Value?) {
-        self.init(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
-            if let string = value.toString() {
-                return block(string)
-            } else {
-                return block(nil)
-            }
-        }))
-    }
-    
-    private struct BlockFilter: MustacheFilter {
-        let block: (Value, NSErrorPointer) -> Value?
-        
-        func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-            return nil
-        }
-        
-        func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-            return block(value, error)
-        }
-    }
-    
-    private struct BlockVariadicFilter: MustacheFilter {
-        let arguments: [Value]
-        let block: ([Value], NSErrorPointer) -> Value?
-        
-        func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
-            return BlockVariadicFilter(arguments: arguments + [argument], block: block)
-        }
-        
-        func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
-            return block(arguments + [value], error)
-        }
+    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
+        return block(value, error)
     }
 }
 
+public func FilterValue(block: (Value, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: block))
+}
 
+public func FilterValue(block: (AnyObject?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let object:AnyObject = value.object() {
+            return block(object, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
 
+public func FilterValue<T: MustacheWrappable>(block: (T?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let object:T = value.object() {
+            return block(object, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
 
-// =============================================================================
-// MARK: - MustacheFilter + MustacheRenderable Convenience Initializers
+public func FilterValue<T: NSObjectProtocol>(block: (T?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let object:T = value.object() {
+            return block(object, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
 
-extension Value {
+public func FilterValue(block: (Int?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let int = value.toInt() {
+            return block(int, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
+
+public func FilterValue(block: (Double?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let double = value.toDouble() {
+            return block(double, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
+
+public func FilterValue(block: (String?, NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        if let string = value.toString() {
+            return block(string, error)
+        } else {
+            return block(nil, error)
+        }
+    }))
+}
+
+private struct BlockVariadicFilter: MustacheFilter {
+    let arguments: [Value]
+    let block: ([Value], NSErrorPointer) -> Value?
     
-    public convenience init(_ block: (Value, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (value: Value) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(value, info: info, error: error)
-            })
-        })
+    func mustacheFilterByApplyingArgument(argument: Value) -> MustacheFilter? {
+        return BlockVariadicFilter(arguments: arguments + [argument], block: block)
     }
     
-    public convenience init(_ block: ([Value], info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (arguments: [Value]) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(arguments, info: info, error: error)
-            })
-        })
+    func transformedMustacheValue(value: Value, error: NSErrorPointer) -> Value? {
+        return block(arguments + [value], error)
     }
-    
-    public convenience init(_ block: (AnyObject?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (object: AnyObject?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, info: info, error: error)
-            })
-        })
-    }
-    
-    public convenience init<T: MustacheWrappable>(_ block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (object: T?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, info: info, error: error)
-            })
-        })
-    }
-    
-    public convenience init<T: NSObjectProtocol>(_ block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (object: T?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(object, info: info, error: error)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (int: Int?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(int, info: info, error: error)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (Double?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (double: Double?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(double, info: info, error: error)
-            })
-        })
-    }
-    
-    public convenience init(_ block: (String?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) {
-        self.init( { (string: String?) -> Value in
-            return Value( { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                return block(string, info: info, error: error)
-            })
-        })
-    }
+}
+
+public func VariadicFilterValue(block: ([Value], NSErrorPointer) -> Value?) -> Value {
+    return Value(BlockVariadicFilter(arguments: [], block: block))
 }
 
 
 // =============================================================================
-// MARK: - MustacheRenderable Convenience Initializers
+// MARK: - MustacheFilter + MustacheRenderable Factory Methods
 
-extension Value {
+public func FilterValue(block: (Value, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(value, info: info, error: error)
+        })
+    })
+}
+
+public func FilterValue(block: ([Value], info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return VariadicFilterValue({ (arguments: [Value], error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(arguments, info: info, error: error)
+        })
+    })
+}
+
+public func FilterValue(block: (AnyObject?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return FilterValue({ (object: AnyObject?, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(object, info: info, error: error)
+        })
+    })
+}
+
+public func FilterValue<T: MustacheWrappable>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            if let object:T = value.object() {
+                return block(object, info: info, error: error)
+            } else {
+                return block(nil, info: info, error: error)
+            }
+        })
+    }))
+}
+
+public func FilterValue<T: NSObjectProtocol>(block: (T?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return Value(BlockFilter(block: { (value: Value, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            if let object:T = value.object() {
+                return block(object, info: info, error: error)
+            } else {
+                return block(nil, info: info, error: error)
+            }
+        })
+    }))
+}
+
+public func FilterValue(block: (Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return FilterValue({ (int: Int?, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(int, info: info, error: error)
+        })
+    })
+}
+
+public func FilterValue(block: (Double?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return FilterValue({ (double: Double?, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(double, info: info, error: error)
+        })
+    })
+}
+
+public func FilterValue(block: (String?, info: RenderingInfo, error: NSErrorPointer) -> Rendering?) -> Value {
+    return FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
+        return RenderableValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return block(string, info: info, error: error)
+        })
+    })
+}
+
+
+// =============================================================================
+// MARK: - MustacheRenderable Factory Methods
+
+private struct BlockRenderable: MustacheRenderable {
+    let block: (RenderingInfo, NSErrorPointer) -> Rendering?
     
-    public convenience init(_ block: (RenderingInfo, NSErrorPointer) -> Rendering?) {
-        self.init(BlockRenderable(block: block))
+    func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        return block(info, error)
     }
-    
-    private struct BlockRenderable: MustacheRenderable {
-        let block: (RenderingInfo, NSErrorPointer) -> Rendering?
-        
-        func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-            return block(info, error)
-        }
-    }
+}
+
+public func RenderableValue(block: (RenderingInfo, NSErrorPointer) -> Rendering?) -> Value {
+    return Value(BlockRenderable(block: block))
 }
 
 

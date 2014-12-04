@@ -14,10 +14,10 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let value = Value([
             "name": Value("Name"),
-            "uppercase": Value({ (string: String?) -> Value in
+            "uppercase": FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
                 return Value(string?.uppercaseString)
             }),
-            "prefix": Value({ (string: String?) -> Value in
+            "prefix": FilterValue({ (string: String?, error: NSErrorPointer) -> Value? in
                 return Value("prefix\(string!)")
             })
             ])
@@ -34,7 +34,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (value: Value) -> Value in
+            "f": FilterValue({ (value: Value, error: NSErrorPointer) -> Value? in
                 return value
             })
             ])
@@ -44,7 +44,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (_: Value) -> Value in
+            "f": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
                 return Value(["name": "filterName"])
             })
             ])
@@ -54,7 +54,7 @@ class FilterTests: XCTestCase {
         value = Value([
             "object": Value(["name": "objectName"]),
             "name": Value("rootName"),
-            "f": Value({ (_: Value) -> Value in
+            "f": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
                 return Value(true)
             })
             ])
@@ -63,25 +63,24 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterArgumentsDoNotEnterSectionContextStack() {
-        // TODO: avoid this `as [String: Value]` cast
         let value = Value([
             "test": Value("success"),
             "filtered": Value(["test": "failure"]),
-            "filter": Value({ (_: Value) -> Value in
+            "filter": FilterValue({ (_: Value, _: NSErrorPointer) -> Value? in
                 return Value(true)
-            })
-            ] as [String: Value])
+            })])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "<success instead of failure>")
     }
     
     func testFilterNameSpace() {
+        let doubleFilter = FilterValue({ (x: Int?, error: NSErrorPointer) -> Value? in
+            return Value((x ?? 0) * 2)
+        })
         let value = Value([
             "x": Value(1),
-            "math": Value(["double": Value({ (x: Int?) -> Value in
-                return Value((x ?? 0) * 2)
-            })])
+            "math": Value(["double": doubleFilter])
             ])
         let template = Template(string:"{{ math.double(x) }}")!
         let rendering = template.render(value)!
@@ -89,23 +88,22 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        // TODO: avoid this `as [String: Value]` cast
-        let value = Value([
-            "prefix": Value("prefix"),
-            "value": Value("value"),
-            "f": Value({ (string1: String?) -> Value in
-                return Value({ (string2: String?) -> Value in
+        let filterValue = FilterValue({ (string1: String?, error: NSErrorPointer) -> Value? in
+            return FilterValue({ (string2: String?, error: NSErrorPointer) -> Value? in
                     return Value("\(string1!)\(string2!)")
                 })
             })
-            ] as [String: Value])
+        let value = Value([
+            "prefix": Value("prefix"),
+            "value": Value("value"),
+            "f": filterValue])
         let template = Template(string:"{{f(prefix)(value)}}")!
         let rendering = template.render(value)!
         XCTAssertEqual(rendering, "prefixvalue")
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let value = Value({ (_: Value) -> Value in
+        let value = FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
             return Value("filter")
         })
         let template = Template(string:"{{.(a)}}")!
@@ -116,7 +114,7 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let value = Value([
             "name": Value("Name"),
-            "replace": Value({ (_: Value) -> Value in
+            "replace": FilterValue({ (_: Value, error: NSErrorPointer) -> Value? in
                 return Value("replace")
             })
         ])
