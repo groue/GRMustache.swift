@@ -23,13 +23,15 @@ class JavascriptEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver 
     
     // MARK: - MustacheFilter
     
-    func filterFunction() -> MustacheFilterFunction {
-        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
-            if let string = argument.toString() {
-                return Box(JavascriptEscape.escapeJavascript(string))
-            } else {
-                return Box()
-            }
+    func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
+        return nil
+    }
+    
+    func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
+        if let string = box.toString() {
+            return Box(JavascriptEscape.escapeJavascript(string))
+        } else {
+            return Box()
         }
     }
     

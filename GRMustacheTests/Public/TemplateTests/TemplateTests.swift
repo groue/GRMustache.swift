@@ -37,7 +37,7 @@ class TemplateTests: XCTestCase {
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 return Box("observer")
             }
-            func mustacheTag(tag: Tag, didRender rendering: String?, forValue box: Box) {
+            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
         }
 

@@ -46,7 +46,7 @@ public protocol MustacheCluster: MustacheWrappable {
     :returns: An optional filter object that should be applied when the object
     is involved in a filter expression such as `object(...)`.
     */
-    var mustacheFilter: MustacheFilterFunction? { get }
+    var mustacheFilter: MustacheFilter? { get }
     
     /**
     TODO
@@ -59,9 +59,9 @@ public protocol MustacheCluster: MustacheWrappable {
     var mustacheRenderable: MustacheRenderable? { get }
 }
 
-public typealias MustacheFilterFunction = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
 public protocol MustacheFilter: MustacheWrappable {
-    func filterFunction() -> MustacheFilterFunction
+    func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter?
+    func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box?
 }
 
 public protocol MustacheInspectable: MustacheWrappable {
@@ -206,11 +206,13 @@ public class Box {
 
 private struct BlockFilter: MustacheFilter {
     let block: (Box, NSErrorPointer) -> Box?
-
-    func filterFunction() -> MustacheFilterFunction {
-        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
-            return self.block(argument, error)
-        }
+    
+    func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
+        return nil
+    }
+    
+    func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
+        return block(box, error)
     }
 }
 
@@ -282,14 +284,12 @@ private struct BlockVariadicFilter: MustacheFilter {
     let arguments: [Box]
     let block: ([Box], NSErrorPointer) -> Box?
     
-    func filterFunction() -> MustacheFilterFunction {
-        return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
-            if partialApplication {
-                return Box(BlockVariadicFilter(arguments: self.arguments + [argument], block: self.block))
-            } else {
-                return self.block(self.arguments + [argument], error)
-            }
-        }
+    func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
+        return BlockVariadicFilter(arguments: arguments + [argument], block: block)
+    }
+    
+    func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
+        return block(arguments + [box], error)
     }
 }
 
@@ -591,11 +591,11 @@ extension Box {
         return (value() as MustacheCluster?)?.mustacheTagObserver
     }
     
-    public func object<T: MustacheWrappable>() -> T? {
+    public func value<T: MustacheWrappable>() -> T? {
         return Box.wrappableFromCluster(value() as MustacheCluster?) as? T
     }
     
-    public func object<T: NSObjectProtocol>() -> T? {
+    public func value<T: NSObjectProtocol>() -> T? {
         return (value() as AnyObject?) as? T
     }
     

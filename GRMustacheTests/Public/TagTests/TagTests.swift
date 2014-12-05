@@ -18,9 +18,9 @@ class TagTests: XCTestCase {
         }
         func mustacheTag(tag: Tag, willRender box: Box) -> Box {
             tagDescription = tag.description
-            return value
+            return box
         }
-        func mustacheTag(tag: Tag, didRender rendering: String?, forValue box: Box) {
+        func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
         }
     }
     

@@ -14,13 +14,12 @@ class ReadMeTests: XCTestCase {
     func testReadmeExample1() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let template = Template(named: "ReadMeExample1", bundle: testBundle)!
-        let value = Box([
+        let data = [
             "name": "Chris",
             "value": 10000.0,
             "taxed_value": 10000 - (10000 * 0.4),
-            "in_ca": true
-            ])
-        let rendering = template.render(value)!
+            "in_ca": true]
+        let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     

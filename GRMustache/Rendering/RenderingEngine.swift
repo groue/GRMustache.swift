@@ -264,13 +264,13 @@ class RenderingEngine: TemplateASTVisitor {
                 buffer = buffer! + string
                 
                 for tagObserver in tagObserverStack.reverse() {
-                    tagObserver.mustacheTag(tag, didRender:string, forValue: value)
+                    tagObserver.mustacheTag(tag, didRender: value, asString: string)
                 }
                 
                 return .Success
             } else {
                 for tagObserver in tagObserverStack.reverse() {
-                    tagObserver.mustacheTag(tag, didRender:nil, forValue: value)
+                    tagObserver.mustacheTag(tag, didRender: value, asString: nil)
                 }
                 
                 return .Error(error!)
@@ -286,7 +286,7 @@ class RenderingEngine: TemplateASTVisitor {
 extension Bool: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self }
-    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -308,7 +308,7 @@ extension Bool: MustacheCluster, MustacheRenderable {
 extension Int: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0 }
-    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -330,7 +330,7 @@ extension Int: MustacheCluster, MustacheRenderable {
 extension Double: MustacheCluster, MustacheRenderable {
     
     public var mustacheBool: Bool { return self != 0.0 }
-    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return nil }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }
@@ -352,7 +352,7 @@ extension Double: MustacheCluster, MustacheRenderable {
 extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
     
     public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheFilterFunction: MustacheFilterFunction? { return nil }
+    public var mustacheFilter: MustacheFilter? { return nil }
     public var mustacheInspectable: MustacheInspectable? { return self }
     public var mustacheTagObserver: MustacheTagObserver? { return nil }
     public var mustacheRenderable: MustacheRenderable? { return self }

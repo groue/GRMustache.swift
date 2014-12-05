@@ -31,34 +31,34 @@ class FilterTests: XCTestCase {
         var box: Box
         var rendering: String
         
-        value = Box([
+        box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
             "f": BoxedFilter({ (box: Box, error: NSErrorPointer) -> Box? in
-                return value
+                return box
             })
             ])
-        rendering = template.render(value)!
+        rendering = template.render(box)!
         XCTAssertEqual(rendering, "<objectName> <objectName>")
         
-        value = Box([
+        box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
             "f": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return Box(["name": "filterName"])
             })
             ])
-        rendering = template.render(value)!
+        rendering = template.render(box)!
         XCTAssertEqual(rendering, "<filterName> <filterName>")
         
-        value = Box([
+        box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
             "f": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return Box(true)
             })
             ])
-        rendering = template.render(value)!
+        rendering = template.render(box)!
         XCTAssertEqual(rendering, "<> <rootName>")
     }
     

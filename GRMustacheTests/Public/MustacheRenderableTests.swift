@@ -299,7 +299,7 @@ class MustacheRenderableTests: XCTestCase {
             }
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 ++tagWillRenderCount
-                return value
+                return box
             }
             func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
@@ -319,7 +319,7 @@ class MustacheRenderableTests: XCTestCase {
             }
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 ++tagWillRenderCount
-                return value
+                return box
             }
             func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
             }
@@ -336,7 +336,7 @@ class MustacheRenderableTests: XCTestCase {
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
-                    return value
+                    return box
                 default:
                     return Box("delegate")
                 }
@@ -362,7 +362,7 @@ class MustacheRenderableTests: XCTestCase {
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
-                    return value
+                    return box
                 default:
                     return Box("delegate")
                 }
@@ -389,7 +389,7 @@ class MustacheRenderableTests: XCTestCase {
             func mustacheTag(tag: Tag, willRender box: Box) -> Box {
                 switch tag.type {
                 case .Section:
-                    return value
+                    return box
                 default:
                     return Box("delegate")
                 }

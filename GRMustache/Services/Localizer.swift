@@ -26,7 +26,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
     }
     
     public func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
-        if let string = value.toString() {
+        if let string = box.toString() {
             return Box(localizedStringForKey(string))
         } else {
             return Box()
@@ -125,7 +125,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             if formatArguments == nil {
                 return Box(Placeholder.string)
             } else {
-                return value
+                return box
             }
             
         case .Section:
@@ -134,7 +134,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             //
             // We do not want to mess with Mustache handling of boolean sections
             // such as {{#true}}...{{/}}.
-            return value
+            return box
         }
     }
     
@@ -146,8 +146,8 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
             // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments != nil {
-                if let rendering = rendering {
-                    formatArguments!.append(rendering)
+                if let string = string {
+                    formatArguments!.append(string)
                 }
             }
             
