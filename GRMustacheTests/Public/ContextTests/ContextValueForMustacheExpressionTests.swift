@@ -32,6 +32,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         XCTAssertEqual(string!, "success")
     }
     
+    // TODO: uncomment test
 //    func testFilteredExpression() {
 //        let filterValue = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box in
 //            return Box(string!.uppercaseString)

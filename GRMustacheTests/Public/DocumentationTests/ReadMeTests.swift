@@ -9,72 +9,75 @@
 import XCTest
 import GRMustache
 
-//class ReadMeTests: XCTestCase {
-//    
-//    func testReadmeExample1() {
-//        let testBundle = NSBundle(forClass: self.dynamicType)
-//        let template = Template(named: "ReadMeExample1", bundle: testBundle)!
-//        let data = [
-//            "name": "Chris",
-//            "value": 10000.0,
-//            "taxed_value": 10000 - (10000 * 0.4),
-//            "in_ca": true]
-//        let rendering = template.render(Box(data))!
-//        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
-//    }
-//    
-//    func testReadmeExample2() {
-//        // Define the `pluralize` filter.
-//        //
-//        // {{# pluralize(count) }}...{{/ }} renders the plural form of the
-//        // section content if the `count` argument is greater than 1.
-//        
-//        let pluralizeFilter = BoxedFilter { (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-//            
-//            // Pluralize the section inner content if needed:
-//            var string = info.tag.innerTemplateString
-//            if count > 1 {
-//                string = string + "s"  // naive
-//            }
-//            
-//            return Rendering(string)
-//        }
-//        
-//        
-//        // Register the pluralize filter for all Mustache renderings:
-//        
-//        Configuration.defaultConfiguration.extendBaseContext(box: Box(["pluralize": pluralizeFilter]))
-//        
-//        
-//        // I have 3 cats.
-//        
-//        let testBundle = NSBundle(forClass: self.dynamicType)
-//        let template = Template(named: "ReadMeExample2", bundle: testBundle)!
-//        let box = Box(["cats": ["Kitty", "Pussy", "Melba"]])
-//        let rendering = template.render(value)!
-//        XCTAssertEqual(rendering, "I have 3 cats.")
-//        
-//        Configuration.defaultConfiguration = Configuration()
-//    }
-//    
-//    func testReadmeExample3() {
-//        
-//        struct ReadmeExample3User: MustacheInspectable {
-//            let name: String
-//            
-//            func valueForMustacheKey(key: String) -> Box? {
-//                switch key {
-//                case "name":
-//                    return Box(name)
-//                default:
-//                    return nil
-//                }
-//            }
-//        }
-//        
-//        let user = ReadmeExample3User(name: "Arthur")
-//        let rendering = Template(string:"Hello {{name}}!")!.render(Box(user))!
-//        XCTAssertEqual(rendering, "Hello Arthur!")
-//    }
-//    
-//}
+class ReadMeTests: XCTestCase {
+    
+    func testReadmeExample1() {
+        let testBundle = NSBundle(forClass: self.dynamicType)
+        let template = Template(named: "ReadMeExample1", bundle: testBundle)!
+        let data = [
+            "name": "Chris",
+            "value": 10000.0,
+            "taxed_value": 10000 - (10000 * 0.4),
+            "in_ca": true]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
+    }
+    
+    func testReadmeExample2() {
+        // Define the `pluralize` filter.
+        //
+        // {{# pluralize(count) }}...{{/ }} renders the plural form of the
+        // section content if the `count` argument is greater than 1.
+        
+        let pluralizeFilter = MakeFilter({ (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            
+            // Pluralize the section inner content if needed:
+            var string = info.tag.innerTemplateString
+            if count > 1 {
+                string = string + "s"  // naive
+            }
+            
+            return Rendering(string)
+        })
+        
+        
+        // Register the pluralize filter for all Mustache renderings:
+        
+        Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
+        
+        
+        // I have 3 cats.
+        
+        let testBundle = NSBundle(forClass: self.dynamicType)
+        let template = Template(named: "ReadMeExample2", bundle: testBundle)!
+        let box = Box(["cats": ["Kitty", "Pussy", "Melba"]])
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "I have 3 cats.")
+        
+        Configuration.defaultConfiguration = Configuration()
+    }
+    
+    func testReadmeExample3() {
+        
+        struct ReadmeExample3User: MustacheBoxable {
+            let name: String
+            
+            func toBox() -> Box {
+                return Box(value: self, inspector: { (identifier: String) -> Box? in
+                    switch identifier {
+                    case "name":
+                        return Box(self.name)
+                    default:
+                        return nil
+                    }
+                })
+                
+            }
+        }
+        
+        let user = ReadmeExample3User(name: "Arthur")
+        let rendering = Template(string:"Hello {{name}}!")!.render(Box(user))!
+        XCTAssertEqual(rendering, "Hello Arthur!")
+    }
+    
+}

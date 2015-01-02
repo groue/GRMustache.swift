@@ -80,6 +80,62 @@ public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> Filter {
     }
 }
 
+public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> Filter {
+    // TODO: test
+    return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = argument.stringValue() {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+    return MakeFilter({ (t: T?, error: NSErrorPointer) -> Box? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(t, info, error)
+        })
+    })
+}
+
+public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+    return MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(box, info, error)
+        })
+    })
+}
+
+public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+    return MakeFilter({ (int: Int?, error: NSErrorPointer) -> Box? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(int, info, error)
+        })
+    })
+}
+
+public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+    return MakeFilter({ (double: Double?, error: NSErrorPointer) -> Box? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(double, info, error)
+        })
+    })
+}
+
+public func MakeFilter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+    return MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(string, info, error)
+        })
+    })
+}
+
 public struct Box {
     public let value: Any?
     public let mustacheBool: Void -> Bool
