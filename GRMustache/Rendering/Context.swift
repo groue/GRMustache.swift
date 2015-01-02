@@ -22,8 +22,12 @@ public class Context {
         switch type {
         case .Root:
             return Box()
-        case .BoxType(box: let box, parent: _):
-            return box
+        case .BoxType(box: let box, parent: let parent):
+            if box.inspector != nil {
+                return box
+            } else {
+                return parent.topBox
+            }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
             return parent.topBox
         }

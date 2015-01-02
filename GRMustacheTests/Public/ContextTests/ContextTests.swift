@@ -42,46 +42,36 @@ class ContextTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-//    func testContextWithTagObserverConstructor() {
-//        class CustomTagObserver: MustacheTagObserver {
-//            var success = false
-//            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
-//                success = true
-//                return box
-//            }
-//            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-//            }
-//        }
-//        
-//        let template = Template(string: "{{success}}")!
-//        let tagObserver = CustomTagObserver()
-//        template.baseContext = Context(tagObserver)
-//        template.render()
-//        XCTAssertTrue(tagObserver.success)
-//    }
+    func testContextWithTagObserverConstructor() {
+        var success = false
+        let preRenderer = { (tag: Tag, box: Box) -> Box in
+            success = true
+            return box
+        }
+        let template = Template(string: "{{success}}")!
+        template.baseContext = Context(Box(preRenderer))
+        template.render()
+        XCTAssertTrue(success)
+    }
     
-//    func testTopMustacheValue() {
-//        var context = Context()
-//        XCTAssertTrue(context.topBox.isEmpty)
-//        
-//        context = context.extendedContext(Box("object"))
-//        XCTAssertEqual((context.topBox.value as String), "object")
-//        
-//        // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
-//        
-//        class CustomTagObserver: MustacheTagObserver {
-//            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
-//                return box
-//            }
-//            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-//            }
-//        }
-//        context = context.extendedContext(tagObserver: CustomTagObserver())
-//        XCTAssertEqual(context.topBox.value()! as String, "object")
-//
-//        context = context.extendedContext(Box("object2"))
-//        XCTAssertEqual(context.topBox.value()! as String, "object2")
-//    }
+    func testTopMustacheValue() {
+        var context = Context()
+        XCTAssertTrue(context.topBox.isEmpty)
+        
+        context = context.extendedContext(Box("object"))
+        XCTAssertEqual((context.topBox.value as String), "object")
+        
+        // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
+        
+        let preRenderer = { (tag: Tag, box: Box) -> Box in
+            return box
+        }
+        context = context.extendedContext(Box(preRenderer))
+        XCTAssertEqual(context.topBox.value as String, "object")
+
+        context = context.extendedContext(Box("object2"))
+        XCTAssertEqual(context.topBox.value as String, "object2")
+    }
     
     func testSubscript() {
         let context = Context(Box(["name": "name1", "a": ["name": "name2"]]))
