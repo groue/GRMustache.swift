@@ -516,10 +516,10 @@ public struct Box {
                 } else if let object = object as? NSObject {
                     self.init(object)
                 } else {
-                    fatalError("Not implemented")
+                    fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
                 }
             } else {
-                fatalError("Not implemented")
+                fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
             }
         } else {
             self.init()

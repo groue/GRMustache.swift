@@ -9,7 +9,7 @@
 /**
     The Template class provides Mustache rendering services.
 */
-public class Template {
+public class Template: MustacheBoxable {
     
     /**
     Parses a template string, and returns a template.
@@ -218,6 +218,13 @@ public class Template {
         let rendering = renderingEngine.render(templateAST, error: error)
         RenderingEngine.popCurrentTemplateRepository()
         return rendering
+    }
+    
+    
+    // MARK: - MustacheBoxable
+    
+    public func toBox() -> Box {
+        return Box(value: self, renderer: self.render)
     }
     
     
