@@ -136,6 +136,21 @@ public func MakeFilter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rende
     })
 }
 
+private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> Filter {
+    return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+        let arguments = arguments + [argument]
+        if partialApplication {
+            return Box(MakePartialVariadicFilter(arguments, filter))
+        } else {
+            return filter(arguments: arguments, error: error)
+        }
+    }
+}
+
+public func MakeVariadicFilter(filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> Filter {
+    return MakePartialVariadicFilter([], filter)
+}
+
 public struct Box {
     public let value: Any?
     public let mustacheBool: Void -> Bool

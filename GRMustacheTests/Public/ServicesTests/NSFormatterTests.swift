@@ -36,6 +36,7 @@ class NSFormatterTests: XCTestCase {
         
         // test filtering a string
         let template = Template(string: "{{ percent(string) }}")!
+        // TODO: avoid this `as [String: Box]` explicit cast
         let box = Box(["string": Box("foo"), "percent": Box(percentFormatter)] as [String: Box])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "")
@@ -58,6 +59,7 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
         let template = Template(string: "{{# percent }}{{ value }}{{/ percent }}")!
+        // TODO: avoid this `as [String: Box]` explicit cast
         let box = Box(["value": Box("foo"), "percent": Box(percentFormatter)] as [String: Box])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "foo")
@@ -80,6 +82,7 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
         let template = Template(string: "NO is {{ NO }}. {{^ NO }}NO is false.{{/ NO }} percent(NO) is {{ percent(NO) }}. {{# percent(NO) }}percent(NO) is true.{{/ percent(NO) }} {{# percent }}{{^ NO }}NO is now {{ NO }} and is still false.{{/ NO }}{{/ percent }}")!
+        // TODO: avoid this `as [String: Box]` explicit cast
         let box = Box(["number": Box(0.5), "NO": Box(0), "percent": Box(percentFormatter)] as [String: Box])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "NO is 0. NO is false. percent(NO) is 0%. percent(NO) is true. NO is now 0% and is still false.")
