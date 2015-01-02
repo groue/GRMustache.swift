@@ -50,7 +50,7 @@ import GRMustache
 //        
 //        let testBundle = NSBundle(forClass: self.dynamicType)
 //        let template = Template(named: "ReadMeExample2", bundle: testBundle)!
-//        let value = Box(["cats": ["Kitty", "Pussy", "Melba"]])
+//        let box = Box(["cats": ["Kitty", "Pussy", "Melba"]])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "I have 3 cats.")
 //        

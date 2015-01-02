@@ -30,7 +30,7 @@ import GRMustache
 //    func testLocalizer() {
 //        let template = Template(string: "{{localize(string)}}")!
 //        // TODO: make this protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver> cast unnecessary
-//        let value = Box(["localize": Box(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>), "string": Box("testable?")])
+//        let box = Box(["localize": Box(localizer as protocol<MustacheFilter, MustacheRenderable, MustacheTagObserver>), "string": Box("testable?")])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "YES")
 //    }
@@ -38,14 +38,14 @@ import GRMustache
 //    func testLocalizerFromTable() {
 //        let template = Template(string: "{{localize(string)}}")!
 //        let localizer = Localizer(bundle: localizableBundle, table: "Table")
-//        let value = Box(["localize": Box(localizer), "string": Box("table_testable?")])
+//        let box = Box(["localize": Box(localizer), "string": Box("table_testable?")])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "YES")
 //    }
 //
 //    func testDefaultLocalizerAsFilter() {
 //        let template = Template(string: "{{localize(foo)}}")!
-//        let value = Box(["foo": "bar"])
+//        let box = Box(["foo": "bar"])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "bar")
 //    }
@@ -58,14 +58,14 @@ import GRMustache
 //    
 //    func testDefaultLocalizerAsRenderableWithArgument() {
 //        let template = Template(string: "{{#localize}}...{{foo}}...{{/}}")!
-//        let value = Box(["foo": "bar"])
+//        let box = Box(["foo": "bar"])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "...bar...")
 //    }
 //    
 //    func testDefaultLocalizerAsRenderableWithArgumentAndConditions() {
 //        let template = Template(string: "{{#localize}}.{{foo}}.{{^false}}{{baz}}{{/}}.{{/}}")!
-//        let value = Box(["foo": "bar", "baz": "truc"])
+//        let box = Box(["foo": "bar", "baz": "truc"])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, ".bar.truc.")
 //    }

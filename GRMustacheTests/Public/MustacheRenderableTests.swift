@@ -174,7 +174,7 @@ import GRMustache
 //            return tagRendering
 //        }
 //        
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        Template(string: "{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
 //        
 //        XCTAssertEqual(tagRendering!.string, "-=-")
@@ -188,7 +188,7 @@ import GRMustache
 //            return tagRendering
 //        }
 //        
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        Template(string: "{{^renderable}}{{#renderable}}{{subject}}={{subject}}{{/renderable}}")!.render(value)
 //        
 //        XCTAssertEqual(tagRendering!.string, "-=-")
@@ -226,7 +226,7 @@ import GRMustache
 //        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return altTemplate.render(info, error: error)
 //        }
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        let rendering = Template(string: "{{renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "-")
 //    }
@@ -236,7 +236,7 @@ import GRMustache
 //        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return altTemplate.render(info, error: error)
 //        }
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        let rendering = Template(string: "{{#renderable}}{{/renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "-")
 //    }
@@ -250,7 +250,7 @@ import GRMustache
 //                return Template(string:"key:{{key}}")!.render(info, error: error)
 //            }
 //        }
-//        let value = Box(["renderable": Box(TestedRenderable())])
+//        let box = Box(["renderable": Box(TestedRenderable())])
 //        let rendering = Template(string: "{{renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "key:")
 //    }
@@ -264,7 +264,7 @@ import GRMustache
 //                return info.tag.render(info.context, error: error)
 //            }
 //        }
-//        let value = Box(["renderable": Box(TestedRenderable())])
+//        let box = Box(["renderable": Box(TestedRenderable())])
 //        let rendering = Template(string: "{{#renderable}}key:{{key}}{{/renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "key:")
 //    }
@@ -275,7 +275,7 @@ import GRMustache
 //            let template = Template(string: "{{subject}}{{subject2}}")!
 //            return template.render(context, error: error)
 //        }
-//        let value = Box(["renderable": Box(renderable), "subject": Box("---")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("---")])
 //        let rendering = Template(string: "{{renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "---+++")
 //    }
@@ -284,7 +284,7 @@ import GRMustache
 //        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return info.tag.render(info.context.extendedContext(Box(["subject2": Box("+++")])), error: error)
 //        }
-//        let value = Box(["renderable": Box(renderable), "subject": Box("---")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("---")])
 //        let rendering = Template(string: "{{#renderable}}{{subject}}{{subject2}}{{/renderable}}")!.render(value)!
 //        XCTAssertEqual(rendering, "---+++")
 //    }
@@ -305,7 +305,7 @@ import GRMustache
 //            }
 //        }
 //        let renderable = TestedRenderable()
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        let rendering = Template(string: "{{subject}}{{renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
 //        XCTAssertEqual(rendering, "-------")
 //        XCTAssertEqual(renderable.tagWillRenderCount, 2)
@@ -325,7 +325,7 @@ import GRMustache
 //            }
 //        }
 //        let renderable = TestedRenderable()
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        let rendering = Template(string: "{{subject}}{{#renderable}}{{subject}}{{subject}}{{/renderable}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(value)!
 //        XCTAssertEqual(rendering, "-------")
 //        XCTAssertEqual(renderable.tagWillRenderCount, 2)
@@ -352,7 +352,7 @@ import GRMustache
 //        
 //        let template = Template(string: "{{#renderable}}{{subject}}{{/renderable}}")!
 //        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-//        let value = Box(["renderable": Box(renderable), "subject": Box("---")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("---")])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "delegate")
 //    }
@@ -379,7 +379,7 @@ import GRMustache
 //        
 //        let template = Template(string: "{{renderable}}")!
 //        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-//        let value = Box(["renderable": Box(renderable), "subject": Box("---")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("---")])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "delegate")
 //    }
@@ -406,7 +406,7 @@ import GRMustache
 //        
 //        let template = Template(string: "{{#renderable}}{{/renderable}}")!
 //        template.baseContext = template.baseContext.extendedContext(tagObserver: TestedTagObserver())
-//        let value = Box(["renderable": Box(renderable), "subject": Box("---")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("---")])
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "delegate")
 //    }
@@ -418,7 +418,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("2")
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{#items}}{{/items}}")!.render(value)!
 //        XCTAssertEqual(rendering, "12")
 //    }
@@ -430,7 +430,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("2")
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{items}}")!.render(value)!
 //        XCTAssertEqual(rendering, "12")
 //    }
@@ -442,7 +442,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>", .HTML)
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{items}}")!.render(value)!
 //        XCTAssertEqual(rendering, "<1><2>")
 //    }
@@ -454,7 +454,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>", .HTML)
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{{items}}}")!.render(value)!
 //        XCTAssertEqual(rendering, "<1><2>")
 //    }
@@ -466,7 +466,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>")
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{items}}")!.render(value)!
 //        XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
 //    }
@@ -478,7 +478,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>")
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        let rendering = Template(string: "{{{items}}}")!.render(value)!
 //        XCTAssertEqual(rendering, "<1><2>")
 //    }
@@ -490,7 +490,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>", .HTML)
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        var error: NSError?
 //        let rendering = Template(string: "{{items}}")!.render(value, error: &error)
 //        XCTAssertNil(rendering)
@@ -505,7 +505,7 @@ import GRMustache
 //        let renderable2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //            return Rendering("<2>", .HTML)
 //        }
-//        let value = Box(["items": Box([Box(renderable1), Box(renderable2)])])
+//        let box = Box(["items": Box([Box(renderable1), Box(renderable2)])])
 //        var error: NSError?
 //        let rendering = Template(string: "{{#items}}{{/items}}")!.render(value, error: &error)
 //        XCTAssertNil(rendering)
@@ -516,7 +516,7 @@ import GRMustache
 //    func testTemplateAsRenderableObject() {
 //        let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
 //        let template = repository.template(named: "partial")!
-//        let value = Box(["partial": Box(template), "subject": Box("---")])
+//        let box = Box(["partial": Box(template), "subject": Box("---")])
 //        let rendering = Template(string: "{{partial}}")!.render(value)!
 //        XCTAssertEqual(rendering, "---")
 //    }
@@ -524,7 +524,7 @@ import GRMustache
 //    func testTemplateAsRenderableObjectInNotHTMLEscaped() {
 //        let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
 //        let template = repository.template(named: "partial")!
-//        let value = Box(["partial": Box(template), "subject": Box("---")])
+//        let box = Box(["partial": Box(template), "subject": Box("---")])
 //        let rendering = Template(string: "{{partial}}")!.render(value)!
 //        XCTAssertEqual(rendering, "<--->")
 //    }
@@ -539,7 +539,7 @@ import GRMustache
 //            let altTemplate = Template(string: "{{>partial}}")!
 //            return altTemplate.render(info, error: error)
 //        }
-//        let value = Box(["renderable": Box(renderable), "subject": Box("-")])
+//        let box = Box(["renderable": Box(renderable), "subject": Box("-")])
 //        let template = repository.template(named: "template")!
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "-")
@@ -552,7 +552,7 @@ import GRMustache
 //        let repository2 = TemplateRepository(templates: [
 //            "template2": "{{ renderable }}",
 //            "partial": "partial2"])
-//        let value = Box([
+//        let box = Box([
 //            "template2": Box(repository2.template(named: "template2")!),
 //            "renderable": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //                let altTemplate = Template(string: "{{>partial}}")!
@@ -564,7 +564,7 @@ import GRMustache
 //    }
 //    
 //    func testRenderableObjectInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
-//        let value = Box([
+//        let box = Box([
 //            "object": Box("&"),
 //            "renderable": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //                let altTemplate = Template(string: "{{ object }}")!
@@ -577,7 +577,7 @@ import GRMustache
 //    }
 //    
 //    func testRenderableObjectInheritTextContentTypeOfCurrentlyRenderedTemplate() {
-//        let value = Box([
+//        let box = Box([
 //            "object": Box("&"),
 //            "renderable": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //                let altTemplate = Template(string: "{{ object }}")!
@@ -593,7 +593,7 @@ import GRMustache
 //        let repository = TemplateRepository(templates: [
 //            "templateHTML": "{{ renderable }}|{{> templateText }}",
 //            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderable }}"])
-//        let value = Box([
+//        let box = Box([
 //            "value": Box("&"),
 //            "renderable": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
 //                let altTemplate = Template(string: "{{ value }}")!
@@ -615,7 +615,7 @@ import GRMustache
 //            let altTemplate = Template(string: "{{{ value }}}")!
 //            return altTemplate.render(info, error: error)
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "value": Box("&"),
 //            "templateText": Box(repository2.template(named: "templateText")!),
 //            "renderable": renderableValue])

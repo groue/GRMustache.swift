@@ -16,9 +16,9 @@ class EachFilterTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let value = Box(["array": Box([Box(renderable)])])
+        let box = Box(["array": Box([Box(renderable)])])
         let template = Template(string: "{{#each(array)}}{{@index}}{{/}}")!
-        let rendering = template.render(value)!
+        let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<0>")
     }
 

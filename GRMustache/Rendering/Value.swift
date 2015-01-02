@@ -48,6 +48,38 @@ public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> Filter {
     }
 }
 
+public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> Filter {
+    // TODO: test
+    return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = argument.intValue() {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> Filter {
+    // TODO: test
+    return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = argument.doubleValue() {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
 public struct Box {
     public let value: Any?
     public let mustacheBool: Void -> Bool

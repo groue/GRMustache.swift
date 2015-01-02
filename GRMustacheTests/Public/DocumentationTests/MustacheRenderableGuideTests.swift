@@ -43,7 +43,7 @@ import GRMustache
 //            return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
 //        }
 //        
-//        let value = Box([
+//        let box = Box([
 //            "strong": Box(renderable),
 //            "name": Box("Arthur")])
 //        let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(value)!
@@ -55,7 +55,7 @@ import GRMustache
 //            let rendering = info.tag.render(info.context)!
 //            return Rendering(rendering.string + rendering.string, rendering.contentType)
 //        }
-//        let value = Box(["twice": Box(renderable)])
+//        let box = Box(["twice": Box(renderable)])
 //        let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(value)!
 //        XCTAssertEqual(rendering, "SuccessSuccess")
 //    }
@@ -65,7 +65,7 @@ import GRMustache
 //            let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
 //            return template.render(info.context, error: error)
 //        }
-//        let value = Box([
+//        let box = Box([
 //            "link": Box(renderable),
 //            "name": Box("Arthur"),
 //            "url": Box("/people/123")])
@@ -87,7 +87,7 @@ import GRMustache
 //            "name": Box("Orson Welles"),
 //            "url": Box("/people/123"),
 //            "link": link2])
-//        let value = Box(["items": Box([item1, item2])])
+//        let box = Box(["items": Box([item1, item2])])
 //        let rendering = Template(string: "{{#items}}{{link}}{{/items}}")!.render(value)!
 //        XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
 //    }
@@ -163,7 +163,7 @@ import GRMustache
 //        let item2 = Box([
 //            "url": "http://github.com/groue/GRMustache.swift",
 //            "title": "GRMustache.swift"])
-//        let value = Box(["nav": Box([item1, item2])])
+//        let box = Box(["nav": Box([item1, item2])])
 //        
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")

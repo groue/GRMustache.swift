@@ -12,7 +12,7 @@ import GRMustache
 //class FilterTests: XCTestCase {
 //    
 //    func testFilterCanChain() {
-//        let value = Box([
+//        let box = Box([
 //            "name": Box("Name"),
 //            "uppercase": BoxedFilter({ (string: String?, error: NSErrorPointer) -> Box? in
 //                return Box(string?.uppercaseString)
@@ -63,7 +63,7 @@ import GRMustache
 //    }
 //    
 //    func testFilterArgumentsDoNotEnterSectionContextStack() {
-//        let value = Box([
+//        let box = Box([
 //            "test": Box("success"),
 //            "filtered": Box(["test": "failure"]),
 //            "filter": BoxedFilter({ (_: Box, _: NSErrorPointer) -> Box? in
@@ -78,7 +78,7 @@ import GRMustache
 //        let doubleFilter = BoxedFilter({ (x: Int?, error: NSErrorPointer) -> Box? in
 //            return Box((x ?? 0) * 2)
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "x": Box(1),
 //            "math": Box(["double": doubleFilter])
 //            ])
@@ -93,7 +93,7 @@ import GRMustache
 //                    return Box("\(string1!)\(string2!)")
 //                })
 //            })
-//        let value = Box([
+//        let box = Box([
 //            "prefix": Box("prefix"),
 //            "value": Box("value"),
 //            "f": filterValue])
@@ -103,7 +103,7 @@ import GRMustache
 //    }
 //    
 //    func testImplicitIteratorCanReturnFilter() {
-//        let value = BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
+//        let box = BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
 //            return Box("filter")
 //        })
 //        let template = Template(string:"{{.(a)}}")!
@@ -112,7 +112,7 @@ import GRMustache
 //    }
 //    
 //    func testMissingFilterError() {
-//        let value = Box([
+//        let box = Box([
 //            "name": Box("Name"),
 //            "replace": BoxedFilter({ (_: Box, error: NSErrorPointer) -> Box? in
 //                return Box("replace")
@@ -146,7 +146,7 @@ import GRMustache
 //    }
 //    
 //    func testNotAFilterError() {
-//        let value = Box([
+//        let box = Box([
 //            "name": "Name",
 //            "filter": "filter"
 //            ])

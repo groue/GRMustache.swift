@@ -15,7 +15,7 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return Box(",".join(args.map { $0.toString() ?? "" }))
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "a": "a",
 //            "b": "b",
 //            "c": "c",
@@ -32,7 +32,7 @@ import GRMustache
 //                return Box(joined + "+" + (box.toString() ?? ""))
 //            })
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "a": "a",
 //            "b": "b",
 //            "c": "c",
@@ -46,7 +46,7 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return Box(["foo": "bar"])
 //        })
-//        let value = Box(["f": filter])
+//        let box = Box(["f": filter])
 //        let template = Template(string:"{{f(a,b).foo}}")!
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "bar")
@@ -56,7 +56,7 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return Box(["foo": "bar"])
 //        })
-//        let value = Box(["f": filter])
+//        let box = Box(["f": filter])
 //        let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "bar")
@@ -66,7 +66,7 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return Box(args)
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "a": "a",
 //            "b": "b",
 //            "c": "c",
@@ -80,7 +80,7 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return args.first
 //        })
-//        let value = Box([
+//        let box = Box([
 //            "yes": true,
 //            "no": false,
 //            "f": filter])
@@ -93,14 +93,14 @@ import GRMustache
 //        let filter = BoxedVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
 //            return nil
 //        })
-//        let value = Box(["f": filter])
+//        let box = Box(["f": filter])
 //        let template = Template(string:"{{^f(x)}}nil{{/}}")!
 //        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "nil")
 //    }
 //    
 //    func testImplicitIteratorCanBeVariadicFilterArgument() {
-//        let value = Box([
+//        let box = Box([
 //            "f": BoxedVariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
 //                var result = ""
 //                for argument in arguments {
