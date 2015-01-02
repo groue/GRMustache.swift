@@ -62,7 +62,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -87,7 +87,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -105,7 +105,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -123,7 +123,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -141,7 +141,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -159,7 +159,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(BoxedRenderable(renderable))
+        template.render(Box(renderable))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     

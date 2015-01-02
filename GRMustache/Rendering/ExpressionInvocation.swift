@@ -20,6 +20,7 @@ class ExpressionInvocation: ExpressionVisitor {
         case Error(NSError)
         case Success(Box)
     }
+    
     func invokeWithContext(context: Context) -> InvocationResult {
         self.context = context
         switch expression.acceptExpressionVisitor(self) {
@@ -52,10 +53,22 @@ class ExpressionInvocation: ExpressionVisitor {
         }
         let boxedArgument = box
         
-        if boxedFilter.isEmpty {
+        if let filter = boxedFilter.filter {
+            var filterError: NSError? = nil
+            if let filterResult = filter(argument: boxedArgument, partialApplication: expression.curried, error: &filterError) {
+                box = filterResult
+                return .Success
+            } else if let filterError = filterError {
+                return .Error(filterError)
+            } else {
+                // MustacheFilter result is nil, but filter error is not set.
+                // Assume a filter coded by a lazy programmer, whose
+                // intention is to return the empty value.
+                box = Box()
+                return .Success
+            }
+        } else if boxedFilter.isEmpty {
             return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"]))
-        } else if let filter: MustacheFilter = boxedFilter.value() {
-            return visit(filter, boxedArgument: boxedArgument, curried: expression.curried)
         } else {
             return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"]))
         }
@@ -67,7 +80,7 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult {
-        box = context!.topBoxedValue
+        box = context!.topBox
         return .Success
     }
     
@@ -80,34 +93,5 @@ class ExpressionInvocation: ExpressionVisitor {
             box = box[expression.identifier]
             return .Success
         }
-    }
-    
-    
-    // MARK: - Private
-    
-    private func visit(filter: MustacheFilter, boxedArgument: Box, curried: Bool) -> ExpressionVisitResult {
-        if curried {
-            if let curriedFilter = filter.mustacheFilterByApplyingArgument(boxedArgument) {
-                box = Box(curriedFilter)
-                return .Success
-            } else {
-                return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"]))
-            }
-        } else {
-            var filterError: NSError? = nil
-            if let filterResult = filter.transformedMustacheValue(boxedArgument, error: &filterError) {
-                box = filterResult
-                return .Success
-            } else if let filterError = filterError {
-                return .Error(filterError)
-            } else {
-                // MustacheFilter result is nil, but filter error is not set.
-                // Assume a filter coded by a lazy programmer, whose
-                // intention is to return the empty value.
-                box = Box()
-                return .Success
-            }
-        }
-    }
-    
+    }   
 }

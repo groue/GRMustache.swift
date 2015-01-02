@@ -22,10 +22,6 @@ public struct Configuration {
     public static var defaultConfiguration = Configuration()
     
     public mutating func extendBaseContext(# box: Box) {
-        baseContext = baseContext.extendedContext(box: box)
-    }
-    
-    public mutating func extendBaseContext(# tagObserver: MustacheTagObserver) {
-        baseContext = baseContext.extendedContext(tagObserver: tagObserver)
+        baseContext = baseContext.extendedContext(box)
     }
 }

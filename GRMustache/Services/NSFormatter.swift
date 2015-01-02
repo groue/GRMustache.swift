@@ -8,27 +8,26 @@
 
 import Foundation
 
-extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
+extension NSFormatter: MustacheBoxable {
     
-    
-    // MARK: - MustacheFilter
-    
-    public func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
-        return nil
+    public func toBox() -> Box {
+        return Box(
+            value: self,
+            inspector: nil,
+            renderer: self.render,
+            filter: MakeFilter(self.filter),
+            preRenderer: self.preRender)
     }
     
-    public func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
-        if let object: AnyObject = box.value() {
+    private func filter(box: Box, error: NSErrorPointer) -> Box? {
+        if let object = box.value as? NSObject {
             return Box(self.stringForObjectValue(object))
         } else {
             return Box()
         }
     }
     
-    
-    // MARK: - MustacheRenderable
-    
-    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             // {{ formatter }}
@@ -40,19 +39,16 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
+            return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
         }
     }
     
-    
-    // MARK: - MustacheTagObserver
-    
-    public func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+    private func preRender(tag: Tag, box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
             
-            if let object: AnyObject = box.value() {
+            if let object = box.value as? NSObject {
                 // NSFormatter documentation for stringForObjectValue: states:
                 //
                 // > First test the passed-in object to see if it’s of the correct
@@ -73,9 +69,5 @@ extension NSFormatter: MustacheFilter, MustacheRenderable, MustacheTagObserver {
             // {{^ value }}
             return box
         }
-    }
-    
-    public func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-        
     }
 }

@@ -9,7 +9,7 @@
 /**
     The Template class provides Mustache rendering services.
 */
-public class Template: MustacheRenderable {
+public class Template {
     
     /**
     Parses a template string, and returns a template.
@@ -189,7 +189,7 @@ public class Template: MustacheRenderable {
     :returns: The rendered string
     */
     public func render(_ box: Box = Box(), error: NSErrorPointer = nil) -> String? {
-        if let rendering = render(baseContext.extendedContext(box: box), error: error) {
+        if let rendering = render(baseContext.extendedContext(box), error: error) {
             return rendering.string
         } else {
             return nil
@@ -235,11 +235,7 @@ public class Template: MustacheRenderable {
     public var baseContext: Context
     
     public func extendBaseContext(# box: Box) {
-        baseContext = baseContext.extendedContext(box: box)
-    }
-    
-    public func extendBaseContext(# tagObserver: MustacheTagObserver) {
-        baseContext = baseContext.extendedContext(tagObserver: tagObserver)
+        baseContext = baseContext.extendedContext(box)
     }
     
     
@@ -280,9 +276,7 @@ public class Template: MustacheRenderable {
     public let repository: TemplateRepository
     
     
-    // MARK: - MustacheRenderable
-    
-    // TODO: make this method internal
+    // TODO: is it good API?
     public func render(info: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
         return render(info.context, error: error)
     }

@@ -14,38 +14,48 @@ public class Context {
         case Root
         case BoxType(box: Box, parent: Context)
         case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
-        case TagObserverType(tagObserver: MustacheTagObserver, parent: Context)
     }
     
     private let type: Type
     
-    public var topBoxedValue: Box {
+    public var topBox: Box {
         switch type {
         case .Root:
             return Box()
         case .BoxType(box: let box, parent: _):
             return box
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.topBoxedValue
-        case .TagObserverType(tagObserver: _, parent: let parent):
-            return parent.topBoxedValue
+            return parent.topBox
         }
     }
     
-    var tagObserverStack: [MustacheTagObserver] {
+    var preRendererStack: [PreRenderer] {
         switch type {
         case .Root:
             return []
         case .BoxType(box: let box, parent: let parent):
-            if let tagObserver: MustacheTagObserver = box.value() {
-                return [tagObserver] + parent.tagObserverStack
+            if let preRenderer: PreRenderer = box.preRenderer {
+                return [preRenderer] + parent.preRendererStack
             } else {
-                return parent.tagObserverStack
+                return parent.preRendererStack
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.tagObserverStack
-        case .TagObserverType(tagObserver: let tagObserver, parent: let parent):
-            return [tagObserver] + parent.tagObserverStack
+            return parent.preRendererStack
+        }
+    }
+    
+    var postRendererStack: [PostRenderer] {
+        switch type {
+        case .Root:
+            return []
+        case .BoxType(box: let box, parent: let parent):
+            if let postRenderer: PostRenderer = box.postRenderer {
+                return parent.postRendererStack + [postRenderer]
+            } else {
+                return parent.postRendererStack
+            }
+        case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
+            return parent.postRendererStack
         }
     }
     
@@ -61,11 +71,7 @@ public class Context {
         self.init(type: .BoxType(box: box, parent: Context()))
     }
     
-    public convenience init(_ tagObserver: MustacheTagObserver) {
-        self.init(type: .TagObserverType(tagObserver: tagObserver, parent: Context()))
-    }
-    
-    public func extendedContext(# box: Box) -> Context {
+    public func extendedContext(box: Box) -> Context {
         if box.isEmpty {
             return self
         } else {
@@ -76,11 +82,7 @@ public class Context {
     func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
         return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self))
     }
-    
-    public func extendedContext(# tagObserver: MustacheTagObserver) -> Context {
-        return Context(type: .TagObserverType(tagObserver: tagObserver, parent: self))
-    }
-    
+        
     func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
         var usedTemplateASTs: [TemplateAST] = []
         var context = self
@@ -107,8 +109,6 @@ public class Context {
                     node = resolvedNode
                 }
                 context = parent
-            case .TagObserverType(tagObserver: _, parent: let parent):
-                context = parent
             }
         }
     }
@@ -126,12 +126,10 @@ public class Context {
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
             return parent[identifier]
-        case .TagObserverType(tagObserver: _, parent: let parent):
-            return parent[identifier]
         }
     }
     
-    public func boxedValueForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Box? {
+    public func boxForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Box? {
         let parser = ExpressionParser()
         var empty = false
         if let expression = parser.parse(string, empty: &empty, error: error) {
@@ -160,8 +158,6 @@ extension Context: DebugPrintable {
             return "Context.BoxType(\(box)):\(parent.debugDescription)"
         case .InheritablePartialNodeType(inheritablePartialNode: let node, parent: let parent):
             return "Context.InheritablePartialNodeType(\(node)):\(parent.debugDescription)"
-        case .TagObserverType(tagObserver: let tagObserver, parent: let parent):
-            return "Context.TagObserverType(\(tagObserver)):\(parent.debugDescription)"
         }
     }
 }

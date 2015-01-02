@@ -11,11 +11,9 @@ import GRMustache
 
 class TemplateFromMethodsTests: XCTestCase {
     
-    struct TestedObject: MustacheInspectable {
-        let string: String
-        
-        func valueForMustacheKey(key: String) -> Box? {
-            if key == "string" {
+    func testedObject(string: String) -> Inspector {
+        return { (identifier: String) -> Box? in
+            if identifier == "string" {
                 return Box(string)
             } else {
                 return nil
@@ -67,28 +65,28 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testTemplateFromString() {
         let template = Template(string: templateString)!
-        let object = TestedObject(string: "foo")
+        let object = testedObject("foo")
         let rendering = template.render(Box(object))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = Template(path: templatePath)!
-        let object = TestedObject(string: "foo")
+        let object = testedObject("foo")
         let rendering = template.render(Box(object))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = Template(URL: templateURL)!
-        let object = TestedObject(string: "foo")
+        let object = testedObject("foo")
         let rendering = template.render(Box(object))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = Template(named: templateName, bundle: testBundle)!
-        let object = TestedObject(string: "foo")
+        let object = testedObject("foo")
         let rendering = template.render(Box(object))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")

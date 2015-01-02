@@ -6,28 +6,27 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
+class URLEscape: MustacheBoxable {
     
+    func toBox() -> Box {
+        return Box(
+            value: self,
+            inspector: nil,
+            renderer: self.render,
+            filter: MakeFilter(self.filter),
+            preRenderer: self.preRender)
+    }
     
-    // MARK: - MustacheRenderable
-    
-    func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(tagObserver: self), error: error)
+            return info.tag.render(info.context.extendedContext(toBox()), error: error)
         }
     }
-
     
-    // MARK: - MustacheFilter
-    
-    func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
-        return nil
-    }
-    
-    func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
+    private func filter(box: Box, error: NSErrorPointer) -> Box? {
         if let string = box.toString() {
             return Box(URLEscape.escapeURL(string))
         } else {
@@ -35,10 +34,7 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
         }
     }
     
-    
-    // MARK: - MustacheTagObserver
-    
-    func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+    private func preRender(tag: Tag, box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -47,8 +43,8 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return BoxedRenderable({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if let rendering = box.render(info, error: error) {
+            return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                if let rendering = box.renderer(info: info, error: error) {
                     return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
                 } else {
                     return nil
@@ -58,12 +54,6 @@ class URLEscape: MustacheRenderable, MustacheFilter, MustacheTagObserver {
             return box
         }
     }
-    
-    func mustacheTag(tag: Tag, didRender box: Box, asString: String?) {
-    }
-    
-    
-    // MARK: - private
     
     private class func escapeURL(string: String) -> String {
         var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet

@@ -29,20 +29,20 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-    func testConfigurationExtendBaseContextWithTagObserver() {
-        class TestedTagObserver: MustacheTagObserver {
-            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
-                return Box("delegate")
-            }
-            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-            }
-        }
-        var configuration = Configuration()
-        configuration.extendBaseContext(tagObserver: TestedTagObserver())
-        let repository = TemplateRepository()
-        repository.configuration = configuration
-        let template = repository.template(string: "{{name}}")!
-        let rendering = template.render()!
-        XCTAssertEqual(rendering, "delegate")
-    }
+//    func testConfigurationExtendBaseContextWithTagObserver() {
+//        class TestedTagObserver: MustacheTagObserver {
+//            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+//                return Box("delegate")
+//            }
+//            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
+//            }
+//        }
+//        var configuration = Configuration()
+//        configuration.extendBaseContext(tagObserver: TestedTagObserver())
+//        let repository = TemplateRepository()
+//        repository.configuration = configuration
+//        let template = repository.template(string: "{{name}}")!
+//        let rendering = template.render()!
+//        XCTAssertEqual(rendering, "delegate")
+//    }
 }

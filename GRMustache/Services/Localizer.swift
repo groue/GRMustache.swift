@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver {
+public class Localizer: MustacheBoxable {
     public let bundle: NSBundle
     public let table: String?
     var formatArguments: [String]?
@@ -18,23 +18,17 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         self.table = table
     }
     
-    
-    // MARK: - MustacheFilter
-    
-    public func mustacheFilterByApplyingArgument(argument: Box) -> MustacheFilter? {
-        return nil
+    public func toBox() -> Box {
+        return Box(value: self, inspector: nil, renderer: self.render, filter: self.filter, preRenderer: self.preRender, postRenderer: self.postRender)
     }
     
-    public func transformedMustacheValue(box: Box, error: NSErrorPointer) -> Box? {
-        if let string = box.toString() {
+    private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {
+        if let string = argument.toString() {
             return Box(localizedStringForKey(string))
         } else {
             return Box()
         }
     }
-    
-    
-    // MARK: - MustacheRenderable
     
     public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         
@@ -55,7 +49,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.extendedContext(tagObserver: self)
+        let context = info.context.extendedContext(toBox())
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             
@@ -112,10 +106,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         }
     }
     
-    
-    // MARK: - MustacheTagObserver
-    
-    public func mustacheTag(tag: Tag, willRender box: Box) -> Box {
+    public func preRender(tag: Tag, box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -138,7 +129,7 @@ public class Localizer: MustacheFilter, MustacheRenderable, MustacheTagObserver 
         }
     }
     
-    public func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
+    public func postRender(tag: Tag, box: Box, string: String?) {
         switch tag.type {
         case .Variable:
             // {{ value }}

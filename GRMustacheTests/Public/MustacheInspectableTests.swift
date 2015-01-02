@@ -9,21 +9,21 @@
 import XCTest
 import GRMustache
 
-class MustacheInspectableTests: XCTestCase {
- 
-    func testInspectable() {
-        class T: MustacheInspectable {
-            func valueForMustacheKey(key: String) -> Box? {
-                if key == "self" {
-                    return Box(self)
-                } else {
-                    return Box(key)
-                }
-            }
-        }
-        
-        let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Box(T()))!
-        XCTAssertEqual(rendering, "a,b,c")
-    }
-}
+//class MustacheInspectableTests: XCTestCase {
+// 
+//    func testInspectable() {
+//        class T: MustacheInspectable {
+//            func valueForMustacheKey(key: String) -> Box? {
+//                if key == "self" {
+//                    return Box(self)
+//                } else {
+//                    return Box(key)
+//                }
+//            }
+//        }
+//        
+//        let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
+//        let rendering = template.render(Box(T()))!
+//        XCTAssertEqual(rendering, "a,b,c")
+//    }
+//}

@@ -222,11 +222,10 @@ class RenderingEngine: TemplateASTVisitor {
                 userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description)"
             }
             return .Error(NSError(domain: error.domain, code: error.code, userInfo: userInfo))
-        case .Success(var value):
+        case .Success(var box):
             
-            let tagObserverStack = context.tagObserverStack
-            for tagObserver in tagObserverStack {
-                value = tagObserver.mustacheTag(tag, willRender: value)
+            for preRenderer in context.preRendererStack {
+                box = preRenderer(tag: tag, box: box)
             }
             
             let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
@@ -234,9 +233,9 @@ class RenderingEngine: TemplateASTVisitor {
             var rendering: Rendering?
             switch tag.type {
             case .Variable:
-                rendering = value.render(info, error: &error)
+                rendering = box.renderer(info: info, error: &error)
             case .Section:
-                let boolValue = value.mustacheBool
+                let boolValue = box.mustacheBool()
                 if tag.inverted {
                     if boolValue {
                         rendering = Rendering("")
@@ -245,7 +244,7 @@ class RenderingEngine: TemplateASTVisitor {
                     }
                 } else {
                     if boolValue {
-                        rendering = value.render(info, error: &error)
+                        rendering = box.renderer(info: info, error: &error)
                     } else {
                         rendering = Rendering("")
                     }
@@ -263,14 +262,14 @@ class RenderingEngine: TemplateASTVisitor {
                 
                 buffer = buffer! + string
                 
-                for tagObserver in tagObserverStack.reverse() {
-                    tagObserver.mustacheTag(tag, didRender: value, asString: string)
+                for postRenderer in context.postRendererStack {
+                    postRenderer(tag: tag, box: box, string: string)
                 }
                 
                 return .Success
             } else {
-                for tagObserver in tagObserverStack.reverse() {
-                    tagObserver.mustacheTag(tag, didRender: value, asString: nil)
+                for postRenderer in context.postRendererStack {
+                    postRenderer(tag: tag, box: box, string: nil)
                 }
                 
                 return .Error(error!)
@@ -280,98 +279,98 @@ class RenderingEngine: TemplateASTVisitor {
 }
 
 
-// =============================================================================
-// MARK: - Rendering Support
-
-extension Bool: MustacheCluster, MustacheRenderable {
-    
-    public var mustacheBool: Bool { return self }
-    public var mustacheFilter: MustacheFilter? { return nil }
-    public var mustacheInspectable: MustacheInspectable? { return nil }
-    public var mustacheTagObserver: MustacheTagObserver? { return nil }
-    public var mustacheRenderable: MustacheRenderable? { return self }
-    
-    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering("\(self)")
-        case .Section:
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
-            } else {
-                return info.tag.render(info.context, error: error)
-            }
-        }
-    }
-}
-
-extension Int: MustacheCluster, MustacheRenderable {
-    
-    public var mustacheBool: Bool { return self != 0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
-    public var mustacheInspectable: MustacheInspectable? { return nil }
-    public var mustacheTagObserver: MustacheTagObserver? { return nil }
-    public var mustacheRenderable: MustacheRenderable? { return self }
-    
-    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering("\(self)")
-        case .Section:
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
-            } else {
-                return info.tag.render(info.context, error: error)
-            }
-        }
-    }
-}
-
-extension Double: MustacheCluster, MustacheRenderable {
-    
-    public var mustacheBool: Bool { return self != 0.0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
-    public var mustacheInspectable: MustacheInspectable? { return nil }
-    public var mustacheTagObserver: MustacheTagObserver? { return nil }
-    public var mustacheRenderable: MustacheRenderable? { return self }
-    
-    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering("\(self)")
-        case .Section:
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
-            } else {
-                return info.tag.render(info.context, error: error)
-            }
-        }
-    }
-}
-
-extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
-    
-    public var mustacheBool: Bool { return countElements(self) > 0 }
-    public var mustacheFilter: MustacheFilter? { return nil }
-    public var mustacheInspectable: MustacheInspectable? { return self }
-    public var mustacheTagObserver: MustacheTagObserver? { return nil }
-    public var mustacheRenderable: MustacheRenderable? { return self }
-    
-    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering(self)
-        case .Section:
-            return info.tag.render(info.context.extendedContext(box: Box(self)), error: error)
-        }
-    }
-    
-    public func valueForMustacheKey(key: String) -> Box? {
-        switch key {
-        case "length":
-            return Box(countElements(self))
-        default:
-            return nil
-        }
-    }
-}
+//// =============================================================================
+//// MARK: - Rendering Support
+//
+//extension Bool: MustacheCluster, MustacheRenderable {
+//    
+//    public var mustacheBool: Bool { return self }
+//    public var mustacheFilter: MustacheFilter? { return nil }
+//    public var mustacheInspectable: MustacheInspectable? { return nil }
+//    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+//    public var mustacheRenderable: MustacheRenderable? { return self }
+//    
+//    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+//        switch info.tag.type {
+//        case .Variable:
+//            return Rendering("\(self)")
+//        case .Section:
+//            if info.enumerationItem {
+//                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+//            } else {
+//                return info.tag.render(info.context, error: error)
+//            }
+//        }
+//    }
+//}
+//
+//extension Int: MustacheCluster, MustacheRenderable {
+//    
+//    public var mustacheBool: Bool { return self != 0 }
+//    public var mustacheFilter: MustacheFilter? { return nil }
+//    public var mustacheInspectable: MustacheInspectable? { return nil }
+//    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+//    public var mustacheRenderable: MustacheRenderable? { return self }
+//    
+//    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+//        switch info.tag.type {
+//        case .Variable:
+//            return Rendering("\(self)")
+//        case .Section:
+//            if info.enumerationItem {
+//                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+//            } else {
+//                return info.tag.render(info.context, error: error)
+//            }
+//        }
+//    }
+//}
+//
+//extension Double: MustacheCluster, MustacheRenderable {
+//    
+//    public var mustacheBool: Bool { return self != 0.0 }
+//    public var mustacheFilter: MustacheFilter? { return nil }
+//    public var mustacheInspectable: MustacheInspectable? { return nil }
+//    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+//    public var mustacheRenderable: MustacheRenderable? { return self }
+//    
+//    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+//        switch info.tag.type {
+//        case .Variable:
+//            return Rendering("\(self)")
+//        case .Section:
+//            if info.enumerationItem {
+//                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+//            } else {
+//                return info.tag.render(info.context, error: error)
+//            }
+//        }
+//    }
+//}
+//
+//extension String: MustacheCluster, MustacheRenderable, MustacheInspectable {
+//    
+//    public var mustacheBool: Bool { return countElements(self) > 0 }
+//    public var mustacheFilter: MustacheFilter? { return nil }
+//    public var mustacheInspectable: MustacheInspectable? { return self }
+//    public var mustacheTagObserver: MustacheTagObserver? { return nil }
+//    public var mustacheRenderable: MustacheRenderable? { return self }
+//    
+//    public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+//        switch info.tag.type {
+//        case .Variable:
+//            return Rendering(self)
+//        case .Section:
+//            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+//        }
+//    }
+//    
+//    public func valueForMustacheKey(key: String) -> Box? {
+//        switch key {
+//        case "length":
+//            return Box(countElements(self))
+//        default:
+//            return nil
+//        }
+//    }
+//}
