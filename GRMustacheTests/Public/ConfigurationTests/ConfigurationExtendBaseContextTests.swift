@@ -13,7 +13,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.extendBaseContext(box: Box(["name": "Arthur"]))
+        configuration.extendBaseContext(Box(["name": "Arthur"]))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!
@@ -29,20 +29,16 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-//    func testConfigurationExtendBaseContextWithTagObserver() {
-//        class TestedTagObserver: MustacheTagObserver {
-//            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
-//                return Box("delegate")
-//            }
-//            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-//            }
-//        }
-//        var configuration = Configuration()
-//        configuration.extendBaseContext(tagObserver: TestedTagObserver())
-//        let repository = TemplateRepository()
-//        repository.configuration = configuration
-//        let template = repository.template(string: "{{name}}")!
-//        let rendering = template.render()!
-//        XCTAssertEqual(rendering, "delegate")
-//    }
+    func testConfigurationExtendBaseContextWithTagObserver() {
+        let preRenderer: PreRenderer = { (tag: Tag, box: Box) -> Box in
+            return Box("delegate")
+        }
+        var configuration = Configuration()
+        configuration.extendBaseContext(Box(preRenderer))
+        let repository = TemplateRepository()
+        repository.configuration = configuration
+        let template = repository.template(string: "{{name}}")!
+        let rendering = template.render()!
+        XCTAssertEqual(rendering, "delegate")
+    }
 }

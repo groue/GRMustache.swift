@@ -21,7 +21,7 @@ public struct Configuration {
     
     public static var defaultConfiguration = Configuration()
     
-    public mutating func extendBaseContext(# box: Box) {
+    public mutating func extendBaseContext(box: Box) {
         baseContext = baseContext.extendedContext(box)
     }
 }

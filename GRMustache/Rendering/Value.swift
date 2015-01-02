@@ -358,6 +358,38 @@ public struct Box {
         self.renderer = renderer
     }
     
+    public init(_ preRenderer: PreRenderer) {
+        self.mustacheBool = { return true }
+        self.inspector = nil
+        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
+        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(preRenderer)")
+            case .Section:
+                return info.tag.render(info.context.extendedContext(self), error: error)
+            }
+        }
+        self.preRenderer = preRenderer
+    }
+    
+    public init(_ postRenderer: PostRenderer) {
+        self.mustacheBool = { return true }
+        self.inspector = nil
+        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
+        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(postRenderer)")
+            case .Section:
+                return info.tag.render(info.context.extendedContext(self), error: error)
+            }
+        }
+        self.postRenderer = postRenderer
+    }
+    
     private init(_ object: NSObject) {
         self.value = object
         self.mustacheBool = { return true }
