@@ -27,7 +27,7 @@ class HTMLEscape: MustacheBoxable {
     }
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
-        if let string = box.toString() {
+        if let string = box.stringValue() {
             return Box(escapeHTML(string))
         } else {
             return Box()

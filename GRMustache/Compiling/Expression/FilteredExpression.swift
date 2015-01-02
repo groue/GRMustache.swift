@@ -9,12 +9,12 @@
 class FilteredExpression: Expression {
     let filterExpression: Expression
     let argumentExpression: Expression
-    let curried: Bool
+    let partialApplication: Bool
     
-    init(filterExpression: Expression, argumentExpression: Expression, curried: Bool) {
+    init(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) {
         self.filterExpression = filterExpression
         self.argumentExpression = argumentExpression
-        self.curried = curried
+        self.partialApplication = partialApplication
     }
     
     override func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {

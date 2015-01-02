@@ -27,7 +27,7 @@ class JavascriptEscape: MustacheBoxable {
     }
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
-        if let string = box.toString() {
+        if let string = box.stringValue() {
             return Box(JavascriptEscape.escapeJavascript(string))
         } else {
             return Box()

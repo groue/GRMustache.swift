@@ -27,7 +27,7 @@ class URLEscape: MustacheBoxable {
     }
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
-        if let string = box.toString() {
+        if let string = box.stringValue() {
             return Box(URLEscape.escapeURL(string))
         } else {
             return Box()

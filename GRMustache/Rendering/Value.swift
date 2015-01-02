@@ -414,7 +414,7 @@ public struct Box {
         return value == nil && inspector == nil && preRenderer == nil && postRenderer == nil
     }
 
-    public func toInt() -> Int? {
+    public func intValue() -> Int? {
         if let int = value as? Int {
             return int
         } else if let double = value as? Double {
@@ -424,7 +424,7 @@ public struct Box {
         }
     }
     
-    public func toDouble() -> Double? {
+    public func doubleValue() -> Double? {
         if let int = value as? Int {
             return Double(int)
         } else if let double = value as? Double {
@@ -434,7 +434,7 @@ public struct Box {
         }
     }
     
-    public func toString() -> String? {
+    public func stringValue() -> String? {
         if value is NSNull {
             return nil
         } else if let value = value {

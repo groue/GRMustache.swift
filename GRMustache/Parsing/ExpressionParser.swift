@@ -66,7 +66,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .FilterDone
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: false)
+                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: false)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                     }
@@ -74,7 +74,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .Initial
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: true))
                         currentExpression = nil
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -122,7 +122,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .FilterDone
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: false)
+                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: false)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                     }
@@ -136,7 +136,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .Initial
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: true))
                         currentExpression = nil
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -175,7 +175,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .FilterDone
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: false)
+                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: false)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                     }
@@ -183,7 +183,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .Initial
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: true))
                         currentExpression = nil
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -205,7 +205,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .FilterDone
                         filterExpressionStack.removeLast()
-                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: false)
+                        currentExpression = FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: false)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                     }
@@ -213,7 +213,7 @@ class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         state = .Initial
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, curried: true))
+                        filterExpressionStack.append(FilteredExpression(filterExpression: filterExpression, argumentExpression: currentExpression!, partialApplication: true))
                         currentExpression = nil
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")

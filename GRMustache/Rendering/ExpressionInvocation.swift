@@ -55,7 +55,7 @@ class ExpressionInvocation: ExpressionVisitor {
         
         if let filter = boxedFilter.filter {
             var filterError: NSError? = nil
-            if let filterResult = filter(argument: boxedArgument, partialApplication: expression.curried, error: &filterError) {
+            if let filterResult = filter(argument: boxedArgument, partialApplication: expression.partialApplication, error: &filterError) {
                 box = filterResult
                 return .Success
             } else if let filterError = filterError {
