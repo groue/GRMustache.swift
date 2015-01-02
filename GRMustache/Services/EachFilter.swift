@@ -36,7 +36,7 @@ private class Item: MustacheBoxable {
         self.last = last
     }
     
-    private func toBox() -> Box {
+    func toBox() -> Box {
         return Box(
             value: box.value,
             mustacheBool: box.mustacheBool(),

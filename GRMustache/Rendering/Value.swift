@@ -1393,7 +1393,10 @@ extension Bool: MustacheBoxable {
                 }
             }
         }
-        return Box(value: self, mustacheBool: self, renderer: renderer)
+        return Box(
+            value: self,
+            mustacheBool: self,
+            renderer: renderer)
     }
 }
 
@@ -1411,7 +1414,10 @@ extension Int: MustacheBoxable {
                 }
             }
         }
-        return Box(value: self, mustacheBool: (self != 0), renderer: renderer)
+        return Box(
+            value: self,
+            mustacheBool: (self != 0),
+            renderer: renderer)
     }
 }
 
@@ -1429,7 +1435,10 @@ extension Double: MustacheBoxable {
                 }
             }
         }
-        return Box(value: self, mustacheBool: (self != 0.0), renderer: renderer)
+        return Box(
+            value: self,
+            mustacheBool: (self != 0.0),
+            renderer: renderer)
     }
 }
 
@@ -1451,7 +1460,11 @@ extension String: MustacheBoxable {
                 return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
             }
         }
-        return Box(value: self, mustacheBool: (countElements(self) > 0), inspector: inspector, renderer: renderer)
+        return Box(
+            value: self,
+            mustacheBool: (countElements(self) > 0),
+            inspector: inspector,
+            renderer: renderer)
     }
 }
 
@@ -1542,6 +1555,10 @@ extension NSSet: MustacheBoxable {
                 }
             }
         }
-        return Box(value: self, mustacheBool: (self.count > 0), inspector: inspector, renderer: renderer)
+        return Box(
+            value: self,
+            mustacheBool: (self.count > 0),
+            inspector: inspector,
+            renderer: renderer)
     }
 }

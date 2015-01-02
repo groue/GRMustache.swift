@@ -224,7 +224,9 @@ public class Template: MustacheBoxable {
     // MARK: - MustacheBoxable
     
     public func toBox() -> Box {
-        return Box(value: self, renderer: self.render)
+        return Box(
+            value: self,
+            renderer: self.render)
     }
     
     

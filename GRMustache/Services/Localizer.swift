@@ -19,7 +19,13 @@ public class Localizer: MustacheBoxable {
     }
     
     public func toBox() -> Box {
-        return Box(value: self, inspector: nil, renderer: self.render, filter: self.filter, preRenderer: self.preRender, postRenderer: self.postRender)
+        return Box(
+            value: self,
+            inspector: nil,
+            renderer: self.render,
+            filter: self.filter,
+            preRenderer: self.preRender,
+            postRenderer: self.postRender)
     }
     
     private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {

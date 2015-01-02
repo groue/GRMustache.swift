@@ -63,14 +63,17 @@ class ReadMeTests: XCTestCase {
             let name: String
             
             func toBox() -> Box {
-                return Box(value: self, inspector: { (identifier: String) -> Box? in
+                let inspector = { (identifier: String) -> Box? in
                     switch identifier {
                     case "name":
                         return Box(self.name)
                     default:
                         return nil
                     }
-                })
+                }
+                return Box(
+                    value: self,
+                    inspector: inspector)
                 
             }
         }
