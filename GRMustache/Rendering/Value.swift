@@ -56,7 +56,7 @@ public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> Filter {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.intValue() {
+        } else if let t = argument.intValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -72,7 +72,7 @@ public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> Filter {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.doubleValue() {
+        } else if let t = argument.doubleValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -88,7 +88,7 @@ public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> Filter {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.stringValue() {
+        } else if let t = argument.stringValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -153,7 +153,7 @@ public func MakeVariadicFilter(filter: (arguments: [Box], error: NSErrorPointer)
 
 public struct Box {
     public let value: Any?
-    public let mustacheBool: Void -> Bool
+    public let mustacheBool: Bool
     public let inspector: Inspector?
     public private(set) var renderer: Renderer
     public let filter: Filter?
@@ -161,7 +161,7 @@ public struct Box {
     public let postRenderer: PostRenderer?
     
     public init() {
-        self.mustacheBool = { return false }
+        self.mustacheBool = false
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
@@ -174,7 +174,7 @@ public struct Box {
     
     public init(value: Any, mustacheBool: Bool = true, inspector: Inspector? = DefaultInspector, renderer: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
         self.value = value
-        self.mustacheBool = { return mustacheBool }
+        self.mustacheBool = mustacheBool
         self.inspector = inspector
         if let renderer = renderer {
             self.renderer = renderer
@@ -207,7 +207,7 @@ public struct Box {
     
     public init(_ dictionary: [String: Box]) {
         self.value = dictionary
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = { (identifier: String) -> Box? in
             return dictionary[identifier]
         }
@@ -277,13 +277,14 @@ public struct Box {
 //    }
     
     public init<T: SequenceType where T.Generator.Element == Box>(_ sequence: T) {
-        self.value = sequence
-        self.mustacheBool = {
+        var empty: Bool {
             for x in sequence {
-                return true
+                return false
             }
-            return false
+            return true
         }
+        self.value = sequence
+        self.mustacheBool = !empty
         self.inspector = DefaultInspector
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -328,9 +329,7 @@ public struct Box {
     
     public init<T: CollectionType where T.Generator.Element == Box, T.Index: Comparable, T.Index.Distance == Int>(_ collection: T) {
         self.value = collection
-        self.mustacheBool = {
-            return countElements(collection) > 0
-        }
+        self.mustacheBool = (countElements(collection) > 0)
         self.inspector = { (identifier: String) -> Box? in
             switch identifier {
             case "count":
@@ -393,7 +392,7 @@ public struct Box {
     }
     
     public init(_ filter: Filter) {
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = DefaultInspector
         self.filter = filter
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
@@ -409,7 +408,7 @@ public struct Box {
     }
     
     public init(_ inspector: Inspector) {
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = inspector
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -424,13 +423,13 @@ public struct Box {
     }
     
     public init(_ renderer: Renderer) {
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = DefaultInspector
         self.renderer = renderer
     }
     
     public init(_ preRenderer: PreRenderer) {
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = nil
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -446,7 +445,7 @@ public struct Box {
     }
     
     public init(_ postRenderer: PostRenderer) {
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = nil
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -463,7 +462,7 @@ public struct Box {
     
     private init(_ object: NSObject) {
         self.value = object
-        self.mustacheBool = { return true }
+        self.mustacheBool = true
         self.inspector = { (identifier: String) -> Box? in
             return Box(object.valueForKey(identifier))
         }
@@ -549,7 +548,7 @@ public struct Box {
         return value == nil && inspector == nil && preRenderer == nil && postRenderer == nil
     }
 
-    public func intValue() -> Int? {
+    public var intValue: Int? {
         if let int = value as? Int {
             return int
         } else if let double = value as? Double {
@@ -559,7 +558,7 @@ public struct Box {
         }
     }
     
-    public func doubleValue() -> Double? {
+    public var doubleValue: Double? {
         if let int = value as? Int {
             return Double(int)
         } else if let double = value as? Double {
@@ -569,7 +568,7 @@ public struct Box {
         }
     }
     
-    public func stringValue() -> String? {
+    public var stringValue: String? {
         if value is NSNull {
             return nil
         } else if let value = value {

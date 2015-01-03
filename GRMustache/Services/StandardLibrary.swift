@@ -38,7 +38,7 @@ class StandardLibrary: MustacheBoxable {
             } else if let string = box.value as? String {
                 return Box(string.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).isEmpty)
             } else {
-                return Box(!box.mustacheBool())
+                return Box(!box.mustacheBool)
             }
         }))
         
@@ -48,7 +48,7 @@ class StandardLibrary: MustacheBoxable {
             } else if let double = box.value as? Double {
                 return Box(false)
             } else {
-                return Box(!box.mustacheBool())
+                return Box(!box.mustacheBool)
             }
         }))
         

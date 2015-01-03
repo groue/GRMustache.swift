@@ -39,7 +39,7 @@ private class Item: MustacheBoxable {
     func toBox() -> Box {
         return Box(
             value: box.value,
-            mustacheBool: box.mustacheBool(),
+            mustacheBool: box.mustacheBool,
             inspector: box.inspector,
             renderer: self.render,
             filter: box.filter,

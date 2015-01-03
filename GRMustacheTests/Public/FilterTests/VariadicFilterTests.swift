@@ -13,7 +13,7 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
         let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return Box(",".join(args.map { $0.stringValue() ?? "" }))
+            return Box(",".join(args.map { $0.stringValue ?? "" }))
         })
         // TODO: avoid this `as [String: Box]` explicit cast
         let box = Box([
@@ -28,9 +28,9 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanReturnFilter() {
         let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            let joined = ",".join(args.map { $0.stringValue() ?? "" })
+            let joined = ",".join(args.map { $0.stringValue ?? "" })
             return Box(MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
-                return Box(joined + "+" + (box.stringValue() ?? ""))
+                return Box(joined + "+" + (box.stringValue ?? ""))
             }))
         })
         // TODO: avoid this `as [String: Box]` explicit cast
