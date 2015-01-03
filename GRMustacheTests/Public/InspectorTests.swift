@@ -1,5 +1,5 @@
 //
-//  MustacheInspectableTests.swift
+//  InspectorTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 14/11/2014.
@@ -10,7 +10,7 @@ import XCTest
 import GRMustache
 
 // TODO: rename test
-class MustacheInspectableTests: XCTestCase {
+class InspectorTests: XCTestCase {
     
     func testBoxedInspector1() {
         class T: MustacheBoxable {

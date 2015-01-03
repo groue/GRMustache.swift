@@ -201,8 +201,7 @@ public class Template: MustacheBoxable {
     
     This method does not return a String, but a Rendering value that wraps both
     the rendered string and its content type (HTML or Text). It is intended to
-    be used when you want to perform custom rendering through the
-    MustacheRenderable protocol.
+    be used when you want to perform custom rendering in a Renderer function.
     
     :param: context A rendering context
     :param: error   If there is an error rendering the tag, upon return contains
@@ -210,7 +209,7 @@ public class Template: MustacheBoxable {
     
     :returns: The template rendering
     
-    :see: MustacheRenderable
+    :see: Renderer
     */
     public func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)

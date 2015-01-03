@@ -12,7 +12,7 @@ import GRMustache
 class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample1() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("I'm rendering a {{ variable }} tag.")
@@ -21,52 +21,52 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        var rendering = Template(string: "{{.}}")!.render(Box(renderable))!
+        var rendering = Template(string: "{{.}}")!.render(Box(renderer))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
         
-        rendering = Template(string: "{{#.}}{{/}}")!.render(Box(renderable))!
+        rendering = Template(string: "{{#.}}{{/}}")!.render(Box(renderer))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
     
     func textExample2() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("Arthur & Cie")
         }
         
-        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Box(renderable))!
+        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Box(renderer))!
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
     
     func textExample3() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
         let box = Box([
-            "strong": Box(renderable),
+            "strong": Box(renderer),
             "name": Box("Arthur")])
         let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(box)!
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
     
     func textExample4() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = Box(["twice": Box(renderable)])
+        let box = Box(["twice": Box(renderer)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(box)!
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
 
     func textExample5() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
             return template.render(info.context, error: error)
         }
         let box = Box([
-            "link": Box(renderable),
+            "link": Box(renderer),
             "name": Box("Arthur"),
             "url": Box("/people/123")])
         let rendering = Template(string: "{{# link }}{{ name }}{{/ link }}")!.render(box)!

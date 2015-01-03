@@ -23,10 +23,10 @@ public class Context {
         case .Root:
             return Box()
         case .BoxType(box: let box, parent: let parent):
-            if box.inspector != nil {
-                return box
-            } else {
+            if box.isHook {
                 return parent.topBox
+            } else {
+                return box
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
             return parent.topBox

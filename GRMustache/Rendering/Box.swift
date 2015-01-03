@@ -180,40 +180,28 @@ public protocol MustacheBoxable {
     func mustacheBox() -> Box
 }
 
-private let DefaultInspector: Inspector = { (key: String) -> Box? in
-    return nil
-}
-
 public struct Box {
+    public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
     public let inspector: Inspector?
-    public private(set) var renderer: Renderer
+    public private(set) var renderer: Renderer  // It should be a `let` property. But compilers spawns unwanted "variable 'self.renderer' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
     public let filter: Filter?
     public let preRenderer: PreRenderer?
     public let postRenderer: PostRenderer?
     
-    // TODO: distinguish clearly empty boxes created by Box(), and boxes without
-    // inspector.
-    public var isEmpty: Bool {
-        return value == nil && inspector == nil && preRenderer == nil && postRenderer == nil
-    }
+    // True if only preRenderer or postRenderer are non nil.
+    let isHook: Bool
     
-    public init() {
-        self.mustacheBool = false
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("")
-            case .Section:
-                return info.tag.render(info.context, error: error)
-            }
-        }
-    }
-    
-    public init(value: Any, mustacheBool: Bool = true, inspector: Inspector? = DefaultInspector, renderer: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
+    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspector: Inspector? = nil, renderer: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
+        let hasHook = preRenderer != nil || postRenderer != nil
+        let hasNonHook = value != nil || inspector != nil || renderer != nil || filter != nil
+        let empty = !hasHook && !hasNonHook
+        
+        self.isEmpty = empty
+        self.isHook = hasHook && !hasNonHook
         self.value = value
-        self.mustacheBool = mustacheBool
+        self.mustacheBool = mustacheBool ?? !empty
         self.inspector = inspector
         if let renderer = renderer {
             self.renderer = renderer
@@ -223,7 +211,11 @@ public struct Box {
             self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 switch info.tag.type {
                 case .Variable:
-                    return Rendering("\(value)")
+                    if let value = value {
+                        return Rendering("\(value)")
+                    } else {
+                        return Rendering("")
+                    }
                 case .Section:
                     return info.tag.render(info.context.extendedContext(self), error: error)
                 }
@@ -235,6 +227,8 @@ public struct Box {
     }
     
     public init(_ box: Box) {
+        isEmpty = box.isEmpty
+        isHook = box.isHook
         value = box.value
         mustacheBool = box.mustacheBool
         inspector = box.inspector
@@ -245,6 +239,8 @@ public struct Box {
     }
     
     public init(_ dictionary: [String: Box]) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = dictionary
         self.mustacheBool = true
         self.inspector = { (key: String) -> Box? in
@@ -263,15 +259,16 @@ public struct Box {
     }
     
     public init<T: SequenceType where T.Generator.Element == Box>(_ sequence: T) {
-        var empty: Bool {
+        var emptySequence: Bool {
             for x in sequence {
                 return false
             }
             return true
         }
+        self.isEmpty = false
+        self.isHook = false
         self.value = sequence
-        self.mustacheBool = !empty
-        self.inspector = DefaultInspector
+        self.mustacheBool = !emptySequence
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -302,18 +299,15 @@ public struct Box {
                 if let contentType = contentType {
                     return Rendering(buffer, contentType)
                 } else {
-                    switch info.tag.type {
-                    case .Variable:
-                        return Rendering("")
-                    case .Section:
-                        return info.tag.render(info.context, error: error)
-                    }
+                    return info.tag.render(info.context, error: error)
                 }
             }
         }
     }
     
     public init<T: CollectionType where T.Generator.Element == Box, T.Index: Comparable, T.Index.Distance == Int>(_ collection: T) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = collection
         self.mustacheBool = (countElements(collection) > 0)
         self.inspector = { (key: String) -> Box? in
@@ -366,21 +360,17 @@ public struct Box {
                 if let contentType = contentType {
                     return Rendering(buffer, contentType)
                 } else {
-                    switch info.tag.type {
-                    case .Variable:
-                        return Rendering("")
-                    case .Section:
-                        return info.tag.render(info.context, error: error)
-                    }
+                    return info.tag.render(info.context, error: error)
                 }
             }
         }
     }
     
     public init(_ filter: Filter) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = filter
         self.mustacheBool = true
-        self.inspector = DefaultInspector
         self.filter = filter
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -395,6 +385,8 @@ public struct Box {
     }
     
     public init(_ inspector: Inspector) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = inspector
         self.mustacheBool = true
         self.inspector = inspector
@@ -411,16 +403,18 @@ public struct Box {
     }
     
     public init(_ renderer: Renderer) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = renderer
         self.mustacheBool = true
-        self.inspector = DefaultInspector
         self.renderer = renderer
     }
     
     public init(_ preRenderer: PreRenderer) {
-        self.value = nil
+        self.isEmpty = false
+        self.isHook = true
+        self.value = preRenderer
         self.mustacheBool = true
-        self.inspector = nil
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -435,9 +429,10 @@ public struct Box {
     }
     
     public init(_ postRenderer: PostRenderer) {
-        self.value = nil
+        self.isEmpty = false
+        self.isHook = true
+        self.value = postRenderer
         self.mustacheBool = true
-        self.inspector = nil
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -452,6 +447,8 @@ public struct Box {
     }
     
     private init(_ object: NSObject) {
+        self.isEmpty = false
+        self.isHook = false
         self.value = object
         self.mustacheBool = true
         self.inspector = { (key: String) -> Box? in

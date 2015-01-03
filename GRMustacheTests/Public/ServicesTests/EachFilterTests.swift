@@ -11,23 +11,23 @@ import GRMustache
 
 class EachFilterTests: XCTestCase {
 
-    func testEachFilterTriggersRenderableItemsInArray() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    func testEachFilterTriggersRenderersInArray() {
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = Box(["array": Box([Box(renderable)])])
+        let box = Box(["array": Box([Box(renderer)])])
         let template = Template(string: "{{#each(array)}}{{@index}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<0>")
     }
 
-    func testEachFilterTriggersRenderableItemsInDictionary() {
-        let renderable = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    func testEachFilterTriggersRenderersInDictionary() {
+        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = Box(["dictionary": Box(["a": Box(renderable)])])
+        let box = Box(["dictionary": Box(["a": Box(renderer)])])
         let template = Template(string: "{{#each(dictionary)}}{{@key}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<a>")
