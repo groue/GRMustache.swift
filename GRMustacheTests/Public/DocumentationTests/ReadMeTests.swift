@@ -63,19 +63,13 @@ class ReadMeTests: XCTestCase {
             let name: String
             
             func mustacheBox() -> Box {
-                return Box(
-                    // The boxed value: self
-                    value: self,
-                    
-                    // In order to extract a key such as `name`, we need to
-                    // provide a function that turns Strings into boxed values:
-                    inspector: { (key: String) -> Box? in
-                        switch key {
-                        case "name":
-                            return Box(self.name)
-                        default:
-                            return nil
-                        }
+                return Box({ (key: String) -> Box? in
+                    switch key {
+                    case "name":
+                        return Box(self.name)
+                    default:
+                        return nil
+                    }
                 })
             }
         }

@@ -44,19 +44,14 @@ struct User {
 // Here we only want to let templates extract the `name` key out of our users.
 extension User: MustacheBoxable {
     func mustacheBox() -> Box {
-        return Box(
-            // The boxed value: self
-            value: self,
-            
-            // In order to extract `name`, we need to provide a function that
-            // turns Strings into boxed values:
-            inspector: { (key: String) -> Box? in
-                switch key {
-                case "name":
-                    return Box(self.name)
-                default:
-                    return nil
-                }
+        // What we box is a function that turns Strings into boxed values:
+        return Box({ (key: String) -> Box? in
+            switch key {
+            case "name":
+                return Box(self.name)
+            default:
+                return nil
+            }
         })
     }
 }
