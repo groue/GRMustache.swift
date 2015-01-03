@@ -14,7 +14,7 @@ extension NSFormatter: MustacheBoxable {
         return Box(
             value: self,
             inspector: nil,
-            renderer: self.render,
+            render: self.render,
             filter: MakeFilter(self.filter),
             preRenderer: self.preRender)
     }

@@ -6,11 +6,11 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class StandardLibrary: MustacheBoxable {
+public class StandardLibrary: MustacheBoxable {
     
     private let items: [String: Box]
     
-    init() {
+    public init() {
         var items: [String: Box] = [:]
         
         items["capitalized"] = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
@@ -61,7 +61,7 @@ class StandardLibrary: MustacheBoxable {
         self.items = items
     }
     
-    func mustacheBox() -> Box {
+    public func mustacheBox() -> Box {
         return Box(items)
     }
 }

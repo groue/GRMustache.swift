@@ -233,7 +233,7 @@ class RenderingEngine: TemplateASTVisitor {
             var rendering: Rendering?
             switch tag.type {
             case .Variable:
-                rendering = box.renderer(info: info, error: &error)
+                rendering = box.render(info: info, error: &error)
             case .Section:
                 if tag.inverted {
                     if box.mustacheBool {
@@ -243,7 +243,7 @@ class RenderingEngine: TemplateASTVisitor {
                     }
                 } else {
                     if box.mustacheBool {
-                        rendering = box.renderer(info: info, error: &error)
+                        rendering = box.render(info: info, error: &error)
                     } else {
                         rendering = Rendering("")
                     }

@@ -12,7 +12,7 @@ class URLEscape: MustacheBoxable {
         return Box(
             value: self,
             inspector: nil,
-            renderer: self.render,
+            render: self.render,
             filter: MakeFilter(self.filter),
             preRenderer: self.preRender)
     }
@@ -44,7 +44,7 @@ class URLEscape: MustacheBoxable {
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if let rendering = box.renderer(info: info, error: error) {
+                if let rendering = box.render(info: info, error: error) {
                     return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
                 } else {
                     return nil

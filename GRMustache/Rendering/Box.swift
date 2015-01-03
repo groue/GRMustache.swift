@@ -185,7 +185,7 @@ public struct Box {
     public let value: Any?
     public let mustacheBool: Bool
     public let inspector: Inspector?
-    public private(set) var renderer: Renderer  // It should be a `let` property. But compilers spawns unwanted "variable 'self.renderer' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
+    public private(set) var render: Renderer  // It should be a `let` property. But compilers spawns unwanted "variable 'self.render' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
     public let filter: Filter?
     public let preRenderer: PreRenderer?
     public let postRenderer: PostRenderer?
@@ -193,9 +193,9 @@ public struct Box {
     // True if only preRenderer or postRenderer are non nil.
     let isHook: Bool
     
-    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspector: Inspector? = nil, renderer: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
+    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspector: Inspector? = nil, render: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
         let hasHook = preRenderer != nil || postRenderer != nil
-        let hasNonHook = value != nil || inspector != nil || renderer != nil || filter != nil
+        let hasNonHook = value != nil || inspector != nil || render != nil || filter != nil
         let empty = !hasHook && !hasNonHook
         
         self.isEmpty = empty
@@ -203,12 +203,12 @@ public struct Box {
         self.value = value
         self.mustacheBool = mustacheBool ?? !empty
         self.inspector = inspector
-        if let renderer = renderer {
-            self.renderer = renderer
+        if let render = render {
+            self.render = render
         } else {
-            // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-            self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-            self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            // Avoid error: variable 'self.render' captured by a closure before being initialized
+            self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+            self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 switch info.tag.type {
                 case .Variable:
                     if let value = value {
@@ -232,7 +232,7 @@ public struct Box {
         value = box.value
         mustacheBool = box.mustacheBool
         inspector = box.inspector
-        renderer = box.renderer
+        render = box.render
         filter = box.filter
         preRenderer = box.preRenderer
         postRenderer = box.postRenderer
@@ -246,9 +246,9 @@ public struct Box {
         self.inspector = { (key: String) -> Box? in
             return dictionary[key]
         }
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(dictionary)")
@@ -269,9 +269,9 @@ public struct Box {
         self.isHook = false
         self.value = sequence
         self.mustacheBool = !emptySequence
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
                 return info.tag.render(info.context.extendedContext(self), error: error)
             } else {
@@ -279,7 +279,7 @@ public struct Box {
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for box in sequence {
-                    if let boxRendering = box.renderer(info: enumerationRenderingInfo, error: error) {
+                    if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = boxRendering.contentType
                             buffer += boxRendering.string
@@ -330,9 +330,9 @@ public struct Box {
                 return Box()
             }
         }
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
                 return info.tag.render(info.context.extendedContext(self), error: error)
             } else {
@@ -340,7 +340,7 @@ public struct Box {
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for box in collection {
-                    if let boxRendering = box.renderer(info: enumerationRenderingInfo, error: error) {
+                    if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = boxRendering.contentType
                             buffer += boxRendering.string
@@ -372,9 +372,9 @@ public struct Box {
         self.value = filter
         self.mustacheBool = true
         self.filter = filter
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(filter)")
@@ -390,9 +390,9 @@ public struct Box {
         self.value = inspector
         self.mustacheBool = true
         self.inspector = inspector
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(inspector)")
@@ -402,12 +402,12 @@ public struct Box {
         }
     }
     
-    public init(_ renderer: Renderer) {
+    public init(_ render: Renderer) {
         self.isEmpty = false
         self.isHook = false
-        self.value = renderer
+        self.value = render
         self.mustacheBool = true
-        self.renderer = renderer
+        self.render = render
     }
     
     public init(_ preRenderer: PreRenderer) {
@@ -415,9 +415,9 @@ public struct Box {
         self.isHook = true
         self.value = preRenderer
         self.mustacheBool = true
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(preRenderer)")
@@ -433,9 +433,9 @@ public struct Box {
         self.isHook = true
         self.value = postRenderer
         self.mustacheBool = true
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(postRenderer)")
@@ -454,9 +454,9 @@ public struct Box {
         self.inspector = { (key: String) -> Box? in
             return Box(object.valueForKey(key))
         }
-        // Avoid error: variable 'self.renderer' captured by a closure before being initialized
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(object)")
@@ -524,11 +524,11 @@ public struct Box {
                     self.init(object)
                     
                 } else {
-                    fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
+                    fatalError("\(object) can not be boxed. Check that it conforms to the MustacheBoxable protocol.")
                 }
                 
             } else {
-                fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
+                fatalError("\(object) can not be boxed. Check that it conforms to the MustacheBoxable protocol, and that it is not an optional.")
             }
             
         } else {
@@ -536,10 +536,9 @@ public struct Box {
         }
     }
     
-    public init<T: MustacheBoxable>(_ value: T) {
-        self.init(value.mustacheBox())
+    public init<T: MustacheBoxable>(_ boxable: T) {
+        self.init(boxable.mustacheBox())
     }
-    
 }
 
 
@@ -548,12 +547,12 @@ public struct Box {
 
 extension Box {
     
-    public func boxWithRenderer(renderer: Renderer) -> Box {
+    public func boxWithRenderer(render: Renderer) -> Box {
         return Box(
             value: self.value,
             mustacheBool: self.mustacheBool,
             inspector: self.inspector,
-            renderer: renderer,
+            render: render,
             filter: self.filter,
             preRenderer: self.preRenderer,
             postRenderer: self.postRenderer)
@@ -631,7 +630,7 @@ extension Box {
 
 extension Bool: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
@@ -646,13 +645,13 @@ extension Bool: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: self,
-            renderer: renderer)
+            render: render)
     }
 }
 
 extension Int: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
@@ -667,13 +666,13 @@ extension Int: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: (self != 0),
-            renderer: renderer)
+            render: render)
     }
 }
 
 extension Double: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
@@ -688,7 +687,7 @@ extension Double: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: (self != 0.0),
-            renderer: renderer)
+            render: render)
     }
 }
 
@@ -702,7 +701,7 @@ extension String: MustacheBoxable {
                 return nil
             }
         }
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
@@ -714,13 +713,13 @@ extension String: MustacheBoxable {
             value: self,
             mustacheBool: (countElements(self) > 0),
             inspector: inspector,
-            renderer: renderer)
+            render: render)
     }
 }
 
 extension NSNull: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("")
@@ -735,7 +734,7 @@ extension NSNull: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: false,
-            renderer: renderer)
+            render: render)
     }
 }
 
@@ -768,7 +767,7 @@ extension NSSet: MustacheBoxable {
                 return nil
             }
         }
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
                 return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
             } else {
@@ -776,7 +775,7 @@ extension NSSet: MustacheBoxable {
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for object in self {
-                    if let boxRendering = Box(object).renderer(info: enumerationRenderingInfo, error: error) {
+                    if let boxRendering = Box(object).render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = boxRendering.contentType
                             buffer += boxRendering.string
@@ -809,6 +808,6 @@ extension NSSet: MustacheBoxable {
             value: self,
             mustacheBool: (self.count > 0),
             inspector: inspector,
-            renderer: renderer)
+            render: render)
     }
 }

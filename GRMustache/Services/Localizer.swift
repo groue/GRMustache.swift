@@ -21,8 +21,7 @@ public class Localizer: MustacheBoxable {
     public func mustacheBox() -> Box {
         return Box(
             value: self,
-            inspector: nil,
-            renderer: self.render,
+            render: self.render,
             filter: self.filter,
             preRenderer: self.preRender,
             postRenderer: self.postRender)

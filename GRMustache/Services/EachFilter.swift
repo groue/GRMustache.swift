@@ -40,7 +40,7 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
             position["@first"] = Box(index == 0)
             position["@last"] = Box(last)
             info.context = info.context.extendedContext(Box(position))
-            return box.renderer(info: info, error: error)
+            return box.render(info: info, error: error)
         }))
         i = i.successor()
     }
@@ -62,7 +62,7 @@ private func transformedSet(set: NSSet) -> Box {
             position["@first"] = Box(index == 0)
             position["@last"] = Box(last)
             info.context = info.context.extendedContext(Box(position))
-            return box.renderer(info: info, error: error)
+            return box.render(info: info, error: error)
         }))
         ++index
     }
@@ -87,7 +87,7 @@ private func transformedDictionary(dictionary: [String: Box]) -> Box {
             position["@last"] = Box(last)
             position["@key"] = Box(key)
             info.context = info.context.extendedContext(Box(position))
-            return box.renderer(info: info, error: error)
+            return box.render(info: info, error: error)
         }))
         i = i.successor()
     }

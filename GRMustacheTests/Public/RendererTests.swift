@@ -12,104 +12,104 @@ import GRMustache
 class RendererTests: XCTestCase {
 
     func testRendererInVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "---")
     }
     
     func testRendererInSectionTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "---")
     }
     
     func testRendererInInvertedSectionTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("---")
         }
-        let rendering = Template(string: "{{^.}}{{/.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{^.}}{{/.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "")
     }
     
     func testRendererHTMLRenderingOfEscapedVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testRendererHTMLRenderingOfUnescapedVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{{.}}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{{.}}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testRendererTextRenderingOfEscapedVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testRendererTextRenderingOfUnescapedVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{{.}}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{{.}}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testRendererHTMLRenderingOfSectionTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&", .HTML)
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testRendererTextRenderingOfSectionTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         }
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testRendererCanSetErrorFromVariableTag() {
         let errorDomain = "ClusterTests"
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             error.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
             return nil
         }
         var error: NSError?
-        let rendering = Template(string: "{{.}}")!.render(Box(renderer), error: &error)
+        let rendering = Template(string: "{{.}}")!.render(Box(render), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
     
     func testRendererCanSetErrorFromSectionTag() {
         let errorDomain = "ClusterTests"
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             error.memory = NSError(domain: errorDomain, code: 0, userInfo: nil)
             return nil
         }
         var error: NSError?
-        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(renderer), error: &error)
+        let rendering = Template(string: "{{#.}}{{/.}}")!.render(Box(render), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, errorDomain)
     }
     
     func testRendererCanAccessVariableTagType() {
         var variableTagDetections = 0
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 ++variableTagDetections
@@ -118,13 +118,13 @@ class RendererTests: XCTestCase {
             }
             return Rendering("")
         }
-        Template(string: "{{.}}")!.render(Box(renderer))
+        Template(string: "{{.}}")!.render(Box(render))
         XCTAssertEqual(variableTagDetections, 1)
     }
     
     func testRendererCanAccessSectionTagType() {
         var sectionTagDetections = 0
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Section:
                 ++sectionTagDetections
@@ -133,49 +133,49 @@ class RendererTests: XCTestCase {
             }
             return Rendering("")
         }
-        Template(string: "{{#.}}{{/.}}")!.render(Box(renderer))
+        Template(string: "{{#.}}{{/.}}")!.render(Box(render))
         XCTAssertEqual(sectionTagDetections, 1)
     }
     
     func testRendererCanAccessInnerTemplateStringFromSectionTag() {
         var innerTemplateString: String? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{#.}}{{subject}}{{/.}}")!.render(Box(renderer))
+        Template(string: "{{#.}}{{subject}}{{/.}}")!.render(Box(render))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
     func testRendererCanAccessInnerTemplateStringFromExtensionSectionTag() {
         var innerTemplateString: String? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(Box(renderer))
+        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(Box(render))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
 
     func testRendererCanAccessInnerTemplateStringFromVariableTag() {
         var innerTemplateString: String? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        Template(string: "{{.}}")!.render(Box(renderer))
+        Template(string: "{{.}}")!.render(Box(render))
         XCTAssertEqual(innerTemplateString!, "")
     }
     
     func testRendererCanAccessRenderedContentFromSectionTag() {
         var tagRendering: Rendering? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             tagRendering = info.tag.render(info.context, error: error)
             return tagRendering
         }
         
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        Template(string: "{{#renderer}}{{subject}}={{subject}}{{/renderer}}")!.render(box)
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}")!.render(box)
         
         XCTAssertEqual(tagRendering!.string, "-=-")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -183,13 +183,13 @@ class RendererTests: XCTestCase {
     
     func testRendererCanAccessRenderedContentFromExtensionSectionTag() {
         var tagRendering: Rendering? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             tagRendering = info.tag.render(info.context, error: error)
             return tagRendering
         }
         
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        Template(string: "{{^renderer}}{{#renderer}}{{subject}}={{subject}}{{/renderer}}")!.render(box)
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        Template(string: "{{^render}}{{#render}}{{subject}}={{subject}}{{/render}}")!.render(box)
         
         XCTAssertEqual(tagRendering!.string, "-=-")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -197,12 +197,12 @@ class RendererTests: XCTestCase {
     
     func testRendererCanAccessRenderedContentFromEscapedVariableTag() {
         var tagRendering: Rendering? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             tagRendering = info.tag.render(info.context, error: error)
             return tagRendering
         }
         
-        Template(string: "{{.}}")!.render(Box(renderer))
+        Template(string: "{{.}}")!.render(Box(render))
         
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -210,12 +210,12 @@ class RendererTests: XCTestCase {
     
     func testRendererCanAccessRenderedContentFromUnescapedVariableTag() {
         var tagRendering: Rendering? = nil
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             tagRendering = info.tag.render(info.context, error: error)
             return tagRendering
         }
         
-        Template(string: "{{{.}}}")!.render(Box(renderer))
+        Template(string: "{{{.}}}")!.render(Box(render))
         
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -223,21 +223,21 @@ class RendererTests: XCTestCase {
     
     func testRendererCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
         let altTemplate = Template(string:"{{subject}}")!
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return altTemplate.render(info, error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        let rendering = Template(string: "{{renderer}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        let rendering = Template(string: "{{render}}")!.render(box)!
         XCTAssertEqual(rendering, "-")
     }
     
     func testRendererCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
         let altTemplate = Template(string:"{{subject}}")!
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return altTemplate.render(info, error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        let rendering = Template(string: "{{#renderer}}{{/renderer}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        let rendering = Template(string: "{{#render}}{{/render}}")!.render(box)!
         XCTAssertEqual(rendering, "-")
     }
 
@@ -245,12 +245,11 @@ class RendererTests: XCTestCase {
         let inspector = { (key: String) -> Box? in
             return Box("value")
         }
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Template(string:"key:{{key}}")!.render(info, error: error)
         }
-        let testedBox = Box(inspector: inspector, renderer: renderer)
-        let box = Box(["renderer": testedBox])
-        let rendering = Template(string: "{{renderer}}")!.render(box)!
+        let box = Box(["render": Box(inspector: inspector, render: render)])
+        let rendering = Template(string: "{{render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }
     
@@ -258,38 +257,37 @@ class RendererTests: XCTestCase {
         let inspector = { (key: String) -> Box? in
             return Box("value")
         }
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context, error: error)
         }
-        let testedBox = Box(inspector: inspector, renderer: renderer)
-        let box = Box(["renderer": testedBox])
-        let rendering = Template(string: "{{#renderer}}key:{{key}}{{/renderer}}")!.render(box)!
+        let box = Box(["render": Box(inspector: inspector, render: render)])
+        let rendering = Template(string: "{{#render}}key:{{key}}{{/render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRendererCanExtendValueContextStackInVariableTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let context = info.context.extendedContext(Box(["subject2": Box("+++")]))
             let template = Template(string: "{{subject}}{{subject2}}")!
             return template.render(context, error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("---")])
-        let rendering = Template(string: "{{renderer}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("---")])
+        let rendering = Template(string: "{{render}}")!.render(box)!
         XCTAssertEqual(rendering, "---+++")
     }
     
     func testRendererCanExtendValueContextStackInSectionTag() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context.extendedContext(Box(["subject2": Box("+++")])), error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("---")])
-        let rendering = Template(string: "{{#renderer}}{{subject}}{{subject2}}{{/renderer}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("---")])
+        let rendering = Template(string: "{{#render}}{{subject}}{{subject2}}{{/render}}")!.render(box)!
         XCTAssertEqual(rendering, "---+++")
     }
     
     func testRendererCanExtendTagObserverStackInVariableTag() {
         var tagWillRenderCount = 0
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let context = info.context.extendedContext(Box({ (tag: Tag, box: Box) -> Box in
                 ++tagWillRenderCount
                 return box
@@ -297,22 +295,22 @@ class RendererTests: XCTestCase {
             let template = Template(string: "{{subject}}{{subject}}")!
             return template.render(context, error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        let rendering = Template(string: "{{subject}}{{renderer}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        let rendering = Template(string: "{{subject}}{{render}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(box)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(tagWillRenderCount, 2)
     }
     
     func testRendererCanExtendTagObserverStackInSectionTag() {
         var tagWillRenderCount = 0
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: Box) -> Box in
                 ++tagWillRenderCount
                 return box
             })), error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
-        let rendering = Template(string: "{{subject}}{{#renderer}}{{subject}}{{subject}}{{/renderer}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(box)!
+        let box = Box(["render": Box(render), "subject": Box("-")])
+        let rendering = Template(string: "{{subject}}{{#render}}{{subject}}{{subject}}{{/render}}{{subject}}{{subject}}{{subject}}{{subject}}")!.render(box)!
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(tagWillRenderCount, 2)
     }
@@ -327,13 +325,13 @@ class RendererTests: XCTestCase {
             }
         }
         
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context, error: error)
         }
         
-        let template = Template(string: "{{#renderer}}{{subject}}{{/renderer}}")!
+        let template = Template(string: "{{#render}}{{subject}}{{/render}}")!
         template.baseContext = template.baseContext.extendedContext(Box(preRenderer))
-        let box = Box(["renderer": Box(renderer), "subject": Box("---")])
+        let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "delegate")
     }
@@ -348,14 +346,14 @@ class RendererTests: XCTestCase {
             }
         }
         
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "{{subject}}")!
             return template.render(info.context, error: error)
         }
         
-        let template = Template(string: "{{renderer}}")!
+        let template = Template(string: "{{render}}")!
         template.baseContext = template.baseContext.extendedContext(Box(preRenderer))
-        let box = Box(["renderer": Box(renderer), "subject": Box("---")])
+        let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "delegate")
     }
@@ -370,98 +368,98 @@ class RendererTests: XCTestCase {
             }
         }
         
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "{{subject}}")!
             return template.render(info.context, error: error)
         }
         
-        let template = Template(string: "{{#renderer}}{{/renderer}}")!
+        let template = Template(string: "{{#render}}{{/render}}")!
         template.baseContext = template.baseContext.extendedContext(Box(preRenderer))
-        let box = Box(["renderer": Box(renderer), "subject": Box("---")])
+        let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "delegate")
     }
     
     func testArrayOfRenderersInSectionTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("1")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("2")
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(box)!
         XCTAssertEqual(rendering, "12")
     }
     
     func testArrayOfRenderersInEscapedVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("1")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("2")
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{items}}")!.render(box)!
         XCTAssertEqual(rendering, "12")
     }
     
     func testArrayOfHTMLRenderersInEscapedVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>", .HTML)
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{items}}")!.render(box)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
     func testArrayOfHTMLRenderersInUnescapedVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>", .HTML)
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{{items}}}")!.render(box)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
     func testArrayOfTextRenderersInEscapedVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>")
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{items}}")!.render(box)!
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
     
     func testArrayOfTextRenderersInUnescapedVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>")
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         let rendering = Template(string: "{{{items}}}")!.render(box)!
         XCTAssertEqual(rendering, "<1><2>")
     }
     
     func testArrayOfInconsistentContentTypeRenderersInVariableTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         var error: NSError?
         let rendering = Template(string: "{{items}}")!.render(box, error: &error)
         XCTAssertNil(rendering)
@@ -470,13 +468,13 @@ class RendererTests: XCTestCase {
     }
     
     func testArrayOfInconsistentContentTypeRenderersInSectionTag() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<1>")
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("<2>", .HTML)
         }
-        let box = Box(["items": Box([Box(renderer1), Box(renderer2)])])
+        let box = Box(["items": Box([Box(render1), Box(render2)])])
         var error: NSError?
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(box, error: &error)
         XCTAssertNil(rendering)
@@ -502,15 +500,15 @@ class RendererTests: XCTestCase {
     
     func testRendererCanAccessSiblingPartialTemplatesOfCurrentlyRenderedTemplate() {
         let templates = [
-            "template": "{{renderer}}",
+            "template": "{{render}}",
             "partial": "{{subject}}",
         ]
         let repository = TemplateRepository(templates: templates)
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{>partial}}")!
             return altTemplate.render(info, error: error)
         }
-        let box = Box(["renderer": Box(renderer), "subject": Box("-")])
+        let box = Box(["render": Box(render), "subject": Box("-")])
         let template = repository.template(named: "template")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "-")
@@ -518,14 +516,14 @@ class RendererTests: XCTestCase {
     
     func testRendererCanAccessSiblingPartialTemplatesOfTemplateAsRenderer() {
         let repository1 = TemplateRepository(templates: [
-            "template1": "{{ renderer }}|{{ template2 }}",
+            "template1": "{{ render }}|{{ template2 }}",
             "partial": "partial1"])
         let repository2 = TemplateRepository(templates: [
-            "template2": "{{ renderer }}",
+            "template2": "{{ render }}",
             "partial": "partial2"])
         let box = Box([
             "template2": Box(repository2.template(named: "template2")!),
-            "renderer": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{>partial}}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -537,12 +535,12 @@ class RendererTests: XCTestCase {
     func testRendererInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
         let box = Box([
             "object": Box("&"),
-            "renderer": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
                 return altTemplate.render(info, error: error)
             })])
         
-        let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{renderer}}")!
+        let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{render}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "&amp;")
     }
@@ -550,23 +548,23 @@ class RendererTests: XCTestCase {
     func testRendererInheritTextContentTypeOfCurrentlyRenderedTemplate() {
         let box = Box([
             "object": Box("&"),
-            "renderer": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
                 return altTemplate.render(info, error: error)
             })])
         
-        let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{renderer}}")!
+        let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{render}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "&")
     }
     
     func testRendererInheritContentTypeFromPartial() {
         let repository = TemplateRepository(templates: [
-            "templateHTML": "{{ renderer }}|{{> templateText }}",
-            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ renderer }}"])
+            "templateHTML": "{{ render }}|{{> templateText }}",
+            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ render }}"])
         let box = Box([
             "value": Box("&"),
-            "renderer": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ value }}")!
                 return altTemplate.render(info, error: error)
             })])
@@ -577,36 +575,36 @@ class RendererTests: XCTestCase {
     
     func testRendererInheritContentTypeFromTemplateAsRenderer() {
         let repository1 = TemplateRepository(templates: [
-            "templateHTML": "{{ renderer }}|{{ templateText }}"])
+            "templateHTML": "{{ render }}|{{ templateText }}"])
         let repository2 = TemplateRepository(templates: [
-            "templateText": "{{ renderer }}"])
+            "templateText": "{{ render }}"])
         repository2.configuration.contentType = .Text
         
-        let rendererValue = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{{ value }}}")!
             return altTemplate.render(info, error: error)
-        })
+        }
         let box = Box([
             "value": Box("&"),
             "templateText": Box(repository2.template(named: "templateText")!),
-            "renderer": rendererValue])
+            "render": Box(render)])
         let template = repository1.template(named: "templateHTML")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "&|&amp;")
     }
     
     func testArrayOfRenderersInSectionTagDoesNotNeedExplicitInvocation() {
-        let renderer1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("[1:\(rendering.string)]", rendering.contentType)
         }
-        let renderer2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("[2:\(rendering.string)]", rendering.contentType)
         }
-        let renderers = [Box(renderer1), Box(renderer2), Box(true), Box(false)]
+        let renders = [Box(render1), Box(render2), Box(true), Box(false)]
         let template = Template(string: "{{#items}}---{{/items}},{{#items}}{{#.}}---{{/.}}{{/items}}")!
-        let rendering = template.render(Box(["items":Box(renderers)]))!
+        let rendering = template.render(Box(["items":Box(renders)]))!
         XCTAssertEqual(rendering, "[1:---][2:---]------,[1:---][2:---]---")
     }
 

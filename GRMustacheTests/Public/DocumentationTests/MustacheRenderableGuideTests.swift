@@ -12,7 +12,7 @@ import GRMustache
 class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample1() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("I'm rendering a {{ variable }} tag.")
@@ -21,52 +21,52 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        var rendering = Template(string: "{{.}}")!.render(Box(renderer))!
+        var rendering = Template(string: "{{.}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
         
-        rendering = Template(string: "{{#.}}{{/}}")!.render(Box(renderer))!
+        rendering = Template(string: "{{#.}}{{/}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
     
     func textExample2() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("Arthur & Cie")
         }
         
-        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Box(renderer))!
+        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Box(render))!
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
     
     func textExample3() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
         let box = Box([
-            "strong": Box(renderer),
+            "strong": Box(render),
             "name": Box("Arthur")])
         let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(box)!
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
     
     func textExample4() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = Box(["twice": Box(renderer)])
+        let box = Box(["twice": Box(render)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(box)!
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
 
     func textExample5() {
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
             return template.render(info.context, error: error)
         }
         let box = Box([
-            "link": Box(renderer),
+            "link": Box(render),
             "name": Box("Arthur"),
             "url": Box("/people/123")])
         let rendering = Template(string: "{{# link }}{{ name }}{{/ link }}")!.render(box)!
@@ -107,7 +107,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                         return nil
                     }
                 }
-                let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
                     let context = info.context.extendedContext(Box(self))
                     return template.render(context, error: error)
@@ -115,7 +115,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 return Box(
                     value: self,
                     inspector: inspector,
-                    renderer: renderer)
+                    render: render)
             }
         }
         
@@ -133,7 +133,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                         return nil
                     }
                 }
-                let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
                     let context = info.context.extendedContext(Box(self))
                     return template.render(context, error: error)
@@ -141,7 +141,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 return Box(
                     value: self,
                     inspector: inspector,
-                    renderer: renderer)
+                    render: render)
             }
         }
         

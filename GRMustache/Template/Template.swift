@@ -225,7 +225,7 @@ public class Template: MustacheBoxable {
     public func mustacheBox() -> Box {
         return Box(
             value: self,
-            renderer: self.render)
+            render: self.render)
     }
     
     
