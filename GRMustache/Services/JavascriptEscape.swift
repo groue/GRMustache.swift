@@ -8,7 +8,7 @@
 
 class JavascriptEscape: MustacheBoxable {
     
-    func toBox() -> Box {
+    func mustacheBox() -> Box {
         return Box(
             value: self,
             inspector: nil,
@@ -22,7 +22,7 @@ class JavascriptEscape: MustacheBoxable {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(toBox()), error: error)
+            return info.tag.render(info.context.extendedContext(mustacheBox()), error: error)
         }
     }
     

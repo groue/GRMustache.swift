@@ -96,7 +96,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Person: MustacheBoxable {
             let firstName: String
             let lastName: String
-            func toBox() -> Box {
+            func mustacheBox() -> Box {
                 let inspector = { (identifier: String) -> Box? in
                     switch identifier {
                     case "firstName":
@@ -122,7 +122,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         struct Movie: MustacheBoxable {
             let title: String
             let director: Person
-            func toBox() -> Box {
+            func mustacheBox() -> Box {
                 let inspector = { (identifier: String) -> Box? in
                     switch identifier {
                     case "title":

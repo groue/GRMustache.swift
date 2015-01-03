@@ -62,7 +62,7 @@ class ReadMeTests: XCTestCase {
         struct ReadmeExample3User: MustacheBoxable {
             let name: String
             
-            func toBox() -> Box {
+            func mustacheBox() -> Box {
                 let inspector = { (identifier: String) -> Box? in
                     switch identifier {
                     case "name":

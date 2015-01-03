@@ -31,7 +31,7 @@ class MustacheInspectableTests: XCTestCase {
     
     func testBoxedInspector() {
         class T: MustacheBoxable {
-            func toBox() -> Box {
+            func mustacheBox() -> Box {
                 let inspector = { (identifier: String) -> Box? in
                     if identifier == "self" {
                         return Box(self)

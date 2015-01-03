@@ -18,7 +18,7 @@ public class Localizer: MustacheBoxable {
         self.table = table
     }
     
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         return Box(
             value: self,
             inspector: nil,
@@ -55,7 +55,7 @@ public class Localizer: MustacheBoxable {
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.extendedContext(toBox())
+        let context = info.context.extendedContext(mustacheBox())
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             

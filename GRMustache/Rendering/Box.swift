@@ -13,7 +13,7 @@ public typealias PreRenderer = (tag: Tag, box: Box) -> Box
 public typealias PostRenderer = (tag: Tag, box: Box, string: String?) -> Void
 
 public protocol MustacheBoxable {
-    func toBox() -> Box
+    func mustacheBox() -> Box
 }
 
 private let DefaultInspector: Inspector = { (identifier: String) -> Box? in
@@ -481,13 +481,17 @@ public struct Box {
     public init(_ object: AnyObject?) {
         if let object: AnyObject = object {
             if let null = object as? NSNull {
-                self.init(null.toBox())
+                self.init(null.mustacheBox())
+                
             } else if let number = object as? NSNumber {
-                self.init(number.toBox())
+                self.init(number.mustacheBox())
+                
             } else if let set = object as? NSSet {
-                self.init(set.toBox())
+                self.init(set.mustacheBox())
+                
             } else if let string = object as? String {
-                self.init(string.toBox())
+                self.init(string.mustacheBox())
+                
             } else if let object = object as? NSObjectProtocol {
                 if let enumerable = object as? NSFastEnumeration {
                     if object.respondsToSelector("objectAtIndexedSubscript:") {
@@ -525,23 +529,27 @@ public struct Box {
                                 break
                             }
                         }
-                        self.init(set.toBox())
+                        self.init(set.mustacheBox())
                     }
+                    
                 } else if let object = object as? NSObject {
                     self.init(object)
+                    
                 } else {
                     fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
                 }
+                
             } else {
                 fatalError("\(object) can not be boxed. Consider having it implement the MustacheBoxable protocol.")
             }
+            
         } else {
             self.init()
         }
     }
     
     public init<T: MustacheBoxable>(_ value: T) {
-        self.init(value.toBox())
+        self.init(value.mustacheBox())
     }
     
     public var isEmpty: Bool {
@@ -1394,14 +1402,14 @@ extension Box {
 
 
 extension Bool: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
@@ -1415,14 +1423,14 @@ extension Bool: MustacheBoxable {
 }
 
 extension Int: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
@@ -1436,14 +1444,14 @@ extension Int: MustacheBoxable {
 }
 
 extension Double: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
@@ -1457,7 +1465,7 @@ extension Double: MustacheBoxable {
 }
 
 extension String: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let inspector = { (identifier: String) -> Box? in
             switch identifier {
             case "length":
@@ -1471,7 +1479,7 @@ extension String: MustacheBoxable {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
-                return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
             }
         }
         return Box(
@@ -1483,14 +1491,14 @@ extension String: MustacheBoxable {
 }
 
 extension NSNull: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
@@ -1504,7 +1512,7 @@ extension NSNull: MustacheBoxable {
 }
 
 extension NSNumber: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let objCType = self.objCType
         let str = String.fromCString(objCType)
         switch str! {
@@ -1521,7 +1529,7 @@ extension NSNumber: MustacheBoxable {
 }
 
 extension NSSet: MustacheBoxable {
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         let inspector = { (identifier: String) -> Box? in
             switch identifier {
             case "count":
@@ -1534,7 +1542,7 @@ extension NSSet: MustacheBoxable {
         }
         let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+                return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?

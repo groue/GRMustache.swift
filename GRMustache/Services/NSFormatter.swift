@@ -10,7 +10,7 @@ import Foundation
 
 extension NSFormatter: MustacheBoxable {
     
-    public func toBox() -> Box {
+    public func mustacheBox() -> Box {
         return Box(
             value: self,
             inspector: nil,
@@ -39,7 +39,7 @@ extension NSFormatter: MustacheBoxable {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.extendedContext(self.toBox()), error: error)
+            return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
         }
     }
     

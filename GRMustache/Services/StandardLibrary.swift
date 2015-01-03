@@ -61,7 +61,7 @@ class StandardLibrary: MustacheBoxable {
         self.items = items
     }
     
-    func toBox() -> Box {
+    func mustacheBox() -> Box {
         return Box(items)
     }
 }
