@@ -117,19 +117,19 @@ public class Context {
         }
     }
     
-    public subscript(identifier: String) -> Box {
+    public subscript(key: String) -> Box {
         switch type {
         case .Root:
             return Box()
         case .BoxType(box: let box, parent: let parent):
-            let innerBox = box[identifier]
+            let innerBox = box[key]
             if innerBox.isEmpty {
-                return parent[identifier]
+                return parent[key]
             } else {
                 return innerBox
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent[identifier]
+            return parent[key]
         }
     }
     

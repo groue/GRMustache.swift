@@ -17,13 +17,13 @@ Its APIs are similar to the Objective-C version [GRMustache](https://github.com/
 
 ```swift
 let template = Template(named: "template")!
-let value = Value([
+let data = [
     "name": "Chris",
     "value": 10000.0,
     "taxed_value": 10000 - (10000 * 0.4),
     "in_ca": true
-])
-let rendering = template.render(value)!
+]
+let rendering = template.render(Box(data))!
 ```
 
 
@@ -38,22 +38,33 @@ struct User {
     let name: String
 }
 
-// Let Mustache dig into it, using the `MustacheInspectable` protocol:
-extension User: MustacheInspectable {
-    func valueForMustacheKey(key: String) -> Value? {
-        switch key {
-        case "name":
-            return Value(name)
-        default:
-            return nil
-        }
+// There are many ways for a value to contribute to Mustache rendering, and it
+// always requires "boxing", through the `MustacheBoxable` protocol.
+//
+// Here we only want to let templates extract the `name` key out of our users.
+extension User: MustacheBoxable {
+    func mustacheBox() -> Box {
+        return Box(
+            // The boxed value: self
+            value: self,
+            
+            // In order to extract `name`, we need to provide a function that
+            // turns Strings into boxed values:
+            inspector: { (key: String) -> Box? in
+                switch key {
+                case "name":
+                    return Box(self.name)
+                default:
+                    return nil
+                }
+        })
     }
 }
 
 // Hello Arthur!
 let user = User(name: "Arthur")
 let template = Template(string: "Hello {{name}}!")!
-let rendering = template.render(Value(user))!
+let rendering = template.render(Box(user))!
 ```
 
 
@@ -72,7 +83,7 @@ Forget the strict minimalism of the genuine Mustache language: GRMustache ships 
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = FilterValue { (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+let pluralize = MakeFilter({ (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
     
     // Pluralize the section inner content if needed:
     var string = info.tag.innerTemplateString
@@ -86,12 +97,12 @@ let pluralize = FilterValue { (count: Int?, info: RenderingInfo, error: NSErrorP
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContext(value: Value(["pluralize": pluralizeFilter]))
+Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralize)]))
 
 
 // I have 3 cats.
 
 let template = Template(named: "example2")!
-let value = Value(["cats": ["Kitty", "Pussy", "Melba"]])
-let rendering = template.render(value)!
+let box = Box(["cats": ["Kitty", "Pussy", "Melba"]])
+let rendering = template.render(box)!
 ```

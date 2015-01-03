@@ -15,7 +15,7 @@ class MustacheInspectableTests: XCTestCase {
     // TODO: make it run
 //    func testInspector() {
 //        func inspector() -> Inspector {
-//            return { (identifier: String) -> Box? in
+//            return { (key: String) -> Box? in
 //                if identifier == "self" {
 //                    return Box(inspector())
 //                } else {
@@ -32,11 +32,11 @@ class MustacheInspectableTests: XCTestCase {
     func testBoxedInspector() {
         class T: MustacheBoxable {
             func mustacheBox() -> Box {
-                let inspector = { (identifier: String) -> Box? in
-                    if identifier == "self" {
+                let inspector = { (key: String) -> Box? in
+                    if key == "self" {
                         return Box(self)
                     } else {
-                        return Box(identifier)
+                        return Box(key)
                     }
                 }
                 return Box(value: self, inspector: inspector)

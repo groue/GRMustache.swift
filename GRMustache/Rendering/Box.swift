@@ -6,7 +6,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public typealias Inspector = (identifier: String) -> Box?
+public typealias Inspector = (key: String) -> Box?
 public typealias Filter = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
 public typealias Renderer = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 public typealias PreRenderer = (tag: Tag, box: Box) -> Box
@@ -16,7 +16,7 @@ public protocol MustacheBoxable {
     func mustacheBox() -> Box
 }
 
-private let DefaultInspector: Inspector = { (identifier: String) -> Box? in
+private let DefaultInspector: Inspector = { (key: String) -> Box? in
     return nil
 }
 
@@ -208,8 +208,8 @@ public struct Box {
     public init(_ dictionary: [String: Box]) {
         self.value = dictionary
         self.mustacheBool = true
-        self.inspector = { (identifier: String) -> Box? in
-            return dictionary[identifier]
+        self.inspector = { (key: String) -> Box? in
+            return dictionary[key]
         }
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -226,7 +226,7 @@ public struct Box {
 //    public init(_ array: [Box]) {
 //        value = array
 //        mustacheBool = { return countElements(array) > 0 }
-//        inspector = { (identifier: String) -> Box? in
+//        inspector = { (key: String) -> Box? in
 //            switch identifier {
 //            case "count":
 //                return Box(countElements(array))
@@ -330,8 +330,8 @@ public struct Box {
     public init<T: CollectionType where T.Generator.Element == Box, T.Index: Comparable, T.Index.Distance == Int>(_ collection: T) {
         self.value = collection
         self.mustacheBool = (countElements(collection) > 0)
-        self.inspector = { (identifier: String) -> Box? in
-            switch identifier {
+        self.inspector = { (key: String) -> Box? in
+            switch key {
             case "count":
                 return Box(countElements(collection))
             case "firstObject":
@@ -463,8 +463,8 @@ public struct Box {
     private init(_ object: NSObject) {
         self.value = object
         self.mustacheBool = true
-        self.inspector = { (identifier: String) -> Box? in
-            return Box(object.valueForKey(identifier))
+        self.inspector = { (key: String) -> Box? in
+            return Box(object.valueForKey(key))
         }
         // Avoid error: variable 'self.renderer' captured by a closure before being initialized
         self.renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
@@ -1211,16 +1211,16 @@ public struct Box {
 
 extension Box {
     
-    subscript(identifier: String) -> Box {
+    subscript(key: String) -> Box {
         if let inspector = inspector {
-            if let box = inspector(identifier: identifier) {
+            if let box = inspector(key: key) {
                 return box
             }
         }
         return Box()
     }
     
-//    subscript(identifier: String) -> Box {
+//    subscript(key: String) -> Box {
 //        return Box()
 //        switch type {
 //        case .None:
@@ -1466,8 +1466,8 @@ extension Double: MustacheBoxable {
 
 extension String: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let inspector = { (identifier: String) -> Box? in
-            switch identifier {
+        let inspector = { (key: String) -> Box? in
+            switch key {
             case "length":
                 return Box(countElements(self))
             default:
@@ -1530,8 +1530,8 @@ extension NSNumber: MustacheBoxable {
 
 extension NSSet: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let inspector = { (identifier: String) -> Box? in
-            switch identifier {
+        let inspector = { (key: String) -> Box? in
+            switch key {
             case "count":
                 return Box(self.count)
             case "anyObject":

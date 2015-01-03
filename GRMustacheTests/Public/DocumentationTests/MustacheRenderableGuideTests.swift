@@ -97,8 +97,8 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             func mustacheBox() -> Box {
-                let inspector = { (identifier: String) -> Box? in
-                    switch identifier {
+                let inspector = { (key: String) -> Box? in
+                    switch key {
                     case "firstName":
                         return Box(self.firstName)
                     case "lastName":
@@ -123,8 +123,8 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             func mustacheBox() -> Box {
-                let inspector = { (identifier: String) -> Box? in
-                    switch identifier {
+                let inspector = { (key: String) -> Box? in
+                    switch key {
                     case "title":
                         return Box(self.title)
                     case "director":

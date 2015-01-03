@@ -12,8 +12,8 @@ import GRMustache
 class TemplateFromMethodsTests: XCTestCase {
     
     func testedObject(string: String) -> Inspector {
-        return { (identifier: String) -> Box? in
-            if identifier == "string" {
+        return { (key: String) -> Box? in
+            if key == "string" {
                 return Box(string)
             } else {
                 return nil
