@@ -11,7 +11,7 @@ import GRMustache
 
 class TemplateFromMethodsTests: XCTestCase {
     
-    func testedObject(string: String) -> Inspector {
+    func inspectFunction(string: String) -> InspectFunction {
         return { (key: String) -> Box? in
             if key == "string" {
                 return Box(string)
@@ -65,29 +65,29 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testTemplateFromString() {
         let template = Template(string: templateString)!
-        let object = testedObject("foo")
-        let rendering = template.render(Box(object))!
+        let inspect = inspectFunction("foo")
+        let rendering = template.render(Box(inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = Template(path: templatePath)!
-        let object = testedObject("foo")
-        let rendering = template.render(Box(object))!
+        let inspect = inspectFunction("foo")
+        let rendering = template.render(Box(inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = Template(URL: templateURL)!
-        let object = testedObject("foo")
-        let rendering = template.render(Box(object))!
+        let inspect = inspectFunction("foo")
+        let rendering = template.render(Box(inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = Template(named: templateName, bundle: testBundle)!
-        let object = testedObject("foo")
-        let rendering = template.render(Box(object))!
+        let inspect = inspectFunction("foo")
+        let rendering = template.render(Box(inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }

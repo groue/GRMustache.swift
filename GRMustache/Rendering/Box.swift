@@ -11,27 +11,18 @@
 // =============================================================================
 // MARK: - Core function types
 
-// Key Extraction
-public typealias Inspector = (key: String) -> Box?
-
-// Filter
-public typealias Filter = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
-
-// Rendering
-public typealias Renderer = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
-
-// Pre-rendering hook
-public typealias PreRenderer = (tag: Tag, box: Box) -> Box
-
-// Post-rendering hook
-public typealias PostRenderer = (tag: Tag, box: Box, string: String?) -> Void
+public typealias InspectFunction = (key: String) -> Box?
+public typealias FilterFunction = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
+public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
+public typealias WillRenderFunction = (tag: Tag, box: Box) -> Box
+public typealias DidRenderFunction = (tag: Tag, box: Box, string: String?) -> Void
 
 
 // =============================================================================
 // MARK: - Filters
 
 // Single argument filter
-public func MakeFilter(filter: (Box, NSErrorPointer) -> Box?) -> Filter {
+public func MakeFilter(filter: (Box, NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
             if error != nil {
@@ -45,7 +36,7 @@ public func MakeFilter(filter: (Box, NSErrorPointer) -> Box?) -> Filter {
 }
 
 // Single argument filter with generic unboxing
-public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> Filter {
+public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
             if error != nil {
@@ -61,7 +52,7 @@ public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> Filter {
 }
 
 // Single argument filter with Int conversion (see intValue)
-public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> Filter {
+public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -78,7 +69,7 @@ public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> Filter {
 }
 
 // Single argument filter with Double conversion (see doubleValue)
-public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> Filter {
+public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -95,7 +86,7 @@ public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> Filter {
 }
 
 // Single argument filter with String conversion (see stringValue)
-public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> Filter {
+public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -112,11 +103,11 @@ public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> Filter {
 }
 
 // Variadic filter
-public func MakeVariadicFilter(filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> Filter {
+public func MakeVariadicFilter(filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
     return MakePartialVariadicFilter([], filter)
 }
 
-private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> Filter {
+private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         let arguments = arguments + [argument]
         if partialApplication {
@@ -128,7 +119,7 @@ private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Bo
 }
 
 // Single argument filter for custom rendering
-public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(box, info, error)
@@ -137,7 +128,7 @@ public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering
 }
 
 // Single argument filter with generic unboxing for custom rendering
-public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return MakeFilter({ (t: T?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(t, info, error)
@@ -146,7 +137,7 @@ public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Renderi
 }
 
 // Single argument filter with Int conversion (see intValue) for custom rendering
-public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return MakeFilter({ (int: Int?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(int, info, error)
@@ -155,7 +146,7 @@ public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Renderin
 }
 
 // Single argument filter with Double conversion (see doubleValue) for custom rendering
-public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return MakeFilter({ (double: Double?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(double, info, error)
@@ -164,7 +155,7 @@ public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rende
 }
 
 // Single argument filter with String conversion (see stringValue) for custom rendering
-public func MakeFilter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> Filter {
+public func MakeFilter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(string, info, error)
@@ -184,25 +175,25 @@ public struct Box {
     public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
-    public let inspector: Inspector?
-    public private(set) var render: Renderer  // It should be a `let` property. But compilers spawns unwanted "variable 'self.render' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
-    public let filter: Filter?
-    public let preRenderer: PreRenderer?
-    public let postRenderer: PostRenderer?
+    public let inspect: InspectFunction?
+    public private(set) var render: RenderFunction  // It should be a `let` property. But compilers spawns unwanted "variable 'self.render' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
+    public let filter: FilterFunction?
+    public let willRender: WillRenderFunction?
+    public let didRender: DidRenderFunction?
     
-    // True if only preRenderer or postRenderer are non nil.
+    // True if only willRender or didRender are non nil.
     let isHook: Bool
     
-    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspector: Inspector? = nil, render: Renderer? = nil, filter: Filter? = nil, preRenderer: PreRenderer? = nil, postRenderer: PostRenderer? = nil) {
-        let hasHook = preRenderer != nil || postRenderer != nil
-        let hasNonHook = value != nil || inspector != nil || render != nil || filter != nil
+    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspect: InspectFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
+        let hasHook = willRender != nil || didRender != nil
+        let hasNonHook = value != nil || inspect != nil || render != nil || filter != nil
         let empty = !hasHook && !hasNonHook
         
         self.isEmpty = empty
         self.isHook = hasHook && !hasNonHook
         self.value = value
         self.mustacheBool = mustacheBool ?? !empty
-        self.inspector = inspector
+        self.inspect = inspect
         if let render = render {
             self.render = render
         } else {
@@ -222,8 +213,8 @@ public struct Box {
             }
         }
         self.filter = filter
-        self.preRenderer = preRenderer
-        self.postRenderer = postRenderer
+        self.willRender = willRender
+        self.didRender = didRender
     }
     
     public init(_ box: Box) {
@@ -231,11 +222,11 @@ public struct Box {
         isHook = box.isHook
         value = box.value
         mustacheBool = box.mustacheBool
-        inspector = box.inspector
+        inspect = box.inspect
         render = box.render
         filter = box.filter
-        preRenderer = box.preRenderer
-        postRenderer = box.postRenderer
+        willRender = box.willRender
+        didRender = box.didRender
     }
     
     public init(_ dictionary: [String: Box]) {
@@ -243,7 +234,7 @@ public struct Box {
         self.isHook = false
         self.value = dictionary
         self.mustacheBool = true
-        self.inspector = { (key: String) -> Box? in
+        self.inspect = { (key: String) -> Box? in
             return dictionary[key]
         }
         // Avoid error: variable 'self.render' captured by a closure before being initialized
@@ -310,7 +301,7 @@ public struct Box {
         self.isHook = false
         self.value = collection
         self.mustacheBool = (countElements(collection) > 0)
-        self.inspector = { (key: String) -> Box? in
+        self.inspect = { (key: String) -> Box? in
             switch key {
             case "count":
                 return Box(countElements(collection))
@@ -366,7 +357,7 @@ public struct Box {
         }
     }
     
-    public init(_ filter: Filter) {
+    public init(_ filter: FilterFunction) {
         self.isEmpty = false
         self.isHook = false
         self.value = filter
@@ -384,25 +375,25 @@ public struct Box {
         }
     }
     
-    public init(_ inspector: Inspector) {
+    public init(_ inspect: InspectFunction) {
         self.isEmpty = false
         self.isHook = false
-        self.value = inspector
+        self.value = inspect
         self.mustacheBool = true
-        self.inspector = inspector
+        self.inspect = inspect
         // Avoid error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(inspector)")
+                return Rendering("\(inspect)")
             case .Section:
                 return info.tag.render(info.context.extendedContext(self), error: error)
             }
         }
     }
     
-    public init(_ render: Renderer) {
+    public init(_ render: RenderFunction) {
         self.isEmpty = false
         self.isHook = false
         self.value = render
@@ -410,40 +401,40 @@ public struct Box {
         self.render = render
     }
     
-    public init(_ preRenderer: PreRenderer) {
+    public init(_ willRender: WillRenderFunction) {
         self.isEmpty = false
         self.isHook = true
-        self.value = preRenderer
+        self.value = willRender
         self.mustacheBool = true
         // Avoid error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(preRenderer)")
+                return Rendering("\(willRender)")
             case .Section:
                 return info.tag.render(info.context.extendedContext(self), error: error)
             }
         }
-        self.preRenderer = preRenderer
+        self.willRender = willRender
     }
     
-    public init(_ postRenderer: PostRenderer) {
+    public init(_ didRender: DidRenderFunction) {
         self.isEmpty = false
         self.isHook = true
-        self.value = postRenderer
+        self.value = didRender
         self.mustacheBool = true
         // Avoid error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(postRenderer)")
+                return Rendering("\(didRender)")
             case .Section:
                 return info.tag.render(info.context.extendedContext(self), error: error)
             }
         }
-        self.postRenderer = postRenderer
+        self.didRender = didRender
     }
     
     private init(_ object: NSObject) {
@@ -451,7 +442,7 @@ public struct Box {
         self.isHook = false
         self.value = object
         self.mustacheBool = true
-        self.inspector = { (key: String) -> Box? in
+        self.inspect = { (key: String) -> Box? in
             return Box(object.valueForKey(key))
         }
         // Avoid error: variable 'self.render' captured by a closure before being initialized
@@ -546,16 +537,16 @@ public struct Box {
 // MARK: - Box derivation
 
 extension Box {
-    
-    public func boxWithRenderer(render: Renderer) -> Box {
+    // TODO: find better name
+    public func boxWithRenderFunction(render: RenderFunction) -> Box {
         return Box(
             value: self.value,
             mustacheBool: self.mustacheBool,
-            inspector: self.inspector,
+            inspect: self.inspect,
             render: render,
             filter: self.filter,
-            preRenderer: self.preRenderer,
-            postRenderer: self.postRenderer)
+            willRender: self.willRender,
+            didRender: self.didRender)
     }
     
 }
@@ -615,8 +606,8 @@ extension Box: DebugPrintable {
 extension Box {
     
     subscript(key: String) -> Box {
-        if let inspector = inspector {
-            if let box = inspector(key: key) {
+        if let inspect = inspect {
+            if let box = inspect(key: key) {
                 return box
             }
         }
@@ -693,7 +684,7 @@ extension Double: MustacheBoxable {
 
 extension String: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let inspector = { (key: String) -> Box? in
+        let inspect = { (key: String) -> Box? in
             switch key {
             case "length":
                 return Box(countElements(self))
@@ -712,7 +703,7 @@ extension String: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: (countElements(self) > 0),
-            inspector: inspector,
+            inspect: inspect,
             render: render)
     }
 }
@@ -757,7 +748,7 @@ extension NSNumber: MustacheBoxable {
 
 extension NSSet: MustacheBoxable {
     public func mustacheBox() -> Box {
-        let inspector = { (key: String) -> Box? in
+        let inspect = { (key: String) -> Box? in
             switch key {
             case "count":
                 return Box(self.count)
@@ -807,7 +798,7 @@ extension NSSet: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: (self.count > 0),
-            inspector: inspector,
+            inspect: inspect,
             render: render)
     }
 }

@@ -224,8 +224,8 @@ class RenderingEngine: TemplateASTVisitor {
             return .Error(NSError(domain: error.domain, code: error.code, userInfo: userInfo))
         case .Success(var box):
             
-            for preRenderer in context.preRendererStack {
-                box = preRenderer(tag: tag, box: box)
+            for willRender in context.willRenderStack {
+                box = willRender(tag: tag, box: box)
             }
             
             let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
@@ -261,14 +261,14 @@ class RenderingEngine: TemplateASTVisitor {
                 
                 buffer = buffer! + string
                 
-                for postRenderer in context.postRendererStack {
-                    postRenderer(tag: tag, box: box, string: string)
+                for didRender in context.didRenderStack {
+                    didRender(tag: tag, box: box, string: string)
                 }
                 
                 return .Success
             } else {
-                for postRenderer in context.postRendererStack {
-                    postRenderer(tag: tag, box: box, string: nil)
+                for didRender in context.didRenderStack {
+                    didRender(tag: tag, box: box, string: nil)
                 }
                 
                 return .Error(error!)

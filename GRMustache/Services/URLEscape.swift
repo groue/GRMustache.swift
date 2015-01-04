@@ -11,10 +11,9 @@ class URLEscape: MustacheBoxable {
     func mustacheBox() -> Box {
         return Box(
             value: self,
-            inspector: nil,
             render: self.render,
             filter: MakeFilter(self.filter),
-            preRenderer: self.preRender)
+            willRender: self.willRender)
     }
     
     private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
@@ -34,7 +33,7 @@ class URLEscape: MustacheBoxable {
         }
     }
     
-    private func preRender(tag: Tag, box: Box) -> Box {
+    private func willRender(tag: Tag, box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}

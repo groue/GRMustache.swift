@@ -23,8 +23,8 @@ public class Localizer: MustacheBoxable {
             value: self,
             render: self.render,
             filter: self.filter,
-            preRenderer: self.preRender,
-            postRenderer: self.postRender)
+            willRender: self.willRender,
+            didRender: self.didRender)
     }
     
     private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {
@@ -111,7 +111,7 @@ public class Localizer: MustacheBoxable {
         }
     }
     
-    public func preRender(tag: Tag, box: Box) -> Box {
+    public func willRender(tag: Tag, box: Box) -> Box {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -134,7 +134,7 @@ public class Localizer: MustacheBoxable {
         }
     }
     
-    public func postRender(tag: Tag, box: Box, string: String?) {
+    public func didRender(tag: Tag, box: Box, string: String?) {
         switch tag.type {
         case .Variable:
             // {{ value }}

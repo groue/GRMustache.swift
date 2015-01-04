@@ -30,11 +30,11 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
     }
     
     func testConfigurationExtendBaseContextWithTagObserver() {
-        let preRenderer = { (tag: Tag, box: Box) -> Box in
+        let willRender = { (tag: Tag, box: Box) -> Box in
             return Box("delegate")
         }
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(preRenderer))
+        configuration.extendBaseContext(Box(willRender))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!

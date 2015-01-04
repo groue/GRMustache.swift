@@ -33,33 +33,33 @@ public class Context {
         }
     }
     
-    var preRendererStack: [PreRenderer] {
+    var willRenderStack: [WillRenderFunction] {
         switch type {
         case .Root:
             return []
         case .BoxType(box: let box, parent: let parent):
-            if let preRenderer: PreRenderer = box.preRenderer {
-                return [preRenderer] + parent.preRendererStack
+            if let willRender = box.willRender {
+                return [willRender] + parent.willRenderStack
             } else {
-                return parent.preRendererStack
+                return parent.willRenderStack
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.preRendererStack
+            return parent.willRenderStack
         }
     }
     
-    var postRendererStack: [PostRenderer] {
+    var didRenderStack: [DidRenderFunction] {
         switch type {
         case .Root:
             return []
         case .BoxType(box: let box, parent: let parent):
-            if let postRenderer: PostRenderer = box.postRenderer {
-                return parent.postRendererStack + [postRenderer]
+            if let didRender = box.didRender {
+                return parent.didRenderStack + [didRender]
             } else {
-                return parent.postRendererStack
+                return parent.didRenderStack
             }
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
-            return parent.postRendererStack
+            return parent.didRenderStack
         }
     }
     

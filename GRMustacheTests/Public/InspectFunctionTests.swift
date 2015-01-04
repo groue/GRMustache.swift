@@ -1,5 +1,5 @@
 //
-//  InspectorTests.swift
+//  InspectFunctionTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 14/11/2014.
@@ -10,19 +10,19 @@ import XCTest
 import GRMustache
 
 // TODO: rename test
-class InspectorTests: XCTestCase {
+class InspectFunctionTests: XCTestCase {
     
-    func testBoxedInspector1() {
+    func testBoxedInspectFunction1() {
         class T: MustacheBoxable {
             func mustacheBox() -> Box {
-                let inspector = { (key: String) -> Box? in
+                let inspect = { (key: String) -> Box? in
                     if key == "self" {
                         return Box(self)
                     } else {
                         return Box(key)
                     }
                 }
-                return Box(inspector)
+                return Box(inspect)
             }
         }
         
@@ -31,10 +31,10 @@ class InspectorTests: XCTestCase {
         XCTAssertEqual(rendering, "a,b,c")
     }
     
-    func testBoxedInspector2() {
+    func testBoxedInspectFunction2() {
         class T: MustacheBoxable {
             func mustacheBox() -> Box {
-                let inspector = { (key: String) -> Box? in
+                let inspect = { (key: String) -> Box? in
                     if key == "self" {
                         return Box(self)
                     } else {
@@ -43,7 +43,7 @@ class InspectorTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    inspector: inspector)
+                    inspect: inspect)
             }
         }
         

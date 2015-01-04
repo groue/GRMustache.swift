@@ -32,7 +32,7 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
         let box = collection[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(box.boxWithRenderer({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -54,7 +54,7 @@ private func transformedSet(set: NSSet) -> Box {
     for item in set {
         let box = Box(item)
         let last = index == count
-        mustacheBoxes.append(box.boxWithRenderer({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -78,7 +78,7 @@ private func transformedDictionary(dictionary: [String: Box]) -> Box {
         let (key, box) = dictionary[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(box.boxWithRenderer({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)

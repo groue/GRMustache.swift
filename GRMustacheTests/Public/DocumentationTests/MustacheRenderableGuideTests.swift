@@ -97,7 +97,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             func mustacheBox() -> Box {
-                let inspector = { (key: String) -> Box? in
+                let inspect = { (key: String) -> Box? in
                     switch key {
                     case "firstName":
                         return Box(self.firstName)
@@ -114,7 +114,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    inspector: inspector,
+                    inspect: inspect,
                     render: render)
             }
         }
@@ -123,7 +123,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             func mustacheBox() -> Box {
-                let inspector = { (key: String) -> Box? in
+                let inspect = { (key: String) -> Box? in
                     switch key {
                     case "title":
                         return Box(self.title)
@@ -140,7 +140,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    inspector: inspector,
+                    inspect: inspect,
                     render: render)
             }
         }

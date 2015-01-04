@@ -359,7 +359,7 @@ import GRMustache
 //        XCTAssertTrue(willRender2)
 //    }
 //    
-//    func testTagDelegateCanProcessRenderer() {
+//    func testTagDelegateCanProcessRenderFunction() {
 //        let tagObserver = TestedTagObserver(willRenderBlock: { (tag, box) -> Box in
 //            return Box({ (info, error) -> Rendering? in
 //                let rendering = box.render(info, error: error)!

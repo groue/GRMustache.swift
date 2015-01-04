@@ -44,12 +44,12 @@ class ContextTests: XCTestCase {
     
     func testContextWithTagObserverConstructor() {
         var success = false
-        let preRenderer = { (tag: Tag, box: Box) -> Box in
+        let willRender = { (tag: Tag, box: Box) -> Box in
             success = true
             return box
         }
         let template = Template(string: "{{success}}")!
-        template.baseContext = Context(Box(preRenderer))
+        template.baseContext = Context(Box(willRender))
         template.render()
         XCTAssertTrue(success)
     }
@@ -63,10 +63,10 @@ class ContextTests: XCTestCase {
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
         
-        let preRenderer = { (tag: Tag, box: Box) -> Box in
+        let willRender = { (tag: Tag, box: Box) -> Box in
             return box
         }
-        context = context.extendedContext(Box(preRenderer))
+        context = context.extendedContext(Box(willRender))
         XCTAssertEqual(context.topBox.value as String, "object")
 
         context = context.extendedContext(Box("object2"))

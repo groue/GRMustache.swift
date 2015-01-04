@@ -45,7 +45,7 @@ class StandardLibraryTests: XCTestCase {
         XCTAssertEqual(rendering, "&lt;br&gt;")
     }
     
-    func testStandardLibraryJavascriptEscapeDoesEscapeRenderer() {
+    func testStandardLibraryJavascriptEscapeDoesEscapeRenderFunction() {
         let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("\"double quotes\" and 'single quotes'")
         })
@@ -54,7 +54,7 @@ class StandardLibraryTests: XCTestCase {
         XCTAssertEqual(rendering, "\\u0022double quotes\\u0022 and \\u0027single quotes\\u0027")
     }
     
-    func testStandardLibraryURLEscapeDoesEscapeRenderers() {
+    func testStandardLibraryURLEscapeDoesEscapeRenderFunctions() {
         let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("&")
         })
