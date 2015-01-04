@@ -31,10 +31,10 @@ class ReadMeTests: XCTestCase {
         
         let pluralizeFilter = Filter({ (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             
-            // Pluralize the section inner content if needed:
+            // Pluralize the inner content of the section tag:
             var string = info.tag.innerTemplateString
             if count > 1 {
-                string = string + "s"  // naive
+                string += "s"  // naive
             }
             
             return Rendering(string)
