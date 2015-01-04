@@ -13,24 +13,24 @@ public class StandardLibrary: MustacheBoxable {
     public init() {
         var items: [String: Box] = [:]
         
-        items["capitalized"] = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+        items["capitalized"] = Box(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
             return Box(string?.capitalizedString)
         }))
         
-        items["lowercase"] = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+        items["lowercase"] = Box(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
             return Box(string?.lowercaseString)
         }))
         
-        items["uppercase"] = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+        items["uppercase"] = Box(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
             return Box(string?.uppercaseString)
         }))
         
         // TODO: test that Box contains the correct object type
         items["localize"] = Box(Localizer(bundle: nil, table: nil))
         
-        items["each"] = Box(MakeFilter(EachFilter))
+        items["each"] = Box(Filter(EachFilter))
         
-        items["isBlank"] = Box(MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+        items["isBlank"] = Box(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
             if let int = box.value as? Int {
                 return Box(false)
             } else if let double = box.value as? Double {
@@ -42,7 +42,7 @@ public class StandardLibrary: MustacheBoxable {
             }
         }))
         
-        items["isEmpty"] = Box(MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+        items["isEmpty"] = Box(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
             if let int = box.value as? Int {
                 return Box(false)
             } else if let double = box.value as? Double {

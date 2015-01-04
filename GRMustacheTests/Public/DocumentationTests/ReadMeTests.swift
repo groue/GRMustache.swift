@@ -29,7 +29,7 @@ class ReadMeTests: XCTestCase {
         // {{# pluralize(count) }}...{{/ }} renders the plural form of the
         // section content if the `count` argument is greater than 1.
         
-        let pluralizeFilter = MakeFilter({ (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let pluralizeFilter = Filter({ (count: Int?, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             
             // Pluralize the section inner content if needed:
             var string = info.tag.innerTemplateString

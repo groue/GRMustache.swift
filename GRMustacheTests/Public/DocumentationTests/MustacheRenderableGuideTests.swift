@@ -167,7 +167,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(Box(["list": Box(MakeFilter(listFilter))]))
+        template.baseContext = template.baseContext.extendedContext(Box(["list": Box(Filter(listFilter))]))
         
         let item1 = Box([
             "url": "http://mustache.github.io",

@@ -12,7 +12,7 @@ class URLEscape: MustacheBoxable {
         return Box(
             value: self,
             render: self.render,
-            filter: MakeFilter(self.filter),
+            filter: Filter(self.filter),
             willRender: self.willRender)
     }
     

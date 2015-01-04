@@ -22,7 +22,7 @@ public typealias DidRenderFunction = (tag: Tag, box: Box, string: String?) -> Vo
 // MARK: - Filters
 
 // Single argument filter
-public func MakeFilter(filter: (Box, NSErrorPointer) -> Box?) -> FilterFunction {
+public func Filter(filter: (Box, NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
             if error != nil {
@@ -36,7 +36,7 @@ public func MakeFilter(filter: (Box, NSErrorPointer) -> Box?) -> FilterFunction 
 }
 
 // Single argument filter with generic unboxing
-public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> FilterFunction {
+public func Filter<T>(filter: (T?, NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
             if error != nil {
@@ -52,7 +52,7 @@ public func MakeFilter<T>(filter: (T?, NSErrorPointer) -> Box?) -> FilterFunctio
 }
 
 // Single argument filter with Int conversion (see intValue)
-public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> FilterFunction {
+public func Filter(filter: (Int?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -69,7 +69,7 @@ public func MakeFilter(filter: (Int?, NSErrorPointer) -> Box?) -> FilterFunction
 }
 
 // Single argument filter with Double conversion (see doubleValue)
-public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> FilterFunction {
+public func Filter(filter: (Double?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -86,7 +86,7 @@ public func MakeFilter(filter: (Double?, NSErrorPointer) -> Box?) -> FilterFunct
 }
 
 // Single argument filter with String conversion (see stringValue)
-public func MakeFilter(filter: (String?, NSErrorPointer) -> Box?) -> FilterFunction {
+public func Filter(filter: (String?, NSErrorPointer) -> Box?) -> FilterFunction {
     // TODO: test
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         if partialApplication {
@@ -119,8 +119,8 @@ private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Bo
 }
 
 // Single argument filter for custom rendering
-public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+public func Filter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (box: Box, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(box, info, error)
         })
@@ -128,8 +128,8 @@ public func MakeFilter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering
 }
 
 // Single argument filter with generic unboxing for custom rendering
-public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return MakeFilter({ (t: T?, error: NSErrorPointer) -> Box? in
+public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (t: T?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(t, info, error)
         })
@@ -137,8 +137,8 @@ public func MakeFilter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Renderi
 }
 
 // Single argument filter with Int conversion (see intValue) for custom rendering
-public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return MakeFilter({ (int: Int?, error: NSErrorPointer) -> Box? in
+public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (int: Int?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(int, info, error)
         })
@@ -146,8 +146,8 @@ public func MakeFilter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Renderin
 }
 
 // Single argument filter with Double conversion (see doubleValue) for custom rendering
-public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return MakeFilter({ (double: Double?, error: NSErrorPointer) -> Box? in
+public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (double: Double?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(double, info, error)
         })
@@ -155,8 +155,8 @@ public func MakeFilter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rende
 }
 
 // Single argument filter with String conversion (see stringValue) for custom rendering
-public func MakeFilter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return MakeFilter({ (string: String?, error: NSErrorPointer) -> Box? in
+public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (string: String?, error: NSErrorPointer) -> Box? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(string, info, error)
         })

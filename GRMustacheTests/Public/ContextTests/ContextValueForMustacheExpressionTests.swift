@@ -34,7 +34,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     
     // TODO: uncomment test
 //    func testFilteredExpression() {
-//        let filterValue = Box(MakeFilter({ (string: String?, error: NSErrorPointer) -> Box in
+//        let filterValue = Box(Filter({ (string: String?, error: NSErrorPointer) -> Box in
 //            return Box(string!.uppercaseString)
 //        }))
 //        let context = Context(Box(["name": Box("success"), "f": filterValue]))

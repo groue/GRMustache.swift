@@ -29,7 +29,7 @@ class VariadicFilterTests: XCTestCase {
     func testVariadicFilterCanReturnFilter() {
         let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             let joined = ",".join(args.map { $0.stringValue ?? "" })
-            return Box(MakeFilter({ (box: Box, error: NSErrorPointer) -> Box? in
+            return Box(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return Box(joined + "+" + (box.stringValue ?? ""))
             }))
         })
