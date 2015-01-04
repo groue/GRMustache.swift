@@ -296,7 +296,7 @@ public struct Box {
         }
     }
     
-    public init<T: CollectionType where T.Generator.Element == Box, T.Index: Comparable, T.Index.Distance == Int>(_ collection: T) {
+    public init<T: CollectionType where T.Generator.Element == Box, T.Index: BidirectionalIndexType, T.Index.Distance == Int>(_ collection: T) {
         self.isEmpty = false
         self.isHook = false
         self.value = collection
@@ -304,7 +304,7 @@ public struct Box {
         self.inspect = { (key: String) -> Box? in
             switch key {
             case "count":
-                return Box(countElements(collection))
+                return Box(countElements(collection))   // T.Index.Distance == Int
             case "firstObject":
                 if countElements(collection) > 0 {
                     return collection[collection.startIndex]
@@ -313,7 +313,7 @@ public struct Box {
                 }
             case "lastObject":
                 if countElements(collection) > 0 {
-                    return collection[advance(collection.endIndex, -1)]
+                    return collection[collection.endIndex.predecessor()]    // T.Index: BidirectionalIndexType
                 } else {
                     return Box()
                 }
