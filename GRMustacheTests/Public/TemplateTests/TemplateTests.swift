@@ -32,18 +32,14 @@ class TemplateTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-//    func testTemplateExtendBaseContextWithTagObserver() {
-//        class TestedTagObserver: MustacheTagObserver {
-//            func mustacheTag(tag: Tag, willRender box: Box) -> Box {
-//                return Box("observer")
-//            }
-//            func mustacheTag(tag: Tag, didRender box: Box, asString string: String?) {
-//            }
-//        }
-//
-//        let template = Template(string: "{{name}}")!
-//        template.extendBaseContext(tagObserver: TestedTagObserver())
-//        let rendering = template.render()!
-//        XCTAssertEqual(rendering, "observer")
-//    }
+    func testTemplateExtendBaseContextWithWillRenderFunction() {
+        let willRender = { (tag: Tag, box: Box) -> Box in
+            return Box("observer")
+        }
+        
+        let template = Template(string: "{{name}}")!
+        template.extendBaseContext(Box(willRender))
+        let rendering = template.render()!
+        XCTAssertEqual(rendering, "observer")
+    }
 }
