@@ -29,7 +29,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-    func testConfigurationExtendBaseContextWithTagObserver() {
+    func testConfigurationExtendBaseContextWithWillRenderFunction() {
         let willRender = { (tag: Tag, box: Box) -> Box in
             return Box("delegate")
         }
