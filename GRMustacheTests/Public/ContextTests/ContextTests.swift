@@ -42,7 +42,7 @@ class ContextTests: XCTestCase {
         // TODO: import test from GRMustache
     }
     
-    func testContextWithTagObserverConstructor() {
+    func testContextWithWillRenderFunction() {
         var success = false
         let willRender = { (tag: Tag, box: Box) -> Box in
             success = true

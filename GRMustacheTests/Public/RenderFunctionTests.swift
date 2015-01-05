@@ -285,7 +285,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "---+++")
     }
     
-    func testRenderFunctionCanExtendTagObserverStackInVariableTag() {
+    func testRenderFunctionCanExtendWillRenderStackInVariableTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let context = info.context.extendedContext(Box({ (tag: Tag, box: Box) -> Box in
@@ -301,7 +301,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(tagWillRenderCount, 2)
     }
     
-    func testRenderFunctionCanExtendTagObserverStackInSectionTag() {
+    func testRenderFunctionCanExtendWillRenderStackInSectionTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: Box) -> Box in
@@ -315,7 +315,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(tagWillRenderCount, 2)
     }
     
-    func testRenderFunctionTriggersTagObserverCallbacks() {
+    func testRenderFunctionTriggersWillRenderFunctions() {
         let willRender = { (tag: Tag, box: Box) -> Box in
             switch tag.type {
             case .Section:
@@ -336,7 +336,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "delegate")
     }
     
-    func testRenderFunctionTriggersTagObserverCallbacksInAnotherTemplateFromVariableTag() {
+    func testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag() {
         let willRender = { (tag: Tag, box: Box) -> Box in
             switch tag.type {
             case .Section:
@@ -358,7 +358,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "delegate")
     }
     
-    func testRenderFunctionTriggersTagObserverCallbacksInAnotherTemplateFromSectionTag() {
+    func testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag() {
         let willRender = { (tag: Tag, box: Box) -> Box in
             switch tag.type {
             case .Section:
