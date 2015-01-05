@@ -39,7 +39,7 @@ class TemplateRepositoryTests: XCTestCase {
         let repo = TemplateRepository(templates: templates)
         
         let template1 = repo.template(named: "name")!
-        template1.extendBaseContext(box: Box(["value": "foo"]))
+        template1.extendBaseContext(Box(["value": "foo"]))
         let rendering1 = template1.render()!
         
         let template2 = repo.template(named: "name")!

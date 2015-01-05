@@ -242,7 +242,7 @@ public class Template: MustacheBoxable {
     */
     public var baseContext: Context
     
-    public func extendBaseContext(# box: Box) {
+    public func extendBaseContext(box: Box) {
         baseContext = baseContext.extendedContext(box)
     }
     
