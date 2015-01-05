@@ -66,7 +66,7 @@ let rendering = template.render(Box(user))!
 Mustache, and beyond
 --------------------
 
-Forget the strict minimalism of the genuine Mustache language: GRMustache ships with built-in goodies and extensibility hooks that won't let you down.
+GRMustache is an extensible Mustache engine.
 
 `cats.mustache`:
 
