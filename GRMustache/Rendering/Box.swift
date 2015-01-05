@@ -103,15 +103,15 @@ public func Filter(filter: (String?, NSErrorPointer) -> Box?) -> FilterFunction 
 }
 
 // Variadic filter
-public func MakeVariadicFilter(filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
-    return MakePartialVariadicFilter([], filter)
+public func VariadicFilter(filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
+    return _VariadicFilter([], filter)
 }
 
-private func MakePartialVariadicFilter(arguments: [Box], filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
+private func _VariadicFilter(arguments: [Box], filter: (arguments: [Box], error: NSErrorPointer) -> Box?) -> FilterFunction {
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         let arguments = arguments + [argument]
         if partialApplication {
-            return Box(MakePartialVariadicFilter(arguments, filter))
+            return Box(_VariadicFilter(arguments, filter))
         } else {
             return filter(arguments: arguments, error: error)
         }

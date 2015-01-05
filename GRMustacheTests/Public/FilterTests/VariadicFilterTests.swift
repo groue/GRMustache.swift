@@ -12,7 +12,7 @@ import GRMustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return Box(",".join(args.map { $0.stringValue ?? "" }))
         })
         // TODO: avoid this `as [String: Box]` explicit cast
@@ -27,7 +27,7 @@ class VariadicFilterTests: XCTestCase {
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             let joined = ",".join(args.map { $0.stringValue ?? "" })
             return Box(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return Box(joined + "+" + (box.stringValue ?? ""))
@@ -45,7 +45,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -55,7 +55,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -65,7 +65,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return Box(args)
         })
         // TODO: avoid this `as [String: Box]` explicit cast
@@ -80,7 +80,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return args.first
         })
         let box = Box([
@@ -93,7 +93,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = MakeVariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return nil
         })
         let box = Box(["f": Box(filter)])
@@ -104,7 +104,7 @@ class VariadicFilterTests: XCTestCase {
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let box = Box([
-            "f": Box(MakeVariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
+            "f": Box(VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
                 var result = ""
                 for argument in arguments {
                     if let dictionary = argument.value as? [String: Box] {
