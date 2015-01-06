@@ -14,27 +14,63 @@ class ValueTests: XCTestCase {
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from Box.
         
-        struct Boxable: MustacheBoxable {
+        struct BoxableStruct: MustacheBoxable {
             let name: String
             func mustacheBox() -> Box {
                 return Box(value: self)
             }
         }
         
-        let custom1 = Boxable(name: "custom1")
-        let custom3 = NSDate()
+        struct Struct {
+            let name: String
+        }
         
-        let value1: Box = Box(custom1)
-        let value2: Box = Box(value: Boxable(name: "custom2"))
-        let value3: Box = Box(custom3)
+        class BoxableClass: MustacheBoxable {
+            let name: String
+            init(name: String) {
+                self.name = name
+            }
+            func mustacheBox() -> Box {
+                return Box(value: self)
+            }
+        }
         
-        let extractedCustom1 = Box(custom1).value as Boxable
-        let extractedCustom2 = value2.value as Boxable
-        let extractedCustom3 = Box(custom3).value as NSDate
+        class Class {
+            let name: String
+            init(name: String) {
+                self.name = name
+            }
+        }
         
-        XCTAssertEqual(extractedCustom1.name, "custom1")
-        XCTAssertEqual(extractedCustom2.name, "custom2")
-        XCTAssertEqual(extractedCustom3, custom3)
+        let boxableStruct = BoxableStruct(name: "BoxableStruct")
+        let optionalBoxableStruct: BoxableStruct? = BoxableStruct(name: "BoxableStruct")
+        let boxableClass = BoxableClass(name: "BoxableClass")
+        let optionalBoxableClass: BoxableClass? = BoxableClass(name: "BoxableClass")
+        let NSObject = NSDate()
+        
+        let boxedBoxableStruct: Box = Box(boxableStruct)
+//        let boxedOptionalBoxableStruct: Box = Box(optionalBoxableStruct)  // TODO: uncomment and avoid compiler error
+        let boxedStruct: Box = Box(value: Struct(name: "Struct"))
+        let boxedBoxableClass: Box = Box(boxableClass)
+//        let boxedOptionalBoxableClass: Box = Box(optionalBoxableClass)  // TODO: uncomment and avoid runtime error
+        let boxedClass: Box = Box(value: Class(name: "Class"))
+        let boxedNSObject: Box = Box(NSObject)
+        
+        let extractedBoxableStruct = boxedBoxableStruct.value as BoxableStruct
+//        let extractedOptionalBoxableStruct = boxedOptionalBoxableStruct.value as? BoxableStruct
+        let extractedStruct = boxedStruct.value as Struct
+        let extractedBoxableClass = boxedBoxableClass.value as BoxableClass
+//        let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
+        let extractedClass = boxedClass.value as Class
+        let extractedNSObject = boxedNSObject.value as NSDate
+        
+        XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
+//        XCTAssertEqual(extractedOptionalBoxableStruct!.name, "BoxableStruct")
+        XCTAssertEqual(extractedStruct.name, "Struct")
+        XCTAssertEqual(extractedBoxableClass.name, "BoxableClass")
+//        XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
+        XCTAssertEqual(extractedClass.name, "Class")
+        XCTAssertEqual(extractedNSObject, NSObject)
     }
     
     func testCustomValueFilter() {
