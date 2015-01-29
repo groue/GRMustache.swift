@@ -21,10 +21,6 @@ public typealias DidRenderFunction = (tag: Tag, box: Box, string: String?) -> Vo
 // =============================================================================
 // MARK: - Box
 
-public protocol MustacheBoxable {
-    func mustacheBox() -> Box
-}
-
 public struct Box {
     public let isEmpty: Bool
     public let value: Any?
@@ -70,17 +66,265 @@ public struct Box {
         self.willRender = willRender
         self.didRender = didRender
     }
+}
+
+
+// =============================================================================
+// MARK: - Box derivation
+
+extension Box {
+    // TODO: find better name
+    public func boxWithRenderFunction(render: RenderFunction) -> Box {
+        return Box(
+            value: self.value,
+            mustacheBool: self.mustacheBool,
+            inspect: self.inspect,
+            render: render,
+            filter: self.filter,
+            willRender: self.willRender,
+            didRender: self.didRender)
+    }
     
-    public init(_ box: Box) {
-        isEmpty = box.isEmpty
-        isHook = box.isHook
-        value = box.value
-        mustacheBool = box.mustacheBool
-        inspect = box.inspect
-        render = box.render
-        filter = box.filter
-        willRender = box.willRender
-        didRender = box.didRender
+}
+
+
+
+// =============================================================================
+// MARK: - Box unwrapping
+
+extension Box {
+    
+    public var intValue: Int? {
+        if let int = value as? Int {
+            return int
+        } else if let double = value as? Double {
+            return Int(double)
+        } else {
+            return nil
+        }
+    }
+    
+    public var doubleValue: Double? {
+        if let int = value as? Int {
+            return Double(int)
+        } else if let double = value as? Double {
+            return double
+        } else {
+            return nil
+        }
+    }
+    
+    public var stringValue: String? {
+        if value is NSNull {
+            return nil
+        } else if let value = value {
+            return "\(value)"
+        } else {
+            return nil
+        }
+    }
+}
+
+// =============================================================================
+// MARK: - DebugPrintable
+
+extension Box: DebugPrintable {
+    
+    public var debugDescription: String {
+        return "Box\(value)"
+    }
+}
+
+
+// =============================================================================
+// MARK: - Key extraction
+
+extension Box {
+    
+    subscript(key: String) -> Box {
+        if let inspect = inspect {
+            if let box = inspect(key: key) {
+                return box
+            }
+        }
+        return Box()
+    }
+}
+
+
+// =============================================================================
+// MARK: - Support for built-in types
+
+extension Box {
+    
+    public init(_ bool: Bool) {
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(bool)")
+            case .Section:
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(bool)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
+        }
+        self.init(
+            value: bool,
+            mustacheBool: bool,
+            render: render)
+    }
+    
+    public init(_ int: Int) {
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(int)")
+            case .Section:
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(int)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
+        }
+        self.init(
+            value: int,
+            mustacheBool: (int != 0),
+            render: render)
+    }
+    
+    public init(_ double: Double) {
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(double)")
+            case .Section:
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(double)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
+        }
+        self.init(
+            value: double,
+            mustacheBool: (double != 0.0),
+            render: render)
+    }
+    
+    public init(_ string: String) {
+        let inspect = { (key: String) -> Box? in
+            switch key {
+            case "length":
+                return Box(countElements(string))
+            default:
+                return nil
+            }
+        }
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(string)")
+            case .Section:
+                return info.tag.render(info.context.extendedContext(Box(string)), error: error)
+            }
+        }
+        self.init(
+            value: string,
+            mustacheBool: (countElements(string) > 0),
+            inspect: inspect,
+            render: render)
+    }
+    
+    public init(_ null: NSNull) {
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("")
+            case .Section:
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(null)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
+        }
+        self.init(
+            value: null,
+            mustacheBool: false,
+            render: render)
+    }
+    
+    public init(_ number: NSNumber) {
+        let objCType = number.objCType
+        let str = String.fromCString(objCType)
+        switch str! {
+        case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
+            self.init(Int(number.longLongValue))
+        case "f", "d":
+            self.init(number.doubleValue)
+        case "B":
+            self.init(number.boolValue)
+        default:
+            fatalError("Not implemented yet")
+        }
+    }
+    
+    public init(_ set: NSSet) {
+        let inspect = { (key: String) -> Box? in
+            switch key {
+            case "count":
+                return Box(set.count)
+            case "anyObject":
+                return Box(set.anyObject())
+            default:
+                return nil
+            }
+        }
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            if info.enumerationItem {
+                return info.tag.render(info.context.extendedContext(Box(set)), error: error)
+            } else {
+                var buffer = ""
+                var contentType: ContentType?
+                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+                for object in set {
+                    if let boxRendering = Box(object).render(info: enumerationRenderingInfo, error: error) {
+                        if contentType == nil {
+                            contentType = boxRendering.contentType
+                            buffer += boxRendering.string
+                        } else if contentType == boxRendering.contentType {
+                            buffer += boxRendering.string
+                        } else {
+                            if error != nil {
+                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                            }
+                            return nil
+                        }
+                    } else {
+                        return nil
+                    }
+                }
+                
+                if let contentType = contentType {
+                    return Rendering(buffer, contentType)
+                } else {
+                    switch info.tag.type {
+                    case .Variable:
+                        return Rendering("")
+                    case .Section:
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+            }
+        }
+        self.init(
+            value: set,
+            mustacheBool: (set.count > 0),
+            inspect: inspect,
+            render: render)
     }
     
     public init(_ dictionary: [String: Box]) {
@@ -211,119 +455,19 @@ public struct Box {
         }
     }
     
-    public init(_ filter: FilterFunction) {
-        self.isEmpty = false
-        self.isHook = false
-        self.value = filter
-        self.mustacheBool = true
-        self.filter = filter
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(filter)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-    }
-    
-    public init(_ inspect: InspectFunction) {
-        self.isEmpty = false
-        self.isHook = false
-        self.value = inspect
-        self.mustacheBool = true
-        self.inspect = inspect
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(inspect)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-    }
-    
-    public init(_ render: RenderFunction) {
-        self.isEmpty = false
-        self.isHook = false
-        self.value = render
-        self.mustacheBool = true
-        self.render = render
-    }
-    
-    public init(_ willRender: WillRenderFunction) {
-        self.isEmpty = false
-        self.isHook = true
-        self.value = willRender
-        self.mustacheBool = true
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(willRender)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-        self.willRender = willRender
-    }
-    
-    public init(_ didRender: DidRenderFunction) {
-        self.isEmpty = false
-        self.isHook = true
-        self.value = didRender
-        self.mustacheBool = true
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(didRender)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-        self.didRender = didRender
-    }
-    
-    private init(_ object: NSObject) {
-        self.isEmpty = false
-        self.isHook = false
-        self.value = object
-        self.mustacheBool = true
-        self.inspect = { (key: String) -> Box? in
-            return Box(object.valueForKey(key))
-        }
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(object)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-    }
-    
     public init(_ object: AnyObject?) {
         if let object: AnyObject = object {
             if let null = object as? NSNull {
-                self.init(null.mustacheBox())
+                self.init(null)
                 
             } else if let number = object as? NSNumber {
-                self.init(number.mustacheBox())
+                self.init(number)
                 
             } else if let set = object as? NSSet {
-                self.init(set.mustacheBox())
+                self.init(set)
                 
             } else if let string = object as? String {
-                self.init(string.mustacheBox())
+                self.init(string)
                 
             } else if let object = object as? NSObjectProtocol {
                 if let enumerable = object as? NSFastEnumeration {
@@ -362,297 +506,43 @@ public struct Box {
                                 break
                             }
                         }
-                        self.init(set.mustacheBox())
+                        self.init(set)
                     }
                     
                 } else if let object = object as? NSObject {
                     self.init(object)
                     
                 } else {
-                    fatalError("\(object) can not be boxed. Check that it conforms to the MustacheBoxable protocol.")
+                    fatalError("\(object) can not be boxed.")
                 }
                 
             } else {
-                fatalError("\(object) can not be boxed. Check that it conforms to the MustacheBoxable protocol, and that it is not an optional.")
+                fatalError("\(object) can not be boxed.")
             }
             
         } else {
             self.init()
         }
     }
-    
-    public init<T: MustacheBoxable>(_ boxable: T) {
-        self.init(boxable.mustacheBox())
-    }
-}
 
-
-// =============================================================================
-// MARK: - Box derivation
-
-extension Box {
-    // TODO: find better name
-    public func boxWithRenderFunction(render: RenderFunction) -> Box {
-        return Box(
-            value: self.value,
-            mustacheBool: self.mustacheBool,
-            inspect: self.inspect,
-            render: render,
-            filter: self.filter,
-            willRender: self.willRender,
-            didRender: self.didRender)
-    }
-    
-}
-
-
-
-// =============================================================================
-// MARK: - Box unwrapping
-
-extension Box {
-    
-    public var intValue: Int? {
-        if let int = value as? Int {
-            return int
-        } else if let double = value as? Double {
-            return Int(double)
-        } else {
-            return nil
+    private init(_ object: NSObject) {
+        self.isEmpty = false
+        self.isHook = false
+        self.value = object
+        self.mustacheBool = true
+        self.inspect = { (key: String) -> Box? in
+            return Box(object.valueForKey(key))
         }
-    }
-    
-    public var doubleValue: Double? {
-        if let int = value as? Int {
-            return Double(int)
-        } else if let double = value as? Double {
-            return double
-        } else {
-            return nil
-        }
-    }
-    
-    public var stringValue: String? {
-        if value is NSNull {
-            return nil
-        } else if let value = value {
-            return "\(value)"
-        } else {
-            return nil
-        }
-    }
-}
-
-// =============================================================================
-// MARK: - DebugPrintable
-
-extension Box: DebugPrintable {
-    
-    public var debugDescription: String {
-        return "Box\(value)"
-    }
-}
-
-
-// =============================================================================
-// MARK: - Key extraction
-
-extension Box {
-    
-    subscript(key: String) -> Box {
-        if let inspect = inspect {
-            if let box = inspect(key: key) {
-                return box
-            }
-        }
-        return Box()
-    }
-}
-
-
-// =============================================================================
-// MARK: - Support for built-in types
-
-extension Bool: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
+        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(self)")
+                return Rendering("\(object)")
             case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
+                return info.tag.render(info.context.extendedContext(self), error: error)
             }
-        }
-        return Box(
-            value: self,
-            mustacheBool: self,
-            render: render)
-    }
-}
-
-extension Int: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
-        return Box(
-            value: self,
-            mustacheBool: (self != 0),
-            render: render)
-    }
-}
-
-extension Double: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
-        return Box(
-            value: self,
-            mustacheBool: (self != 0.0),
-            render: render)
-    }
-}
-
-extension String: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let inspect = { (key: String) -> Box? in
-            switch key {
-            case "length":
-                return Box(countElements(self))
-            default:
-                return nil
-            }
-        }
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-            }
-        }
-        return Box(
-            value: self,
-            mustacheBool: (countElements(self) > 0),
-            inspect: inspect,
-            render: render)
-    }
-}
-
-extension NSNull: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("")
-            case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
-        return Box(
-            value: self,
-            mustacheBool: false,
-            render: render)
-    }
-}
-
-extension NSNumber: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let objCType = self.objCType
-        let str = String.fromCString(objCType)
-        switch str! {
-        case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-            return Box(Int(longLongValue))
-        case "f", "d":
-            return Box(doubleValue)
-        case "B":
-            return Box(boolValue)
-        default:
-            fatalError("Not implemented yet")
         }
     }
-}
-
-extension NSSet: MustacheBoxable {
-    public func mustacheBox() -> Box {
-        let inspect = { (key: String) -> Box? in
-            switch key {
-            case "count":
-                return Box(self.count)
-            case "anyObject":
-                return Box(self.anyObject())
-            default:
-                return nil
-            }
-        }
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                for object in self {
-                    if let boxRendering = Box(object).render(info: enumerationRenderingInfo, error: error) {
-                        if contentType == nil {
-                            contentType = boxRendering.contentType
-                            buffer += boxRendering.string
-                        } else if contentType == boxRendering.contentType {
-                            buffer += boxRendering.string
-                        } else {
-                            if error != nil {
-                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if let contentType = contentType {
-                    return Rendering(buffer, contentType)
-                } else {
-                    switch info.tag.type {
-                    case .Variable:
-                        return Rendering("")
-                    case .Section:
-                        return info.tag.render(info.context, error: error)
-                    }
-                }
-            }
-        }
-        return Box(
-            value: self,
-            mustacheBool: (self.count > 0),
-            inspect: inspect,
-            render: render)
-    }
+    
 }

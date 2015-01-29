@@ -6,22 +6,14 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class URLEscape: MustacheBoxable {
-    
-    func mustacheBox() -> Box {
-        return Box(
-            value: self,
-            render: self.render,
-            filter: Filter(self.filter),
-            willRender: self.willRender)
-    }
+class URLEscape {
     
     private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(mustacheBox()), error: error)
+            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
         }
     }
     
@@ -42,7 +34,7 @@ class URLEscape: MustacheBoxable {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
                     return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
                 } else {
@@ -58,5 +50,15 @@ class URLEscape: MustacheBoxable {
         var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
         s.removeCharactersInString("?&=")
         return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
+    }
+}
+
+extension Box {
+    init(_ formatter: URLEscape) {
+        self.init(
+            value: formatter,
+            render: formatter.render,
+            filter: Filter(formatter.filter),
+            willRender: formatter.willRender)
     }
 }

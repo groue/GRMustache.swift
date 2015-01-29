@@ -9,7 +9,7 @@
 /**
     The Template class provides Mustache rendering services.
 */
-public class Template: MustacheBoxable {
+public class Template {
     
     /**
     Parses a template string, and returns a template.
@@ -220,15 +220,6 @@ public class Template: MustacheBoxable {
     }
     
     
-    // MARK: - MustacheBoxable
-    
-    public func mustacheBox() -> Box {
-        return Box(
-            value: self,
-            render: self.render)
-    }
-    
-    
     // MARK: - Configuring Templates
     
     /**
@@ -300,4 +291,12 @@ public class Template: MustacheBoxable {
         self.baseContext = baseContext
     }
     
+}
+
+extension Box {
+    public init(_ template: Template) {
+        self.init(
+            value: template,
+            render: template.render)
+    }
 }

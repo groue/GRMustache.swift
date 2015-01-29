@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Localizer: MustacheBoxable {
+public class Localizer {
     public let bundle: NSBundle
     public let table: String?
     var formatArguments: [String]?
@@ -16,15 +16,6 @@ public class Localizer: MustacheBoxable {
     public init(bundle: NSBundle?, table: String?) {
         self.bundle = bundle ?? NSBundle.mainBundle()
         self.table = table
-    }
-    
-    public func mustacheBox() -> Box {
-        return Box(
-            value: self,
-            render: self.render,
-            filter: self.filter,
-            willRender: self.willRender,
-            didRender: self.didRender)
     }
     
     private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {
@@ -54,7 +45,7 @@ public class Localizer: MustacheBoxable {
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.extendedContext(mustacheBox())
+        let context = info.context.extendedContext(Box(self))
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             
@@ -192,5 +183,16 @@ public class Localizer: MustacheBoxable {
     
     struct Placeholder {
         static let string = "GRMustacheLocalizerValuePlaceholder"
+    }
+}
+
+extension Box {
+    public init(_ localizer: Localizer) {
+        self.init(
+            value: localizer,
+            render: localizer.render,
+            filter: localizer.filter,
+            willRender: localizer.willRender,
+            didRender: localizer.didRender)
     }
 }

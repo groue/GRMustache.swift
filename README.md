@@ -39,16 +39,15 @@ struct User {
 }
 
 // There are many ways for a value to contribute to Mustache rendering, and it
-// always requires "boxing", through the `MustacheBoxable` protocol.
-//
-// Here we only want to let templates extract the `name` key out of our users.
-extension User: MustacheBoxable {
-    func mustacheBox() -> Box {
-        // What we box is a function that turns Strings into boxed values:
-        return Box({ (key: String) -> Box? in
+// always requires "boxing": let's define the Box(User) initializer.
+extension Box {
+    init(_ user: User) {
+        // We only want to let templates extract the `name` key out of a user.
+        // So we box an "inspect" function, that turns keys into boxed values:
+        self.init(inspect: { (key: String) -> Box? in
             switch key {
             case "name":
-                return Box(self.name)
+                return Box(user.name)
             default:
                 return nil
             }
@@ -92,7 +91,7 @@ let pluralize = Filter({ (count: Int?, info: RenderingInfo, error: NSErrorPointe
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralize)]))
+Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(filter: pluralize)]))
 
 
 // I have 3 cats.

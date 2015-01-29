@@ -14,10 +14,10 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
-            "uppercase": Box(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
+            "uppercase": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
                 return Box(string?.uppercaseString)
             })),
-            "prefix": Box(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
+            "prefix": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
                 return Box("prefix\(string!)")
             }))
             ])
@@ -34,7 +34,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
+            "f": Box(filter: Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return box
             }))
             ])
@@ -44,7 +44,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return Box(["name": "filterName"])
             }))
             ])
@@ -54,7 +54,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return Box(true)
             }))
             ])
@@ -66,7 +66,7 @@ class FilterTests: XCTestCase {
         let box = Box([
             "test": Box("success"),
             "filtered": Box(["test": "failure"]),
-            "filter": Box(Filter({ (_: Box, _: NSErrorPointer) -> Box? in
+            "filter": Box(filter: Filter({ (_: Box, _: NSErrorPointer) -> Box? in
                 return Box(true)
             }))])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
@@ -75,7 +75,7 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterNameSpace() {
-        let doubleFilter = Box(Filter({ (x: Int?, error: NSErrorPointer) -> Box? in
+        let doubleFilter = Box(filter: Filter({ (x: Int?, error: NSErrorPointer) -> Box? in
             return Box((x ?? 0) * 2)
         }))
         let box = Box([
@@ -88,8 +88,8 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        let filterValue = Box(Filter({ (string1: String?, error: NSErrorPointer) -> Box? in
-            return Box(Filter({ (string2: String?, error: NSErrorPointer) -> Box? in
+        let filterValue = Box(filter: Filter({ (string1: String?, error: NSErrorPointer) -> Box? in
+            return Box(filter: Filter({ (string2: String?, error: NSErrorPointer) -> Box? in
                     return Box("\(string1!)\(string2!)")
                 }))
             }))
@@ -103,7 +103,7 @@ class FilterTests: XCTestCase {
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let box = Box(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+        let box = Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
             return Box("filter")
         }))
         let template = Template(string:"{{.(a)}}")!
@@ -114,7 +114,7 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let box = Box([
             "name": Box("Name"),
-            "replace": Box(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "replace": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return Box("replace")
             }))
         ])

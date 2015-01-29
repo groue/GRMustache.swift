@@ -53,7 +53,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = testedTemplate.render(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -62,7 +62,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -78,7 +78,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = testedTemplate.render(info, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -87,7 +87,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -96,7 +96,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -105,7 +105,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -114,7 +114,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -123,7 +123,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -132,7 +132,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -141,7 +141,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -150,7 +150,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
-        let renderer = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
@@ -159,7 +159,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(Box(renderer))
+        template.render(Box(render: render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     

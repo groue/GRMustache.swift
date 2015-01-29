@@ -43,7 +43,7 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
+        Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(filter: pluralizeFilter)]))
         
         
         // I have 3 cats.
@@ -58,25 +58,26 @@ class ReadMeTests: XCTestCase {
     }
     
     func testReadmeExample3() {
-        
-        struct ReadmeExample3User: MustacheBoxable {
-            let name: String
-            
-            func mustacheBox() -> Box {
-                return Box({ (key: String) -> Box? in
-                    switch key {
-                    case "name":
-                        return Box(self.name)
-                    default:
-                        return nil
-                    }
-                })
-            }
-        }
-        
         let user = ReadmeExample3User(name: "Arthur")
         let rendering = Template(string:"Hello {{name}}!")!.render(Box(user))!
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     
+}
+
+struct ReadmeExample3User {
+    let name: String
+}
+
+extension Box {
+    init(_ user: ReadmeExample3User) {
+        self.init(inspect: { (key: String) -> Box? in
+            switch key {
+            case "name":
+                return Box(user.name)
+            default:
+                return nil
+            }
+        })
+    }
 }

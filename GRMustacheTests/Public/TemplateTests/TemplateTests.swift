@@ -38,7 +38,7 @@ class TemplateTests: XCTestCase {
         }
         
         let template = Template(string: "{{name}}")!
-        template.extendBaseContext(Box(willRender))
+        template.extendBaseContext(Box(willRender: willRender))
         let rendering = template.render()!
         XCTAssertEqual(rendering, "observer")
     }

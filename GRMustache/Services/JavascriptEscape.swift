@@ -6,22 +6,14 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class JavascriptEscape: MustacheBoxable {
-    
-    func mustacheBox() -> Box {
-        return Box(
-            value: self,
-            render: self.render,
-            filter: Filter(self.filter),
-            willRender: self.willRender)
-    }
+class JavascriptEscape {
     
     private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(mustacheBox()), error: error)
+            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
         }
     }
     
@@ -42,7 +34,7 @@ class JavascriptEscape: MustacheBoxable {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
                     return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
                 } else {
@@ -131,5 +123,15 @@ class JavascriptEscape: MustacheBoxable {
             }
         }
         return escaped
+    }
+}
+
+extension Box {
+    init(_ formatter: JavascriptEscape) {
+        self.init(
+            value: formatter,
+            render: formatter.render,
+            filter: Filter(formatter.filter),
+            willRender: formatter.willRender)
     }
 }

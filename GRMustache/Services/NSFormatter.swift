@@ -8,15 +8,7 @@
 
 import Foundation
 
-extension NSFormatter: MustacheBoxable {
-    
-    public func mustacheBox() -> Box {
-        return Box(
-            value: self,
-            render: self.render,
-            filter: Filter(self.filter),
-            willRender: self.willRender)
-    }
+extension NSFormatter {
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
         if let object = box.value as? NSObject {
@@ -38,7 +30,7 @@ extension NSFormatter: MustacheBoxable {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.extendedContext(self.mustacheBox()), error: error)
+            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
         }
     }
     
@@ -68,5 +60,15 @@ extension NSFormatter: MustacheBoxable {
             // {{^ value }}
             return box
         }
+    }
+}
+
+extension Box {
+    public init(_ formatter: NSFormatter) {
+        self.init(
+            value: formatter,
+            render: formatter.render,
+            filter: Filter(formatter.filter),
+            willRender: formatter.willRender)
     }
 }

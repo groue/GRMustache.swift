@@ -49,7 +49,7 @@ class ContextTests: XCTestCase {
             return box
         }
         let template = Template(string: "{{success}}")!
-        template.baseContext = Context(Box(willRender))
+        template.baseContext = Context(Box(willRender: willRender))
         template.render()
         XCTAssertTrue(success)
     }
@@ -66,7 +66,7 @@ class ContextTests: XCTestCase {
         let willRender = { (tag: Tag, box: Box) -> Box in
             return box
         }
-        context = context.extendedContext(Box(willRender))
+        context = context.extendedContext(Box(willRender: willRender))
         XCTAssertEqual(context.topBox.value as String, "object")
 
         context = context.extendedContext(Box("object2"))

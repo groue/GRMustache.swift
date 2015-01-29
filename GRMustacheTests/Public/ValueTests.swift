@@ -14,7 +14,7 @@ class ValueTests: XCTestCase {
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from Box.
         
-        struct BoxableStruct: MustacheBoxable {
+        struct BoxableStruct {
             let name: String
             func mustacheBox() -> Box {
                 return Box(value: self)
@@ -25,7 +25,7 @@ class ValueTests: XCTestCase {
             let name: String
         }
         
-        class BoxableClass: MustacheBoxable {
+        class BoxableClass {
             let name: String
             init(name: String) {
                 self.name = name
@@ -43,32 +43,28 @@ class ValueTests: XCTestCase {
         }
         
         let boxableStruct = BoxableStruct(name: "BoxableStruct")
-        let optionalBoxableStruct: BoxableStruct? = BoxableStruct(name: "BoxableStruct")
         let boxableClass = BoxableClass(name: "BoxableClass")
         let optionalBoxableClass: BoxableClass? = BoxableClass(name: "BoxableClass")
         let NSObject = NSDate()
         
-        let boxedBoxableStruct: Box = Box(boxableStruct)
-//        let boxedOptionalBoxableStruct: Box = Box(optionalBoxableStruct)  // TODO: uncomment and avoid compiler error
-        let boxedStruct: Box = Box(value: Struct(name: "Struct"))
-        let boxedBoxableClass: Box = Box(boxableClass)
-//        let boxedOptionalBoxableClass: Box = Box(optionalBoxableClass)  // TODO: uncomment and avoid runtime error
-        let boxedClass: Box = Box(value: Class(name: "Class"))
-        let boxedNSObject: Box = Box(NSObject)
+        let boxedBoxableStruct = boxableStruct.mustacheBox()
+        let boxedStruct = Box(value: Struct(name: "Struct"))
+        let boxedBoxableClass = boxableClass.mustacheBox()
+        let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
+        let boxedClass = Box(value: Class(name: "Class"))
+        let boxedNSObject = Box(NSObject)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as BoxableStruct
-//        let extractedOptionalBoxableStruct = boxedOptionalBoxableStruct.value as? BoxableStruct
         let extractedStruct = boxedStruct.value as Struct
         let extractedBoxableClass = boxedBoxableClass.value as BoxableClass
-//        let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
+        let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
         let extractedClass = boxedClass.value as Class
         let extractedNSObject = boxedNSObject.value as NSDate
         
         XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
-//        XCTAssertEqual(extractedOptionalBoxableStruct!.name, "BoxableStruct")
         XCTAssertEqual(extractedStruct.name, "Struct")
         XCTAssertEqual(extractedBoxableClass.name, "BoxableClass")
-//        XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
+        XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
         XCTAssertEqual(extractedClass.name, "Class")
         XCTAssertEqual(extractedNSObject, NSObject)
     }
@@ -76,7 +72,7 @@ class ValueTests: XCTestCase {
     func testCustomValueFilter() {
         // Test that one can define a filter taking a CustomValue as an argument.
         
-        struct Boxable: MustacheBoxable {
+        struct Boxable {
             let name: String
             func mustacheBox() -> Box {
                 return Box(value: self)
@@ -111,8 +107,8 @@ class ValueTests: XCTestCase {
         
         let value1 = Box([
             "string": Box("success"),
-            "custom": Box(Boxable(name: "custom1")),
-            "f": Box(Filter(filter1))
+            "custom": Boxable(name: "custom1").mustacheBox(),
+            "f": Box(filter: Filter(filter1))
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
@@ -120,14 +116,14 @@ class ValueTests: XCTestCase {
         let value2 = Box([
             "string": Box("success"),
             "custom": Box(value: Boxable(name: "custom2")),
-            "f": Box(Filter(filter2))])
+            "f": Box(filter: Filter(filter2))])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
         let value3 = Box([
             "string": Box("success"),
             "custom": Box(NSDate()),
-            "f": Box(Filter(filter3))])
+            "f": Box(filter: Filter(filter3))])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
     }
