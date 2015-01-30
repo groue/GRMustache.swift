@@ -22,12 +22,8 @@ public class Context {
         switch type {
         case .Root:
             return Box()
-        case .BoxType(box: let box, parent: let parent):
-            if box.isHook {
-                return parent.topBox
-            } else {
-                return box
-            }
+        case .BoxType(box: let box, parent: _):
+            return box
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
             return parent.topBox
         }

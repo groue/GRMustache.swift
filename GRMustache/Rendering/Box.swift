@@ -31,23 +31,19 @@ public struct Box {
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
     
-    // True if only willRender or didRender are non nil.
-    let isHook: Bool
-    
     public init(value: Any? = nil, mustacheBool: Bool? = nil, inspect: InspectFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
-        let hasHook = willRender != nil || didRender != nil
-        let hasNonHook = value != nil || inspect != nil || render != nil || filter != nil
-        let empty = !hasHook && !hasNonHook
-        
+        let empty = (value == nil) && (inspect == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
-        self.isHook = hasHook && !hasNonHook
         self.value = value
         self.mustacheBool = mustacheBool ?? !empty
         self.inspect = inspect
+        self.filter = filter
+        self.willRender = willRender
+        self.didRender = didRender
         if let render = render {
             self.render = render
         } else {
-            // Avoid error: variable 'self.render' captured by a closure before being initialized
+            // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
             self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
             self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 switch info.tag.type {
@@ -62,9 +58,6 @@ public struct Box {
                 }
             }
         }
-        self.filter = filter
-        self.willRender = willRender
-        self.didRender = didRender
     }
 }
 
@@ -329,13 +322,12 @@ extension Box {
     
     public init(_ dictionary: [String: Box]) {
         self.isEmpty = false
-        self.isHook = false
         self.value = dictionary
         self.mustacheBool = true
         self.inspect = { (key: String) -> Box? in
             return dictionary[key]
         }
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
@@ -355,10 +347,9 @@ extension Box {
             return true
         }
         self.isEmpty = false
-        self.isHook = false
         self.value = sequence
         self.mustacheBool = !emptySequence
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
@@ -396,7 +387,6 @@ extension Box {
     
     public init<T: CollectionType where T.Generator.Element == Box, T.Index: BidirectionalIndexType, T.Index.Distance == Int>(_ collection: T) {
         self.isEmpty = false
-        self.isHook = false
         self.value = collection
         self.mustacheBool = (countElements(collection) > 0)
         self.inspect = { (key: String) -> Box? in
@@ -419,7 +409,7 @@ extension Box {
                 return Box()
             }
         }
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
@@ -527,13 +517,12 @@ extension Box {
 
     private init(_ object: NSObject) {
         self.isEmpty = false
-        self.isHook = false
         self.value = object
         self.mustacheBool = true
         self.inspect = { (key: String) -> Box? in
             return Box(object.valueForKey(key))
         }
-        // Avoid error: variable 'self.render' captured by a closure before being initialized
+        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
         self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {

@@ -63,11 +63,12 @@ class ContextTests: XCTestCase {
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
         
-        let willRender = { (tag: Tag, box: Box) -> Box in
-            return box
-        }
-        context = context.extendedContext(Box(willRender: willRender))
-        XCTAssertEqual(context.topBox.value as String, "object")
+        // TODO: check if those commented lines are worth decommenting
+//        let willRender = { (tag: Tag, box: Box) -> Box in
+//            return box
+//        }
+//        context = context.extendedContext(Box(willRender: willRender))
+//        XCTAssertEqual(context.topBox.value as String, "object")
 
         context = context.extendedContext(Box("object2"))
         XCTAssertEqual(context.topBox.value as String, "object2")
