@@ -94,7 +94,7 @@ let pluralize = Filter({ (count: Int?, info: RenderingInfo, error: NSErrorPointe
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(filter: pluralize)]))
+Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": Box(filter: pluralize)]))
 
 
 // I have 3 cats.
