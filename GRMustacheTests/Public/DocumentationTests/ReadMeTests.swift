@@ -73,7 +73,8 @@ class ReadMeTests: XCTestCase {
         }
         
         let user = User(name: "Arthur")
-        let rendering = Template(string:"Hello {{name}}!")!.render(boxValue(user))!
+        let template = Template(string: "Hello {{name}}!")!
+        let rendering = template.render(boxValue(user))!
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     

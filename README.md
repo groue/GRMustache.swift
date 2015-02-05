@@ -19,10 +19,9 @@ Its APIs are similar to the Objective-C version [GRMustache](https://github.com/
 let template = Template(named: "template")!
 let data = [
     "name": "Chris",
-    "value": 10000.0,
+    "value": 10000,
     "taxed_value": 10000 - (10000 * 0.4),
-    "in_ca": true
-]
+    "in_ca": true]
 let rendering = template.render(boxValue(data))!
 ```
 
@@ -98,7 +97,7 @@ let pluralize = Filter({ (count: Int?, info: RenderingInfo, error: NSErrorPointe
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": Box(filter: pluralize)]))
+Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": boxValue(pluralizeFilter)]))
 
 
 // I have 3 cats.
