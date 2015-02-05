@@ -11,9 +11,9 @@ import GRMustache;
 
 class FoundationCollectionTests: XCTestCase {
     
-    var boxedArray: Box!
-    var boxedSet: Box!
-    var boxedOrderedSet: Box!
+    var boxedArray: MustacheBox!
+    var boxedSet: MustacheBox!
+    var boxedOrderedSet: MustacheBox!
     
     override func setUp() {
         boxedArray = {
@@ -21,21 +21,21 @@ class FoundationCollectionTests: XCTestCase {
             array.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(array, forKey: "collection")
-            return boxValue(data)
+            return Box(data)
         }()
         boxedSet = {
             var set = NSMutableSet()
             set.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(set, forKey: "collection")
-            return boxValue(data)
+            return Box(data)
             }()
         boxedOrderedSet = {
             var orderedSet = NSMutableOrderedSet()
             orderedSet.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(orderedSet, forKey: "collection")
-            return boxValue(data)
+            return Box(data)
             }()
     }
     

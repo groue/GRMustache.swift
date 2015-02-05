@@ -21,7 +21,7 @@ class LocalizerTests: XCTestCase {
     
     func testLocalizer() {
         let template = Template(string: "{{localize(string)}}")!
-        let box = boxValue(["localize": boxValue(localizer), "string": boxValue("testable?")])
+        let box = Box(["localize": Box(localizer), "string": Box("testable?")])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "YES")
     }
@@ -29,14 +29,14 @@ class LocalizerTests: XCTestCase {
     func testLocalizerFromTable() {
         let template = Template(string: "{{localize(string)}}")!
         let localizer = Localizer(bundle: localizableBundle, table: "Table")
-        let box = boxValue(["localize": boxValue(localizer), "string": boxValue("table_testable?")])
+        let box = Box(["localize": Box(localizer), "string": Box("table_testable?")])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "YES")
     }
 
     func testDefaultLocalizerAsFilter() {
         let template = Template(string: "{{localize(foo)}}")!
-        let box = boxValue(["foo": "bar"])
+        let box = Box(["foo": "bar"])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
     }
@@ -49,27 +49,27 @@ class LocalizerTests: XCTestCase {
     
     func testDefaultLocalizerAsRenderableWithArgument() {
         let template = Template(string: "{{#localize}}...{{foo}}...{{/}}")!
-        let box = boxValue(["foo": "bar"])
+        let box = Box(["foo": "bar"])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "...bar...")
     }
     
     func testDefaultLocalizerAsRenderableWithArgumentAndConditions() {
         let template = Template(string: "{{#localize}}.{{foo}}.{{^false}}{{baz}}{{/}}.{{/}}")!
-        let box = boxValue(["foo": "bar", "baz": "truc"])
+        let box = Box(["foo": "bar", "baz": "truc"])
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, ".bar.truc.")
     }
     
     func testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString() {
         var template = Template(string: "{{#localize}}%d{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         var rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%d", value: nil, table: nil), "ha ha percent d %d")
         XCTAssertEqual(rendering, "ha ha percent d %d")
         
         template = Template(string: "{{#localize}}%@{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%@", value: nil, table: nil), "ha ha percent @ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@")
@@ -77,29 +77,29 @@ class LocalizerTests: XCTestCase {
     
     func testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString() {
         var template = Template(string: "{{#localize}}%d {{foo}}{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
-        var rendering = template.render(boxValue(["foo": "bar"]))!
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
+        var rendering = template.render(Box(["foo": "bar"]))!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%%d %@", value: nil, table: nil), "ha ha percent d %%d %@")
         XCTAssertEqual(rendering, "ha ha percent d %d bar")
 
         template = Template(string: "{{#localize}}%@ {{foo}}{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
-        rendering = template.render(boxValue(["foo": "bar"]))!
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
+        rendering = template.render(Box(["foo": "bar"]))!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%%@ %@", value: nil, table: nil), "ha ha percent @ %%@ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@ bar")
     }
     
     func testLocalizerAsFilter() {
         let template = Template(string: "{{localize(foo)}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
-        let rendering = template.render(boxValue(["foo": "bar"]))!
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
+        let rendering = template.render(Box(["foo": "bar"]))!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
     
     func testLocalizerAsRenderable() {
         let template = Template(string: "{{#localize}}bar{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         let rendering = template.render()!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
@@ -107,37 +107,37 @@ class LocalizerTests: XCTestCase {
     
     func testLocalizerAsRenderableWithArgument() {
         let template = Template(string: "{{#localize}}..{{foo}}..{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
-        let rendering = template.render(boxValue(["foo": "bar"]))!
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
+        let rendering = template.render(Box(["foo": "bar"]))!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey("..%@..", value: nil, table: nil), "!!%@!!")
         XCTAssertEqual(rendering, "!!bar!!")
     }
     
     func testLocalizerAsRenderableWithArgumentAndConditions() {
         let template = Template(string: "{{#localize}}.{{foo}}.{{^false}}{{baz}}{{/}}.{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["localize": boxValue(localizer)]))
-        let rendering = template.render(boxValue(["foo": "bar", "baz": "truc"]))!
+        template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
+        let rendering = template.render(Box(["foo": "bar", "baz": "truc"]))!
         XCTAssertEqual(self.localizer.bundle.localizedStringForKey(".%@.%@.", value: nil, table: nil), "!%@!%@!")
         XCTAssertEqual(rendering, "!bar!truc!")
     }
     
     func testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates() {
         var template = Template(string: "{{#localize}}..{{foo}}..{{/}}")!
-        var rendering = template.render(boxValue(["foo": "&"]))!
+        var rendering = template.render(Box(["foo": "&"]))!
         XCTAssertEqual(rendering, "..&amp;..")
 
         template = Template(string: "{{#localize}}..{{{foo}}}..{{/}}")!
-        rendering = template.render(boxValue(["foo": "&"]))!
+        rendering = template.render(Box(["foo": "&"]))!
         XCTAssertEqual(rendering, "..&..")
     }
     
     func testLocalizerRendersUnescapedValuesOfTextTemplates() {
         var template = Template(string: "{{% CONTENT_TYPE:TEXT }}{{#localize}}..{{foo}}..{{/}}")!
-        var rendering = template.render(boxValue(["foo": "&"]))!
+        var rendering = template.render(Box(["foo": "&"]))!
         XCTAssertEqual(rendering, "..&..")
         
         template = Template(string: "{{% CONTENT_TYPE:TEXT }}{{#localize}}..{{{foo}}}..{{/}}")!
-        rendering = template.render(boxValue(["foo": "&"]))!
+        rendering = template.render(Box(["foo": "&"]))!
         XCTAssertEqual(rendering, "..&..")
     }
 }

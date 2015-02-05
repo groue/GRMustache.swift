@@ -13,19 +13,19 @@ class JavascriptEscape: MustacheBoxable {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
         }
     }
     
-    private func filter(box: Box, error: NSErrorPointer) -> Box? {
+    private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
         if let string = box.stringValue {
-            return boxValue(JavascriptEscape.escapeJavascript(string))
+            return Box(JavascriptEscape.escapeJavascript(string))
         } else {
-            return Box.empty
+            return MustacheBox.empty
         }
     }
     
-    private func willRender(tag: Tag, box: Box) -> Box {
+    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -34,7 +34,7 @@ class JavascriptEscape: MustacheBoxable {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
                     return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
                 } else {
@@ -128,8 +128,8 @@ class JavascriptEscape: MustacheBoxable {
     
     // MARK: - MustacheBoxable
     
-    var mustacheBox: Box {
-        return boxValue(
+    var mustacheBox: MustacheBox {
+        return Box(
             value: self,
             render: render,
             filter: Filter(filter),

@@ -8,17 +8,17 @@
 
 class ExpressionInvocation: ExpressionVisitor {
     private let expression: Expression
-    private var box: Box
+    private var box: MustacheBox
     private var context: Context?
     
     init (expression: Expression) {
-        self.box = Box.empty
+        self.box = MustacheBox.empty
         self.expression = expression
     }
     
     enum InvocationResult {
         case Error(NSError)
-        case Success(Box)
+        case Success(MustacheBox)
     }
     
     func invokeWithContext(context: Context) -> InvocationResult {
@@ -64,7 +64,7 @@ class ExpressionInvocation: ExpressionVisitor {
                 // MustacheFilter result is nil, but filter error is not set.
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
-                box = Box.empty
+                box = MustacheBox.empty
                 return .Success
             }
         } else if boxedFilter.isEmpty {

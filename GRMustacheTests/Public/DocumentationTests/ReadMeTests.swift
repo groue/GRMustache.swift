@@ -19,7 +19,7 @@ class ReadMeTests: XCTestCase {
             "value": 10000.0,
             "taxed_value": 10000 - (10000 * 0.4),
             "in_ca": true]
-        let rendering = template.render(boxValue(data))!
+        let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000.0 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     
@@ -43,7 +43,7 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": boxValue(pluralizeFilter)]))
+        Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
         
         
         // I have 3 cats.
@@ -51,7 +51,7 @@ class ReadMeTests: XCTestCase {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let template = Template(named: "ReadMeExample2", bundle: testBundle)!
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-        let rendering = template.render(boxValue(data))!
+        let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "I have 3 cats.")
         
         Configuration.defaultConfiguration = Configuration()
@@ -61,12 +61,12 @@ class ReadMeTests: XCTestCase {
         // Allow Mustache engine to consume User values.
         struct User: MustacheBoxable {
             let name: String
-            var mustacheBox: Box {
-                // Return a Box that is able to extract the `name` key of our user:
-                return boxValue { (key: String) -> Box? in
+            var mustacheBox: MustacheBox {
+                // Return a MustacheBox that is able to extract the `name` key of our user:
+                return Box { (key: String) -> MustacheBox? in
                     switch key {
                     case "name":
-                        return boxValue(self.name)
+                        return Box(self.name)
                     default:
                         return nil
                     }
@@ -76,7 +76,7 @@ class ReadMeTests: XCTestCase {
         
         let user = User(name: "Arthur")
         let template = Template(string: "Hello {{name}}!")!
-        let rendering = template.render(boxValue(user))!
+        let rendering = template.render(Box(user))!
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     

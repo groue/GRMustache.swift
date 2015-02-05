@@ -12,16 +12,16 @@
 public class Context {
     private enum Type {
         case Root
-        case BoxType(box: Box, parent: Context)
+        case BoxType(box: MustacheBox, parent: Context)
         case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
     }
     
     private let type: Type
     
-    public var topBox: Box {
+    public var topBox: MustacheBox {
         switch type {
         case .Root:
-            return Box.empty
+            return MustacheBox.empty
         case .BoxType(box: let box, parent: _):
             return box
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
@@ -67,11 +67,11 @@ public class Context {
         self.init(type: .Root)
     }
     
-    public convenience init(_ box: Box) {
+    public convenience init(_ box: MustacheBox) {
         self.init(type: .BoxType(box: box, parent: Context()))
     }
     
-    public func extendedContext(box: Box) -> Context {
+    public func extendedContext(box: MustacheBox) -> Context {
         if box.isEmpty {
             return self
         } else {
@@ -113,10 +113,10 @@ public class Context {
         }
     }
     
-    public subscript(key: String) -> Box {
+    public subscript(key: String) -> MustacheBox {
         switch type {
         case .Root:
-            return Box.empty
+            return MustacheBox.empty
         case .BoxType(box: let box, parent: let parent):
             let innerBox = box[key]
             if innerBox.isEmpty {
@@ -129,7 +129,7 @@ public class Context {
         }
     }
     
-    public func boxForMustacheExpression(string: String, error: NSErrorPointer = nil) -> Box? {
+    public func boxForMustacheExpression(string: String, error: NSErrorPointer = nil) -> MustacheBox? {
         let parser = ExpressionParser()
         var empty = false
         if let expression = parser.parse(string, empty: &empty, error: error) {

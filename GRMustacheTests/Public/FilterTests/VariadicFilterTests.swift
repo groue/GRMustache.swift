@@ -12,105 +12,105 @@ import GRMustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return boxValue(",".join(args.map { $0.stringValue ?? "" }))
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(",".join(args.map { $0.stringValue ?? "" }))
         })
-        let box = boxValue([
-            "a": boxValue("a"),
-            "b": boxValue("b"),
-            "c": boxValue("c"),
-            "join": boxValue(filter)] as [String: Box]) // TODO: remove this unnecessary cast
+        let box = Box([
+            "a": Box("a"),
+            "b": Box("b"),
+            "c": Box("c"),
+            "join": Box(filter)] as [String: MustacheBox]) // TODO: remove this unnecessary cast
         let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a a,b a,b,c")
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             let joined = ",".join(args.map { $0.stringValue ?? "" })
-            return boxValue(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
-                return boxValue(joined + "+" + (box.stringValue ?? ""))
+            return Box(Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+                return Box(joined + "+" + (box.stringValue ?? ""))
             }))
         })
-        let box = boxValue([
-            "a": boxValue("a"),
-            "b": boxValue("b"),
-            "c": boxValue("c"),
-            "f": boxValue(filter)] as [String: Box])    // TODO: remove this unnecessary cast
+        let box = Box([
+            "a": Box("a"),
+            "b": Box("b"),
+            "c": Box("c"),
+            "f": Box(filter)] as [String: MustacheBox])    // TODO: remove this unnecessary cast
         let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return boxValue(["foo": "bar"])
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(["foo": "bar"])
         })
-        let box = boxValue(["f": boxValue(filter)])
+        let box = Box(["f": Box(filter)])
         let template = Template(string:"{{f(a,b).foo}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return boxValue(["foo": "bar"])
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(["foo": "bar"])
         })
-        let box = boxValue(["f": boxValue(filter)])
+        let box = Box(["f": Box(filter)])
         let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return boxValue(args)
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(args)
         })
-        let box = boxValue([
-            "a": boxValue("a"),
-            "b": boxValue("b"),
-            "c": boxValue("c"),
-            "f": boxValue(filter)] as [String: Box])    // TODO: remove this unnecessary cast
+        let box = Box([
+            "a": Box("a"),
+            "b": Box("b"),
+            "c": Box("c"),
+            "f": Box(filter)] as [String: MustacheBox])    // TODO: remove this unnecessary cast
         let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "ab abc")
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             return args.first
         })
-        let box = boxValue([
-            "yes": boxValue(true),
-            "no": boxValue(false),
-            "f": boxValue(filter)])
+        let box = Box([
+            "yes": Box(true),
+            "no": Box(false),
+            "f": Box(filter)])
         let template = Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "YES NO")
     }
     
     func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
+        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             return nil
         })
-        let box = boxValue(["f": boxValue(filter)])
+        let box = Box(["f": Box(filter)])
         let template = Template(string:"{{^f(x)}}nil{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "nil")
     }
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
-        let box = boxValue([
-            "f": boxValue(VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
+        let box = Box([
+            "f": Box(VariadicFilter({ (arguments: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
                 var result = ""
                 for argument in arguments {
-                    if let dictionary = argument.value as? [String: Box] {
+                    if let dictionary = argument.value as? [String: MustacheBox] {
                         result += String(countElements(dictionary))
                     }
                 }
-                return boxValue(result)
+                return Box(result)
             })),
-            "foo": boxValue(["a": "a", "b": "b", "c": "c"])
+            "foo": Box(["a": "a", "b": "b", "c": "c"])
             ])
         let template = Template(string:"{{f(foo,.)}} {{f(.,foo)}}")!
         let rendering = template.render(box)!

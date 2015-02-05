@@ -30,14 +30,14 @@ class ConfigurationContentTypeTests: XCTestCase {
     func testDefaultConfigurationContentTypeHTMLHasTemplateRenderEscapedInput() {
         Configuration.defaultConfiguration.contentType = .HTML
         let template = Template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
 
     func testDefaultConfigurationContentTypeTextLHasTemplateRenderUnescapedInput() {
         Configuration.defaultConfiguration.contentType = .Text
         let template = Template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -62,7 +62,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -87,7 +87,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -105,7 +105,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -123,7 +123,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
@@ -141,7 +141,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -159,21 +159,21 @@ class ConfigurationContentTypeTests: XCTestCase {
         }
         
         let template = Template(string: "{{.}}")!
-        template.render(boxValue(render))
+        template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testPragmaContentTypeTextOverridesDefaultConfiguration() {
         Configuration.defaultConfiguration.contentType = .HTML
         let template = Template(string:"{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testPragmaContentTypeHTMLOverridesDefaultConfiguration() {
         Configuration.defaultConfiguration.contentType = .Text
         let template = Template(string:"{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -193,7 +193,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -201,7 +201,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -211,7 +211,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -219,7 +219,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
 
@@ -230,7 +230,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -239,7 +239,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -250,7 +250,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -259,7 +259,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
         let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -269,7 +269,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -277,7 +277,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
         let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
@@ -287,7 +287,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -295,7 +295,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
         let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(boxValue("&"))!
+        let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     

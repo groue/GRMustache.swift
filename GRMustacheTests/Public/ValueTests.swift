@@ -12,12 +12,12 @@ import GRMustache
 class ValueTests: XCTestCase {
     
     func testCustomValueExtraction() {
-        // Test that one can extract a custom value from Box.
+        // Test that one can extract a custom value from MustacheBox.
         
         struct BoxableStruct {
             let name: String
-            func mustacheBox() -> Box {
-                return boxValue(value: self)
+            func mustacheBox() -> MustacheBox {
+                return Box(value: self)
             }
         }
         
@@ -30,8 +30,8 @@ class ValueTests: XCTestCase {
             init(name: String) {
                 self.name = name
             }
-            func mustacheBox() -> Box {
-                return boxValue(value: self)
+            func mustacheBox() -> MustacheBox {
+                return Box(value: self)
             }
         }
         
@@ -48,11 +48,11 @@ class ValueTests: XCTestCase {
         let NSObject = NSDate()
         
         let boxedBoxableStruct = boxableStruct.mustacheBox()
-        let boxedStruct = boxValue(value: Struct(name: "Struct"))
+        let boxedStruct = Box(value: Struct(name: "Struct"))
         let boxedBoxableClass = boxableClass.mustacheBox()
         let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
-        let boxedClass = boxValue(value: Class(name: "Class"))
-        let boxedNSObject = boxValue(NSObject)
+        let boxedClass = Box(value: Class(name: "Class"))
+        let boxedNSObject = Box(NSObject)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as BoxableStruct
         let extractedStruct = boxedStruct.value as Struct
@@ -74,56 +74,56 @@ class ValueTests: XCTestCase {
         
         struct Boxable: MustacheBoxable {
             let name: String
-            var mustacheBox: Box {
-                return boxValue(value: self)
+            var mustacheBox: MustacheBox {
+                return Box(value: self)
             }
         }
         
-        let filter1 = { (value: Boxable?, error: NSErrorPointer) -> Box? in
+        let filter1 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
             if let value = value {
-                return boxValue(value.name)
+                return Box(value.name)
             } else {
-                return boxValue("other")
+                return Box("other")
             }
         }
         
-        let filter2 = { (value: Boxable?, error: NSErrorPointer) -> Box? in
+        let filter2 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
             if let value = value {
-                return boxValue(value.name)
+                return Box(value.name)
             } else {
-                return boxValue("other")
+                return Box("other")
             }
         }
         
-        let filter3 = { (value: NSDate?, error: NSErrorPointer) -> Box? in
+        let filter3 = { (value: NSDate?, error: NSErrorPointer) -> MustacheBox? in
             if let value = value {
-                return boxValue("custom3")
+                return Box("custom3")
             } else {
-                return boxValue("other")
+                return Box("other")
             }
         }
         
         let template = Template(string:"{{f(custom)}},{{f(string)}}")!
         
-        let value1 = boxValue([
-            "string": boxValue("success"),
-            "custom": boxValue(Boxable(name: "custom1")),
-            "f": boxValue(Filter(filter1))
+        let value1 = Box([
+            "string": Box("success"),
+            "custom": Box(Boxable(name: "custom1")),
+            "f": Box(Filter(filter1))
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
         
-        let value2 = boxValue([
-            "string": boxValue("success"),
-            "custom": boxValue(value: Boxable(name: "custom2")),
-            "f": boxValue(Filter(filter2))])
+        let value2 = Box([
+            "string": Box("success"),
+            "custom": Box(value: Boxable(name: "custom2")),
+            "f": Box(Filter(filter2))])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
-        let value3 = boxValue([
-            "string": boxValue("success"),
-            "custom": boxValue(NSDate()),
-            "f": boxValue(Filter(filter3))])
+        let value3 = Box([
+            "string": Box("success"),
+            "custom": Box(NSDate()),
+            "f": Box(Filter(filter3))])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
     }
@@ -131,7 +131,7 @@ class ValueTests: XCTestCase {
     func testArrayOfInt() {
         let value: Array<Int> = [0,1,2,3]
         let template = Template(string: "{{#.}}{{.}}{{/}}")!
-        let box = boxValue(value)
+        let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "0123")
     }
@@ -139,7 +139,7 @@ class ValueTests: XCTestCase {
     func testArrayOfArrayOfInt() {
         let value: Array<Array<Int>> = [[0,1],[2,3]]
         let template = Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")!
-        let box = boxValue(value)
+        let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[0,1,],[2,3,],")
     }
@@ -147,7 +147,7 @@ class ValueTests: XCTestCase {
     func testArrayOfArrayOfArrayOfInt() {
         let value: Array<Array<Array<Int>>> = [[[0,1],[2,3]], [[4,5],[6,7]]]
         let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")!
-        let box = boxValue(value)
+        let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
@@ -155,7 +155,7 @@ class ValueTests: XCTestCase {
     func testArrayOfArrayOfArrayOfDictionaryOfInt() {
         let value: Array<Array<Array<Dictionary<String, Int>>>> = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
         let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")!
-        let box = boxValue(value)
+        let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
@@ -163,7 +163,7 @@ class ValueTests: XCTestCase {
     func testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
         let value: Dictionary<String, Array<Array<Array<Dictionary<String, Int>>>>> = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
         let template = Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")!
-        let box = boxValue(value)
+        let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")
     }

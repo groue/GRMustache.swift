@@ -188,7 +188,7 @@ public class Template: MustacheBoxable {
     
     :returns: The rendered string
     */
-    public func render(_ box: Box = Box.empty, error: NSErrorPointer = nil) -> String? {
+    public func render(_ box: MustacheBox = MustacheBox.empty, error: NSErrorPointer = nil) -> String? {
         if let rendering = render(baseContext.extendedContext(box), error: error) {
             return rendering.string
         } else {
@@ -233,7 +233,7 @@ public class Template: MustacheBoxable {
     */
     public var baseContext: Context
     
-    public func extendBaseContext(box: Box) {
+    public func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
     
@@ -283,8 +283,8 @@ public class Template: MustacheBoxable {
     
     // MARK: - MustacheBoxable
     
-    public var mustacheBox: Box {
-        return boxValue(
+    public var mustacheBox: MustacheBox {
+        return Box(
             value: self,
             render: render)
     }

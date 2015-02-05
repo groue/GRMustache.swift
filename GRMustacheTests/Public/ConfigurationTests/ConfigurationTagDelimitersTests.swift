@@ -32,7 +32,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         Configuration.defaultConfiguration.tagEndDelimiter = "%>"
         
         let template = Template(string: "<%subject%>")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -41,7 +41,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         Configuration.defaultConfiguration.tagEndDelimiter = "%>"
         
         let template = Template(string: "<%=[[ ]]=%>[[subject]]")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -68,7 +68,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = repository.template(string: "<%subject%>")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -78,7 +78,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagEndDelimiter = "%>"
         
         let template = repository.template(string: "<%subject%>")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -93,7 +93,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = repository.template(string: "[[subject]]")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -106,7 +106,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagEndDelimiter = "]]"
         
         let template = repository.template(string: "[[subject]]")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -118,7 +118,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = repository.template(string: "<%=[[ ]]=%>[[subject]]")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     
@@ -128,7 +128,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagEndDelimiter = "%>"
         
         let template = repository.template(string: "<%=[[ ]]=%>[[subject]]")!
-        let rendering = template.render(boxValue(["subject": "---"]))!
+        let rendering = template.render(Box(["subject": "---"]))!
         XCTAssertEqual(rendering, "---")
     }
     

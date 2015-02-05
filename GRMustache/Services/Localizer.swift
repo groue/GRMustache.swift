@@ -18,11 +18,11 @@ public class Localizer: MustacheBoxable {
         self.table = table
     }
     
-    private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {
+    private func filter(argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? {
         if let string = argument.stringValue {
-            return boxValue(localizedStringForKey(string))
+            return Box(localizedStringForKey(string))
         } else {
-            return Box.empty
+            return MustacheBox.empty
         }
     }
     
@@ -45,7 +45,7 @@ public class Localizer: MustacheBoxable {
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.extendedContext(boxValue(self))
+        let context = info.context.extendedContext(Box(self))
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             
@@ -102,7 +102,7 @@ public class Localizer: MustacheBoxable {
         }
     }
     
-    public func willRender(tag: Tag, box: Box) -> Box {
+    public func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -110,7 +110,7 @@ public class Localizer: MustacheBoxable {
             // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments == nil {
-                return boxValue(Placeholder.string)
+                return Box(Placeholder.string)
             } else {
                 return box
             }
@@ -125,7 +125,7 @@ public class Localizer: MustacheBoxable {
         }
     }
     
-    public func didRender(tag: Tag, box: Box, string: String?) {
+    public func didRender(tag: Tag, box: MustacheBox, string: String?) {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -148,8 +148,8 @@ public class Localizer: MustacheBoxable {
     
     // MARK: - MustacheBoxable
     
-    public var mustacheBox: Box {
-        return boxValue(
+    public var mustacheBox: MustacheBox {
+        return Box(
             value: self,
             render: render,
             filter: filter,

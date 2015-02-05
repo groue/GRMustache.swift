@@ -22,7 +22,7 @@ let data = [
     "value": 10000,
     "taxed_value": 10000 - (10000 * 0.4),
     "in_ca": true]
-let rendering = template.render(boxValue(data))!
+let rendering = template.render(Box(data))!
 ```
 
 
@@ -42,17 +42,17 @@ We want to let templates extract the `name` key out of a user, so that, for exam
 
 Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine finding the `name` of a User.
 
-Helping the Mustache engine always involves "boxing" with the `boxValue()` function. Only values that conform to the `MustacheBoxable` protocol can be boxed:
+Helping the Mustache engine always involves "boxing" with the `Box()` function. Only values that conform to the `MustacheBoxable` protocol can be boxed:
 
 ```swift
 // Allow Mustache engine to consume User values.
 extension User: MustacheBoxable {
-    var mustacheBox: Box {
+    var mustacheBox: MustacheBox {
         // Return a Box that is able to extract the `name` key of our user:
-        return boxValue { (key: String) -> Box? in
+        return Box { (key: String) -> MustacheBox? in
             switch key {
             case "name":
-                return boxValue(self.name)
+                return Box(self.name)
             default:
                 return nil
             }
@@ -63,7 +63,7 @@ extension User: MustacheBoxable {
 // Hello Arthur!
 let user = User(name: "Arthur")
 let template = Template(string: "Hello {{name}}!")!
-let rendering = template.render(boxValue(user))!
+let rendering = template.render(Box(user))!
 ```
 
 
@@ -96,12 +96,12 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo, error: NSErrorPointe
 
 // Register the pluralize filter for all Mustache renderings:
 
-Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": boxValue(pluralizeFilter)]))
+Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
 
 
 // I have 3 cats.
 
 let template = Template(named: "example2")!
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-let rendering = template.render(boxValue(data))!
+let rendering = template.render(Box(data))!
 ```

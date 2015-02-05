@@ -1,5 +1,5 @@
 //
-//  Box.swift
+//  MustacheBox.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 08/11/2014.
@@ -11,17 +11,17 @@
 // =============================================================================
 // MARK: - Core function types
 
-public typealias SubscriptFunction = (key: String) -> Box?
-public typealias FilterFunction = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
+public typealias SubscriptFunction = (key: String) -> MustacheBox?
+public typealias FilterFunction = (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
-public typealias WillRenderFunction = (tag: Tag, box: Box) -> Box
-public typealias DidRenderFunction = (tag: Tag, box: Box, string: String?) -> Void
+public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
+public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 
 
 // =============================================================================
-// MARK: - Box
+// MARK: - MustacheBox
 
-public struct Box {
+public struct MustacheBox {
     public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
@@ -60,24 +60,24 @@ public struct Box {
         }
     }
     
-    public static var empty: Box {
-        return Box.empty
+    public static var empty: MustacheBox {
+        return Box()
     }
 }
 
-public func boxValue(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> Box {
-    return Box(value: value, mustacheBool: mustacheBool, objectForKeyedSubscript: objectForKeyedSubscript, render: render, filter: filter, willRender: willRender, didRender: didRender)
+public func Box(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> MustacheBox {
+    return MustacheBox(value: value, mustacheBool: mustacheBool, objectForKeyedSubscript: objectForKeyedSubscript, render: render, filter: filter, willRender: willRender, didRender: didRender)
 }
 
 
 
 // =============================================================================
-// MARK: - Box derivation
+// MARK: - MustacheBox derivation
 
-extension Box {
+extension MustacheBox {
     // TODO: find better name
-    public func boxWithRenderFunction(render: RenderFunction) -> Box {
-        return Box(
+    public func boxWithRenderFunction(render: RenderFunction) -> MustacheBox {
+        return MustacheBox(
             value: self.value,
             mustacheBool: self.mustacheBool,
             objectForKeyedSubscript: self.objectForKeyedSubscript,
@@ -92,9 +92,9 @@ extension Box {
 
 
 // =============================================================================
-// MARK: - Box unwrapping
+// MARK: - MustacheBox unwrapping
 
-extension Box {
+extension MustacheBox {
     
     public var intValue: Int? {
         if let int = value as? Int {
@@ -127,16 +127,17 @@ extension Box {
     }
 }
 
+
 // =============================================================================
 // MARK: - DebugPrintable
 
-extension Box: DebugPrintable {
+extension MustacheBox: DebugPrintable {
     
     public var debugDescription: String {
         if let value = value {
-            return "Box(\(value))"  // remove the "Optional" in the output
+            return "MustacheBox(\(value))"  // remove the "Optional" in the output
         } else {
-            return "Box(\(value))"
+            return "MustacheBox(\(value))"
         }
     }
 }
@@ -145,15 +146,15 @@ extension Box: DebugPrintable {
 // =============================================================================
 // MARK: - Key extraction
 
-extension Box {
+extension MustacheBox {
     
-    subscript(key: String) -> Box {
+    subscript(key: String) -> MustacheBox {
         if let objectForKeyedSubscript = objectForKeyedSubscript {
             if let box = objectForKeyedSubscript(key: key) {
                 return box
             }
         }
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
@@ -161,24 +162,24 @@ extension Box {
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
 
-public func boxValue(objectForKeyedSubscript: SubscriptFunction) -> Box {
-    return Box(objectForKeyedSubscript: objectForKeyedSubscript)
+public func Box(objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
+    return MustacheBox(objectForKeyedSubscript: objectForKeyedSubscript)
 }
 
-public func boxValue(filter: FilterFunction) -> Box {
-    return Box(filter: filter)
+public func Box(filter: FilterFunction) -> MustacheBox {
+    return MustacheBox(filter: filter)
 }
 
-public func boxValue(render: RenderFunction) -> Box {
-    return Box(render: render)
+public func Box(render: RenderFunction) -> MustacheBox {
+    return MustacheBox(render: render)
 }
 
-public func boxValue(willRender: WillRenderFunction) -> Box {
-    return Box(willRender: willRender)
+public func Box(willRender: WillRenderFunction) -> MustacheBox {
+    return MustacheBox(willRender: willRender)
 }
 
-public func boxValue(didRender: DidRenderFunction) -> Box {
-    return Box(didRender: didRender)
+public func Box(didRender: DidRenderFunction) -> MustacheBox {
+    return MustacheBox(didRender: didRender)
 }
 
 
@@ -186,38 +187,38 @@ public func boxValue(didRender: DidRenderFunction) -> Box {
 // MARK: - Boxing of Swift scalar types
 
 public protocol MustacheBoxable {
-    var mustacheBox: Box { get }
+    var mustacheBox: MustacheBox { get }
 }
 
-public func boxValue<T: MustacheBoxable>(boxable: T?) -> Box {
+public func Box<T: MustacheBoxable>(boxable: T?) -> MustacheBox {
     if let boxable = boxable {
         return boxable.mustacheBox
     } else {
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
-extension Box: MustacheBoxable {
-    public var mustacheBox: Box {
+extension MustacheBox: MustacheBoxable {
+    public var mustacheBox: MustacheBox {
         return self
     }
 }
 
 extension Bool: MustacheBoxable {
-    public var mustacheBox: Box {
+    public var mustacheBox: MustacheBox {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        return Box(
+        return MustacheBox(
             value: self,
             mustacheBool: self,
             render: render)
@@ -225,20 +226,20 @@ extension Bool: MustacheBoxable {
 }
 
 extension Int: MustacheBoxable {
-    public var mustacheBox: Box {
+    public var mustacheBox: MustacheBox {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        return Box(
+        return MustacheBox(
             value: self,
             mustacheBool: (self != 0),
             render: render)
@@ -246,20 +247,20 @@ extension Int: MustacheBoxable {
 }
 
 extension Double: MustacheBoxable {
-    public var mustacheBox: Box {
+    public var mustacheBox: MustacheBox {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        return Box(
+        return MustacheBox(
             value: self,
             mustacheBool: (self != 0.0),
             render: render)
@@ -267,11 +268,11 @@ extension Double: MustacheBoxable {
 }
 
 extension String: MustacheBoxable {
-    public var mustacheBox: Box {
-        let objectForKeyedSubscript = { (key: String) -> Box? in
+    public var mustacheBox: MustacheBox {
+        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
             switch key {
             case "length":
-                return boxValue(countElements(self))
+                return Box(countElements(self))
             default:
                 return nil
             }
@@ -281,10 +282,10 @@ extension String: MustacheBoxable {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
-                return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
             }
         }
-        return Box(
+        return MustacheBox(
             value: self,
             mustacheBool: (countElements(self) > 0),
             objectForKeyedSubscript: objectForKeyedSubscript,
@@ -296,22 +297,22 @@ extension String: MustacheBoxable {
 // =============================================================================
 // MARK: - Boxing of Swift sequences & collections
 
-public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> Box {
+public func Box<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> MustacheBox {
     // TODO: test this method
     if let sequence = sequence {
-        var boxSequence = map(sequence) { boxValue($0) }
+        var boxSequence = map(sequence) { Box($0) }
         var emptySequence: Bool {
             for x in sequence {
                 return false
             }
             return true
         }
-        return Box(
+        return MustacheBox(
             value: boxSequence,
             mustacheBool: !emptySequence,
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(sequence)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(sequence)), error: error)
                 } else {
                     var buffer = ""
                     var contentType: ContentType?
@@ -342,40 +343,40 @@ public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>
                 }
         })
     } else {
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
-public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> Box {
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
-        var boxCollection = map(collection) { boxValue($0) }
+        var boxCollection = map(collection) { Box($0) }
         let count = countElements(collection)   // T.Index.Distance == Int
-        return Box(
+        return MustacheBox(
             value: boxCollection,
             mustacheBool: (count > 0),
-            objectForKeyedSubscript: { (key: String) -> Box? in
+            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 switch key {
                 case "count":
-                    return boxValue(count)
+                    return Box(count)
                 case "firstObject":
                     if count > 0 {
-                        return boxValue(collection[collection.startIndex])
+                        return Box(collection[collection.startIndex])
                     } else {
-                        return Box.empty
+                        return MustacheBox.empty
                     }
                 case "lastObject":
                     if count > 0 {
-                        return boxValue(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
+                        return Box(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
                     } else {
-                        return Box.empty
+                        return MustacheBox.empty
                     }
                 default:
-                    return Box.empty
+                    return MustacheBox.empty
                 }
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(collection)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
                 } else {
                     var buffer = ""
                     var contentType: ContentType?
@@ -406,7 +407,7 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
                 }
         })
     } else {
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
@@ -414,16 +415,16 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
 // =============================================================================
 // MARK: - Boxing of Swift dictionaries
 
-public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
+public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
-        var boxDictionary: [String: Box] = [:]
+        var boxDictionary: [String: MustacheBox] = [:]
         for (key, item) in dictionary {
-            boxDictionary[key] = boxValue(item)
+            boxDictionary[key] = Box(item)
         }
-        return Box(
+        return MustacheBox(
             value: boxDictionary,
             mustacheBool: true,
-            objectForKeyedSubscript: { (key: String) -> Box? in
+            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 return boxDictionary[key]
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -431,12 +432,12 @@ public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
                 case .Variable:
                     return Rendering("\(boxDictionary)")
                 case .Section:
-                    return info.tag.render(info.context.extendedContext(boxValue(dictionary)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(dictionary)), error: error)
                 }
             }
         )
     } else {
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
@@ -444,27 +445,27 @@ public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
 // =============================================================================
 // MARK: - Boxing of Objective-C types
 
-// The MustacheBoxable protocol can not be used by Objc classes, because Box is
+// The MustacheBoxable protocol can not be used by Objc classes, because MustacheBox is
 // not compatible with ObjC. So let's define another protocol.
 @objc public protocol ObjCMustacheBoxable {
-    // Can not return a Box, because Box is not compatible with ObjC.
-    // So let's return an ObjC object which wraps a Box.
+    // Can not return a MustacheBox, because MustacheBox is not compatible with ObjC.
+    // So let's return an ObjC object which wraps a MustacheBox.
     var mustacheBoxWrapper: ObjCBoxWrapper { get }
 }
 
-// The ObjC object which wraps a Box (see ObjCMustacheBoxable)
+// The ObjC object which wraps a MustacheBox (see ObjCMustacheBoxable)
 public class ObjCBoxWrapper: NSObject {
-    let box: Box
-    init(_ box: Box) {
+    let box: MustacheBox
+    init(_ box: MustacheBox) {
         self.box = box
     }
 }
 
-public func boxValue(boxable: ObjCMustacheBoxable?) -> Box {
+public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
         return boxable.mustacheBoxWrapper.box
     } else {
-        return Box.empty
+        return MustacheBox.empty
     }
 }
 
@@ -473,37 +474,37 @@ extension NSObject: ObjCMustacheBoxable {
         if let enumerable = self as? NSFastEnumeration {
             if respondsToSelector("objectAtIndexedSubscript:") {
                 // Array
-                var array: [Box] = []
+                var array: [MustacheBox] = []
                 let generator = NSFastGenerator(enumerable)
                 while true {
                     if let item: AnyObject = generator.next() {
-                        var itemBox: Box = Box.empty
+                        var itemBox: MustacheBox = MustacheBox.empty
                         if let item = item as? ObjCMustacheBoxable {
-                            itemBox = boxValue(item)
+                            itemBox = Box(item)
                         }
                         array.append(itemBox)
                     } else {
                         break
                     }
                 }
-                return ObjCBoxWrapper(boxValue(array))
+                return ObjCBoxWrapper(Box(array))
             } else if respondsToSelector("objectForKeyedSubscript:") {
                 // Dictionary
-                var dictionary: [String: Box] = [:]
+                var dictionary: [String: MustacheBox] = [:]
                 let generator = NSFastGenerator(enumerable)
                 while true {
                     if let key = generator.next() as? String {
                         let item = (self as AnyObject)[key]
-                        var itemBox: Box = Box.empty
+                        var itemBox: MustacheBox = MustacheBox.empty
                         if let item = item as? ObjCMustacheBoxable {
-                            itemBox = boxValue(item)
+                            itemBox = Box(item)
                         }
                         dictionary[key] = itemBox
                     } else {
                         break
                     }
                 }
-                return ObjCBoxWrapper(boxValue(dictionary))
+                return ObjCBoxWrapper(Box(dictionary))
             } else {
                 // Set
                 var set = NSMutableSet()
@@ -515,18 +516,18 @@ extension NSObject: ObjCMustacheBoxable {
                         break
                     }
                 }
-                return ObjCBoxWrapper(boxValue(set))
+                return ObjCBoxWrapper(Box(set))
             }
             
         } else {
-            return ObjCBoxWrapper(Box(
+            return ObjCBoxWrapper(MustacheBox(
                 value: self,
                 mustacheBool: true,
-                objectForKeyedSubscript: { (key: String) -> Box? in
+                objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                     if let value = self.valueForKey(key) as? ObjCMustacheBoxable {
-                        return boxValue(value)
+                        return Box(value)
                     } else {
-                        return Box.empty
+                        return MustacheBox.empty
                     }
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -534,7 +535,7 @@ extension NSObject: ObjCMustacheBoxable {
                     case .Variable:
                         return Rendering("\(self)")
                     case .Section:
-                        return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     }
             }))
         }
@@ -549,13 +550,13 @@ extension NSNull: ObjCMustacheBoxable {
                 return Rendering("")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        return ObjCBoxWrapper(Box(
+        return ObjCBoxWrapper(MustacheBox(
             value: self,
             mustacheBool: false,
             render: render))
@@ -566,11 +567,11 @@ extension NSNumber: ObjCMustacheBoxable {
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
         switch String.fromCString(objCType)! {
         case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-            return ObjCBoxWrapper(boxValue(Int(longLongValue)))
+            return ObjCBoxWrapper(Box(Int(longLongValue)))
         case "f", "d":
-            return ObjCBoxWrapper(boxValue(doubleValue))
+            return ObjCBoxWrapper(Box(doubleValue))
         case "B":
-            return ObjCBoxWrapper(boxValue(boolValue))
+            return ObjCBoxWrapper(Box(boolValue))
         default:
             fatalError("Not implemented yet")
         }
@@ -579,21 +580,21 @@ extension NSNumber: ObjCMustacheBoxable {
 
 extension NSString: ObjCMustacheBoxable {
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        return ObjCBoxWrapper(boxValue(self as String))
+        return ObjCBoxWrapper(Box(self as String))
     }
 }
 
 extension NSSet: ObjCMustacheBoxable {
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        let objectForKeyedSubscript = { (key: String) -> Box? in
+        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
             switch key {
             case "count":
-                return boxValue(self.count)
+                return Box(self.count)
             case "anyObject":
                 if let any = self.anyObject() as? ObjCMustacheBoxable {
-                    return boxValue(any)
+                    return Box(any)
                 } else {
-                    return Box.empty
+                    return MustacheBox.empty
                 }
             default:
                 return nil
@@ -601,15 +602,15 @@ extension NSSet: ObjCMustacheBoxable {
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in self {
-                    var itemBox: Box = Box.empty
+                    var itemBox: MustacheBox = MustacheBox.empty
                     if let item = item as? ObjCMustacheBoxable {
-                        itemBox = boxValue(item)
+                        itemBox = Box(item)
                     }
                     if let boxRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
@@ -640,7 +641,7 @@ extension NSSet: ObjCMustacheBoxable {
                 }
             }
         }
-        return ObjCBoxWrapper(Box(
+        return ObjCBoxWrapper(MustacheBox(
             value: self,
             mustacheBool: (self.count > 0),
             objectForKeyedSubscript: objectForKeyedSubscript,

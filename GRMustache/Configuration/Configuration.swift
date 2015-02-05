@@ -14,14 +14,14 @@ public struct Configuration {
     
     public init() {
         contentType = .HTML
-        baseContext = Context(boxValue(StandardLibrary()))
+        baseContext = Context(Box(StandardLibrary()))
         tagStartDelimiter = "{{"
         tagEndDelimiter = "}}"
     }
     
     public static var defaultConfiguration = Configuration()
     
-    public mutating func extendBaseContext(box: Box) {
+    public mutating func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
 }

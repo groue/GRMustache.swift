@@ -10,11 +10,11 @@ import Foundation
 
 extension NSFormatter: ObjCMustacheBoxable {
     
-    private func filter(box: Box, error: NSErrorPointer) -> Box? {
+    private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
         if let object = box.value as? NSObject {
-            return boxValue(self.stringForObjectValue(object))
+            return Box(self.stringForObjectValue(object))
         } else {
-            return Box.empty
+            return MustacheBox.empty
         }
     }
     
@@ -30,11 +30,11 @@ extension NSFormatter: ObjCMustacheBoxable {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
         }
     }
     
-    private func willRender(tag: Tag, box: Box) -> Box {
+    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
             // {{ value }}
@@ -50,7 +50,7 @@ extension NSFormatter: ObjCMustacheBoxable {
                 // it untouched.
                 
                 if let formatted = self.stringForObjectValue(object) {
-                    return boxValue(formatted)
+                    return Box(formatted)
                 }
             }
             return box
@@ -66,7 +66,7 @@ extension NSFormatter: ObjCMustacheBoxable {
     // MARK: - ObjCMustacheBoxable
     
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        return ObjCBoxWrapper(boxValue(
+        return ObjCBoxWrapper(Box(
             value: self,
             render: render,
             filter: Filter(filter),
