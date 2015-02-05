@@ -265,6 +265,7 @@ extension String: MustacheBoxable {
 
 public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> Box {
     if let sequence = sequence {
+        var boxSequence = map(sequence) { boxValue($0) }
         var emptySequence: Bool {
             for x in sequence {
                 return false
@@ -272,7 +273,7 @@ public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>
             return true
         }
         return Box(
-            value: sequence,
+            value: boxSequence,
             mustacheBool: !emptySequence,
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if info.enumerationItem {
@@ -281,8 +282,8 @@ public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>
                     var buffer = ""
                     var contentType: ContentType?
                     let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                    for item in sequence {
-                        if let itemRendering = boxValue(item).render(info: enumerationRenderingInfo, error: error) {
+                    for itemBox in boxSequence {
+                        if let itemRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
                             if contentType == nil {
                                 contentType = itemRendering.contentType
                                 buffer += itemRendering.string
@@ -313,21 +314,23 @@ public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>
 
 public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> Box {
     if let collection = collection {
+        var boxCollection = map(collection) { boxValue($0) }
+        let count = countElements(collection)   // T.Index.Distance == Int
         return Box(
-            value: collection,
-            mustacheBool: (countElements(collection) > 0),
+            value: boxCollection,
+            mustacheBool: (count > 0),
             inspect: { (key: String) -> Box? in
                 switch key {
                 case "count":
-                    return boxValue(countElements(collection))   // T.Index.Distance == Int
+                    return boxValue(count)
                 case "firstObject":
-                    if countElements(collection) > 0 {
+                    if count > 0 {
                         return boxValue(collection[collection.startIndex])
                     } else {
                         return Box()
                     }
                 case "lastObject":
-                    if countElements(collection) > 0 {
+                    if count > 0 {
                         return boxValue(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
                     } else {
                         return Box()
@@ -343,8 +346,8 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
                     var buffer = ""
                     var contentType: ContentType?
                     let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                    for item in collection {
-                        if let boxRendering = boxValue(item).render(info: enumerationRenderingInfo, error: error) {
+                    for itemBox in boxCollection {
+                        if let boxRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
                             if contentType == nil {
                                 contentType = boxRendering.contentType
                                 buffer += boxRendering.string
@@ -379,16 +382,20 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
 
 public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
     if let dictionary = dictionary {
+        var boxDictionary: [String: Box] = [:]
+        for (key, item) in dictionary {
+            boxDictionary[key] = boxValue(item)
+        }
         return Box(
-            value: dictionary,
+            value: boxDictionary,
             mustacheBool: true,
             inspect: { (key: String) -> Box? in
-                return boxValue(dictionary[key])
+                return boxDictionary[key]
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 switch info.tag.type {
                 case .Variable:
-                    return Rendering("\(dictionary)")
+                    return Rendering("\(boxDictionary)")
                 case .Section:
                     return info.tag.render(info.context.extendedContext(boxValue(dictionary)), error: error)
                 }

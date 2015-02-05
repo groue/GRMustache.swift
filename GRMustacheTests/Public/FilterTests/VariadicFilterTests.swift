@@ -15,12 +15,11 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return boxValue(",".join(args.map { $0.stringValue ?? "" }))
         })
-        // TODO: avoid this `as [String: Box]` explicit cast
         let box = boxValue([
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "join": Box(filter: filter)] as [String: Box])
+            "join": Box(filter: filter)])
         let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a a,b a,b,c")
@@ -33,12 +32,11 @@ class VariadicFilterTests: XCTestCase {
                 return boxValue(joined + "+" + (box.stringValue ?? ""))
             }))
         })
-        // TODO: avoid this `as [String: Box]` explicit cast
         let box = boxValue([
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "f": Box(filter: filter)] as [String: Box])
+            "f": Box(filter: filter)])
         let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
@@ -68,12 +66,11 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return boxValue(args)
         })
-        // TODO: avoid this `as [String: Box]` explicit cast
         let box = boxValue([
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "f": Box(filter: filter)] as [String: Box])
+            "f": Box(filter: filter)])
         let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "ab abc")
@@ -107,14 +104,8 @@ class VariadicFilterTests: XCTestCase {
             "f": Box(filter: VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
                 var result = ""
                 for argument in arguments {
-                    NSLog("argument: \(argument)")
-                    switch argument.value {
-                    case let dictionary as [String: Box]:
+                    if let dictionary = argument.value as? [String: Box] {
                         result += String(countElements(dictionary))
-                    case let dictionary as [String: String]:
-                        result += String(countElements(dictionary))
-                    default:
-                        break
                     }
                 }
                 return boxValue(result)
