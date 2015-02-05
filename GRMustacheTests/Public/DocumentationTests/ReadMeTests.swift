@@ -50,8 +50,8 @@ class ReadMeTests: XCTestCase {
         
         let testBundle = NSBundle(forClass: self.dynamicType)
         let template = Template(named: "ReadMeExample2", bundle: testBundle)!
-        let box = boxValue(["cats": ["Kitty", "Pussy", "Melba"]])
-        let rendering = template.render(box)!
+        let data = ["cats": ["Kitty", "Pussy", "Melba"]]
+        let rendering = template.render(boxValue(data))!
         XCTAssertEqual(rendering, "I have 3 cats.")
         
         Configuration.defaultConfiguration = Configuration()

@@ -103,5 +103,5 @@ Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": boxV
 
 let template = Template(named: "example2")!
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-let rendering = template.render(Box(data))!
+let rendering = template.render(boxValue(data))!
 ```
