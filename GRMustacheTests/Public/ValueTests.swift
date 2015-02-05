@@ -127,5 +127,44 @@ class ValueTests: XCTestCase {
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
     }
+    
+    func testArrayOfInt() {
+        let value: Array<Int> = [0,1,2,3]
+        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let box = boxValue(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "0123")
+    }
+    
+    func testArrayOfArrayOfInt() {
+        let value: Array<Array<Int>> = [[0,1],[2,3]]
+        let template = Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")!
+        let box = boxValue(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "[0,1,],[2,3,],")
+    }
+    
+    func testArrayOfArrayOfArrayOfInt() {
+        let value: Array<Array<Array<Int>>> = [[[0,1],[2,3]], [[4,5],[6,7]]]
+        let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")!
+        let box = boxValue(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
+    }
+    
+    func testArrayOfArrayOfArrayOfDictionaryOfInt() {
+        let value: Array<Array<Array<Dictionary<String, Int>>>> = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
+        let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")!
+        let box = boxValue(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
+    }
 
+    func testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
+        let value: Dictionary<String, Array<Array<Array<Dictionary<String, Int>>>>> = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
+        let template = Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")!
+        let box = boxValue(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")
+    }
 }
