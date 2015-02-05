@@ -49,15 +49,14 @@ Helping the Mustache engine always involves "boxing" with the `boxValue()` funct
 extension User: MustacheBoxable {
     var mustacheBox: Box {
         // Return a Box that is able to extract the `name` key of our user:
-        return Box(
-            inspect: { (key: String) -> Box? in
-                switch key {
-                case "name":
-                    return boxValue(self.name)
-                default:
-                    return nil
-                }
-        })
+        return boxValue { (key: String) -> Box? in
+            switch key {
+            case "name":
+                return boxValue(self.name)
+            default:
+                return nil
+            }
+        }
     }
 }
 
