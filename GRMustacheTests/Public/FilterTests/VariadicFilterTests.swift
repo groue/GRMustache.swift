@@ -107,8 +107,14 @@ class VariadicFilterTests: XCTestCase {
             "f": Box(filter: VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
                 var result = ""
                 for argument in arguments {
-                    if let dictionary = argument.value as? [String: Box] {
+                    NSLog("argument: \(argument)")
+                    switch argument.value {
+                    case let dictionary as [String: Box]:
                         result += String(countElements(dictionary))
+                    case let dictionary as [String: String]:
+                        result += String(countElements(dictionary))
+                    default:
+                        break
                     }
                 }
                 return boxValue(result)
