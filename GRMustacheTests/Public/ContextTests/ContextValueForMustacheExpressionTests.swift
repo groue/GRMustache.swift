@@ -12,21 +12,21 @@ import GRMustache
 class ContextValueForMustacheExpressionTests: XCTestCase {
 
     func testImplicitIteratorExpression() {
-        let context = Context(Box("success"))
+        let context = Context(boxValue("success"))
         let box = context.boxForMustacheExpression(".")!
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testIdentifierExpression() {
-        let context = Context(Box(["name": "success"]))
+        let context = Context(boxValue(["name": "success"]))
         let box = context.boxForMustacheExpression("name")!
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testScopedExpression() {
-        let context = Context(Box(["a": ["name": "success"]]))
+        let context = Context(boxValue(["a": ["name": "success"]]))
         let box = context.boxForMustacheExpression("a.name")!
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
@@ -34,9 +34,9 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     
     func testFilteredExpression() {
         let filter = Filter({ (string: String?, error: NSErrorPointer) -> Box in
-            return Box(string!.uppercaseString)
+            return boxValue(string!.uppercaseString)
         })
-        let context = Context(Box(["name": Box("success"), "f": Box(filter: filter)]))
+        let context = Context(boxValue(["name": boxValue("success"), "f": Box(filter: filter)]))
         let box = context.boxForMustacheExpression("f(name)")!
         let string = box.value as? String
         XCTAssertEqual(string!, "SUCCESS")

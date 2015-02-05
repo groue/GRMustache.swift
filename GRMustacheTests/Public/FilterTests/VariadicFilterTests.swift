@@ -13,13 +13,13 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return Box(",".join(args.map { $0.stringValue ?? "" }))
+            return boxValue(",".join(args.map { $0.stringValue ?? "" }))
         })
         // TODO: avoid this `as [String: Box]` explicit cast
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
+        let box = boxValue([
+            "a": boxValue("a"),
+            "b": boxValue("b"),
+            "c": boxValue("c"),
             "join": Box(filter: filter)] as [String: Box])
         let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
         let rendering = template.render(box)!
@@ -30,14 +30,14 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             let joined = ",".join(args.map { $0.stringValue ?? "" })
             return Box(filter: Filter({ (box: Box, error: NSErrorPointer) -> Box? in
-                return Box(joined + "+" + (box.stringValue ?? ""))
+                return boxValue(joined + "+" + (box.stringValue ?? ""))
             }))
         })
         // TODO: avoid this `as [String: Box]` explicit cast
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
+        let box = boxValue([
+            "a": boxValue("a"),
+            "b": boxValue("b"),
+            "c": boxValue("c"),
             "f": Box(filter: filter)] as [String: Box])
         let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
         let rendering = template.render(box)!
@@ -46,9 +46,9 @@ class VariadicFilterTests: XCTestCase {
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return Box(["foo": "bar"])
+            return boxValue(["foo": "bar"])
         })
-        let box = Box(["f": Box(filter: filter)])
+        let box = boxValue(["f": Box(filter: filter)])
         let template = Template(string:"{{f(a,b).foo}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
@@ -56,9 +56,9 @@ class VariadicFilterTests: XCTestCase {
     
     func testVariadicFilterCanBeUsedForObjectSections() {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return Box(["foo": "bar"])
+            return boxValue(["foo": "bar"])
         })
-        let box = Box(["f": Box(filter: filter)])
+        let box = boxValue(["f": Box(filter: filter)])
         let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
@@ -66,13 +66,13 @@ class VariadicFilterTests: XCTestCase {
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
-            return Box(args)
+            return boxValue(args)
         })
         // TODO: avoid this `as [String: Box]` explicit cast
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
+        let box = boxValue([
+            "a": boxValue("a"),
+            "b": boxValue("b"),
+            "c": boxValue("c"),
             "f": Box(filter: filter)] as [String: Box])
         let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
         let rendering = template.render(box)!
@@ -83,9 +83,9 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return args.first
         })
-        let box = Box([
-            "yes": Box(true),
-            "no": Box(false),
+        let box = boxValue([
+            "yes": boxValue(true),
+            "no": boxValue(false),
             "f": Box(filter: filter)])
         let template = Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")!
         let rendering = template.render(box)!
@@ -96,14 +96,14 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return nil
         })
-        let box = Box(["f": Box(filter: filter)])
+        let box = boxValue(["f": Box(filter: filter)])
         let template = Template(string:"{{^f(x)}}nil{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "nil")
     }
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
-        let box = Box([
+        let box = boxValue([
             "f": Box(filter: VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
                 var result = ""
                 for argument in arguments {
@@ -111,9 +111,9 @@ class VariadicFilterTests: XCTestCase {
                         result += String(countElements(dictionary))
                     }
                 }
-                return Box(result)
+                return boxValue(result)
             })),
-            "foo": Box(["a": "a", "b": "b", "c": "c"])
+            "foo": boxValue(["a": "a", "b": "b", "c": "c"])
             ])
         let template = Template(string:"{{f(foo,.)}} {{f(.,foo)}}")!
         let rendering = template.render(box)!

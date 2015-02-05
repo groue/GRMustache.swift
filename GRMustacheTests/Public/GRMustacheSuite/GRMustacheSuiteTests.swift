@@ -86,7 +86,13 @@ class GRMustacheSuiteTests: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as [String: String]? }
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
-        var renderedValue: Box { return Box(dictionary["data"]) }
+        var renderedValue: Box {
+            if let data = dictionary["data"] as? ObjCMustacheBoxable {
+                return boxValue(data)
+            } else {
+                return Box()
+            }
+        }
         var expectedRendering: String? { return dictionary["expected"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }
         

@@ -16,7 +16,7 @@ class InspectFunctionTests: XCTestCase {
             if key == "self" {
                 return Box(inspect: self.makeInspect())
             } else {
-                return Box(key)
+                return boxValue(key)
             }
         }
     }

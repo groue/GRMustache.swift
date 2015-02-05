@@ -13,7 +13,7 @@ class ContextTests: XCTestCase {
     
     func testContextConstructor() {
         let template = Template(string: "{{uppercase(foo)}}")!
-        let box = Box(["foo": "bar"])
+        let box = boxValue(["foo": "bar"])
         
         var rendering = template.render(box)
         XCTAssertEqual(rendering!, "BAR")
@@ -32,7 +32,7 @@ class ContextTests: XCTestCase {
         var rendering = template.render()!
         XCTAssertEqual(rendering, "")
         
-        let box = Box(["foo": "bar"])
+        let box = boxValue(["foo": "bar"])
         template.baseContext = Context(box)
         rendering = template.render()!
         XCTAssertEqual(rendering, "bar")
@@ -58,7 +58,7 @@ class ContextTests: XCTestCase {
         var context = Context()
         XCTAssertTrue(context.topBox.isEmpty)
         
-        context = context.extendedContext(Box("object"))
+        context = context.extendedContext(boxValue("object"))
         XCTAssertEqual((context.topBox.value as String), "object")
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
@@ -70,12 +70,12 @@ class ContextTests: XCTestCase {
 //        context = context.extendedContext(Box(willRender: willRender))
 //        XCTAssertEqual(context.topBox.value as String, "object")
 
-        context = context.extendedContext(Box("object2"))
+        context = context.extendedContext(boxValue("object2"))
         XCTAssertEqual(context.topBox.value as String, "object2")
     }
     
     func testSubscript() {
-        let context = Context(Box(["name": "name1", "a": ["name": "name2"]]))
+        let context = Context(boxValue(["name": "name1", "a": ["name": "name2"]]))
         
         // '.' is an expression, not a key
         XCTAssertTrue(context["."].isEmpty)

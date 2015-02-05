@@ -6,20 +6,20 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-class HTMLEscape {
+class HTMLEscape: MustacheBoxable {
     
     private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
         switch info.tag.type {
         case .Variable:
             return Rendering("\(self)")
         case .Section:
-            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+            return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
         }
     }
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
         if let string = box.stringValue {
-            return Box(escapeHTML(string))
+            return boxValue(escapeHTML(string))
         } else {
             return Box()
         }
@@ -45,14 +45,14 @@ class HTMLEscape {
             return box
         }
     }
-}
-
-extension Box {
-    init(_ formatter: HTMLEscape) {
-        self.init(
-            value: formatter,
-            render: formatter.render,
-            filter: Filter(formatter.filter),
-            willRender: formatter.willRender)
+    
+    // MARK: - MustacheBoxable
+    
+    var mustacheBox: Box {
+        return Box(
+            value: self,
+            render: render,
+            filter: Filter(filter),
+            willRender: willRender)
     }
 }

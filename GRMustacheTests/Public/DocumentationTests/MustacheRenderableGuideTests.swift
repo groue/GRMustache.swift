@@ -43,9 +43,9 @@ class MustacheRenderableGuideTests: XCTestCase {
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
-        let box = Box([
+        let box = boxValue([
             "strong": Box(render: render),
-            "name": Box("Arthur")])
+            "name": boxValue("Arthur")])
         let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(box)!
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
@@ -55,7 +55,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = Box(["twice": Box(render: render)])
+        let box = boxValue(["twice": Box(render: render)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(box)!
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
@@ -65,10 +65,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             let template = Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")!
             return template.render(info.context, error: error)
         }
-        let box = Box([
+        let box = boxValue([
             "link": Box(render: render),
-            "name": Box("Arthur"),
-            "url": Box("/people/123")])
+            "name": boxValue("Arthur"),
+            "url": boxValue("/people/123")])
         let rendering = Template(string: "{{# link }}{{ name }}{{/ link }}")!.render(box)!
         XCTAssertEqual(rendering, "<a href=\"/people/123\">Arthur</a>")
     }
@@ -77,39 +77,39 @@ class MustacheRenderableGuideTests: XCTestCase {
         let repository = TemplateRepository(templates: [
             "movieLink": "<a href=\"{{url}}\">{{title}}</a>",
             "personLink": "<a href=\"{{url}}\">{{name}}</a>"])
-        let link1 = Box(repository.template(named: "movieLink")!)
-        let item1 = Box([
-            "title": Box("Citizen Kane"),
-            "url": Box("/movies/321"),
+        let link1 = boxValue(repository.template(named: "movieLink")!)
+        let item1 = boxValue([
+            "title": boxValue("Citizen Kane"),
+            "url": boxValue("/movies/321"),
             "link": link1])
-        let link2 = Box(repository.template(named: "personLink")!)
-        let item2 = Box([
-            "name": Box("Orson Welles"),
-            "url": Box("/people/123"),
+        let link2 = boxValue(repository.template(named: "personLink")!)
+        let item2 = boxValue([
+            "name": boxValue("Orson Welles"),
+            "url": boxValue("/people/123"),
             "link": link2])
-        let box = Box(["items": Box([item1, item2])])
+        let box = boxValue(["items": boxValue([item1, item2])])
         let rendering = Template(string: "{{#items}}{{link}}{{/items}}")!.render(box)!
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
     }
     
     func testExample7() {
-        struct Person {
+        struct Person: MustacheBoxable {
             let firstName: String
             let lastName: String
-            func mustacheBox() -> Box {
+            var mustacheBox: Box {
                 let inspect = { (key: String) -> Box? in
                     switch key {
                     case "firstName":
-                        return Box(self.firstName)
+                        return boxValue(self.firstName)
                     case "lastName":
-                        return Box(self.lastName)
+                        return boxValue(self.lastName)
                     default:
                         return nil
                     }
                 }
                 let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     let template = Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                    let context = info.context.extendedContext(self.mustacheBox())
+                    let context = info.context.extendedContext(boxValue(self))
                     return template.render(context, error: error)
                 }
                 return Box(
@@ -119,23 +119,23 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        struct Movie {
+        struct Movie: MustacheBoxable {
             let title: String
             let director: Person
-            func mustacheBox() -> Box {
+            var mustacheBox: Box {
                 let inspect = { (key: String) -> Box? in
                     switch key {
                     case "title":
-                        return Box(self.title)
+                        return boxValue(self.title)
                     case "director":
-                        return self.director.mustacheBox()
+                        return boxValue(self.director)
                     default:
                         return nil
                     }
                 }
                 let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     let template = Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))!
-                    let context = info.context.extendedContext(self.mustacheBox())
+                    let context = info.context.extendedContext(boxValue(self))
                     return template.render(context, error: error)
                 }
                 return Box(
@@ -149,7 +149,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         let movie = Movie(title:"Citizen Kane", director: director)
         
         let template = Template(string: "{{ movie }}")!
-        let rendering = template.render(Box(["movie": movie.mustacheBox()]))!
+        let rendering = template.render(boxValue(["movie": boxValue(movie)]))!
         XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
     
@@ -167,15 +167,15 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(Box(["list": Box(filter: Filter(listFilter))]))
+        template.baseContext = template.baseContext.extendedContext(boxValue(["list": Box(filter: Filter(listFilter))]))
         
-        let item1 = Box([
+        let item1 = boxValue([
             "url": "http://mustache.github.io",
             "title": "Mustache"])
-        let item2 = Box([
+        let item2 = boxValue([
             "url": "http://github.com/groue/GRMustache.swift",
             "title": "GRMustache.swift"])
-        let box = Box(["nav": Box([item1, item2])])
+        let box = boxValue(["nav": boxValue([item1, item2])])
         
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")

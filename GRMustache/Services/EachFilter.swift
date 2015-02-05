@@ -29,22 +29,22 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
     let end = collection.endIndex
     var i = start
     while i < end {
-        let box = collection[i]
+        let itemBox = collection[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
-            position["@index"] = Box(index)
-            position["@indexPlusOne"] = Box(index + 1)
-            position["@indexIsEven"] = Box(index % 2 == 0)
-            position["@first"] = Box(index == 0)
-            position["@last"] = Box(last)
-            info.context = info.context.extendedContext(Box(position))
-            return box.render(info: info, error: error)
+            position["@index"] = boxValue(index)
+            position["@indexPlusOne"] = boxValue(index + 1)
+            position["@indexIsEven"] = boxValue(index % 2 == 0)
+            position["@first"] = boxValue(index == 0)
+            position["@last"] = boxValue(last)
+            info.context = info.context.extendedContext(boxValue(position))
+            return itemBox.render(info: info, error: error)
         }))
         i = i.successor()
     }
-    return Box(mustacheBoxes)
+    return boxValue(mustacheBoxes)
 }
 
 private func transformedSet(set: NSSet) -> Box {
@@ -52,21 +52,24 @@ private func transformedSet(set: NSSet) -> Box {
     let count = set.count
     var index = 0
     for item in set {
-        let box = Box(item)
+        var itemBox: Box = Box()
+        if let item = item as? ObjCMustacheBoxable {
+            itemBox = boxValue(item)
+        }
         let last = index == count
-        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
-            position["@index"] = Box(index)
-            position["@indexPlusOne"] = Box(index + 1)
-            position["@indexIsEven"] = Box(index % 2 == 0)
-            position["@first"] = Box(index == 0)
-            position["@last"] = Box(last)
-            info.context = info.context.extendedContext(Box(position))
-            return box.render(info: info, error: error)
+            position["@index"] = boxValue(index)
+            position["@indexPlusOne"] = boxValue(index + 1)
+            position["@indexIsEven"] = boxValue(index % 2 == 0)
+            position["@first"] = boxValue(index == 0)
+            position["@last"] = boxValue(last)
+            info.context = info.context.extendedContext(boxValue(position))
+            return itemBox.render(info: info, error: error)
         }))
         ++index
     }
-    return Box(mustacheBoxes)
+    return boxValue(mustacheBoxes)
 }
 
 private func transformedDictionary(dictionary: [String: Box]) -> Box {
@@ -75,21 +78,21 @@ private func transformedDictionary(dictionary: [String: Box]) -> Box {
     let end = dictionary.endIndex
     var i = start
     while i < end {
-        let (key, box) = dictionary[i]
+        let (key, itemBox) = dictionary[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(box.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: Box] = [:]
-            position["@index"] = Box(index)
-            position["@indexPlusOne"] = Box(index + 1)
-            position["@indexIsEven"] = Box(index % 2 == 0)
-            position["@first"] = Box(index == 0)
-            position["@last"] = Box(last)
-            position["@key"] = Box(key)
-            info.context = info.context.extendedContext(Box(position))
-            return box.render(info: info, error: error)
+            position["@index"] = boxValue(index)
+            position["@indexPlusOne"] = boxValue(index + 1)
+            position["@indexIsEven"] = boxValue(index % 2 == 0)
+            position["@first"] = boxValue(index == 0)
+            position["@last"] = boxValue(last)
+            position["@key"] = boxValue(key)
+            info.context = info.context.extendedContext(boxValue(position))
+            return itemBox.render(info: info, error: error)
         }))
         i = i.successor()
     }
-    return Box(mustacheBoxes)
+    return boxValue(mustacheBoxes)
 }

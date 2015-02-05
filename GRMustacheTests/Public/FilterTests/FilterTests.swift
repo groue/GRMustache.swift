@@ -12,13 +12,13 @@ import GRMustache
 class FilterTests: XCTestCase {
     
     func testFilterCanChain() {
-        let box = Box([
-            "name": Box("Name"),
+        let box = boxValue([
+            "name": boxValue("Name"),
             "uppercase": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
-                return Box(string?.uppercaseString)
+                return boxValue(string?.uppercaseString)
             })),
             "prefix": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
-                return Box("prefix\(string!)")
+                return boxValue("prefix\(string!)")
             }))
             ])
         let template = Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")!
@@ -31,9 +31,9 @@ class FilterTests: XCTestCase {
         var box: Box
         var rendering: String
         
-        box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
+        box = boxValue([
+            "object": boxValue(["name": "objectName"]),
+            "name": boxValue("rootName"),
             "f": Box(filter: Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return box
             }))
@@ -41,21 +41,21 @@ class FilterTests: XCTestCase {
         rendering = template.render(box)!
         XCTAssertEqual(rendering, "<objectName> <objectName>")
         
-        box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
+        box = boxValue([
+            "object": boxValue(["name": "objectName"]),
+            "name": boxValue("rootName"),
             "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
-                return Box(["name": "filterName"])
+                return boxValue(["name": "filterName"])
             }))
             ])
         rendering = template.render(box)!
         XCTAssertEqual(rendering, "<filterName> <filterName>")
         
-        box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
+        box = boxValue([
+            "object": boxValue(["name": "objectName"]),
+            "name": boxValue("rootName"),
             "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
-                return Box(true)
+                return boxValue(true)
             }))
             ])
         rendering = template.render(box)!
@@ -63,11 +63,11 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterArgumentsDoNotEnterSectionContextStack() {
-        let box = Box([
-            "test": Box("success"),
-            "filtered": Box(["test": "failure"]),
+        let box = boxValue([
+            "test": boxValue("success"),
+            "filtered": boxValue(["test": "failure"]),
             "filter": Box(filter: Filter({ (_: Box, _: NSErrorPointer) -> Box? in
-                return Box(true)
+                return boxValue(true)
             }))])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
         let rendering = template.render(box)!
@@ -76,11 +76,11 @@ class FilterTests: XCTestCase {
     
     func testFilterNameSpace() {
         let doubleFilter = Box(filter: Filter({ (x: Int?, error: NSErrorPointer) -> Box? in
-            return Box((x ?? 0) * 2)
+            return boxValue((x ?? 0) * 2)
         }))
-        let box = Box([
-            "x": Box(1),
-            "math": Box(["double": doubleFilter])
+        let box = boxValue([
+            "x": boxValue(1),
+            "math": boxValue(["double": doubleFilter])
             ])
         let template = Template(string:"{{ math.double(x) }}")!
         let rendering = template.render(box)!
@@ -90,12 +90,12 @@ class FilterTests: XCTestCase {
     func testFilterCanReturnFilter() {
         let filterValue = Box(filter: Filter({ (string1: String?, error: NSErrorPointer) -> Box? in
             return Box(filter: Filter({ (string2: String?, error: NSErrorPointer) -> Box? in
-                    return Box("\(string1!)\(string2!)")
+                    return boxValue("\(string1!)\(string2!)")
                 }))
             }))
-        let box = Box([
-            "prefix": Box("prefix"),
-            "value": Box("value"),
+        let box = boxValue([
+            "prefix": boxValue("prefix"),
+            "value": boxValue("value"),
             "f": filterValue])
         let template = Template(string:"{{f(prefix)(value)}}")!
         let rendering = template.render(box)!
@@ -104,7 +104,7 @@ class FilterTests: XCTestCase {
     
     func testImplicitIteratorCanReturnFilter() {
         let box = Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
-            return Box("filter")
+            return boxValue("filter")
         }))
         let template = Template(string:"{{.(a)}}")!
         let rendering = template.render(box)!
@@ -112,10 +112,10 @@ class FilterTests: XCTestCase {
     }
     
     func testMissingFilterError() {
-        let box = Box([
-            "name": Box("Name"),
+        let box = boxValue([
+            "name": boxValue("Name"),
             "replace": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
-                return Box("replace")
+                return boxValue("replace")
             }))
         ])
         
@@ -146,7 +146,7 @@ class FilterTests: XCTestCase {
     }
     
     func testNotAFilterError() {
-        let box = Box([
+        let box = boxValue([
             "name": "Name",
             "filter": "filter"
             ])
@@ -180,7 +180,7 @@ class FilterTests: XCTestCase {
     func testNotAFilterErrorDescriptionContainsLineNumber() {
         let template = Template(string: "\n{{f(x)}}")!
         var error: NSError?
-        let rendering = template.render(Box(["f": "foo"]), error: &error)
+        let rendering = template.render(boxValue(["f": "foo"]), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)

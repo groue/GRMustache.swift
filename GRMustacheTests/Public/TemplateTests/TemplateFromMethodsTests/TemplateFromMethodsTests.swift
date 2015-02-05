@@ -14,7 +14,7 @@ class TemplateFromMethodsTests: XCTestCase {
     func inspectFunction(string: String) -> InspectFunction {
         return { (key: String) -> Box? in
             if key == "string" {
-                return Box(string)
+                return boxValue(string)
             } else {
                 return nil
             }
@@ -66,28 +66,28 @@ class TemplateFromMethodsTests: XCTestCase {
     func testTemplateFromString() {
         let template = Template(string: templateString)!
         let inspect = inspectFunction("foo")
-        let rendering = template.render(Box(inspect))!
+        let rendering = template.render(Box(inspect: inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = Template(path: templatePath)!
         let inspect = inspectFunction("foo")
-        let rendering = template.render(Box(inspect))!
+        let rendering = template.render(Box(inspect: inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = Template(URL: templateURL)!
         let inspect = inspectFunction("foo")
-        let rendering = template.render(Box(inspect))!
+        let rendering = template.render(Box(inspect: inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = Template(named: templateName, bundle: testBundle)!
         let inspect = inspectFunction("foo")
-        let rendering = template.render(Box(inspect))!
+        let rendering = template.render(Box(inspect: inspect))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }

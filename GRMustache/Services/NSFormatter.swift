@@ -8,11 +8,11 @@
 
 import Foundation
 
-extension NSFormatter {
+extension NSFormatter: ObjCMustacheBoxable {
     
     private func filter(box: Box, error: NSErrorPointer) -> Box? {
         if let object = box.value as? NSObject {
-            return Box(self.stringForObjectValue(object))
+            return boxValue(self.stringForObjectValue(object))
         } else {
             return Box()
         }
@@ -30,7 +30,7 @@ extension NSFormatter {
             
             // Render normally, but listen to all inner tags rendering, so that
             // we can format them. See mustacheTag:willRenderObject: below.
-            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+            return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
         }
     }
     
@@ -50,7 +50,7 @@ extension NSFormatter {
                 // it untouched.
                 
                 if let formatted = self.stringForObjectValue(object) {
-                    return Box(formatted)
+                    return boxValue(formatted)
                 }
             }
             return box
@@ -61,14 +61,15 @@ extension NSFormatter {
             return box
         }
     }
-}
-
-extension Box {
-    public init(_ formatter: NSFormatter) {
-        self.init(
-            value: formatter,
-            render: formatter.render,
-            filter: Filter(formatter.filter),
-            willRender: formatter.willRender)
+    
+    
+    // MARK: - ObjCMustacheBoxable
+    
+    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+        return ObjCBoxWrapper(Box(
+            value: self,
+            render: render,
+            filter: Filter(filter),
+            willRender: willRender))
     }
 }

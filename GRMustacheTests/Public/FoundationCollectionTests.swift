@@ -21,21 +21,21 @@ class FoundationCollectionTests: XCTestCase {
             array.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(array, forKey: "collection")
-            return Box(data)
+            return boxValue(data)
         }()
         boxedSet = {
             var set = NSMutableSet()
             set.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(set, forKey: "collection")
-            return Box(data)
+            return boxValue(data)
             }()
         boxedOrderedSet = {
             var orderedSet = NSMutableOrderedSet()
             orderedSet.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(orderedSet, forKey: "collection")
-            return Box(data)
+            return boxValue(data)
             }()
     }
     

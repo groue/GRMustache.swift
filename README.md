@@ -23,34 +23,37 @@ let data = [
     "taxed_value": 10000 - (10000 * 0.4),
     "in_ca": true
 ]
-let rendering = template.render(Box(data))!
+let rendering = template.render(boxValue(data))!
 ```
 
 
 Rendering of pure Swift Objects
 -------------------------------
 
-GRMustache can render pure Swift objects, with a little help:
+GRMustache can render pure Swift objects, with a little help.
 
 ```swift
 // Define a pure Swift object:
 struct User {
     let name: String
 }
+```
 
-// There are many ways for a value to contribute to Mustache rendering, and it
-// always requires "boxing": let's define the Box(User) initializer.
-extension Box {
-    init(_ user: User) {
-        // We only want to let templates extract the `name` key out of a user.
-        // So we box an "inspect" function, that turns keys into boxed values:
-        self.init(inspect: { (key: String) -> Box? in
-            switch key {
-            case "name":
-                return Box(user.name)
-            default:
-                return nil
-            }
+We want to let templates extract the `name` key out of a user, so that, for example, the we can render the `Hello {{name}}!` template.
+
+There are many ways for a value to contribute to Mustache rendering, and it always requires "boxing" with the `boxValue()` function. Boxing requires conforming to the MustacheBoxable protocol:
+
+```swift
+extension User: MustacheBoxable {
+    var mustacheBox: Box {
+        return Box(
+            inspect: { (key: String) -> Box? in
+                switch key {
+                case "name":
+                    return boxValue(self.name)
+                default:
+                    return nil
+                }
         })
     }
 }
@@ -58,7 +61,7 @@ extension Box {
 // Hello Arthur!
 let user = User(name: "Arthur")
 let template = Template(string: "Hello {{name}}!")!
-let rendering = template.render(Box(user))!
+let rendering = template.render(boxValue(user))!
 ```
 
 

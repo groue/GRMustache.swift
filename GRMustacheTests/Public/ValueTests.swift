@@ -52,7 +52,7 @@ class ValueTests: XCTestCase {
         let boxedBoxableClass = boxableClass.mustacheBox()
         let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
         let boxedClass = Box(value: Class(name: "Class"))
-        let boxedNSObject = Box(NSObject)
+        let boxedNSObject = boxValue(NSObject)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as BoxableStruct
         let extractedStruct = boxedStruct.value as Struct
@@ -72,57 +72,57 @@ class ValueTests: XCTestCase {
     func testCustomValueFilter() {
         // Test that one can define a filter taking a CustomValue as an argument.
         
-        struct Boxable {
+        struct Boxable: MustacheBoxable {
             let name: String
-            func mustacheBox() -> Box {
+            var mustacheBox: Box {
                 return Box(value: self)
             }
         }
         
         let filter1 = { (value: Boxable?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Box(value.name)
+                return boxValue(value.name)
             } else {
-                return Box("other")
+                return boxValue("other")
             }
         }
         
         let filter2 = { (value: Boxable?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Box(value.name)
+                return boxValue(value.name)
             } else {
-                return Box("other")
+                return boxValue("other")
             }
         }
         
         let filter3 = { (value: NSDate?, error: NSErrorPointer) -> Box? in
             if let value = value {
-                return Box("custom3")
+                return boxValue("custom3")
             } else {
-                return Box("other")
+                return boxValue("other")
             }
         }
         
         let template = Template(string:"{{f(custom)}},{{f(string)}}")!
         
-        let value1 = Box([
-            "string": Box("success"),
-            "custom": Boxable(name: "custom1").mustacheBox(),
+        let value1 = boxValue([
+            "string": boxValue("success"),
+            "custom": boxValue(Boxable(name: "custom1")),
             "f": Box(filter: Filter(filter1))
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
         
-        let value2 = Box([
-            "string": Box("success"),
+        let value2 = boxValue([
+            "string": boxValue("success"),
             "custom": Box(value: Boxable(name: "custom2")),
             "f": Box(filter: Filter(filter2))])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
-        let value3 = Box([
-            "string": Box("success"),
-            "custom": Box(NSDate()),
+        let value3 = boxValue([
+            "string": boxValue("success"),
+            "custom": boxValue(NSDate()),
             "f": Box(filter: Filter(filter3))])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")

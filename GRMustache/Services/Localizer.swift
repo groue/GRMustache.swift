@@ -8,7 +8,7 @@
 
 import Foundation
 
-public class Localizer {
+public class Localizer: MustacheBoxable {
     public let bundle: NSBundle
     public let table: String?
     var formatArguments: [String]?
@@ -20,7 +20,7 @@ public class Localizer {
     
     private func filter(argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? {
         if let string = argument.stringValue {
-            return Box(localizedStringForKey(string))
+            return boxValue(localizedStringForKey(string))
         } else {
             return Box()
         }
@@ -45,7 +45,7 @@ public class Localizer {
         formatArguments = nil
         
         // Render the localizable format, being notified of tag rendering
-        let context = info.context.extendedContext(Box(self))
+        let context = info.context.extendedContext(boxValue(self))
         var error: NSError?
         if let localizableFormatRendering = info.tag.render(context, error: &error) {
             
@@ -110,7 +110,7 @@ public class Localizer {
             // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
             
             if formatArguments == nil {
-                return Box(Placeholder.string)
+                return boxValue(Placeholder.string)
             } else {
                 return box
             }
@@ -143,6 +143,18 @@ public class Localizer {
             // {{^ value }}
             break
         }
+    }
+    
+    
+    // MARK: - MustacheBoxable
+    
+    public var mustacheBox: Box {
+        return Box(
+            value: self,
+            render: render,
+            filter: filter,
+            willRender: willRender,
+            didRender: didRender)
     }
     
     
@@ -183,16 +195,5 @@ public class Localizer {
     
     struct Placeholder {
         static let string = "GRMustacheLocalizerValuePlaceholder"
-    }
-}
-
-extension Box {
-    public init(_ localizer: Localizer) {
-        self.init(
-            value: localizer,
-            render: localizer.render,
-            filter: localizer.filter,
-            willRender: localizer.willRender,
-            didRender: localizer.didRender)
     }
 }

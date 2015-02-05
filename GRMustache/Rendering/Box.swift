@@ -146,72 +146,95 @@ extension Box {
 
 
 // =============================================================================
-// MARK: - Support for built-in types
+// MARK: - Support for Swift types
 
-extension Box {
-    
-    public init(_ bool: Bool) {
+public protocol MustacheBoxable {
+    var mustacheBox: Box { get }
+}
+
+public func boxValue<T: MustacheBoxable>(boxable: T?) -> Box {
+    if let boxable = boxable {
+        return boxable.mustacheBox
+    } else {
+        return Box()
+    }
+}
+
+extension Box: MustacheBoxable {
+    public var mustacheBox: Box {
+        return self
+    }
+}
+
+extension Bool: MustacheBoxable {
+    public var mustacheBox: Box {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(bool)")
+                return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(bool)), error: error)
+                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        self.init(
-            value: bool,
-            mustacheBool: bool,
+        return Box(
+            value: self,
+            mustacheBool: self,
             render: render)
     }
-    
-    public init(_ int: Int) {
+}
+
+extension Int: MustacheBoxable {
+    public var mustacheBox: Box {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(int)")
+                return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(int)), error: error)
+                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        self.init(
-            value: int,
-            mustacheBool: (int != 0),
+        return Box(
+            value: self,
+            mustacheBool: (self != 0),
             render: render)
     }
-    
-    public init(_ double: Double) {
+}
+
+extension Double: MustacheBoxable {
+    public var mustacheBox: Box {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(double)")
+                return Rendering("\(self)")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(double)), error: error)
+                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        self.init(
-            value: double,
-            mustacheBool: (double != 0.0),
+        return Box(
+            value: self,
+            mustacheBool: (self != 0.0),
             render: render)
     }
-    
-    public init(_ string: String) {
+}
+
+extension String: MustacheBoxable {
+    public var mustacheBox: Box {
         let inspect = { (key: String) -> Box? in
             switch key {
             case "length":
-                return Box(countElements(string))
+                return boxValue(countElements(self))
             default:
                 return nil
             }
@@ -219,72 +242,325 @@ extension Box {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
-                return Rendering("\(string)")
+                return Rendering("\(self)")
             case .Section:
-                return info.tag.render(info.context.extendedContext(Box(string)), error: error)
+                return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
             }
         }
-        self.init(
-            value: string,
-            mustacheBool: (countElements(string) > 0),
+        return Box(
+            value: self,
+            mustacheBool: (countElements(self) > 0),
             inspect: inspect,
             render: render)
     }
-    
-    public init(_ null: NSNull) {
+}
+
+
+// =============================================================================
+// MARK: - Support for Swift sequences & collections
+
+public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> Box {
+    if let sequence = sequence {
+        var emptySequence: Bool {
+            for x in sequence {
+                return false
+            }
+            return true
+        }
+        return Box(
+            value: sequence,
+            mustacheBool: !emptySequence,
+            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(boxValue(sequence)), error: error)
+                } else {
+                    var buffer = ""
+                    var contentType: ContentType?
+                    let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+                    for item in sequence {
+                        if let itemRendering = boxValue(item).render(info: enumerationRenderingInfo, error: error) {
+                            if contentType == nil {
+                                contentType = itemRendering.contentType
+                                buffer += itemRendering.string
+                            } else if contentType == itemRendering.contentType {
+                                buffer += itemRendering.string
+                            } else {
+                                if error != nil {
+                                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                                }
+                                return nil
+                            }
+                        } else {
+                            return nil
+                        }
+                    }
+                    
+                    if let contentType = contentType {
+                        return Rendering(buffer, contentType)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
+    } else {
+        return Box()
+    }
+}
+
+public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> Box {
+    if let collection = collection {
+        return Box(
+            value: collection,
+            mustacheBool: (countElements(collection) > 0),
+            inspect: { (key: String) -> Box? in
+                switch key {
+                case "count":
+                    return boxValue(countElements(collection))   // T.Index.Distance == Int
+                case "firstObject":
+                    if countElements(collection) > 0 {
+                        return boxValue(collection[collection.startIndex])
+                    } else {
+                        return Box()
+                    }
+                case "lastObject":
+                    if countElements(collection) > 0 {
+                        return boxValue(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
+                    } else {
+                        return Box()
+                    }
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(boxValue(collection)), error: error)
+                } else {
+                    var buffer = ""
+                    var contentType: ContentType?
+                    let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+                    for item in collection {
+                        if let boxRendering = boxValue(item).render(info: enumerationRenderingInfo, error: error) {
+                            if contentType == nil {
+                                contentType = boxRendering.contentType
+                                buffer += boxRendering.string
+                            } else if contentType == boxRendering.contentType {
+                                buffer += boxRendering.string
+                            } else {
+                                if error != nil {
+                                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                                }
+                                return nil
+                            }
+                        } else {
+                            return nil
+                        }
+                    }
+                    
+                    if let contentType = contentType {
+                        return Rendering(buffer, contentType)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
+    } else {
+        return Box()
+    }
+}
+
+
+// =============================================================================
+// MARK: - Support for Swift dictionaries
+
+public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
+    if let dictionary = dictionary {
+        return Box(
+            value: dictionary,
+            mustacheBool: true,
+            inspect: { (key: String) -> Box? in
+                return boxValue(dictionary[key])
+            },
+            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(dictionary)")
+                case .Section:
+                    return info.tag.render(info.context.extendedContext(boxValue(dictionary)), error: error)
+                }
+            }
+        )
+    } else {
+        return Box()
+    }
+}
+
+
+// =============================================================================
+// MARK: - Support for Objective-C types
+
+// The MustacheBoxable protocol can not be used by Objc classes, because Box is
+// not compatible with ObjC. So let's define another protocol.
+@objc public protocol ObjCMustacheBoxable {
+    // Can not return a Box, because Box is not compatible with ObjC.
+    // So let's return an ObjC object which wraps a Box.
+    var mustacheBoxWrapper: ObjCBoxWrapper { get }
+}
+
+// The ObjC object which wraps a Box (see ObjCMustacheBoxable)
+public class ObjCBoxWrapper: NSObject {
+    let box: Box
+    init(_ box: Box) {
+        self.box = box
+    }
+}
+
+public func boxValue(boxable: ObjCMustacheBoxable?) -> Box {
+    if let boxable = boxable {
+        return boxable.mustacheBoxWrapper.box
+    } else {
+        return Box()
+    }
+}
+
+extension NSObject: ObjCMustacheBoxable {
+    public var mustacheBoxWrapper: ObjCBoxWrapper {
+        if let enumerable = self as? NSFastEnumeration {
+            if respondsToSelector("objectAtIndexedSubscript:") {
+                // Array
+                var array: [Box] = []
+                let generator = NSFastGenerator(enumerable)
+                while true {
+                    if let item: AnyObject = generator.next() {
+                        var itemBox: Box = Box()
+                        if let item = item as? ObjCMustacheBoxable {
+                            itemBox = boxValue(item)
+                        }
+                        array.append(itemBox)
+                    } else {
+                        break
+                    }
+                }
+                return ObjCBoxWrapper(boxValue(array))
+            } else if respondsToSelector("objectForKeyedSubscript:") {
+                // Dictionary
+                var dictionary: [String: Box] = [:]
+                let generator = NSFastGenerator(enumerable)
+                while true {
+                    if let key = generator.next() as? String {
+                        let item = (self as AnyObject)[key]
+                        var itemBox: Box = Box()
+                        if let item = item as? ObjCMustacheBoxable {
+                            itemBox = boxValue(item)
+                        }
+                        dictionary[key] = itemBox
+                    } else {
+                        break
+                    }
+                }
+                return ObjCBoxWrapper(boxValue(dictionary))
+            } else {
+                // Set
+                var set = NSMutableSet()
+                let generator = NSFastGenerator(enumerable)
+                while true {
+                    if let object: AnyObject = generator.next() {
+                        set.addObject(object)
+                    } else {
+                        break
+                    }
+                }
+                return ObjCBoxWrapper(boxValue(set))
+            }
+            
+        } else {
+            return ObjCBoxWrapper(Box(
+                value: self,
+                mustacheBool: true,
+                inspect: { (key: String) -> Box? in
+                    if let value = self.valueForKey(key) as? ObjCMustacheBoxable {
+                        return boxValue(value)
+                    } else {
+                        return Box()
+                    }
+                },
+                render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                    switch info.tag.type {
+                    case .Variable:
+                        return Rendering("\(self)")
+                    case .Section:
+                        return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
+                    }
+            }))
+        }
+    }
+}
+
+extension NSNull: ObjCMustacheBoxable {
+    public override var mustacheBoxWrapper: ObjCBoxWrapper {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
                 return Rendering("")
             case .Section:
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(null)), error: error)
+                    return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
                 } else {
                     return info.tag.render(info.context, error: error)
                 }
             }
         }
-        self.init(
-            value: null,
+        return ObjCBoxWrapper(Box(
+            value: self,
             mustacheBool: false,
-            render: render)
+            render: render))
     }
-    
-    public init(_ number: NSNumber) {
-        let objCType = number.objCType
-        let str = String.fromCString(objCType)
-        switch str! {
+}
+
+extension NSNumber: ObjCMustacheBoxable {
+    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+        switch String.fromCString(objCType)! {
         case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-            self.init(Int(number.longLongValue))
+            return ObjCBoxWrapper(boxValue(Int(longLongValue)))
         case "f", "d":
-            self.init(number.doubleValue)
+            return ObjCBoxWrapper(boxValue(doubleValue))
         case "B":
-            self.init(number.boolValue)
+            return ObjCBoxWrapper(boxValue(boolValue))
         default:
             fatalError("Not implemented yet")
         }
     }
-    
-    public init(_ set: NSSet) {
+}
+
+extension NSSet: ObjCMustacheBoxable {
+    public override var mustacheBoxWrapper: ObjCBoxWrapper {
         let inspect = { (key: String) -> Box? in
             switch key {
             case "count":
-                return Box(set.count)
+                return boxValue(self.count)
             case "anyObject":
-                return Box(set.anyObject())
+                if let any = self.anyObject() as? ObjCMustacheBoxable {
+                    return boxValue(any)
+                } else {
+                    return Box()
+                }
             default:
                 return nil
             }
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(Box(set)), error: error)
+                return info.tag.render(info.context.extendedContext(boxValue(self)), error: error)
             } else {
                 var buffer = ""
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                for object in set {
-                    if let boxRendering = Box(object).render(info: enumerationRenderingInfo, error: error) {
+                for item in self {
+                    var itemBox: Box = Box()
+                    if let item = item as? ObjCMustacheBoxable {
+                        itemBox = boxValue(item)
+                    }
+                    if let boxRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = boxRendering.contentType
                             buffer += boxRendering.string
@@ -313,225 +589,10 @@ extension Box {
                 }
             }
         }
-        self.init(
-            value: set,
-            mustacheBool: (set.count > 0),
+        return ObjCBoxWrapper(Box(
+            value: self,
+            mustacheBool: (self.count > 0),
             inspect: inspect,
-            render: render)
+            render: render))
     }
-    
-    public init(_ dictionary: [String: Box]) {
-        self.isEmpty = false
-        self.value = dictionary
-        self.mustacheBool = true
-        self.inspect = { (key: String) -> Box? in
-            return dictionary[key]
-        }
-        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(dictionary)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-    }
-    
-    public init<T: SequenceType where T.Generator.Element == Box>(_ sequence: T) {
-        var emptySequence: Bool {
-            for x in sequence {
-                return false
-            }
-            return true
-        }
-        self.isEmpty = false
-        self.value = sequence
-        self.mustacheBool = !emptySequence
-        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                for box in sequence {
-                    if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
-                        if contentType == nil {
-                            contentType = boxRendering.contentType
-                            buffer += boxRendering.string
-                        } else if contentType == boxRendering.contentType {
-                            buffer += boxRendering.string
-                        } else {
-                            if error != nil {
-                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if let contentType = contentType {
-                    return Rendering(buffer, contentType)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
-    }
-    
-    public init<T: CollectionType where T.Generator.Element == Box, T.Index: BidirectionalIndexType, T.Index.Distance == Int>(_ collection: T) {
-        self.isEmpty = false
-        self.value = collection
-        self.mustacheBool = (countElements(collection) > 0)
-        self.inspect = { (key: String) -> Box? in
-            switch key {
-            case "count":
-                return Box(countElements(collection))   // T.Index.Distance == Int
-            case "firstObject":
-                if countElements(collection) > 0 {
-                    return collection[collection.startIndex]
-                } else {
-                    return Box()
-                }
-            case "lastObject":
-                if countElements(collection) > 0 {
-                    return collection[collection.endIndex.predecessor()]    // T.Index: BidirectionalIndexType
-                } else {
-                    return Box()
-                }
-            default:
-                return Box()
-            }
-        }
-        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                for box in collection {
-                    if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
-                        if contentType == nil {
-                            contentType = boxRendering.contentType
-                            buffer += boxRendering.string
-                        } else if contentType == boxRendering.contentType {
-                            buffer += boxRendering.string
-                        } else {
-                            if error != nil {
-                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if let contentType = contentType {
-                    return Rendering(buffer, contentType)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
-    }
-    
-    public init(_ object: AnyObject?) {
-        if let object: AnyObject = object {
-            if let null = object as? NSNull {
-                self.init(null)
-                
-            } else if let number = object as? NSNumber {
-                self.init(number)
-                
-            } else if let set = object as? NSSet {
-                self.init(set)
-                
-            } else if let string = object as? String {
-                self.init(string)
-                
-            } else if let object = object as? NSObjectProtocol {
-                if let enumerable = object as? NSFastEnumeration {
-                    if object.respondsToSelector("objectAtIndexedSubscript:") {
-                        // Array
-                        var array: [Box] = []
-                        let generator = NSFastGenerator(enumerable)
-                        while true {
-                            if let item: AnyObject = generator.next() {
-                                array.append(Box(item))
-                            } else {
-                                break
-                            }
-                        }
-                        self.init(array)
-                    } else if object.respondsToSelector("objectForKeyedSubscript:") {
-                        // Dictionary
-                        var dictionary: [String: Box] = [:]
-                        let generator = NSFastGenerator(enumerable)
-                        while true {
-                            if let key = generator.next() as? String {
-                                dictionary[key] = Box((object as AnyObject)[key])
-                            } else {
-                                break
-                            }
-                        }
-                        self.init(dictionary)
-                    } else {
-                        // Set
-                        var set = NSMutableSet()
-                        let generator = NSFastGenerator(enumerable)
-                        while true {
-                            if let object: AnyObject = generator.next() {
-                                set.addObject(object)
-                            } else {
-                                break
-                            }
-                        }
-                        self.init(set)
-                    }
-                    
-                } else if let object = object as? NSObject {
-                    self.init(object)
-                    
-                } else {
-                    fatalError("\(object) can not be boxed.")
-                }
-                
-            } else {
-                fatalError("\(object) can not be boxed.")
-            }
-            
-        } else {
-            self.init()
-        }
-    }
-
-    private init(_ object: NSObject) {
-        self.isEmpty = false
-        self.value = object
-        self.mustacheBool = true
-        self.inspect = { (key: String) -> Box? in
-            return Box(object.valueForKey(key))
-        }
-        // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-        self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(object)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(self), error: error)
-            }
-        }
-    }
-    
 }
