@@ -124,7 +124,11 @@ extension Box {
 extension Box: DebugPrintable {
     
     public var debugDescription: String {
-        return "Box\(value)"
+        if let value = value {
+            return "Box(\(value))"  // remove the "Optional" in the output
+        } else {
+            return "Box(\(value))"
+        }
     }
 }
 
@@ -529,6 +533,12 @@ extension NSNumber: ObjCMustacheBoxable {
         default:
             fatalError("Not implemented yet")
         }
+    }
+}
+
+extension NSString: ObjCMustacheBoxable {
+    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+        return ObjCBoxWrapper(boxValue(self as String))
     }
 }
 
