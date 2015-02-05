@@ -100,7 +100,7 @@ private func _VariadicFilter(arguments: [Box], filter: (arguments: [Box], error:
     return { (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box? in
         let arguments = arguments + [argument]
         if partialApplication {
-            return Box(filter: _VariadicFilter(arguments, filter))
+            return boxValue(_VariadicFilter(arguments, filter))
         } else {
             return filter(arguments: arguments, error: error)
         }
@@ -114,7 +114,7 @@ private func _VariadicFilter(arguments: [Box], filter: (arguments: [Box], error:
 // Box input
 public func Filter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter({ (box: Box, error: NSErrorPointer) -> Box? in
-        return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(box, info, error)
         })
     })
@@ -123,7 +123,7 @@ public func Filter(filter: (Box, RenderingInfo, NSErrorPointer) -> Rendering?) -
 // Generic input
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter({ (t: T?, error: NSErrorPointer) -> Box? in
-        return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(t, info, error)
         })
     })
@@ -132,7 +132,7 @@ public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?)
 // Int input (see Box#intValue)
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter({ (int: Int?, error: NSErrorPointer) -> Box? in
-        return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(int, info, error)
         })
     })
@@ -141,7 +141,7 @@ public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) 
 // Double input (see Box#doubleValue)
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter({ (double: Double?, error: NSErrorPointer) -> Box? in
-        return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(double, info, error)
         })
     })
@@ -150,7 +150,7 @@ public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering
 // Single input (see Box#stringValue)
 public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter({ (string: String?, error: NSErrorPointer) -> Box? in
-        return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(string, info, error)
         })
     })

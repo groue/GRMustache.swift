@@ -34,7 +34,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
             return boxValue("delegate")
         }
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(willRender: willRender))
+        configuration.extendBaseContext(boxValue(willRender))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!

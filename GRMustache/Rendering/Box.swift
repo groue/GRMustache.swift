@@ -11,7 +11,7 @@
 // =============================================================================
 // MARK: - Core function types
 
-public typealias InspectFunction = (key: String) -> Box?
+public typealias SubscriptFunction = (key: String) -> Box?
 public typealias FilterFunction = (argument: Box, partialApplication: Bool, error: NSErrorPointer) -> Box?
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 public typealias WillRenderFunction = (tag: Tag, box: Box) -> Box
@@ -25,18 +25,18 @@ public struct Box {
     public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
-    public let inspect: InspectFunction?
+    public let objectForKeyedSubscript: SubscriptFunction?
     public private(set) var render: RenderFunction  // It should be a `let` property. But compilers spawns unwanted "variable 'self.render' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
     public let filter: FilterFunction?
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
     
-    public init(value: Any? = nil, mustacheBool: Bool? = nil, inspect: InspectFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
-        let empty = (value == nil) && (inspect == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
+    public init(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
+        let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
         self.mustacheBool = mustacheBool ?? !empty
-        self.inspect = inspect
+        self.objectForKeyedSubscript = objectForKeyedSubscript
         self.filter = filter
         self.willRender = willRender
         self.didRender = didRender
@@ -71,7 +71,7 @@ extension Box {
         return Box(
             value: self.value,
             mustacheBool: self.mustacheBool,
-            inspect: self.inspect,
+            objectForKeyedSubscript: self.objectForKeyedSubscript,
             render: render,
             filter: self.filter,
             willRender: self.willRender,
@@ -139,8 +139,8 @@ extension Box: DebugPrintable {
 extension Box {
     
     subscript(key: String) -> Box {
-        if let inspect = inspect {
-            if let box = inspect(key: key) {
+        if let objectForKeyedSubscript = objectForKeyedSubscript {
+            if let box = objectForKeyedSubscript(key: key) {
                 return box
             }
         }
@@ -150,7 +150,31 @@ extension Box {
 
 
 // =============================================================================
-// MARK: - Support for Swift types
+// MARK: - Boxing of Core Mustache functions
+
+public func boxValue(objectForKeyedSubscript: SubscriptFunction) -> Box {
+    return Box(objectForKeyedSubscript: objectForKeyedSubscript)
+}
+
+public func boxValue(filter: FilterFunction) -> Box {
+    return Box(filter: filter)
+}
+
+public func boxValue(render: RenderFunction) -> Box {
+    return Box(render: render)
+}
+
+public func boxValue(willRender: WillRenderFunction) -> Box {
+    return Box(willRender: willRender)
+}
+
+public func boxValue(didRender: DidRenderFunction) -> Box {
+    return Box(didRender: didRender)
+}
+
+
+// =============================================================================
+// MARK: - Boxing of Swift scalar types
 
 public protocol MustacheBoxable {
     var mustacheBox: Box { get }
@@ -235,7 +259,7 @@ extension Double: MustacheBoxable {
 
 extension String: MustacheBoxable {
     public var mustacheBox: Box {
-        let inspect = { (key: String) -> Box? in
+        let objectForKeyedSubscript = { (key: String) -> Box? in
             switch key {
             case "length":
                 return boxValue(countElements(self))
@@ -254,16 +278,17 @@ extension String: MustacheBoxable {
         return Box(
             value: self,
             mustacheBool: (countElements(self) > 0),
-            inspect: inspect,
+            objectForKeyedSubscript: objectForKeyedSubscript,
             render: render)
     }
 }
 
 
 // =============================================================================
-// MARK: - Support for Swift sequences & collections
+// MARK: - Boxing of Swift sequences & collections
 
 public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> Box {
+    // TODO: test this method
     if let sequence = sequence {
         var boxSequence = map(sequence) { boxValue($0) }
         var emptySequence: Bool {
@@ -319,7 +344,7 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
         return Box(
             value: boxCollection,
             mustacheBool: (count > 0),
-            inspect: { (key: String) -> Box? in
+            objectForKeyedSubscript: { (key: String) -> Box? in
                 switch key {
                 case "count":
                     return boxValue(count)
@@ -378,7 +403,7 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
 
 
 // =============================================================================
-// MARK: - Support for Swift dictionaries
+// MARK: - Boxing of Swift dictionaries
 
 public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
     if let dictionary = dictionary {
@@ -389,7 +414,7 @@ public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
         return Box(
             value: boxDictionary,
             mustacheBool: true,
-            inspect: { (key: String) -> Box? in
+            objectForKeyedSubscript: { (key: String) -> Box? in
                 return boxDictionary[key]
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -408,7 +433,7 @@ public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
 
 
 // =============================================================================
-// MARK: - Support for Objective-C types
+// MARK: - Boxing of Objective-C types
 
 // The MustacheBoxable protocol can not be used by Objc classes, because Box is
 // not compatible with ObjC. So let's define another protocol.
@@ -488,7 +513,7 @@ extension NSObject: ObjCMustacheBoxable {
             return ObjCBoxWrapper(Box(
                 value: self,
                 mustacheBool: true,
-                inspect: { (key: String) -> Box? in
+                objectForKeyedSubscript: { (key: String) -> Box? in
                     if let value = self.valueForKey(key) as? ObjCMustacheBoxable {
                         return boxValue(value)
                     } else {
@@ -551,7 +576,7 @@ extension NSString: ObjCMustacheBoxable {
 
 extension NSSet: ObjCMustacheBoxable {
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        let inspect = { (key: String) -> Box? in
+        let objectForKeyedSubscript = { (key: String) -> Box? in
             switch key {
             case "count":
                 return boxValue(self.count)
@@ -609,7 +634,7 @@ extension NSSet: ObjCMustacheBoxable {
         return ObjCBoxWrapper(Box(
             value: self,
             mustacheBool: (self.count > 0),
-            inspect: inspect,
+            objectForKeyedSubscript: objectForKeyedSubscript,
             render: render))
     }
 }

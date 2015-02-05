@@ -36,7 +36,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         let filter = Filter({ (string: String?, error: NSErrorPointer) -> Box in
             return boxValue(string!.uppercaseString)
         })
-        let context = Context(boxValue(["name": boxValue("success"), "f": Box(filter: filter)]))
+        let context = Context(boxValue(["name": boxValue("success"), "f": boxValue(filter)]))
         let box = context.boxForMustacheExpression("f(name)")!
         let string = box.value as? String
         XCTAssertEqual(string!, "SUCCESS")

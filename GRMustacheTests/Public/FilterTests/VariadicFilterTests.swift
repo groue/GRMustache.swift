@@ -19,7 +19,7 @@ class VariadicFilterTests: XCTestCase {
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "join": Box(filter: filter)])
+            "join": boxValue(filter)] as [String: Box]) // TODO: remove this unnecessary cast
         let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a a,b a,b,c")
@@ -28,7 +28,7 @@ class VariadicFilterTests: XCTestCase {
     func testVariadicFilterCanReturnFilter() {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             let joined = ",".join(args.map { $0.stringValue ?? "" })
-            return Box(filter: Filter({ (box: Box, error: NSErrorPointer) -> Box? in
+            return boxValue(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return boxValue(joined + "+" + (box.stringValue ?? ""))
             }))
         })
@@ -36,7 +36,7 @@ class VariadicFilterTests: XCTestCase {
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "f": Box(filter: filter)])
+            "f": boxValue(filter)] as [String: Box])    // TODO: remove this unnecessary cast
         let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
@@ -46,7 +46,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return boxValue(["foo": "bar"])
         })
-        let box = boxValue(["f": Box(filter: filter)])
+        let box = boxValue(["f": boxValue(filter)])
         let template = Template(string:"{{f(a,b).foo}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
@@ -56,7 +56,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return boxValue(["foo": "bar"])
         })
-        let box = boxValue(["f": Box(filter: filter)])
+        let box = boxValue(["f": boxValue(filter)])
         let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "bar")
@@ -70,7 +70,7 @@ class VariadicFilterTests: XCTestCase {
             "a": boxValue("a"),
             "b": boxValue("b"),
             "c": boxValue("c"),
-            "f": Box(filter: filter)])
+            "f": boxValue(filter)] as [String: Box])    // TODO: remove this unnecessary cast
         let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "ab abc")
@@ -83,7 +83,7 @@ class VariadicFilterTests: XCTestCase {
         let box = boxValue([
             "yes": boxValue(true),
             "no": boxValue(false),
-            "f": Box(filter: filter)])
+            "f": boxValue(filter)])
         let template = Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "YES NO")
@@ -93,7 +93,7 @@ class VariadicFilterTests: XCTestCase {
         let filter = VariadicFilter({ (args: [Box], error: NSErrorPointer) -> Box? in
             return nil
         })
-        let box = boxValue(["f": Box(filter: filter)])
+        let box = boxValue(["f": boxValue(filter)])
         let template = Template(string:"{{^f(x)}}nil{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "nil")
@@ -101,7 +101,7 @@ class VariadicFilterTests: XCTestCase {
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let box = boxValue([
-            "f": Box(filter: VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
+            "f": boxValue(VariadicFilter({ (arguments: [Box], error: NSErrorPointer) -> Box? in
                 var result = ""
                 for argument in arguments {
                     if let dictionary = argument.value as? [String: Box] {

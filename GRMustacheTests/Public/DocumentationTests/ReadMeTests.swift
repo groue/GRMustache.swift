@@ -43,7 +43,7 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": Box(filter: pluralizeFilter)]))
+        Configuration.defaultConfiguration.extendBaseContext(boxValue(["pluralize": boxValue(pluralizeFilter)]))
         
         
         // I have 3 cats.
@@ -61,14 +61,13 @@ class ReadMeTests: XCTestCase {
         struct User: MustacheBoxable {
             let name: String
             var mustacheBox: Box {
-                return Box(
-                    inspect: { (key: String) -> Box? in
-                        switch key {
-                        case "name":
-                            return boxValue(self.name)
-                        default:
-                            return nil
-                        }
+                return boxValue({ (key: String) -> Box? in
+                    switch key {
+                    case "name":
+                        return boxValue(self.name)
+                    default:
+                        return nil
+                    }
                 })
             }
         }

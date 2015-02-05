@@ -9,21 +9,21 @@
 import XCTest
 import GRMustache
 
-class InspectFunctionTests: XCTestCase {
+class SubscriptFunctionTests: XCTestCase {
     
-    func makeInspect() -> InspectFunction {
+    func makeSubscriptFunction() -> SubscriptFunction {
         return { (key: String) -> Box? in
             if key == "self" {
-                return Box(inspect: self.makeInspect())
+                return boxValue(self.makeSubscriptFunction())
             } else {
                 return boxValue(key)
             }
         }
     }
     
-    func testBoxedInspectFunction() {
+    func testBoxedSubscriptFunction() {
         let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Box(inspect: makeInspect()))!
+        let rendering = template.render(boxValue(makeSubscriptFunction()))!
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

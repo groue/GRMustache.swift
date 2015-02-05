@@ -14,10 +14,10 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let box = boxValue([
             "name": boxValue("Name"),
-            "uppercase": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
+            "uppercase": boxValue(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
                 return boxValue(string?.uppercaseString)
             })),
-            "prefix": Box(filter: Filter({ (string: String?, error: NSErrorPointer) -> Box? in
+            "prefix": boxValue(Filter({ (string: String?, error: NSErrorPointer) -> Box? in
                 return boxValue("prefix\(string!)")
             }))
             ])
@@ -34,7 +34,7 @@ class FilterTests: XCTestCase {
         box = boxValue([
             "object": boxValue(["name": "objectName"]),
             "name": boxValue("rootName"),
-            "f": Box(filter: Filter({ (box: Box, error: NSErrorPointer) -> Box? in
+            "f": boxValue(Filter({ (box: Box, error: NSErrorPointer) -> Box? in
                 return box
             }))
             ])
@@ -44,7 +44,7 @@ class FilterTests: XCTestCase {
         box = boxValue([
             "object": boxValue(["name": "objectName"]),
             "name": boxValue("rootName"),
-            "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "f": boxValue(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return boxValue(["name": "filterName"])
             }))
             ])
@@ -54,7 +54,7 @@ class FilterTests: XCTestCase {
         box = boxValue([
             "object": boxValue(["name": "objectName"]),
             "name": boxValue("rootName"),
-            "f": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "f": boxValue(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return boxValue(true)
             }))
             ])
@@ -66,7 +66,7 @@ class FilterTests: XCTestCase {
         let box = boxValue([
             "test": boxValue("success"),
             "filtered": boxValue(["test": "failure"]),
-            "filter": Box(filter: Filter({ (_: Box, _: NSErrorPointer) -> Box? in
+            "filter": boxValue(Filter({ (_: Box, _: NSErrorPointer) -> Box? in
                 return boxValue(true)
             }))])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
@@ -75,7 +75,7 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterNameSpace() {
-        let doubleFilter = Box(filter: Filter({ (x: Int?, error: NSErrorPointer) -> Box? in
+        let doubleFilter = boxValue(Filter({ (x: Int?, error: NSErrorPointer) -> Box? in
             return boxValue((x ?? 0) * 2)
         }))
         let box = boxValue([
@@ -88,8 +88,8 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        let filterValue = Box(filter: Filter({ (string1: String?, error: NSErrorPointer) -> Box? in
-            return Box(filter: Filter({ (string2: String?, error: NSErrorPointer) -> Box? in
+        let filterValue = boxValue(Filter({ (string1: String?, error: NSErrorPointer) -> Box? in
+            return boxValue(Filter({ (string2: String?, error: NSErrorPointer) -> Box? in
                     return boxValue("\(string1!)\(string2!)")
                 }))
             }))
@@ -103,7 +103,7 @@ class FilterTests: XCTestCase {
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let box = Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+        let box = boxValue(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
             return boxValue("filter")
         }))
         let template = Template(string:"{{.(a)}}")!
@@ -114,7 +114,7 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let box = boxValue([
             "name": boxValue("Name"),
-            "replace": Box(filter: Filter({ (_: Box, error: NSErrorPointer) -> Box? in
+            "replace": boxValue(Filter({ (_: Box, error: NSErrorPointer) -> Box? in
                 return boxValue("replace")
             }))
         ])

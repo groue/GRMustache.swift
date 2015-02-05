@@ -108,7 +108,7 @@ class ValueTests: XCTestCase {
         let value1 = boxValue([
             "string": boxValue("success"),
             "custom": boxValue(Boxable(name: "custom1")),
-            "f": Box(filter: Filter(filter1))
+            "f": boxValue(Filter(filter1))
             ])
         let rendering1 = template.render(value1)!
         XCTAssertEqual(rendering1, "custom1,other")
@@ -116,14 +116,14 @@ class ValueTests: XCTestCase {
         let value2 = boxValue([
             "string": boxValue("success"),
             "custom": Box(value: Boxable(name: "custom2")),
-            "f": Box(filter: Filter(filter2))])
+            "f": boxValue(Filter(filter2))])
         let rendering2 = template.render(value2)!
         XCTAssertEqual(rendering2, "custom2,other")
         
         let value3 = boxValue([
             "string": boxValue("success"),
             "custom": boxValue(NSDate()),
-            "f": Box(filter: Filter(filter3))])
+            "f": boxValue(Filter(filter3))])
         let rendering3 = template.render(value3)!
         XCTAssertEqual(rendering3, "custom3,other")
     }

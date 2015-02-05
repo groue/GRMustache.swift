@@ -34,7 +34,7 @@ class URLEscape: MustacheBoxable {
             // We want to escape its rendering.
             // So return a rendering object that will eventually render `object`,
             // and escape its rendering.
-            return Box(render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return boxValue({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
                     return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
                 } else {

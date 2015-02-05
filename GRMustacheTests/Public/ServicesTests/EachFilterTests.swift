@@ -16,7 +16,7 @@ class EachFilterTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = boxValue(["array": boxValue([Box(render: render)])])
+        let box = boxValue(["array": boxValue([boxValue(render)])])
         let template = Template(string: "{{#each(array)}}{{@index}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<0>")
@@ -27,7 +27,7 @@ class EachFilterTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = boxValue(["dictionary": boxValue(["a": Box(render: render)])])
+        let box = boxValue(["dictionary": boxValue(["a": boxValue(render)])])
         let template = Template(string: "{{#each(dictionary)}}{{@key}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<a>")

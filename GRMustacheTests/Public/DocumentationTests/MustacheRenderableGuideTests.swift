@@ -21,10 +21,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        var rendering = Template(string: "{{.}}")!.render(Box(render: render))!
+        var rendering = Template(string: "{{.}}")!.render(boxValue(render))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
         
-        rendering = Template(string: "{{#.}}{{/}}")!.render(Box(render: render))!
+        rendering = Template(string: "{{#.}}{{/}}")!.render(boxValue(render))!
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
     
@@ -33,7 +33,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             return Rendering("Arthur & Cie")
         }
         
-        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(Box(render: render))!
+        let rendering = Template(string: "{{.}}|{{{.}}}")!.render(boxValue(render))!
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
     
@@ -44,7 +44,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let box = boxValue([
-            "strong": Box(render: render),
+            "strong": boxValue(render),
             "name": boxValue("Arthur")])
         let rendering = Template(string: "{{#strong}}{{name}}{{/strong}}")!.render(box)!
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
@@ -55,7 +55,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = boxValue(["twice": Box(render: render)])
+        let box = boxValue(["twice": boxValue(render)])
         let rendering = Template(string: "{{#twice}}Success{{/twice}}")!.render(box)!
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
@@ -66,7 +66,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             return template.render(info.context, error: error)
         }
         let box = boxValue([
-            "link": Box(render: render),
+            "link": boxValue(render),
             "name": boxValue("Arthur"),
             "url": boxValue("/people/123")])
         let rendering = Template(string: "{{# link }}{{ name }}{{/ link }}")!.render(box)!
@@ -97,7 +97,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             var mustacheBox: Box {
-                let inspect = { (key: String) -> Box? in
+                let objectForKeyedSubscript = { (key: String) -> Box? in
                     switch key {
                     case "firstName":
                         return boxValue(self.firstName)
@@ -114,7 +114,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    inspect: inspect,
+                    objectForKeyedSubscript: objectForKeyedSubscript,
                     render: render)
             }
         }
@@ -123,7 +123,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             var mustacheBox: Box {
-                let inspect = { (key: String) -> Box? in
+                let objectForKeyedSubscript = { (key: String) -> Box? in
                     switch key {
                     case "title":
                         return boxValue(self.title)
@@ -140,7 +140,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    inspect: inspect,
+                    objectForKeyedSubscript: objectForKeyedSubscript,
                     render: render)
             }
         }
@@ -167,7 +167,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(boxValue(["list": Box(filter: Filter(listFilter))]))
+        template.baseContext = template.baseContext.extendedContext(boxValue(["list": boxValue(Filter(listFilter))]))
         
         let item1 = boxValue([
             "url": "http://mustache.github.io",
