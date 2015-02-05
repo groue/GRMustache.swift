@@ -90,7 +90,7 @@ class GRMustacheSuiteTests: XCTestCase {
             if let data = dictionary["data"] as? ObjCMustacheBoxable {
                 return boxValue(data)
             } else {
-                return Box()
+                return Box.empty
             }
         }
         var expectedRendering: String? { return dictionary["expected"] as String? }

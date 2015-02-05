@@ -14,7 +14,7 @@ extension NSFormatter: ObjCMustacheBoxable {
         if let object = box.value as? NSObject {
             return boxValue(self.stringForObjectValue(object))
         } else {
-            return Box()
+            return Box.empty
         }
     }
     
@@ -66,7 +66,7 @@ extension NSFormatter: ObjCMustacheBoxable {
     // MARK: - ObjCMustacheBoxable
     
     public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        return ObjCBoxWrapper(Box(
+        return ObjCBoxWrapper(boxValue(
             value: self,
             render: render,
             filter: Filter(filter),

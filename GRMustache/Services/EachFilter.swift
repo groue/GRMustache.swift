@@ -52,7 +52,7 @@ private func transformedSet(set: NSSet) -> Box {
     let count = set.count
     var index = 0
     for item in set {
-        var itemBox: Box = Box()
+        var itemBox: Box = Box.empty
         if let item = item as? ObjCMustacheBoxable {
             itemBox = boxValue(item)
         }

@@ -248,7 +248,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Template(string:"key:{{key}}")!.render(info, error: error)
         }
-        let box = boxValue(["render": Box(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
+        let box = boxValue(["render": boxValue(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
         let rendering = Template(string: "{{render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }
@@ -260,7 +260,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context, error: error)
         }
-        let box = boxValue(["render": Box(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
+        let box = boxValue(["render": boxValue(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
         let rendering = Template(string: "{{#render}}key:{{key}}{{/render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }

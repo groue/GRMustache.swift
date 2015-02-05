@@ -1,5 +1,5 @@
 //
-//  InspectFunctionTests.swift
+//  SubscriptFunctionTests.swift
 //  GRMustache
 //
 //  Created by Gwendal Roué on 14/11/2014.

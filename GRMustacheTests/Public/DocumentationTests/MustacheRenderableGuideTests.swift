@@ -112,7 +112,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     let context = info.context.extendedContext(boxValue(self))
                     return template.render(context, error: error)
                 }
-                return Box(
+                return boxValue(
                     value: self,
                     objectForKeyedSubscript: objectForKeyedSubscript,
                     render: render)
@@ -138,7 +138,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     let context = info.context.extendedContext(boxValue(self))
                     return template.render(context, error: error)
                 }
-                return Box(
+                return boxValue(
                     value: self,
                     objectForKeyedSubscript: objectForKeyedSubscript,
                     render: render)

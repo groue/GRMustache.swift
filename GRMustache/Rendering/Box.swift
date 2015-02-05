@@ -31,7 +31,7 @@ public struct Box {
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
     
-    public init(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
+    private init(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
         let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
@@ -59,7 +59,16 @@ public struct Box {
             }
         }
     }
+    
+    public static var empty: Box {
+        return Box.empty
+    }
 }
+
+public func boxValue(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> Box {
+    return Box(value: value, mustacheBool: mustacheBool, objectForKeyedSubscript: objectForKeyedSubscript, render: render, filter: filter, willRender: willRender, didRender: didRender)
+}
+
 
 
 // =============================================================================
@@ -144,7 +153,7 @@ extension Box {
                 return box
             }
         }
-        return Box()
+        return Box.empty
     }
 }
 
@@ -184,7 +193,7 @@ public func boxValue<T: MustacheBoxable>(boxable: T?) -> Box {
     if let boxable = boxable {
         return boxable.mustacheBox
     } else {
-        return Box()
+        return Box.empty
     }
 }
 
@@ -333,7 +342,7 @@ public func boxValue<S: SequenceType where S.Generator.Element: MustacheBoxable>
                 }
         })
     } else {
-        return Box()
+        return Box.empty
     }
 }
 
@@ -352,16 +361,16 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
                     if count > 0 {
                         return boxValue(collection[collection.startIndex])
                     } else {
-                        return Box()
+                        return Box.empty
                     }
                 case "lastObject":
                     if count > 0 {
                         return boxValue(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
                     } else {
-                        return Box()
+                        return Box.empty
                     }
                 default:
-                    return Box()
+                    return Box.empty
                 }
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -397,7 +406,7 @@ public func boxValue<C: CollectionType where C.Generator.Element: MustacheBoxabl
                 }
         })
     } else {
-        return Box()
+        return Box.empty
     }
 }
 
@@ -427,7 +436,7 @@ public func boxValue<T: MustacheBoxable>(dictionary: [String: T]?) -> Box {
             }
         )
     } else {
-        return Box()
+        return Box.empty
     }
 }
 
@@ -455,7 +464,7 @@ public func boxValue(boxable: ObjCMustacheBoxable?) -> Box {
     if let boxable = boxable {
         return boxable.mustacheBoxWrapper.box
     } else {
-        return Box()
+        return Box.empty
     }
 }
 
@@ -468,7 +477,7 @@ extension NSObject: ObjCMustacheBoxable {
                 let generator = NSFastGenerator(enumerable)
                 while true {
                     if let item: AnyObject = generator.next() {
-                        var itemBox: Box = Box()
+                        var itemBox: Box = Box.empty
                         if let item = item as? ObjCMustacheBoxable {
                             itemBox = boxValue(item)
                         }
@@ -485,7 +494,7 @@ extension NSObject: ObjCMustacheBoxable {
                 while true {
                     if let key = generator.next() as? String {
                         let item = (self as AnyObject)[key]
-                        var itemBox: Box = Box()
+                        var itemBox: Box = Box.empty
                         if let item = item as? ObjCMustacheBoxable {
                             itemBox = boxValue(item)
                         }
@@ -517,7 +526,7 @@ extension NSObject: ObjCMustacheBoxable {
                     if let value = self.valueForKey(key) as? ObjCMustacheBoxable {
                         return boxValue(value)
                     } else {
-                        return Box()
+                        return Box.empty
                     }
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -584,7 +593,7 @@ extension NSSet: ObjCMustacheBoxable {
                 if let any = self.anyObject() as? ObjCMustacheBoxable {
                     return boxValue(any)
                 } else {
-                    return Box()
+                    return Box.empty
                 }
             default:
                 return nil
@@ -598,7 +607,7 @@ extension NSSet: ObjCMustacheBoxable {
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in self {
-                    var itemBox: Box = Box()
+                    var itemBox: Box = Box.empty
                     if let item = item as? ObjCMustacheBoxable {
                         itemBox = boxValue(item)
                     }

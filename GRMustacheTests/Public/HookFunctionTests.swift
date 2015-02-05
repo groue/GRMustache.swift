@@ -53,7 +53,7 @@ class HookFunctionTests: XCTestCase {
         }
         
         let template = Template(string: "---{{foo}}---")!
-        template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
+        template.baseContext = template.baseContext.extendedContext(boxValue(willRender: willRender, didRender: didRender))
         let rendering = template.render(boxValue(["foo": "value"]))!
         
         XCTAssertEqual(rendering, "---1---")
@@ -75,7 +75,7 @@ class HookFunctionTests: XCTestCase {
         }
         
         let template = Template(string: "<{{#false}}{{not_rendered}}{{/false}}>")!
-        template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
+        template.baseContext = template.baseContext.extendedContext(boxValue(willRender: willRender, didRender: didRender))
         let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<>")
@@ -103,7 +103,7 @@ class HookFunctionTests: XCTestCase {
         }
         
         let template = Template(string: "<{{#foo}}{{bar}}{{/foo}}>")!
-        template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
+        template.baseContext = template.baseContext.extendedContext(boxValue(willRender: willRender, didRender: didRender))
         let rendering = template.render()!
         
         XCTAssertEqual(rendering, "<observer>")
@@ -297,10 +297,10 @@ class HookFunctionTests: XCTestCase {
         }
         
         let template = Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")!
-        template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender1, didRender: didRender1))
+        template.baseContext = template.baseContext.extendedContext(boxValue(willRender: willRender1, didRender: didRender1))
         let box = boxValue([
-            "observer2": Box(willRender: willRender2, didRender: didRender2),
-            "observer3": Box(willRender: willRender3, didRender: didRender3),
+            "observer2": boxValue(willRender: willRender2, didRender: didRender2),
+            "observer3": boxValue(willRender: willRender3, didRender: didRender3),
             "observed": boxValue("observed")
             ])
         template.render(box)

@@ -22,7 +22,7 @@ public class Localizer: MustacheBoxable {
         if let string = argument.stringValue {
             return boxValue(localizedStringForKey(string))
         } else {
-            return Box()
+            return Box.empty
         }
     }
     
@@ -149,7 +149,7 @@ public class Localizer: MustacheBoxable {
     // MARK: - MustacheBoxable
     
     public var mustacheBox: Box {
-        return Box(
+        return boxValue(
             value: self,
             render: render,
             filter: filter,
