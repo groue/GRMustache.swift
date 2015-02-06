@@ -87,11 +87,8 @@ class GRMustacheSuiteTests: XCTestCase {
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
         var renderedValue: MustacheBox {
-            if let data = dictionary["data"] as? ObjCMustacheBoxable {
-                return Box(data)
-            } else {
-                return MustacheBox.empty
-            }
+            // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
+            return Box((dictionary["data"] as ObjCMustacheBoxable))
         }
         var expectedRendering: String? { return dictionary["expected"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }

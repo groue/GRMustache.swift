@@ -188,7 +188,7 @@ public class Template: MustacheBoxable {
     
     :returns: The rendered string
     */
-    public func render(_ box: MustacheBox = MustacheBox.empty, error: NSErrorPointer = nil) -> String? {
+    public func render(_ box: MustacheBox = Box(), error: NSErrorPointer = nil) -> String? {
         if let rendering = render(baseContext.extendedContext(box), error: error) {
             return rendering.string
         } else {

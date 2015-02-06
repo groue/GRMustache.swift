@@ -11,6 +11,11 @@ import GRMustache
 
 class ReadMeTests: XCTestCase {
     
+    override func tearDown() {
+        super.tearDown()
+        DefaultConfiguration = Configuration()
+    }
+    
     func testReadmeExample1() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let template = Template(named: "ReadMeExample1", bundle: testBundle)!
@@ -43,7 +48,7 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Configuration.defaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
+        GRMustache.DefaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
         
         
         // I have 3 cats.
@@ -53,8 +58,6 @@ class ReadMeTests: XCTestCase {
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "I have 3 cats.")
-        
-        Configuration.defaultConfiguration = Configuration()
     }
     
     func testReadmeExample3() {

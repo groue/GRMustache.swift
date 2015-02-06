@@ -52,10 +52,8 @@ private func transformedSet(set: NSSet) -> MustacheBox {
     let count = set.count
     var index = 0
     for item in set {
-        var itemBox: MustacheBox = MustacheBox.empty
-        if let item = item as? ObjCMustacheBoxable {
-            itemBox = Box(item)
-        }
+        // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
+        let itemBox = Box((item as ObjCMustacheBoxable))
         let last = index == count
         mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: MustacheBox] = [:]

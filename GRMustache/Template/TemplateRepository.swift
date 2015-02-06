@@ -19,7 +19,7 @@ public class TemplateRepository {
     private var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
-        configuration = Configuration.defaultConfiguration
+        configuration = DefaultConfiguration
         templateASTForTemplateID = [:]
         self.dataSource = dataSource
     }

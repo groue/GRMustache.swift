@@ -19,9 +19,9 @@ public struct Configuration {
         tagEndDelimiter = "}}"
     }
     
-    public static var defaultConfiguration = Configuration()
-    
     public mutating func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
 }
+
+public var DefaultConfiguration = Configuration()

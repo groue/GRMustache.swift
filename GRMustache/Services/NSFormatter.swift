@@ -14,7 +14,7 @@ extension NSFormatter: ObjCMustacheBoxable {
         if let object = box.value as? NSObject {
             return Box(self.stringForObjectValue(object))
         } else {
-            return MustacheBox.empty
+            return Box()
         }
     }
     

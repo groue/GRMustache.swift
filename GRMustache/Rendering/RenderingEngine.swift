@@ -120,7 +120,7 @@ class RenderingEngine: TemplateASTVisitor {
         } else if let repository = currentTemplateRepository() {
             return repository.configuration.contentType
         } else {
-            return Configuration.defaultConfiguration.contentType
+            return DefaultConfiguration.contentType
         }
     }
     

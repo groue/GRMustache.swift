@@ -12,7 +12,7 @@ class ExpressionInvocation: ExpressionVisitor {
     private var context: Context?
     
     init (expression: Expression) {
-        self.box = MustacheBox.empty
+        self.box = Box()
         self.expression = expression
     }
     
@@ -64,7 +64,7 @@ class ExpressionInvocation: ExpressionVisitor {
                 // MustacheFilter result is nil, but filter error is not set.
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
-                box = MustacheBox.empty
+                box = Box()
                 return .Success
             }
         } else if boxedFilter.isEmpty {

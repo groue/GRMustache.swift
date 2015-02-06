@@ -21,7 +21,7 @@ class JavascriptEscape: MustacheBoxable {
         if let string = box.stringValue {
             return Box(JavascriptEscape.escapeJavascript(string))
         } else {
-            return MustacheBox.empty
+            return Box()
         }
     }
     

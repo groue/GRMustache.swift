@@ -13,29 +13,29 @@ class ConfigurationContentTypeTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
-        
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration = Configuration()
     }
     
+    
     func testFactoryConfigurationHasHTMLContentTypeRegardlessOfDefaultConfiguration() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         var configuration = Configuration()
         XCTAssertEqual(configuration.contentType, ContentType.HTML)
         
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         configuration = Configuration()
         XCTAssertEqual(configuration.contentType, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasTemplateRenderEscapedInput() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         let template = Template(string: "{{.}}")!
         let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
 
     func testDefaultConfigurationContentTypeTextLHasTemplateRenderUnescapedInput() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         let template = Template(string: "{{.}}")!
         let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
@@ -49,7 +49,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         //
         // Thus we'll use a rendering object that will provide us with one:
         
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -74,7 +74,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         //
         // Thus we'll use a rendering object that will provide us with one:
         
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -92,7 +92,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testDefaultConfigurationContentTypeHTMLHasSectionTagRenderHTML() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -110,7 +110,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testDefaultConfigurationContentTypeTextHasSectionTagRenderText() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -128,7 +128,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testDefaultConfigurationContentTypeHTMLHasVariableTagRenderHTML() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -146,7 +146,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testDefaultConfigurationContentTypeTextHasVariableTagRenderText() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
@@ -164,25 +164,25 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testPragmaContentTypeTextOverridesDefaultConfiguration() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         let template = Template(string:"{{%CONTENT_TYPE:TEXT}}{{.}}")!
         let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&")
     }
     
     func testPragmaContentTypeHTMLOverridesDefaultConfiguration() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         let template = Template(string:"{{%CONTENT_TYPE:HTML}}{{.}}")!
         let rendering = template.render(Box("&"))!
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testDefaultRepositoryConfigurationHasDefaultConfigurationContentType() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         var repo = TemplateRepository()
         XCTAssertEqual(repo.configuration.contentType, ContentType.HTML)
         
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         repo = TemplateRepository()
         XCTAssertEqual(repo.configuration.contentType, ContentType.Text)
     }
@@ -224,7 +224,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
 
     func testRepositoryConfigurationContentTypeTextOverridesDefaultConfigurationContentTypeHTMLWhenSettingTheWholeConfiguration() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         var configuration = Configuration()
         configuration.contentType = .Text
         let repository = TemplateRepository()
@@ -235,7 +235,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testRepositoryConfigurationContentTypeTextOverridesDefaultConfigurationContentTypeHTMLWhenUpdatingRepositoryConfiguration() {
-        Configuration.defaultConfiguration.contentType = .HTML
+        DefaultConfiguration.contentType = .HTML
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
         let template = repository.template(string: "{{.}}")!
@@ -244,7 +244,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testRepositoryConfigurationContentTypeHTMLOverridesDefaultConfigurationContentTypeTextWhenSettingTheWholeConfiguration() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         var configuration = Configuration()
         configuration.contentType = .HTML
         let repository = TemplateRepository()
@@ -255,7 +255,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testRepositoryConfigurationContentTypeHTMLOverridesDefaultConfigurationContentTypeTextWhenUpdatingRepositoryConfiguration() {
-        Configuration.defaultConfiguration.contentType = .Text
+        DefaultConfiguration.contentType = .Text
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
         let template = repository.template(string: "{{.}}")!

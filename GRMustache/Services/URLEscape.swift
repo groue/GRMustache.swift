@@ -21,7 +21,7 @@ class URLEscape: MustacheBoxable {
         if let string = box.stringValue {
             return Box(URLEscape.escapeURL(string))
         } else {
-            return MustacheBox.empty
+            return Box()
         }
     }
     

@@ -13,12 +13,11 @@ class ConfigurationBaseContextTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
-        
-        Configuration.defaultConfiguration.baseContext = Configuration().baseContext
+        DefaultConfiguration = Configuration()
     }
     
     func testFactoryConfigurationHasStandardLibraryInBaseContextRegardlessOfDefaultConfiguration() {
-        Configuration.defaultConfiguration.baseContext = Context()
+        DefaultConfiguration.baseContext = Context()
         
         let repository = TemplateRepository()
         repository.configuration = Configuration()
@@ -29,7 +28,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testDefaultConfigurationCustomBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "success"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
         let template = Template(string: "{{foo}}")!
         let rendering = template.render()!
@@ -37,7 +36,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testDefaultConfigurationCustomBaseContextHasNoStandardLibrary() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "success"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
         let template = Template(string: "{{uppercase(foo)}}")!
         var error: NSError?
@@ -47,7 +46,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
         
         let template = Template(string: "{{foo}}")!
         template.baseContext = Context(Box(["foo": "success"]))
@@ -56,7 +55,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "success"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
         let repository = TemplateRepository()
         let template = repository.template(string: "{{foo}}")!
@@ -86,7 +85,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
         
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "success"]))
@@ -100,7 +99,7 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
-        Configuration.defaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
+        DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
         
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "success"]))

@@ -21,7 +21,7 @@ class HTMLEscape: MustacheBoxable {
         if let string = box.stringValue {
             return Box(escapeHTML(string))
         } else {
-            return MustacheBox.empty
+            return Box()
         }
     }
     

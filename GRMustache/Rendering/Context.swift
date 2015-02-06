@@ -21,7 +21,7 @@ public class Context {
     public var topBox: MustacheBox {
         switch type {
         case .Root:
-            return MustacheBox.empty
+            return Box()
         case .BoxType(box: let box, parent: _):
             return box
         case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
@@ -116,7 +116,7 @@ public class Context {
     public subscript(key: String) -> MustacheBox {
         switch type {
         case .Root:
-            return MustacheBox.empty
+            return Box()
         case .BoxType(box: let box, parent: let parent):
             let innerBox = box[key]
             if innerBox.isEmpty {
