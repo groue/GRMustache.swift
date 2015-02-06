@@ -40,11 +40,11 @@ struct User {
 }
 ```
 
-We want to let templates extract the `name` key out of a user, so that, for example, the we can render the `Hello {{name}}!` template.
+We want to let the `Hello {{name}}!` template extract the `name` key out of a user.
 
-Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine finding the `name` of a User.
+Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
 
-Helping the Mustache engine always involves "boxing" with the `Box()` function. Only values that conform to the `MustacheBoxable` protocol can be boxed:
+Helping the Mustache engine involves "boxing". Only values that conform to the `MustacheBoxable` protocol can be boxed:
 
 ```swift
 // Allow Mustache engine to consume User values.
