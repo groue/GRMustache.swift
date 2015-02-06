@@ -9,3 +9,4 @@ TODO
 - [ ] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
 - [X] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific ObjCBox() function.
 - [ ] Since we turn all collections to [Box] and all dictionaries to [String:Box], we should also turn all sets to NSSet[Box].
+- [ ] Replace RenderingEngine.currentContentType and currentTemplateRepository with currentConfiguration.
