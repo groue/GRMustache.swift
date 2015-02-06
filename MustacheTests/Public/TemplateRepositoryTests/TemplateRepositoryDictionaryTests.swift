@@ -20,13 +20,13 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         var error: NSError?
         var template = repo.template(named: "not_found", error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeTemplateNotFound)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
         template = repo.template(string: "{{>not_found}}", error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeTemplateNotFound)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
 
         template = repo.template(named: "a")
         var rendering = template!.render()!
@@ -38,7 +38,7 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation() {
-        // This behavior is different from objective-C che.
+        // This behavior is different from objective-C GRMustache.
         //
         // Here we basically test that String and Dictionary are Swift structs,
         // i.e., copied when stored in another object. Mutating the original

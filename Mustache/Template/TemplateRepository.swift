@@ -81,7 +81,7 @@ public class TemplateRepository {
                     }
                 } else {
                     if dataSourceError == nil {
-                        dataSourceError = NSError(domain: cheErrorDomain, code: cheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+                        dataSourceError = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
                     }
                     if error != nil {
                         error.memory = dataSourceError
@@ -91,7 +91,7 @@ public class TemplateRepository {
             }
         } else {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
             }
             return nil
         }

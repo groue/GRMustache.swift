@@ -172,11 +172,11 @@ class MustacheRenderableGuideTests: XCTestCase {
             "url": "http://mustache.github.io",
             "title": "Mustache"])
         let item2 = Box([
-            "url": "http://github.com/groue/che.swift",
-            "title": "che.swift"])
+            "url": "http://github.com/groue/GRMustache.swift",
+            "title": "GRMustache.swift"])
         let box = Box(["nav": Box([item1, item2])])
         
         let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/che.swift\">che.swift</a></li></ul>")
+        XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")
     }
 }

@@ -5,8 +5,8 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public let cheErrorDomain = "cheErrorDomain"
+public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
 
-public let cheErrorCodeParseError = 0
-public let cheErrorCodeTemplateNotFound = 1
-public let cheErrorCodeRenderingError = 2
+public let GRMustacheErrorCodeParseError = 0
+public let GRMustacheErrorCodeTemplateNotFound = 1
+public let GRMustacheErrorCodeRenderingError = 2

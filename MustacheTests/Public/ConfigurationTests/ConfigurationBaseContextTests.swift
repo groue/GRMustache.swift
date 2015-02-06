@@ -41,7 +41,7 @@ class ConfigurationBaseContextTests: XCTestCase {
         var error: NSError?
         let rendering = template.render(error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError); // no such filter
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError); // no such filter
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
@@ -134,14 +134,14 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
     
     func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
 }

@@ -67,9 +67,9 @@ class ExpressionInvocation: ExpressionVisitor {
                 return .Success
             }
         } else if boxedFilter.isEmpty {
-            return .Error(NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"]))
+            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"]))
         } else {
-            return .Error(NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"]))
+            return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"]))
         }
     }
     

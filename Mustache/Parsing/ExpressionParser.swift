@@ -278,13 +278,13 @@ class ExpressionParser {
         case .Empty:
             outEmpty = true
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
             }
             return nil
         case .Error(let description):
             outEmpty = false
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
             }
             return nil
         case .Valid(expression: let validExpression):

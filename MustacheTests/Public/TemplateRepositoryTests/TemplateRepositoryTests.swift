@@ -16,14 +16,14 @@ class TemplateRepositoryTests: XCTestCase {
         var error: NSError? = nil
         var template = repo.template(named:"partial", error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeTemplateNotFound)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
         error = nil
         template = repo.template(string:"{{>partial}}", error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeTemplateNotFound)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
     }
 
     func testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate() {

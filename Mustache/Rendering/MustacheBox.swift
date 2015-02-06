@@ -5,6 +5,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
+import Foundation
 
 
 // =============================================================================
@@ -393,7 +394,7 @@ public func Box(array: [MustacheBox]?) -> MustacheBox {
                                 buffer += boxRendering.string
                             } else {
                                 if error != nil {
-                                    error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
                                 }
                                 return nil
                             }
@@ -503,14 +504,14 @@ public func ObjCBox(object: AnyObject?) -> MustacheBox {
             //     var array = NSMutableArray()
             //     array.addObject(C())
             //
-            // che *can not* known that the array contains a valid
+            // GRMustache *can not* known that the array contains a valid
             // boxable value, because NSArray exposes its contents as AnyObject,
             // and MustacheBoxable is a pure-Swift protocol:
             //
             // https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-XID_363
             // > you need to mark your protocols with the @objc attribute if you want to be able to check for protocol conformance.
-            // 
-            // So che generally assumes that a method that returns
+            //
+            // So GRMustache generally assumes that a method that returns
             // AnyObject from an Objective-C class actually returns an
             // Objective-C value, and invokes the ObjCBox() function. Even if
             // it ends up here.
@@ -519,13 +520,13 @@ public func ObjCBox(object: AnyObject?) -> MustacheBox {
             //
             // TODO: document caveat with something like:
             //
-            // If che.ObjCBox was called from your own code, check the
+            // If GRMustache.ObjCBox was called from your own code, check the
             // type of the value you provide. If not, it is likely that an
             // Objective-C collection like NSArray, NSDictionary, NSSet or any
             // other Objective-C object contains a value that is not an
-            // Objective-C object. che does not support such mixing of
+            // Objective-C object. GRMustache does not support such mixing of
             // Objective-C and Swift values.
-            NSLog("che.ObjCBox(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
+            NSLog("Mustache.ObjCBox(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
             return Box()
         }
     } else {
@@ -654,7 +655,7 @@ extension NSSet: ObjCMustacheBoxable {
                             buffer += boxRendering.string
                         } else {
                             if error != nil {
-                                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
                             }
                             return nil
                         }

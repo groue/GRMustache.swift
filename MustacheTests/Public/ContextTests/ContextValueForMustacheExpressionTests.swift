@@ -46,8 +46,8 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         var error: NSError? = nil
         let box = context.boxForMustacheExpression("a.", error: &error)
         XCTAssertTrue(box == nil)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)  // Invalid expression
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)  // Invalid expression
     }
     
     func testRenderingError() {
@@ -55,7 +55,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         var error: NSError? = nil
         let box = context.boxForMustacheExpression("f(x)", error: &error)
         XCTAssertTrue(box == nil)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)  // Missing filter
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)  // Missing filter
     }
 }

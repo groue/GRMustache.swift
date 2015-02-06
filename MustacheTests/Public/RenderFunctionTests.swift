@@ -462,8 +462,8 @@ class RenderFunctionTests: XCTestCase {
         var error: NSError?
         let rendering = Template(string: "{{items}}")!.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testArrayOfInconsistentContentTypeRenderFunctionsInSectionTag() {
@@ -477,8 +477,8 @@ class RenderFunctionTests: XCTestCase {
         var error: NSError?
         let rendering = Template(string: "{{#items}}{{/items}}")!.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testTemplateAsRenderFunction() {

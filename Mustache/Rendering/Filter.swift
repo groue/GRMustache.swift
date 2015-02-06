@@ -14,7 +14,7 @@ public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> Fil
     return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else {
@@ -28,7 +28,7 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
     return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else if let t = argument.value as? T {
@@ -44,7 +44,7 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else if let t = argument.intValue {
@@ -60,7 +60,7 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
     return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else if let t = argument.doubleValue {
@@ -76,7 +76,7 @@ public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterF
     return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
-                error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else if let t = argument.stringValue {

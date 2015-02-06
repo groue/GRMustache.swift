@@ -215,7 +215,7 @@ class GRMustacheSuiteTests: XCTestCase {
             var error: NSError?
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
-                let templatesPath = NSTemporaryDirectory().stringByAppendingPathComponent("cheTest").stringByAppendingPathComponent("encoding_\(encoding)")
+                let templatesPath = NSTemporaryDirectory().stringByAppendingPathComponent("GRMustacheTest").stringByAppendingPathComponent("encoding_\(encoding)")
                 if fm.fileExistsAtPath(templatesPath) && !fm.removeItemAtPath(templatesPath, error: &error) {
                     XCTFail("Could not cleanup tests in \(description): \(error!)")
                     return []

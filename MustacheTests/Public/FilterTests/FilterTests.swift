@@ -122,26 +122,26 @@ class FilterTests: XCTestCase {
         var error: NSError?
         var rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
         template = Template(string:"<{{missing(name)}}>")!
         rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
         template = Template(string:"<{{replace(missing(name))}}>")!
         rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
         template = Template(string:"<{{missing(replace(name))}}>")!
         rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testNotAFilterError() {
@@ -154,40 +154,40 @@ class FilterTests: XCTestCase {
         var error: NSError?
         var rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
-    // TODO: port this test to Objective-C che
+    // TODO: port this test to Objective-C GRMustache
     func testMissingFilterErrorDescriptionContainsLineNumber() {
         let template = Template(string: "\n{{f(x)}}")!
         var error: NSError?
         let rendering = template.render(error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("Missing filter") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
-    // TODO: port this test to Objective-C che
+    // TODO: port this test to Objective-C GRMustache
     func testMissingFilterErrorDescriptionContainsTemplatePath() {
         // TODO
     }
     
-    // TODO: port this test to Objective-C che
+    // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsLineNumber() {
         let template = Template(string: "\n{{f(x)}}")!
         var error: NSError?
         let rendering = template.render(Box(["f": "foo"]), error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("Not a filter") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
-    // TODO: port this test to Objective-C che
+    // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsTemplatePath() {
         // TODO
     }

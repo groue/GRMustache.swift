@@ -293,7 +293,7 @@ class TemplateParser {
         } else {
             localizedDescription = "Parse error at line \(lineNumber): \(description)"
         }
-        var error = NSError(domain: cheErrorDomain, code: cheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
+        var error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
         tokenConsumer.parser(self, didFailWithError: error)
     }
 }

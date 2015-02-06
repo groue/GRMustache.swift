@@ -31,11 +31,11 @@ public class Localizer: MustacheBoxable {
         * Perform a first rendering of the section tag, that will turn variable
         * tags into a custom placeholder.
         *
-        * "...{{name}}..." will get turned into "...cheLocalizerValuePlaceholder...".
+        * "...{{name}}..." will get turned into "...GRMustacheLocalizerValuePlaceholder...".
         *
         * For that, we make sure we are notified of tag rendering, so that our
         * mustacheTag:willRenderObject: implementation tells the tags to render
-        * cheLocalizerValuePlaceholder instead of the regular values,
+        * GRMustacheLocalizerValuePlaceholder instead of the regular values,
         * "Arthur" or "Barbara". This behavior is trigerred by the nil value of
         * self.formatArguments.
         */
@@ -78,10 +78,10 @@ public class Localizer: MustacheBoxable {
                 /**
                 * When rendering {{#localize}}%d {{name}}{{/localize}},
                 * The localizableFormat string we have just built is
-                * "%d cheLocalizerValuePlaceholder".
+                * "%d GRMustacheLocalizerValuePlaceholder".
                 *
                 * In order to get an actual format string, we have to:
-                * - turn cheLocalizerValuePlaceholder into %@
+                * - turn GRMustacheLocalizerValuePlaceholder into %@
                 * - escape % into %%.
                 *
                 * The format string will then be "%%d %@".
@@ -193,6 +193,6 @@ public class Localizer: MustacheBoxable {
     }
     
     struct Placeholder {
-        static let string = "cheLocalizerValuePlaceholder"
+        static let string = "GRMustacheLocalizerValuePlaceholder"
     }
 }

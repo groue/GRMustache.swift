@@ -25,7 +25,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
     }
     
     func testConfigurationExtendBaseContextWithProtectedObject() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testConfigurationExtendBaseContextWithWillRenderFunction() {

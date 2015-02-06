@@ -299,15 +299,15 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
     
     func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
 }

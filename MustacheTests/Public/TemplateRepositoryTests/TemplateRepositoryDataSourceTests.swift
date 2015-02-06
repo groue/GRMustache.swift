@@ -43,8 +43,8 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         
         template = repo.template(string: "{{>not_found}}", error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeTemplateNotFound)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
         template = repo.template(string: "{{>error}}", error: &error)
         XCTAssertNil(template)

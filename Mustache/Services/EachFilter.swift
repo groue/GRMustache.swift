@@ -16,7 +16,7 @@ let EachFilter = { (argument: MustacheBox, error: NSErrorPointer) -> MustacheBox
         return transformedSet(set)
     } else {
         if error != nil {
-            error.memory = NSError(domain: cheErrorDomain, code: cheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+            error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
         }
         return nil
     }

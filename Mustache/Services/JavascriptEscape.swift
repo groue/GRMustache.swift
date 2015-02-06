@@ -110,7 +110,7 @@ class JavascriptEscape: MustacheBoxable {
             ";": "\\u003B",
             "\u{2028}": "\\u2028",
             "\u{2029}": "\\u2029",
-            // Required to pass che suite test "`javascript.escape` escapes control characters"
+            // Required to pass GRMustache suite test "`javascript.escape` escapes control characters"
             "\r\n": "\\u000D\\u000A",
         ]
         var escaped = ""

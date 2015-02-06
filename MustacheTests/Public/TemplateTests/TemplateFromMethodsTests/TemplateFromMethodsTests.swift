@@ -95,8 +95,8 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         let template = Template(string: parserErrorTemplateString, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
@@ -104,15 +104,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(path: parserErrorTemplatePath, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         template = Template(path: parserErrorTemplateWrapperPath, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
@@ -121,15 +121,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(URL: parserErrorTemplateURL, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         template = Template(URL: parserErrorTemplateWrapperURL, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
@@ -138,15 +138,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(named: parserErrorTemplateName, bundle: testBundle, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         template = Template(named: parserErrorTemplateWrapperName, bundle: testBundle, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
@@ -155,8 +155,8 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         let template = Template(string: compilerErrorTemplateString, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
@@ -164,15 +164,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(path: compilerErrorTemplatePath, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         template = Template(path: compilerErrorTemplateWrapperPath, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }
@@ -181,15 +181,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(URL: compilerErrorTemplateURL, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         template = Template(URL: compilerErrorTemplateWrapperURL, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }
@@ -198,15 +198,15 @@ class TemplateFromMethodsTests: XCTestCase {
         var error: NSError?
         var template = Template(named: compilerErrorTemplateName, bundle: testBundle, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         template = Template(named: compilerErrorTemplateWrapperName, bundle: testBundle, error: &error)
         XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeParseError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }

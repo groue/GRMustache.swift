@@ -503,6 +503,6 @@ class TemplateCompiler: TemplateTokenConsumer {
         } else {
             localizedDescription = "Parse error at line \(token.lineNumber): \(description)"
         }
-        return NSError(domain: cheErrorDomain, code: cheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
+        return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
     }
 }

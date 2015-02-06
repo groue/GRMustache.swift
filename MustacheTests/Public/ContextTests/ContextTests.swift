@@ -21,8 +21,8 @@ class ContextTests: XCTestCase {
         var error: NSError?
         rendering = template.render(box, error: &error)
         XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, cheErrorDomain)
-        XCTAssertEqual(error!.code, cheErrorCodeRenderingError)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testContextWithValueConstructor() {
@@ -38,7 +38,7 @@ class ContextTests: XCTestCase {
     }
     
     func testContextWithProtectedObjectConstructor() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testContextWithWillRenderFunction() {
@@ -60,7 +60,7 @@ class ContextTests: XCTestCase {
         context = context.extendedContext(Box("object"))
         XCTAssertEqual((context.topBox.value as String), "object")
         
-        // TODO: import protected test from cheContextTopMustacheObjectTest.testTopMustacheObject
+        // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
         
         // TODO: check if those commented lines are worth decommenting
 //        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in

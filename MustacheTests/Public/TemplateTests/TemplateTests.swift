@@ -28,7 +28,7 @@ class TemplateTests: XCTestCase {
     }
     
     func testTemplateExtendBaseContextWithProtectedValue() {
-        // TODO: import test from che
+        // TODO: import test from GRMustache
     }
     
     func testTemplateExtendBaseContextWithWillRenderFunction() {
