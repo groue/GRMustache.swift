@@ -16,6 +16,8 @@ Its APIs are similar to the Objective-C version [GRMustache](https://github.com/
     {{/in_ca}}
 
 ```swift
+import GRMustache
+
 let template = Template(named: "template")!
 let data = [
     "name": "Chris",
@@ -96,7 +98,7 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo, error: NSErrorPointe
 
 // Register the pluralize filter for all Mustache renderings:
 
-DefaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
+GRMustache.DefaultConfiguration.extendBaseContext(Box(["pluralize": Box(pluralizeFilter)]))
 
 
 // I have 3 cats.
