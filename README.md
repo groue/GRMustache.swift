@@ -107,7 +107,7 @@ GRMustache.DefaultConfiguration.registerInBaseContext("pluralize", Box(pluralize
 
 // I have 3 cats.
 
-let template = Template(named: "example2")!
+let template = Template(named: "cats")!
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
