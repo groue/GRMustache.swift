@@ -5,5 +5,6 @@ TODO
 - [X] boxValue(RenderFunction)
 - [X] boxValue(WillRenderFunction)
 - [X] boxValue(DidRenderFunction)
-- [-] rename InspectFunction and inspect key to something which reminds of subscripting
+- [X] rename InspectFunction
+- [ ] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
 - [ ] Box(AnyObject) whithout forcing the end user to force the ObjCMustacheBoxable cast
