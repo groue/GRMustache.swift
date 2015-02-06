@@ -22,6 +22,10 @@ public struct Configuration {
     public mutating func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
+    
+    public mutating func registerInBaseContext(name: String, _ box: MustacheBox) {
+        extendBaseContext(Box([name: box]))
+    }
 }
 
 public var DefaultConfiguration = Configuration()
