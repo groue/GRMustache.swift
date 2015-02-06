@@ -65,8 +65,8 @@ extension NSFormatter: ObjCMustacheBoxable {
     
     // MARK: - ObjCMustacheBoxable
     
-    public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        return ObjCBoxWrapper(Box(
+    public override var mustacheBox: ObjCMustacheBox {
+        return ObjCMustacheBox(Box(
             value: self,
             render: render,
             filter: Filter(filter),

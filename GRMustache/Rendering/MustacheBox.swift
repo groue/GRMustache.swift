@@ -436,11 +436,11 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 @objc public protocol ObjCMustacheBoxable {
     // Can not return a MustacheBox, because MustacheBox is not compatible with ObjC.
     // So let's return an ObjC object which wraps a MustacheBox.
-    var mustacheBoxWrapper: ObjCBoxWrapper { get }
+    var mustacheBox: ObjCMustacheBox { get }
 }
 
 // The ObjC object which wraps a MustacheBox (see ObjCMustacheBoxable)
-public class ObjCBoxWrapper: NSObject {
+public class ObjCMustacheBox: NSObject {
     let box: MustacheBox
     init(_ box: MustacheBox) {
         self.box = box
@@ -449,14 +449,14 @@ public class ObjCBoxWrapper: NSObject {
 
 public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
-        return boxable.mustacheBoxWrapper.box
+        return boxable.mustacheBox.box
     } else {
         return Box()
     }
 }
 
 extension NSObject: ObjCMustacheBoxable {
-    public var mustacheBoxWrapper: ObjCBoxWrapper {
+    public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration {
             if respondsToSelector("objectAtIndexedSubscript:") {
                 // Array
@@ -470,7 +470,7 @@ extension NSObject: ObjCMustacheBoxable {
                         break
                     }
                 }
-                return ObjCBoxWrapper(Box(array))
+                return ObjCMustacheBox(Box(array))
             } else if respondsToSelector("objectForKeyedSubscript:") {
                 // Dictionary
                 var dictionary: [String: MustacheBox] = [:]
@@ -484,7 +484,7 @@ extension NSObject: ObjCMustacheBoxable {
                         break
                     }
                 }
-                return ObjCBoxWrapper(Box(dictionary))
+                return ObjCMustacheBox(Box(dictionary))
             } else {
                 // Set
                 var set = NSMutableSet()
@@ -496,11 +496,11 @@ extension NSObject: ObjCMustacheBoxable {
                         break
                     }
                 }
-                return ObjCBoxWrapper(Box(set))
+                return ObjCMustacheBox(Box(set))
             }
             
         } else {
-            return ObjCBoxWrapper(MustacheBox(
+            return ObjCMustacheBox(MustacheBox(
                 value: self,
                 mustacheBool: true,
                 objectForKeyedSubscript: { (key: String) -> MustacheBox? in
@@ -521,7 +521,7 @@ extension NSObject: ObjCMustacheBoxable {
 }
 
 extension NSNull: ObjCMustacheBoxable {
-    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+    public override var mustacheBox: ObjCMustacheBox {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             switch info.tag.type {
             case .Variable:
@@ -534,7 +534,7 @@ extension NSNull: ObjCMustacheBoxable {
                 }
             }
         }
-        return ObjCBoxWrapper(MustacheBox(
+        return ObjCMustacheBox(MustacheBox(
             value: self,
             mustacheBool: false,
             render: render))
@@ -542,14 +542,14 @@ extension NSNull: ObjCMustacheBoxable {
 }
 
 extension NSNumber: ObjCMustacheBoxable {
-    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+    public override var mustacheBox: ObjCMustacheBox {
         switch String.fromCString(objCType)! {
         case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-            return ObjCBoxWrapper(Box(Int(longLongValue)))
+            return ObjCMustacheBox(Box(Int(longLongValue)))
         case "f", "d":
-            return ObjCBoxWrapper(Box(doubleValue))
+            return ObjCMustacheBox(Box(doubleValue))
         case "B":
-            return ObjCBoxWrapper(Box(boolValue))
+            return ObjCMustacheBox(Box(boolValue))
         default:
             fatalError("Not implemented yet")
         }
@@ -557,13 +557,13 @@ extension NSNumber: ObjCMustacheBoxable {
 }
 
 extension NSString: ObjCMustacheBoxable {
-    public override var mustacheBoxWrapper: ObjCBoxWrapper {
-        return ObjCBoxWrapper(Box(self as String))
+    public override var mustacheBox: ObjCMustacheBox {
+        return ObjCMustacheBox(Box(self as String))
     }
 }
 
 extension NSSet: ObjCMustacheBoxable {
-    public override var mustacheBoxWrapper: ObjCBoxWrapper {
+    public override var mustacheBox: ObjCMustacheBox {
         let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
             switch key {
             case "count":
@@ -614,7 +614,7 @@ extension NSSet: ObjCMustacheBoxable {
                 }
             }
         }
-        return ObjCBoxWrapper(MustacheBox(
+        return ObjCMustacheBox(MustacheBox(
             value: self,
             mustacheBool: (self.count > 0),
             objectForKeyedSubscript: objectForKeyedSubscript,
