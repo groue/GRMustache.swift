@@ -52,8 +52,7 @@ private func transformedSet(set: NSSet) -> MustacheBox {
     let count = set.count
     var index = 0
     for item in set {
-        // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-        let itemBox = Box((item as ObjCMustacheBoxable))
+        let itemBox = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
         let last = index == count
         mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: MustacheBox] = [:]

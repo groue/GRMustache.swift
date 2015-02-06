@@ -86,10 +86,7 @@ class GRMustacheSuiteTests: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as [String: String]? }
         var templateString: String? { return dictionary["template"] as String? }
         var templateName: String? { return dictionary["template_name"] as String? }
-        var renderedValue: MustacheBox {
-            // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-            return Box((dictionary["data"] as ObjCMustacheBoxable))
-        }
+        var renderedValue: MustacheBox { return ObjCBox(dictionary["data"]) }
         var expectedRendering: String? { return dictionary["expected"] as String? }
         var expectedError: String? { return dictionary["expected_error"] as String? }
         

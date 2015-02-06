@@ -455,6 +455,57 @@ public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     }
 }
 
+public func ObjCBox(object: AnyObject?) -> MustacheBox {
+    if let object: AnyObject = object {
+        if let boxable = object as? ObjCMustacheBoxable {
+            return Box(boxable)
+        } else {
+            // This code path will only run if object is not an instance of
+            // NSObject, since NSObject conforms to ObjCMustacheBoxable.
+            //
+            // This may mean that the class of object is NSProxy or any other
+            // Objective-C class that does not derive from NSObject.
+            //
+            // This may also mean that object is an instance of a pure Swift
+            // class:
+            //
+            // It is much possible that a regular Objective-C object or
+            // container such as NSArray would contain a pure Swift instance:
+            //
+            //     class C: MustacheBoxable { ... }
+            //     var array = NSMutableArray()
+            //     array.addObject(C())
+            //
+            // GRMustache *can not* known that the array contains a valid
+            // boxable value, because NSArray exposes its contents as AnyObject,
+            // and MustacheBoxable is a pure-Swift protocol:
+            //
+            // https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-XID_363
+            // > you need to mark your protocols with the @objc attribute if you want to be able to check for protocol conformance.
+            // 
+            // So GRMustache generally assumes that a method that returns
+            // AnyObject from an Objective-C class actually returns an
+            // Objective-C value, and invokes the ObjCBox() function. Even if
+            // it ends up here.
+            //
+            // As a conclusion: let's apologize.
+            //
+            // TODO: document caveat with something like:
+            //
+            // If GRMustache.ObjCBox was called from your own code, check the
+            // type of the value you provide. If not, it is likely that an
+            // Objective-C collection like NSArray, NSDictionary, NSSet or any
+            // other Objective-C object contains a value that is not an
+            // Objective-C object. GRMustache does not support such mixing of
+            // Objective-C and Swift values.
+            NSLog("GRMustache.ObjCBox(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
+            return Box()
+        }
+    } else {
+        return Box()
+    }
+}
+
 extension NSObject: ObjCMustacheBoxable {
     public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration {
@@ -464,8 +515,7 @@ extension NSObject: ObjCMustacheBoxable {
                 let generator = NSFastGenerator(enumerable)
                 while true {
                     if let item: AnyObject = generator.next() {
-                        // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-                        array.append(Box((item as ObjCMustacheBoxable)))
+                        array.append(ObjCBox(item)) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
                     } else {
                         break
                     }
@@ -478,8 +528,7 @@ extension NSObject: ObjCMustacheBoxable {
                 while true {
                     if let key = generator.next() as? String {
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                        // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-                        dictionary[key] = Box((item as ObjCMustacheBoxable))
+                        dictionary[key] = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
                     } else {
                         break
                     }
@@ -505,8 +554,7 @@ extension NSObject: ObjCMustacheBoxable {
                 mustacheBool: true,
                 objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                     let value: AnyObject? = self.valueForKey(key)
-                    // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-                    return Box((value as ObjCMustacheBoxable))
+                    return ObjCBox(value)   // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     switch info.tag.type {
@@ -569,8 +617,7 @@ extension NSSet: ObjCMustacheBoxable {
             case "count":
                 return Box(self.count)
             case "anyObject":
-                // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-                return Box((self.anyObject() as ObjCMustacheBoxable))
+                return ObjCBox(self.anyObject())    // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
             default:
                 return nil
             }
@@ -583,9 +630,8 @@ extension NSSet: ObjCMustacheBoxable {
                 var contentType: ContentType?
                 let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
                 for item in self {
-                    // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
-                    let itemBox = Box((item as ObjCMustacheBoxable))
-                    if let boxRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
+                    let boxItem = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
+                    if let boxRendering = boxItem.render(info: enumerationRenderingInfo, error: error) {
                         if contentType == nil {
                             contentType = boxRendering.contentType
                             buffer += boxRendering.string

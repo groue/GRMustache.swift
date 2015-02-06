@@ -210,6 +210,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		56056AA51A84CDBD0076BBAA /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFromMethodsTests.swift; sourceTree = "<group>"; };
 		560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_compilerError.mustache; sourceTree = "<group>"; };
 		560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_compilerErrorWrapper.mustache; sourceTree = "<group>"; };
@@ -385,6 +386,7 @@
 		563AE18D19FBE4790028C6C1 = {
 			isa = PBXGroup;
 			children = (
+				56056AA51A84CDBD0076BBAA /* TODO.md */,
 				563AE19919FBE47A0028C6C1 /* GRMustache */,
 				563AE1A619FBE47A0028C6C1 /* GRMustacheTests */,
 				563AE19819FBE47A0028C6C1 /* Products */,

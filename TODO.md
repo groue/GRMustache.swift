@@ -7,4 +7,5 @@ TODO
 - [X] boxValue(DidRenderFunction)
 - [X] rename InspectFunction
 - [ ] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
-- [ ] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific ObjCBox() function.
+- [X] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific ObjCBox() function.
+- [ ] Since we turn all collections to [Box] and all dictionaries to [String:Box], we should also turn all sets to NSSet[Box].
