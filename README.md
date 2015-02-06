@@ -61,7 +61,11 @@ extension User: MustacheBoxable {
         }
     }
 }
+```
 
+Now we can box a user with the `Box()` function:
+
+```swift
 // Hello Arthur!
 let user = User(name: "Arthur")
 let template = Template(string: "Hello {{name}}!")!
