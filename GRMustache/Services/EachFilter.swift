@@ -32,7 +32,7 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
         let itemBox = collection[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: MustacheBox] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -55,7 +55,7 @@ private func transformedSet(set: NSSet) -> MustacheBox {
         // Force ObjCMustacheBoxable cast. It's usually OK since NSObject conforms to ObjCMustacheBoxable.
         let itemBox = Box((item as ObjCMustacheBoxable))
         let last = index == count
-        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: MustacheBox] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -79,7 +79,7 @@ private func transformedDictionary(dictionary: [String: MustacheBox]) -> Mustach
         let (key, itemBox) = dictionary[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(itemBox.boxWithRenderFunction({ (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var position: [String: MustacheBox] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)

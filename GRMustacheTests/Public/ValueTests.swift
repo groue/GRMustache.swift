@@ -167,4 +167,13 @@ class ValueTests: XCTestCase {
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")
     }
+    
+    func testRange() {
+        let value = 0..<10
+        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let box = Box(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "0123456789")
+    }
+    
 }

@@ -6,31 +6,6 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-public struct RenderingInfo {
-    public let tag: Tag
-    public var context: Context
-    let enumerationItem: Bool
-    
-    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
-        return RenderingInfo(tag: tag, context: context, enumerationItem: true)
-    }
-}
-
-public enum ContentType {
-    case Text
-    case HTML
-}
-
-public struct Rendering {
-    public var string: String
-    public var contentType: ContentType
-    
-    public init(_ string: String, _ contentType: ContentType = .Text) {
-        self.string = string
-        self.contentType = contentType
-    }
-}
-
 class RenderingEngine: TemplateASTVisitor {
     let contentType: ContentType
     var context: Context

@@ -9,6 +9,35 @@
 
 
 // =============================================================================
+// MARK: - Core rendering types
+
+public enum ContentType {
+    case Text
+    case HTML
+}
+
+public struct Rendering {
+    public var string: String
+    public var contentType: ContentType
+    
+    public init(_ string: String, _ contentType: ContentType = .Text) {
+        self.string = string
+        self.contentType = contentType
+    }
+}
+
+public struct RenderingInfo {
+    public let tag: Tag
+    public var context: Context
+    let enumerationItem: Bool
+    
+    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
+        return RenderingInfo(tag: tag, context: context, enumerationItem: true)
+    }
+}
+
+
+// =============================================================================
 // MARK: - Core function types
 
 public typealias SubscriptFunction = (key: String) -> MustacheBox?
@@ -31,7 +60,7 @@ public struct MustacheBox {
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
     
-    private init(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
+    private init(mustacheBool: Bool? = nil, value: Any? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, filter: FilterFunction? = nil, render: RenderFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) {
         let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
@@ -61,8 +90,8 @@ public struct MustacheBox {
     }
 }
 
-public func Box(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, render: RenderFunction? = nil, filter: FilterFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> MustacheBox {
-    return MustacheBox(value: value, mustacheBool: mustacheBool, objectForKeyedSubscript: objectForKeyedSubscript, render: render, filter: filter, willRender: willRender, didRender: didRender)
+public func Box(mustacheBool: Bool? = nil, value: Any? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, filter: FilterFunction? = nil, render: RenderFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> MustacheBox {
+    return MustacheBox(mustacheBool: mustacheBool, value: value, objectForKeyedSubscript: objectForKeyedSubscript, filter: filter, render: render, willRender: willRender, didRender: didRender)
 }
 
 
@@ -71,24 +100,26 @@ public func Box(value: Any? = nil, mustacheBool: Bool? = nil, objectForKeyedSubs
 // MARK: - MustacheBox derivation
 
 extension MustacheBox {
-    // TODO: find better name
-    public func boxWithRenderFunction(render: RenderFunction) -> MustacheBox {
+    private func boxWithRenderFunction(render: RenderFunction) -> MustacheBox {
         return MustacheBox(
-            value: self.value,
-            mustacheBool: self.mustacheBool,
-            objectForKeyedSubscript: self.objectForKeyedSubscript,
+            value: value,
+            mustacheBool: mustacheBool,
+            objectForKeyedSubscript: objectForKeyedSubscript,
             render: render,
-            filter: self.filter,
-            willRender: self.willRender,
-            didRender: self.didRender)
+            filter: filter,
+            willRender: willRender,
+            didRender: didRender)
     }
     
 }
 
+public func Box(box: MustacheBox, # render: RenderFunction) -> MustacheBox {
+    return box.boxWithRenderFunction(render)
+}
 
 
 // =============================================================================
-// MARK: - MustacheBox unwrapping
+// MARK: - Value unwrapping
 
 extension MustacheBox {
     
@@ -366,7 +397,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
         return Box()
     }
 }
-
 
 // =============================================================================
 // MARK: - Boxing of Swift dictionaries
