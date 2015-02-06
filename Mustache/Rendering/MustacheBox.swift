@@ -326,8 +326,11 @@ extension String: MustacheBoxable {
 public func Box<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> MustacheBox {
     // TODO: test this method
     if let sequence = sequence {
-        var boxSequence = map(sequence) { Box($0) }
-        return Box(boxSequence)
+        // We don't box the original sequence, but an Array<MustacheBox>.
+        //
+        // Why? By boxing an Array<MustacheBox>, we allow user code to recognize
+        // and process all boxed arrays. See EachFilter for an example.
+        return Box(map(sequence) { Box($0) })
     } else {
         return Box()
     }
@@ -335,10 +338,24 @@ public func Box<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequ
 
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
-        var boxCollection = map(collection) { Box($0) }
-        let count = countElements(collection)   // T.Index.Distance == Int
+        // We don't box the original collection, but an Array<MustacheBox>.
+        //
+        // Why? By boxing an Array<MustacheBox>, we allow user code to recognize
+        // and process all boxed arrays. See EachFilter for an example.
+        return Box(map(collection) { Box($0) })
+    } else {
+        return Box()
+    }
+}
+
+public func Box(array: [MustacheBox]?) -> MustacheBox {
+    if let array = array {
+        
+        let count = countElements(array)   // T.Index.Distance == Int
+        
         return MustacheBox(
-            value: boxCollection,
+            value: array,
+            
             mustacheBool: (count > 0),
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 switch key {
@@ -346,13 +363,13 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                     return Box(count)
                 case "firstObject":
                     if count > 0 {
-                        return Box(collection[collection.startIndex])
+                        return Box(array[array.startIndex])
                     } else {
                         return Box()
                     }
                 case "lastObject":
                     if count > 0 {
-                        return Box(collection[collection.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
+                        return Box(array[array.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
                     } else {
                         return Box()
                     }
@@ -362,13 +379,13 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(array)), error: error)
                 } else {
                     var buffer = ""
                     var contentType: ContentType?
                     let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                    for itemBox in boxCollection {
-                        if let boxRendering = itemBox.render(info: enumerationRenderingInfo, error: error) {
+                    for box in array {
+                        if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
                             if contentType == nil {
                                 contentType = boxRendering.contentType
                                 buffer += boxRendering.string
@@ -402,12 +419,23 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
+        
         var boxDictionary: [String: MustacheBox] = [:]
         for (key, item) in dictionary {
             boxDictionary[key] = Box(item)
         }
+        
         return MustacheBox(
+            // We don't box the original dictionary, but a
+            // Dictionary<String, MustacheBox>.
+            //
+            // Why?
+            //
+            // By boxing a Dictionary<String, MustacheBox>, we allow user code to
+            // recognize and process all boxed dictionaries. See EachFilter for
+            // an example.
             value: boxDictionary,
+            
             mustacheBool: true,
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 return boxDictionary[key]
@@ -512,37 +540,25 @@ extension NSObject: ObjCMustacheBoxable {
                 // Array
                 var array: [MustacheBox] = []
                 let generator = NSFastGenerator(enumerable)
-                while true {
-                    if let item: AnyObject = generator.next() {
-                        array.append(ObjCBox(item)) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
-                    } else {
-                        break
-                    }
+                while let item: AnyObject = generator.next() {
+                    array.append(ObjCBox(item)) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
                 }
                 return ObjCMustacheBox(Box(array))
             } else if respondsToSelector("objectForKeyedSubscript:") {
                 // Dictionary
                 var dictionary: [String: MustacheBox] = [:]
                 let generator = NSFastGenerator(enumerable)
-                while true {
-                    if let key = generator.next() as? String {
-                        let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                        dictionary[key] = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
-                    } else {
-                        break
-                    }
+                while let key = generator.next() as? String {
+                    let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
+                    dictionary[key] = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
                 }
                 return ObjCMustacheBox(Box(dictionary))
             } else {
                 // Set
                 var set = NSMutableSet()
                 let generator = NSFastGenerator(enumerable)
-                while true {
-                    if let object: AnyObject = generator.next() {
-                        set.addObject(object)
-                    } else {
-                        break
-                    }
+                while let object: AnyObject = generator.next() {
+                    set.addObject(object)
                 }
                 return ObjCMustacheBox(Box(set))
             }

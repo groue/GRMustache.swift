@@ -1,5 +1,5 @@
 //
-//  cheSuiteTest.swift
+//  GRMustacheSuiteTest.swift
 //
 //  Created by Gwendal Roué on 28/10/2014.
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
@@ -8,31 +8,31 @@
 import XCTest
 import Mustache
 
-class cheSuiteTests: XCTestCase {
+class GRMustacheSuiteTests: XCTestCase {
     
     func testSuite() {
-        runTestsFromResource("comments.json", directory: "cheSuite")
-        runTestsFromResource("compound_keys.json", directory: "cheSuite")
-        runTestsFromResource("delimiters.json", directory: "cheSuite")
-        runTestsFromResource("expression_parsing_errors.json", directory: "cheSuite")
-        runTestsFromResource("filters.json", directory: "cheSuite")
-        runTestsFromResource("general.json", directory: "cheSuite")
-        runTestsFromResource("implicit_iterator.json", directory: "cheSuite")
-        runTestsFromResource("inheritable_partials.json", directory: "cheSuite")
-        runTestsFromResource("inheritable_sections.json", directory: "cheSuite")
-        runTestsFromResource("inverted_sections.json", directory: "cheSuite")
-        runTestsFromResource("partials.json", directory: "cheSuite")
-        runTestsFromResource("pragmas.json", directory: "cheSuite")
-        runTestsFromResource("sections.json", directory: "cheSuite")
-        runTestsFromResource("standard_library.json", directory: "cheSuite")
-        runTestsFromResource("tag_parsing_errors.json", directory: "cheSuite")
-        runTestsFromResource("text_rendering.json", directory: "cheSuite")
-        runTestsFromResource("variables.json", directory: "cheSuite")
+        runTestsFromResource("comments.json", directory: "GRMustacheSuite")
+        runTestsFromResource("compound_keys.json", directory: "GRMustacheSuite")
+        runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
+        runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
+        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
+        runTestsFromResource("general.json", directory: "GRMustacheSuite")
+        runTestsFromResource("implicit_iterator.json", directory: "GRMustacheSuite")
+        runTestsFromResource("inheritable_partials.json", directory: "GRMustacheSuite")
+        runTestsFromResource("inheritable_sections.json", directory: "GRMustacheSuite")
+        runTestsFromResource("inverted_sections.json", directory: "GRMustacheSuite")
+        runTestsFromResource("partials.json", directory: "GRMustacheSuite")
+        runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
+        runTestsFromResource("sections.json", directory: "GRMustacheSuite")
+        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
+        runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
+        runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
+        runTestsFromResource("variables.json", directory: "GRMustacheSuite")
     }
     
     func runTestsFromResource(name: String, directory: String) {
         let testBundle = NSBundle(forClass: self.dynamicType)
-        let path: String! = testBundle.pathForResource(directory, ofType:nil)?.stringByAppendingPathComponent(name)
+        let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
         if path == nil {
             XCTFail("No such test suite \(directory)/\(name)")
             return
