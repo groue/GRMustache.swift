@@ -11,8 +11,8 @@ import Mustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            return Box(",".join(args.map { $0.stringValue ?? "" }))
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(",".join(boxes.map { $0.stringValue ?? "" }))
         })
         let box = Box([
             "a": Box("a"),
@@ -25,8 +25,8 @@ class VariadicFilterTests: XCTestCase {
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            let joined = ",".join(args.map { $0.stringValue ?? "" })
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            let joined = ",".join(boxes.map { $0.stringValue ?? "" })
             return Box(Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
                 return Box(joined + "+" + (box.stringValue ?? ""))
             }))
@@ -42,7 +42,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -52,7 +52,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -62,8 +62,8 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            return Box(args)
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return Box(boxes)
         })
         let box = Box([
             "a": Box("a"),
@@ -76,8 +76,8 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            return args.first
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            return boxes.first
         })
         let box = Box([
             "yes": Box(true),
@@ -89,7 +89,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = VariadicFilter({ (args: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
             return nil
         })
         let box = Box(["f": Box(filter)])
@@ -100,10 +100,10 @@ class VariadicFilterTests: XCTestCase {
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let box = Box([
-            "f": Box(VariadicFilter({ (arguments: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
                 var result = ""
-                for argument in arguments {
-                    if let dictionary = argument.value as? [String: MustacheBox] {
+                for box in boxes {
+                    if let dictionary = box.value as? [String: MustacheBox] {
                         result += String(countElements(dictionary))
                     }
                 }

@@ -41,7 +41,7 @@ public struct RenderingInfo {
 // MARK: - Core function types
 
 public typealias SubscriptFunction = (key: String) -> MustacheBox?
-public typealias FilterFunction = (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
+public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
@@ -55,7 +55,7 @@ public struct MustacheBox {
     public let value: Any?
     public let mustacheBool: Bool
     public let objectForKeyedSubscript: SubscriptFunction?
-    public private(set) var render: RenderFunction  // It should be a `let` property. But compilers spawns unwanted "variable 'self.render' captured by a closure before being initialized" errors that we work around by modifying this property (see below). Hence the `var`.
+    public let render: RenderFunction
     public let filter: FilterFunction?
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
@@ -110,7 +110,6 @@ extension MustacheBox {
             willRender: willRender,
             didRender: didRender)
     }
-    
 }
 
 public func Box(box: MustacheBox, # render: RenderFunction) -> MustacheBox {
@@ -162,9 +161,9 @@ extension MustacheBox: DebugPrintable {
     
     public var debugDescription: String {
         if let value = value {
-            return "MustacheBox(\(value))"  // remove the "Optional" in the output
+            return "MustacheBox(\(value))"  // remove "Optional" from the output
         } else {
-            return "MustacheBox(\(value))"
+            return "MustacheBox(nil)"
         }
     }
 }
@@ -322,10 +321,9 @@ extension String: MustacheBoxable {
 
 
 // =============================================================================
-// MARK: - Boxing of Swift sequences & collections
+// MARK: - Boxing of Swift sequences
 
 public func Box<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S?) -> MustacheBox {
-    // TODO: test this method
     if let sequence = sequence {
         // We don't box the original sequence, but an Array<MustacheBox>.
         //
@@ -337,26 +335,47 @@ public func Box<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequ
     }
 }
 
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-    if let collection = collection {
-        // We don't box the original collection, but an Array<MustacheBox>.
-        //
-        // Why? By boxing an Array<MustacheBox>, we allow user code to recognize
-        // and process all boxed arrays. See EachFilter for an example.
-        return Box(map(collection) { Box($0) })
-    } else {
-        return Box()
+private func renderSequenceFunction<S: SequenceType where S.Generator.Element: MustacheBoxable>(sequence: S) -> RenderFunction {
+    return { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        if info.enumerationItem {
+            return info.tag.render(info.context.extendedContext(Box(sequence)), error: error)
+        } else {
+            var buffer = ""
+            var contentType: ContentType?
+            let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+            for item in sequence {
+                let box = Box(item)
+                if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
+                    if contentType == nil {
+                        contentType = boxRendering.contentType
+                        buffer += boxRendering.string
+                    } else if contentType == boxRendering.contentType {
+                        buffer += boxRendering.string
+                    } else {
+                        if error != nil {
+                            error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                        }
+                        return nil
+                    }
+                } else {
+                    return nil
+                }
+            }
+            
+            if let contentType = contentType {
+                return Rendering(buffer, contentType)
+            } else {
+                return info.tag.render(info.context, error: error)
+            }
+        }
     }
 }
 
 public func Box(array: [MustacheBox]?) -> MustacheBox {
     if let array = array {
-        
-        let count = countElements(array)   // T.Index.Distance == Int
-        
+        let count = countElements(array)
         return MustacheBox(
             value: array,
-            
             mustacheBool: (count > 0),
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 switch key {
@@ -364,13 +383,13 @@ public func Box(array: [MustacheBox]?) -> MustacheBox {
                     return Box(count)
                 case "firstObject":
                     if count > 0 {
-                        return Box(array[array.startIndex])
+                        return Box(array[0])
                     } else {
                         return Box()
                     }
                 case "lastObject":
                     if count > 0 {
-                        return Box(array[array.endIndex.predecessor()])    // T.Index: BidirectionalIndexType
+                        return Box(array[count-1])
                     } else {
                         return Box()
                     }
@@ -378,42 +397,12 @@ public func Box(array: [MustacheBox]?) -> MustacheBox {
                     return Box()
                 }
             },
-            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(array)), error: error)
-                } else {
-                    var buffer = ""
-                    var contentType: ContentType?
-                    let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                    for box in array {
-                        if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
-                            if contentType == nil {
-                                contentType = boxRendering.contentType
-                                buffer += boxRendering.string
-                            } else if contentType == boxRendering.contentType {
-                                buffer += boxRendering.string
-                            } else {
-                                if error != nil {
-                                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                                }
-                                return nil
-                            }
-                        } else {
-                            return nil
-                        }
-                    }
-                    
-                    if let contentType = contentType {
-                        return Rendering(buffer, contentType)
-                    } else {
-                        return info.tag.render(info.context, error: error)
-                    }
-                }
-        })
+            render: renderSequenceFunction(array))
     } else {
         return Box()
     }
 }
+
 
 // =============================================================================
 // MARK: - Boxing of Swift dictionaries
@@ -436,7 +425,6 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
             // recognize and process all boxed dictionaries. See EachFilter for
             // an example.
             value: boxDictionary,
-            
             mustacheBool: true,
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 return boxDictionary[key]
@@ -483,22 +471,22 @@ public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     }
 }
 
-public func ObjCBox(object: AnyObject?) -> MustacheBox {
+public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let object: AnyObject = object {
         if let boxable = object as? ObjCMustacheBoxable {
             return Box(boxable)
         } else {
-            // This code path will only run if object is not an instance of
-            // NSObject, since NSObject conforms to ObjCMustacheBoxable.
+            // This code path will only run if object is not a NSObject
+            // instance, since NSObject conforms to ObjCMustacheBoxable.
             //
             // This may mean that the class of object is NSProxy or any other
             // Objective-C class that does not derive from NSObject.
             //
             // This may also mean that object is an instance of a pure Swift
-            // class:
+            // class.
             //
-            // It is much possible that a regular Objective-C object or
-            // container such as NSArray would contain a pure Swift instance:
+            // Objective-C objects and containers can contain pure Swift
+            // instances. For example, given the following array:
             //
             //     class C: MustacheBoxable { ... }
             //     var array = NSMutableArray()
@@ -506,27 +494,25 @@ public func ObjCBox(object: AnyObject?) -> MustacheBox {
             //
             // GRMustache *can not* known that the array contains a valid
             // boxable value, because NSArray exposes its contents as AnyObject,
-            // and MustacheBoxable is a pure-Swift protocol:
+            // and AnyObject can not be tested for MustacheBoxable conformance:
             //
             // https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-XID_363
             // > you need to mark your protocols with the @objc attribute if you want to be able to check for protocol conformance.
             //
-            // So GRMustache generally assumes that a method that returns
-            // AnyObject from an Objective-C class actually returns an
-            // Objective-C value, and invokes the ObjCBox() function. Even if
-            // it ends up here.
+            // So GRMustache, when given an AnyObject, generally assumes that it
+            // is an Objective-C value, even when it is wrong, and ends up here.
             //
             // As a conclusion: let's apologize.
             //
             // TODO: document caveat with something like:
             //
-            // If GRMustache.ObjCBox was called from your own code, check the
-            // type of the value you provide. If not, it is likely that an
+            // If GRMustache.BoxAnyObject was called from your own code, check
+            // the type of the value you provide. If not, it is likely that an
             // Objective-C collection like NSArray, NSDictionary, NSSet or any
             // other Objective-C object contains a value that is not an
             // Objective-C object. GRMustache does not support such mixing of
             // Objective-C and Swift values.
-            NSLog("Mustache.ObjCBox(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
+            NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
             return Box()
         }
     } else {
@@ -536,41 +522,53 @@ public func ObjCBox(object: AnyObject?) -> MustacheBox {
 
 extension NSObject: ObjCMustacheBoxable {
     public var mustacheBox: ObjCMustacheBox {
-        if let enumerable = self as? NSFastEnumeration {
-            if respondsToSelector("objectAtIndexedSubscript:") {
-                // Array
-                var array: [MustacheBox] = []
-                let generator = NSFastGenerator(enumerable)
-                while let item: AnyObject = generator.next() {
-                    array.append(ObjCBox(item)) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
-                }
-                return ObjCMustacheBox(Box(array))
-            } else if respondsToSelector("objectForKeyedSubscript:") {
-                // Dictionary
+        if let enumerable = self as? NSFastEnumeration
+        {
+            // Enumerable
+            
+            if respondsToSelector("objectForKeyedSubscript:")
+            {
+                // Dictionary-like enumerable
+                //
+                // We don't box the original enumerable, but a
+                // Dictionary<String, MustacheBox>.
+                //
+                // Why?
+                //
+                // By boxing a Dictionary<String, MustacheBox>, we allow user code to
+                // recognize and process all boxed dictionaries. See EachFilter for
+                // an example.
+                
                 var dictionary: [String: MustacheBox] = [:]
                 let generator = NSFastGenerator(enumerable)
                 while let key = generator.next() as? String {
                     let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                    dictionary[key] = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
+                    dictionary[key] = BoxAnyObject(item)
                 }
                 return ObjCMustacheBox(Box(dictionary))
-            } else {
-                // Set
-                var set = NSMutableSet()
-                let generator = NSFastGenerator(enumerable)
-                while let object: AnyObject = generator.next() {
-                    set.addObject(object)
-                }
-                return ObjCMustacheBox(Box(set))
             }
+            else
+            {
+                // Array-like enumerable
+                //
+                // We don't box the original enumerable, but an Array<MustacheBox>.
+                //
+                // Why? By boxing an Array<MustacheBox>, we allow user code to recognize
+                // and process all boxed arrays. See EachFilter for an example.
+                
+                return ObjCMustacheBox(Box(map(SequenceOf { NSFastGenerator(enumerable) }) { BoxAnyObject($0) }))
+            }
+        }
+        else
+        {
+            // Generic NSObject
             
-        } else {
             return ObjCMustacheBox(MustacheBox(
                 value: self,
                 mustacheBool: true,
                 objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                     let value: AnyObject? = self.valueForKey(key)
-                    return ObjCBox(value)   // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
+                    return BoxAnyObject(value)
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     switch info.tag.type {
@@ -586,28 +584,28 @@ extension NSObject: ObjCMustacheBoxable {
 
 extension NSNull: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("")
-            case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return ObjCMustacheBox(MustacheBox(
             value: self,
             mustacheBool: false,
-            render: render))
+            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("")
+                case .Section:
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        }))
     }
 }
 
 extension NSNumber: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        switch String.fromCString(objCType)! {
+        let objCType = String.fromCString(self.objCType)!
+        switch objCType {
         case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
             return ObjCMustacheBox(Box(Int(longLongValue)))
         case "f", "d":
@@ -615,7 +613,8 @@ extension NSNumber: ObjCMustacheBoxable {
         case "B":
             return ObjCMustacheBox(Box(boolValue))
         default:
-            fatalError("Not implemented yet")
+            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented yet: value is discarded.")
+            return ObjCMustacheBox(Box())
         }
     }
 }
@@ -628,58 +627,19 @@ extension NSString: ObjCMustacheBoxable {
 
 extension NSSet: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
-            switch key {
-            case "count":
-                return Box(self.count)
-            case "anyObject":
-                return ObjCBox(self.anyObject())    // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
-            default:
-                return nil
-            }
-        }
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            if info.enumerationItem {
-                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-            } else {
-                var buffer = ""
-                var contentType: ContentType?
-                let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
-                for item in self {
-                    let boxItem = ObjCBox(item) // Assume Objective-C value. This assumption may be wrong: see comments inside ObjCBox() definition.
-                    if let boxRendering = boxItem.render(info: enumerationRenderingInfo, error: error) {
-                        if contentType == nil {
-                            contentType = boxRendering.contentType
-                            buffer += boxRendering.string
-                        } else if contentType == boxRendering.contentType {
-                            buffer += boxRendering.string
-                        } else {
-                            if error != nil {
-                                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                            }
-                            return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
-                
-                if let contentType = contentType {
-                    return Rendering(buffer, contentType)
-                } else {
-                    switch info.tag.type {
-                    case .Variable:
-                        return Rendering("")
-                    case .Section:
-                        return info.tag.render(info.context, error: error)
-                    }
-                }
-            }
-        }
         return ObjCMustacheBox(MustacheBox(
             value: self,
             mustacheBool: (self.count > 0),
-            objectForKeyedSubscript: objectForKeyedSubscript,
-            render: render))
+            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+                switch key {
+                case "count":
+                    return Box(self.count)
+                case "anyObject":
+                    return BoxAnyObject(self.anyObject())
+                default:
+                    return nil
+                }
+            },
+            render: renderSequenceFunction(map(SequenceOf { NSFastGenerator(self) }) { BoxAnyObject($0) })))
     }
 }

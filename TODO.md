@@ -7,7 +7,8 @@ TODO
 - [X] boxValue(DidRenderFunction)
 - [X] rename InspectFunction
 - [ ] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
-- [X] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific ObjCBox() function.
+- [X] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific BoxAnyObject() function.
 - [ ] Since we turn all collections to [Box] and all dictionaries to [String:Box], we should also turn all sets to NSSet[Box].
 - [ ] Replace RenderingEngine.currentContentType and currentTemplateRepository with currentConfiguration.
 - [ ] Don't automatically register the standard library. Instead, provide a way to register the full standard lib, or a way to register one standard tool at a time.
+- [ ] Import safe handling of valueForKey: from ObjC GRMustache

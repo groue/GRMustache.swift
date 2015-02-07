@@ -11,27 +11,27 @@
 
 // MustacheBox input
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else {
-            return filter(argument, error)
+            return filter(box, error)
         }
     }
 }
 
 // Generic input
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.value as? T {
+        } else if let t = box.value as? T {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -41,13 +41,13 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
 
 // Int input (see MustacheBox#intValue)
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.intValue {
+        } else if let t = box.intValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -57,13 +57,13 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
 
 // Double input (see MustacheBox#doubleValue)
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.doubleValue {
+        } else if let t = box.doubleValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -73,13 +73,13 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
 
 // Single input (see MustacheBox#stringValue)
 public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = argument.stringValue {
+        } else if let t = box.stringValue {
             return filter(t, error)
         } else {
             return filter(nil, error)
@@ -91,17 +91,17 @@ public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterF
 // =============================================================================
 // MARK: - Arity N filter factories
 
-public func VariadicFilter(filter: (arguments: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return _VariadicFilter([], filter)
 }
 
-private func _VariadicFilter(arguments: [MustacheBox], filter: (arguments: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
-        let arguments = arguments + [argument]
+private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        let boxes = boxes + [box]
         if partialApplication {
-            return Box(_VariadicFilter(arguments, filter))
+            return Box(_VariadicFilter(boxes, filter))
         } else {
-            return filter(arguments: arguments, error: error)
+            return filter(boxes: boxes, error: error)
         }
     }
 }

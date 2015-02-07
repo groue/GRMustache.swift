@@ -7,11 +7,11 @@
 
 class ExpressionInvocation: ExpressionVisitor {
     private let expression: Expression
-    private var box: MustacheBox
+    private var result: MustacheBox
     private var context: Context?
     
     init (expression: Expression) {
-        self.box = Box()
+        self.result = Box()
         self.expression = expression
     }
     
@@ -24,7 +24,7 @@ class ExpressionInvocation: ExpressionVisitor {
         self.context = context
         switch expression.acceptExpressionVisitor(self) {
         case .Success:
-            return .Success(box)
+            return .Success(result)
         case .Error(let error):
             return .Error(error)
         }
@@ -41,7 +41,7 @@ class ExpressionInvocation: ExpressionVisitor {
         case .Success:
             break
         }
-        let boxedFilter = box
+        let filterBox = result
         
         let argumentResult = expression.argumentExpression.acceptExpressionVisitor(self)
         switch argumentResult {
@@ -50,12 +50,12 @@ class ExpressionInvocation: ExpressionVisitor {
         case .Success:
             break
         }
-        let boxedArgument = box
+        let argumentBox = result
         
-        if let filter = boxedFilter.filter {
+        if let filter = filterBox.filter {
             var filterError: NSError? = nil
-            if let filterResult = filter(argument: boxedArgument, partialApplication: expression.partialApplication, error: &filterError) {
-                box = filterResult
+            if let filterResult = filter(box: argumentBox, partialApplication: expression.partialApplication, error: &filterError) {
+                result = filterResult
                 return .Success
             } else if let filterError = filterError {
                 return .Error(filterError)
@@ -63,10 +63,10 @@ class ExpressionInvocation: ExpressionVisitor {
                 // MustacheFilter result is nil, but filter error is not set.
                 // Assume a filter coded by a lazy programmer, whose
                 // intention is to return the empty value.
-                box = Box()
+                result = Box()
                 return .Success
             }
-        } else if boxedFilter.isEmpty {
+        } else if filterBox.isEmpty {
             return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"]))
         } else {
             return .Error(NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"]))
@@ -74,12 +74,12 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     func visit(expression: IdentifierExpression) -> ExpressionVisitResult {
-        box = context![expression.identifier]
+        result = context![expression.identifier]
         return .Success
     }
     
     func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult {
-        box = context!.topBox
+        result = context!.topBox
         return .Success
     }
     
@@ -89,7 +89,7 @@ class ExpressionInvocation: ExpressionVisitor {
         case .Error:
             return baseResult
         case .Success:
-            box = box[expression.identifier]
+            result = result[expression.identifier]
             return .Success
         }
     }   

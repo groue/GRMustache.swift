@@ -17,8 +17,8 @@ public class Localizer: MustacheBoxable {
         self.table = table
     }
     
-    private func filter(argument: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? {
-        if let string = argument.stringValue {
+    private func filter(box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? {
+        if let string = box.stringValue {
             return Box(localizedStringForKey(string))
         } else {
             return Box()
