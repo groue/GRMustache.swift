@@ -520,6 +520,28 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     }
 }
 
+/**
+Conform to the GRMustacheSafeKeyAccess protocol in order to filter the keys that
+can be accessed by GRMustache templates.
+*/
+@objc public protocol GRMustacheSafeKeyAccess {
+
+    /**
+    List the name of the keys GRMustache.swift can access on this class using
+    the `valueForKey:` method.
+
+    When objects do not respond to this method, only declared properties can be
+    accessed. All properties of Core Data NSManagedObjects are also accessible,
+    even without property declaration.
+
+    This method is not used for objects responding to objectForKeyedSubscript:.
+    For those objects, all keys are accessible from templates.
+
+    @return The set of accessible keys on the class.
+    */
+    class func safeMustacheKeys() -> NSSet
+}
+
 extension NSObject: ObjCMustacheBoxable {
     public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration
@@ -567,8 +589,21 @@ extension NSObject: ObjCMustacheBoxable {
                 value: self,
                 mustacheBool: true,
                 objectForKeyedSubscript: { (key: String) -> MustacheBox? in
-                    let value: AnyObject? = self.valueForKey(key)
-                    return BoxAnyObject(value)
+                    if self.respondsToSelector("objectForKeyedSubscript:")
+                    {
+                        // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
+                        return BoxAnyObject((self as AnyObject)[key]) // Cast to AnyObject so that we can access subscript notation.
+                    }
+                    else if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self)
+                    {
+                        // Use valueForKey: for safe keys
+                        return BoxAnyObject(self.valueForKey(key))
+                    }
+                    else
+                    {
+                        // Missing key
+                        return Box()
+                    }
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                     switch info.tag.type {

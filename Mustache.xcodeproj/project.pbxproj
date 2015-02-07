@@ -138,6 +138,12 @@
 		568A8E091A20CBF7005C9CB4 /* TagTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4019E1A1F643B002D5CD7 /* TagTests.mustache */; };
 		568A8E0A1A20CBFB005C9CB4 /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
 		568A8E0B1A20CBFE005C9CB4 /* ValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */; };
+		569516FA1A863F2100FF7D86 /* GRMustacheKeyAccess_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		569516FB1A863F2100FF7D86 /* GRMustacheKeyAccess_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		569516FC1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */; };
+		569516FD1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */; };
+		569517021A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */; };
+		569517031A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */; };
 		5698D0271A1626240039D564 /* SubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */; };
 		56A0B4671A19D95A008A719F /* ContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0B4661A19D95A008A719F /* ContextTests.swift */; };
 		56A88EC81A066EC40055E40A /* RenderFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */; };
@@ -266,6 +272,9 @@
 		5685DAB51A1A2074003E583B /* LocalizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizerTests.swift; sourceTree = "<group>"; };
 		568A8DB41A20CAAC005C9CB4 /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		568A8DBE1A20CAAD005C9CB4 /* MustacheOSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheOSXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GRMustacheKeyAccess_private.h; sourceTree = "<group>"; };
+		569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRMustacheKeyAccess.m; sourceTree = "<group>"; };
+		569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjcKeyAccessTests.swift; sourceTree = "<group>"; };
 		5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptFunctionTests.swift; sourceTree = "<group>"; };
 		56A0B4661A19D95A008A719F /* ContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextTests.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderFunctionTests.swift; sourceTree = "<group>"; };
@@ -526,6 +535,8 @@
 			children = (
 				563AE1D719FC4A450028C6C1 /* Context.swift */,
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
+				569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */,
+				569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */,
 				56BD793F1A0E381900937A76 /* MustacheBox.swift */,
 				563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */,
 				56ED97621A5AB6C400BFD835 /* Filter.swift */,
@@ -601,6 +612,7 @@
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */,
+				569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */,
 				56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
 				5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */,
@@ -672,6 +684,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				563AE19D19FBE47A0028C6C1 /* Mustache.h in Headers */,
+				569516FA1A863F2100FF7D86 /* GRMustacheKeyAccess_private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -680,6 +693,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				568A8DCD1A20CB8D005C9CB4 /* Mustache.h in Headers */,
+				569516FB1A863F2100FF7D86 /* GRMustacheKeyAccess_private.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -914,6 +928,7 @@
 				5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */,
 				5622F2011A054D5800B5D3F8 /* HTMLEscape.swift in Sources */,
 				563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */,
+				569516FC1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */,
 				563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */,
 				563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */,
 				563AE1CE19FC3A290028C6C1 /* IdentifierExpression.swift in Sources */,
@@ -937,6 +952,7 @@
 				56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				560ABAE41A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */,
 				56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */,
+				569517021A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */,
 				56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */,
 				5698D0271A1626240039D564 /* SubscriptFunctionTests.swift in Sources */,
 				56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */,
@@ -994,6 +1010,7 @@
 				568A8DE31A20CBAD005C9CB4 /* Context.swift in Sources */,
 				568A8DEE1A20CBB7005C9CB4 /* Error.swift in Sources */,
 				568A8DD41A20CB9B005C9CB4 /* InheritablePartialNode.swift in Sources */,
+				569516FD1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */,
 				568A8DD61A20CB9B005C9CB4 /* PartialNode.swift in Sources */,
 				568A8DE11A20CBA7005C9CB4 /* TemplateParser.swift in Sources */,
 				568A8DDD1A20CB9B005C9CB4 /* VariableTag.swift in Sources */,
@@ -1017,6 +1034,7 @@
 				56B4B21A1A2645A000BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				560ABAE51A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */,
 				568A8DF91A20CBCD005C9CB4 /* FilterTests.swift in Sources */,
+				569517031A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */,
 				56B4B2161A25BCB700BD4F8F /* TemplateTests.swift in Sources */,
 				568A8DF41A20CBC4005C9CB4 /* ConfigurationContentTypeTests.swift in Sources */,
 				568A8DF61A20CBC4005C9CB4 /* ConfigurationTagDelimitersTests.swift in Sources */,
@@ -1211,6 +1229,7 @@
 		568A8DC71A20CAAD005C9CB4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -1224,12 +1243,14 @@
 				PRODUCT_NAME = Mustache;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		568A8DC81A20CAAD005C9CB4 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;

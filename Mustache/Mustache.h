@@ -15,4 +15,8 @@ FOUNDATION_EXPORT const unsigned char MustacheVersionString[];
 
 // In this header, you should import all the public headers of your framework using statements like #import <Mustache/PublicHeader.h>
 
-
+// Caveat
+//
+// This one should be private, but Xcode today requires ObjC headers that should
+// be available to private Swift code to be public.
+#import "GRMustacheKeyAccess_private.h"
