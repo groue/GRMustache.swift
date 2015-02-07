@@ -151,6 +151,30 @@ extension MustacheBox {
             return nil
         }
     }
+    
+    public var arrayValue: [MustacheBox]? {
+        if let array = value as? [MustacheBox] {
+            return array
+        } else {
+            return nil
+        }
+    }
+    
+    public var setValue: NSSet? {
+        if let set = value as? NSSet {
+            return set
+        } else {
+            return nil
+        }
+    }
+    
+    public var dictionaryValue: [String: MustacheBox]? {
+        if let dictionary = value as? [String: MustacheBox] {
+            return dictionary
+        } else {
+            return nil
+        }
+    }
 }
 
 

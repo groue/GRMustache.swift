@@ -8,11 +8,11 @@
 let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
     if box.isEmpty {
         return box
-    } else if let dictionary = box.value as? [String: MustacheBox] {
+    } else if let dictionary = box.dictionaryValue {
         return transformedDictionary(dictionary)
-    } else if let array = box.value as? [MustacheBox] {
+    } else if let array = box.arrayValue {
         return transformedCollection(array)
-    } else if let set = box.value as? NSSet {
+    } else if let set = box.setValue {
         return transformedCollection(map(GeneratorSequence(NSFastGenerator(set))) { BoxAnyObject($0) })
     } else {
         if error != nil {

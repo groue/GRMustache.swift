@@ -13,20 +13,20 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     //
     // Other kinds of arguments generate an error.
     
-    var generators: [GeneratorOf<MustacheBox>] = []
+    var zippedGenerators: [GeneratorOf<MustacheBox>] = []
     
     for box in boxes {
         if box.isEmpty {
             // Missing collection is empty collection
-            generators.append(GeneratorOf((EmptyCollection() as EmptyCollection<MustacheBox>).generate()))
-        } else if let array = box.value as? [MustacheBox] {
+            zippedGenerators.append(GeneratorOf((EmptyCollection() as EmptyCollection<MustacheBox>).generate()))
+        } else if let array = box.arrayValue {
             // Array
-            generators.append(GeneratorOf(array.generate()))
-        } else if let set = box.value as? NSSet {
+            zippedGenerators.append(GeneratorOf(array.generate()))
+        } else if let set = box.setValue {
             // Set
             // TODO: test
             var setGenerator = NSFastGenerator(set)
-            generators.append(GeneratorOf { setGenerator.next().map { BoxAnyObject($0) } })
+            zippedGenerators.append(GeneratorOf { setGenerator.next().map { BoxAnyObject($0) } })
         } else {
             // Error
             if error != nil {
@@ -43,36 +43,37 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     while true {
         
-        // Extract from all generators the boxes that should enter the
-        // rendering context at each iteration.
+        // Extract from all generators the boxes that should enter the rendering
+        // context at each iteration.
         //
-        // Given the [1,2,3], [a,b,c] input collections, those objects
-        // would be [1,a] then [2,b] and finally [3,c].
+        // Given the [1,2,3], [a,b,c] input collections, those boxes would be
+        // [1,a] then [2,b] and finally [3,c].
         
-        var boxes: [MustacheBox] = []
-        for generator in generators {
+        var zippedBoxes: [MustacheBox] = []
+        for generator in zippedGenerators {
             var generator = generator
             if let box = generator.next() {
-                boxes.append(box)
+                zippedBoxes.append(box)
             }
         }
         
         
-        // All iterators have been enumerated: stop
+        // All generators have been enumerated: stop
         
-        if boxes.isEmpty {
+        if zippedBoxes.isEmpty {
             break;
         }
         
         
-        // Build a render function which extends the rendering context
+        // Build a render function which extends the rendering context with
+        // zipped boxes before rendering the tag.
         
         let renderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             var context = info.context
-            for box in boxes {
+            for box in zippedBoxes {
                 context = context.extendedContext(box)
             }
-            return info.tag.render(context)
+            return info.tag.render(context, error: error)
         }
         
         renderFunctions.append(renderFunction)

@@ -103,7 +103,7 @@ class VariadicFilterTests: XCTestCase {
             "f": Box(VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
                 var result = ""
                 for box in boxes {
-                    if let dictionary = box.value as? [String: MustacheBox] {
+                    if let dictionary = box.dictionaryValue {
                         result += String(countElements(dictionary))
                     }
                 }
