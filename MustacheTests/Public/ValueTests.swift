@@ -162,6 +162,7 @@ class ValueTests: XCTestCase {
     func testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
         let value: Dictionary<String, Array<Array<Array<Dictionary<String, Int>>>>> = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
         let template = Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
         let box = Box(value)
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")

@@ -15,33 +15,12 @@ class ConfigurationBaseContextTests: XCTestCase {
         DefaultConfiguration = Configuration()
     }
     
-    func testFactoryConfigurationHasStandardLibraryInBaseContextRegardlessOfDefaultConfiguration() {
-        DefaultConfiguration.baseContext = Context()
-        
-        let repository = TemplateRepository()
-        repository.configuration = Configuration()
-        
-        let template = repository.template(string: "{{uppercase(foo)}}")!
-        let rendering = template.render(Box(["foo": "success"]))!
-        XCTAssertEqual(rendering, "SUCCESS")
-    }
-    
     func testDefaultConfigurationCustomBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
         let template = Template(string: "{{foo}}")!
         let rendering = template.render()!
         XCTAssertEqual(rendering, "success")
-    }
-    
-    func testDefaultConfigurationCustomBaseContextHasNoStandardLibrary() {
-        DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
-        
-        let template = Template(string: "{{uppercase(foo)}}")!
-        var error: NSError?
-        let rendering = template.render(error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError); // no such filter
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {

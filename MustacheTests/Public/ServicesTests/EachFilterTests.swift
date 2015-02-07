@@ -9,7 +9,7 @@ import XCTest
 import Mustache
 
 class EachFilterTests: XCTestCase {
-
+    
     func testEachFilterTriggersRenderFunctionsInArray() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.render(info.context)!
@@ -17,6 +17,7 @@ class EachFilterTests: XCTestCase {
         }
         let box = Box(["array": Box([Box(render)])])
         let template = Template(string: "{{#each(array)}}{{@index}}{{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<0>")
     }
@@ -28,6 +29,7 @@ class EachFilterTests: XCTestCase {
         }
         let box = Box(["dictionary": Box(["a": Box(render)])])
         let template = Template(string: "{{#each(dictionary)}}{{@key}}{{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<a>")
     }

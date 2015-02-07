@@ -74,6 +74,20 @@ class GRMustacheSuiteTests: XCTestCase {
         
         func run() {
             for template in templates {
+                
+                // Standard Library
+                template.registerInBaseContext("each", Box(StandardLibrary.each))
+                template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+                template.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
+                template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+                template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+                template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+                
+                // Support for filters.json
+                template.registerInBaseContext("capitalized", Box(Filter({ (string: String?, _) -> MustacheBox? in
+                    return Box(string?.capitalizedString)
+                })))
+                
                 testRendering(template)
             }
         }

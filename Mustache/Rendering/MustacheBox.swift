@@ -216,7 +216,7 @@ public protocol MustacheBoxable {
     var mustacheBox: MustacheBox { get }
 }
 
-public func Box<T: MustacheBoxable>(boxable: T?) -> MustacheBox {
+public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
         return boxable.mustacheBox
     } else {
@@ -578,7 +578,7 @@ extension NSObject: ObjCMustacheBoxable {
                 // Why? By boxing an Array<MustacheBox>, we allow user code to recognize
                 // and process all boxed arrays. See EachFilter for an example.
                 
-                return ObjCMustacheBox(Box(map(SequenceOf { NSFastGenerator(enumerable) }) { BoxAnyObject($0) }))
+                return ObjCMustacheBox(Box(map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }))
             }
         }
         else
@@ -675,6 +675,6 @@ extension NSSet: ObjCMustacheBoxable {
                     return nil
                 }
             },
-            render: renderSequenceFunction(map(SequenceOf { NSFastGenerator(self) }) { BoxAnyObject($0) })))
+            render: renderSequenceFunction(map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) })))
     }
 }

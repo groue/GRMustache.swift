@@ -13,7 +13,7 @@ public struct Configuration {
     
     public init() {
         contentType = .HTML
-        baseContext = Context(Box(StandardLibrary()))
+        baseContext = Context()
         tagStartDelimiter = "{{"
         tagEndDelimiter = "}}"
     }

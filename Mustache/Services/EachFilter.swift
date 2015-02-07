@@ -5,7 +5,7 @@
 //  Copyright (c) 2014 Gwendal Roué. All rights reserved.
 //
 
-let EachFilter = { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
     if box.isEmpty {
         return box
     } else if let dictionary = box.value as? [String: MustacheBox] {
@@ -13,7 +13,7 @@ let EachFilter = { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
     } else if let array = box.value as? [MustacheBox] {
         return transformedCollection(array)
     } else if let set = box.value as? NSSet {
-        return transformedCollection(map(SequenceOf { NSFastGenerator(set) }) { BoxAnyObject($0) })
+        return transformedCollection(map(GeneratorSequence(NSFastGenerator(set))) { BoxAnyObject($0) })
     } else {
         if error != nil {
             error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])

@@ -10,21 +10,6 @@ import Mustache
 
 class ContextTests: XCTestCase {
     
-    func testContextConstructor() {
-        let template = Template(string: "{{uppercase(foo)}}")!
-        let box = Box(["foo": "bar"])
-        
-        var rendering = template.render(box)
-        XCTAssertEqual(rendering!, "BAR")
-        
-        template.baseContext = Context()
-        var error: NSError?
-        rendering = template.render(box, error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-    }
-    
     func testContextWithValueConstructor() {
         let template = Template(string: "{{foo}}")!
         
