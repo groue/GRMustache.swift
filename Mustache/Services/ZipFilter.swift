@@ -6,38 +6,27 @@
 //
 
 
-private struct MustacheBoxGenerator: GeneratorType {
-    let _next: () -> MustacheBox?
-    init<G: GeneratorType where G.Element == MustacheBox>(var _ generator: G) {
-        _next = { return generator.next() }
-    }
-    mutating func next() -> MustacheBox? {
-        return _next()
-    }
-}
-
 let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     // Turn collection arguments into generators. Generators can be iterated
     // all together, and this is what we need.
     //
     // Other kinds of arguments generate an error.
-    //
-    // So that we can declare a variable holding an array of generators of
-    // MustacheBox, we need a specific type: MustacheBoxGenerator
     
-    var generators: [MustacheBoxGenerator] = []
+    var generators: [GeneratorOf<MustacheBox>] = []
     
     for box in boxes {
         if box.isEmpty {
-            // Missing collection: behave as empty array
-            generators.append(MustacheBoxGenerator(([] as [MustacheBox]).generate()))
+            // Missing collection is empty collection
+            generators.append(GeneratorOf((EmptyCollection() as EmptyCollection<MustacheBox>).generate()))
         } else if let array = box.value as? [MustacheBox] {
             // Array
-            generators.append(MustacheBoxGenerator(array.generate()))
+            generators.append(GeneratorOf(array.generate()))
         } else if let set = box.value as? NSSet {
             // Set
-            generators.append(MustacheBoxGenerator((map(GeneratorSequence(NSFastGenerator(set))) { BoxAnyObject($0) }).generate()))
+            // TODO: test
+            var setGenerator = NSFastGenerator(set)
+            generators.append(GeneratorOf { setGenerator.next().map { BoxAnyObject($0) } })
         } else {
             // Error
             if error != nil {
