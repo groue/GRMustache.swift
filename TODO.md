@@ -13,4 +13,4 @@ TODO
 - [X] Now that MustacheBox exposes arrayValue and dictionaryValue properties, we should box the exact provided values, and not a rewritten Array/Dictionary.
 - [X] NSNumber, NSString boxing: box the original values
 - [X] Make MustacheBox.arrayValue and MustacheBox.dictionaryValue lazy
-- [ ] Protected key access
+- [X] Registered keys
