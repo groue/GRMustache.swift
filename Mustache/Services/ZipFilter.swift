@@ -21,11 +21,6 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
         } else if let array = box.arrayValue {
             // Array
             zippedGenerators.append(GeneratorOf(array.generate()))
-        } else if let set = box.value as? NSSet {
-            // Set
-            // TODO: test
-            var setGenerator = NSFastGenerator(set)
-            zippedGenerators.append(GeneratorOf { setGenerator.next().map { BoxAnyObject($0) } })
         } else {
             // Error
             if error != nil {

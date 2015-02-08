@@ -11,6 +11,6 @@ TODO
 - [ ] Replace RenderingEngine.currentContentType and currentTemplateRepository with currentConfiguration.
 - [X] Don't automatically register the standard library. Instead, provide a way to register the full standard lib, or a way to register one standard tool at a time.
 - [X] Import safe handling of valueForKey: from ObjC GRMustache
-- [X] Now that MustacheBox exposes arrayValue and dictionaryValue properties, we can, and should, box the exact provided value, and not a rewritten Array/Dictionary.
-- [ ] NSNumber, NSString boxing: should we box the original values as we box original collectoins and dictionaries?
+- [X] Now that MustacheBox exposes arrayValue and dictionaryValue properties, we should box the exact provided values, and not a rewritten Array/Dictionary.
+- [X] NSNumber, NSString boxing: box the original values
 - [X] Make MustacheBox.arrayValue and MustacheBox.dictionaryValue lazy

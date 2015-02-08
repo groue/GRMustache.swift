@@ -229,4 +229,112 @@ class ValueTests: XCTestCase {
         let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
         XCTAssertEqual(extractedDictionary["key"]!.value as String, "value")
     }
+    
+    func testIntValueForNSNumber() {
+        let originalValue = NSNumber(integer: 123)
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSNumber
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedInt = box.intValue!
+        XCTAssertEqual(extractedInt, 123)
+    }
+
+    func testIntValueForBool() {
+        let originalValue: Bool = false
+        let box = Box(originalValue)
+        let extractedValue = box.value as Bool
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedInt = box.intValue!
+        XCTAssertEqual(extractedInt, 0)
+    }
+    
+    func testIntValueForInt() {
+        let originalValue: Int = 123
+        let box = Box(originalValue)
+        let extractedValue = box.value as Int
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedInt = box.intValue!
+        XCTAssertEqual(extractedInt, 123)
+    }
+    
+    func testIntValueForDouble() {
+        let originalValue: Double = 123.0
+        let box = Box(originalValue)
+        let extractedValue = box.value as Double
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedInt = box.intValue!
+        XCTAssertEqual(extractedInt, 123)
+    }
+    
+    func testUIntValueForNSNumber() {
+        let originalValue = NSNumber(integer: 123)
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSNumber
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedUInt = box.uintValue!
+        XCTAssertEqual(extractedUInt, UInt(123))
+    }
+    
+    func testUIntValueForBool() {
+        let originalValue: Bool = false
+        let box = Box(originalValue)
+        let extractedValue = box.value as Bool
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedUInt = box.uintValue!
+        XCTAssertEqual(extractedUInt, UInt(0))
+    }
+    
+    func testUIntValueForInt() {
+        let originalValue: Int = 123
+        let box = Box(originalValue)
+        let extractedValue = box.value as Int
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedUInt = box.uintValue!
+        XCTAssertEqual(extractedUInt, UInt(123))
+    }
+    
+    func testUIntValueForDouble() {
+        let originalValue: Double = 123.0
+        let box = Box(originalValue)
+        let extractedValue = box.value as Double
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedUInt = box.uintValue!
+        XCTAssertEqual(extractedUInt, UInt(123))
+    }
+    
+    func testDoubleValueForNSNumber() {
+        let originalValue = NSNumber(double: 123.5)
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSNumber
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedDouble = box.doubleValue!
+        XCTAssertEqual(extractedDouble, 123.5)
+    }
+    
+    func testDoubleValueForBool() {
+        let originalValue: Bool = false
+        let box = Box(originalValue)
+        let extractedValue = box.value as Bool
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedDouble = box.doubleValue!
+        XCTAssertEqual(extractedDouble, 0.0)
+    }
+    
+    func testDoubleValueForInt() {
+        let originalValue: Int = 123
+        let box = Box(originalValue)
+        let extractedValue = box.value as Int
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedDouble = box.doubleValue!
+        XCTAssertEqual(extractedDouble, 123.0)
+    }
+    
+    func testDoubleValueForDouble() {
+        let originalValue: Double = 123.5
+        let box = Box(originalValue)
+        let extractedValue = box.value as Double
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedDouble = box.doubleValue!
+        XCTAssertEqual(extractedDouble, 123.5)
+    }
 }

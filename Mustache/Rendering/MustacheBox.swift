@@ -59,13 +59,19 @@ public struct MustacheBox {
     public let filter: FilterFunction?
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
+    private let _intValue: (() -> Int?)?
+    private let _uintValue: (() -> UInt?)?
+    private let _doubleValue: (() -> Double?)?
     private let _arrayValue: (() -> [MustacheBox]?)?
     private let _dictionaryValue: (() -> [String: MustacheBox]?)?
     
     private init(
         mustacheBool: Bool? = nil,
         value: Any? = nil,
-        arrayValue: (() -> [MustacheBox])? = nil,
+        intValue: (() -> Int?)? = nil,
+        uintValue: (() -> UInt?)? = nil,
+        doubleValue: (() -> Double?)? = nil,
+        arrayValue: (() -> [MustacheBox]?)? = nil,
         dictionaryValue: (() -> [String: MustacheBox]?)? = nil,
         objectForKeyedSubscript: SubscriptFunction? = nil,
         filter: FilterFunction? = nil,
@@ -76,6 +82,9 @@ public struct MustacheBox {
         let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
+        self._intValue = intValue
+        self._uintValue = uintValue
+        self._doubleValue = doubleValue
         self._arrayValue = arrayValue
         self._dictionaryValue = dictionaryValue
         self.mustacheBool = mustacheBool ?? !empty
@@ -104,8 +113,23 @@ public struct MustacheBox {
     }
 }
 
-public func Box(mustacheBool: Bool? = nil, value: Any? = nil, objectForKeyedSubscript: SubscriptFunction? = nil, filter: FilterFunction? = nil, render: RenderFunction? = nil, willRender: WillRenderFunction? = nil, didRender: DidRenderFunction? = nil) -> MustacheBox {
-    return MustacheBox(mustacheBool: mustacheBool, value: value, objectForKeyedSubscript: objectForKeyedSubscript, filter: filter, render: render, willRender: willRender, didRender: didRender)
+public func Box(
+    mustacheBool: Bool? = nil,
+    value: Any? = nil,
+    objectForKeyedSubscript: SubscriptFunction? = nil,
+    filter: FilterFunction? = nil,
+    render: RenderFunction? = nil,
+    willRender: WillRenderFunction? = nil,
+    didRender: DidRenderFunction? = nil) -> MustacheBox
+{
+    return MustacheBox(
+        mustacheBool: mustacheBool,
+        value: value,
+        objectForKeyedSubscript: objectForKeyedSubscript,
+        filter: filter,
+        render: render,
+        willRender: willRender,
+        didRender: didRender)
 }
 
 
@@ -116,13 +140,37 @@ public func Box(mustacheBool: Bool? = nil, value: Any? = nil, objectForKeyedSubs
 extension MustacheBox {
     private func boxWithRenderFunction(render: RenderFunction) -> MustacheBox {
         return MustacheBox(
-            value: value,
-            mustacheBool: mustacheBool,
-            objectForKeyedSubscript: objectForKeyedSubscript,
+            mustacheBool: self.mustacheBool,
+            value: self.value,
+            intValue: self._intValue,
+            uintValue: self._uintValue,
+            doubleValue: self._doubleValue,
+            arrayValue: self._arrayValue,
+            dictionaryValue: self._dictionaryValue,
+            objectForKeyedSubscript: self.objectForKeyedSubscript,
+            filter: self.filter,
             render: render,
-            filter: filter,
-            willRender: willRender,
-            didRender: didRender)
+            willRender: self.willRender,
+            didRender: self.didRender)
+    }
+    
+    // Hackish helper function which helps us boxing NSArray and NSString: we
+    // just box a regular [MustacheBox] or Swift String, and rewrite the value
+    // to the original Objective-C value.
+    private func boxWithValue(value: Any?) -> MustacheBox {
+        return MustacheBox(
+            mustacheBool: self.mustacheBool,
+            value: value,
+            intValue: self._intValue,
+            uintValue: self._uintValue,
+            doubleValue: self._doubleValue,
+            arrayValue: self._arrayValue,
+            dictionaryValue: self._dictionaryValue,
+            objectForKeyedSubscript: self.objectForKeyedSubscript,
+            filter: self.filter,
+            render: self.render,
+            willRender: self.willRender,
+            didRender: self.didRender)
     }
 }
 
@@ -136,27 +184,38 @@ public func Box(box: MustacheBox, # render: RenderFunction) -> MustacheBox {
 
 extension MustacheBox {
     
-    // 
+    // If the boxed value is numerical (Swift numerical types, Bool, and
+    // NSNumber), returns this value as an Int.
     public var intValue: Int? {
-        if let int = value as? Int {
-            return int
-        } else if let double = value as? Double {
-            return Int(double)
+        if let intValue = _intValue {
+            return intValue()
         } else {
             return nil
         }
     }
     
+    // If the boxed value is numerical (Swift numerical types, Bool, and
+    // NSNumber), returns this value as a UInt.
+    public var uintValue: UInt? {
+        if let uintValue = _uintValue {
+            return uintValue()
+        } else {
+            return nil
+        }
+    }
+    
+    // If the boxed value is numerical (Swift numerical types, Bool, and
+    // NSNumber), returns this value as a Double.
     public var doubleValue: Double? {
-        if let int = value as? Int {
-            return Double(int)
-        } else if let double = value as? Double {
-            return double
+        if let doubleValue = _doubleValue {
+            return doubleValue()
         } else {
             return nil
         }
     }
     
+    // Returns the String description of the boxed value, or nil if there is
+    // no value or if the value is NSNull.
     public var stringValue: String? {
         if value is NSNull {
             return nil
@@ -167,6 +226,8 @@ extension MustacheBox {
         }
     }
     
+    // If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
+    // returns a [MustacheBox].
     public var arrayValue: [MustacheBox]? {
         if let arrayValue = _arrayValue {
             return arrayValue()
@@ -175,6 +236,8 @@ extension MustacheBox {
         }
     }
     
+    // If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
+    // returns a [String: MustacheBox] dictionary.
     public var dictionaryValue: [String: MustacheBox]? {
         if let dictionaryValue = _dictionaryValue {
             return dictionaryValue()
@@ -269,6 +332,14 @@ extension Bool: MustacheBoxable {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
+                // https://github.com/groue/GRMustache/issues/83
+                //
+                // {{# NSNumber }}...{{/}} renders the section if the number is
+                // not zero, and does not push the number on the top of the
+                // context stack.
+                //
+                // Be consistent with Objective-C, and make Bool behave just
+                // like [NSNumber numberWithBool:]
                 if info.enumerationItem {
                     return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
@@ -278,6 +349,9 @@ extension Bool: MustacheBoxable {
         }
         return MustacheBox(
             value: self,
+            intValue: { self ? 1 : 0 },             // Behave like [NSNumber numberWithBool:]
+            uintValue: { self ? 1 : 0 },            // Behave like [NSNumber numberWithBool:]
+            doubleValue: { self ? 1.0 : 0.0 },      // Behave like [NSNumber numberWithBool:]
             mustacheBool: self,
             render: render)
     }
@@ -290,6 +364,14 @@ extension Int: MustacheBoxable {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
+                // https://github.com/groue/GRMustache/issues/83
+                //
+                // {{# NSNumber }}...{{/}} renders the section if the number is
+                // not zero, and does not push the number on the top of the
+                // context stack.
+                //
+                // Be consistent with Objective-C, and make Int behave just
+                // like [NSNumber numberWithInteger:]
                 if info.enumerationItem {
                     return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
@@ -299,6 +381,41 @@ extension Int: MustacheBoxable {
         }
         return MustacheBox(
             value: self,
+            intValue: { self },
+            uintValue: { UInt(self) },
+            doubleValue: { Double(self) },
+            mustacheBool: (self != 0),
+            render: render)
+    }
+}
+
+extension UInt: MustacheBoxable {
+    public var mustacheBox: MustacheBox {
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(self)")
+            case .Section:
+                // https://github.com/groue/GRMustache/issues/83
+                //
+                // {{# NSNumber }}...{{/}} renders the section if the number is
+                // not zero, and does not push the number on the top of the
+                // context stack.
+                //
+                // Be consistent with Objective-C, and make Int behave just
+                // like [NSNumber numberWithInteger:]
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
+        }
+        return MustacheBox(
+            value: self,
+            intValue: { Int(self) },
+            uintValue: { self },
+            doubleValue: { Double(self) },
             mustacheBool: (self != 0),
             render: render)
     }
@@ -311,6 +428,14 @@ extension Double: MustacheBoxable {
             case .Variable:
                 return Rendering("\(self)")
             case .Section:
+                // https://github.com/groue/GRMustache/issues/83
+                //
+                // {{# NSNumber }}...{{/}} renders the section if the number is
+                // not zero, and does not push the number on the top of the
+                // context stack.
+                //
+                // Be consistent with Objective-C, and make Double behave just
+                // like [NSNumber numberWithDouble:]
                 if info.enumerationItem {
                     return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
@@ -320,6 +445,9 @@ extension Double: MustacheBoxable {
         }
         return MustacheBox(
             value: self,
+            intValue: { Int(self) },
+            uintValue: { UInt(self) },
+            doubleValue: { self },
             mustacheBool: (self != 0.0),
             render: render)
     }
@@ -343,7 +471,7 @@ extension String: MustacheBoxable {
                 return info.tag.render(info.context.extendedContext(Box(self)), error: error)
             }
         }
-        return MustacheBox(
+        return Box(
             value: self,
             mustacheBool: (countElements(self) > 0),
             objectForKeyedSubscript: objectForKeyedSubscript,
@@ -404,9 +532,9 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
     if let collection = collection {
         let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
         return MustacheBox(
+            mustacheBool: (count > 0),
             value: collection,
             arrayValue: { map(collection) { Box($0) } },
-            mustacheBool: (count > 0),
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 switch key {
                 case "count":
@@ -457,6 +585,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         
         return MustacheBox(
+            mustacheBool: true,
             value: dictionary,
             dictionaryValue: {
                 var boxDictionary: [String: MustacheBox] = [:]
@@ -465,7 +594,6 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
                 }
                 return boxDictionary
             },
-            mustacheBool: true,
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 return Box(dictionary[key])
             },
@@ -593,6 +721,7 @@ extension NSObject: ObjCMustacheBoxable {
                 // Dictionary-like enumerable
                 
                 return ObjCMustacheBox(MustacheBox(
+                    mustacheBool: true,
                     value: self,
                     dictionaryValue: {
                         var boxDictionary: [String: MustacheBox] = [:]
@@ -604,7 +733,6 @@ extension NSObject: ObjCMustacheBoxable {
                         }
                         return boxDictionary
                     },
-                    mustacheBool: true,
                     objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                         return BoxAnyObject(item)
@@ -623,49 +751,9 @@ extension NSObject: ObjCMustacheBoxable {
             {
                 // Array-like enumerable
                 
-                let boxArray = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
-                let count = boxArray.count
-                return ObjCMustacheBox(MustacheBox(
-                    value: self,
-                    arrayValue: { boxArray },
-                    mustacheBool: (count > 0),
-                    objectForKeyedSubscript: { (key: String) -> MustacheBox? in
-                        switch key {
-                        case "count":
-                            // Support for both Objective-C and Swift arrays.
-                            return Box(count)
-                            
-                        case "isEmpty":
-                            // Support for Swift arrays.
-                            return Box(count == 0)
-                            
-                        case "firstObject", "first":
-                            // Support for both Objective-C and Swift arrays.
-                            if count > 0 {
-                                return Box(boxArray.first)
-                            } else {
-                                return Box()
-                            }
-                            
-                        case "lastObject", "last":
-                            // Support for both Objective-C and Swift arrays.
-                            if count > 0 {
-                                return Box(boxArray.last)
-                            } else {
-                                return Box()
-                            }
-                            
-                        default:
-                            return Box()
-                        }
-                    },
-                    render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                        if info.enumerationItem {
-                            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                        } else {
-                            return renderCollection(boxArray, info, error)
-                        }
-                    }))
+                let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
+                let box = Box(array).boxWithValue(self)
+                return ObjCMustacheBox(box)
             }
         }
         else
@@ -673,8 +761,8 @@ extension NSObject: ObjCMustacheBoxable {
             // Generic NSObject
             
             return ObjCMustacheBox(MustacheBox(
-                value: self,
                 mustacheBool: true,
+                value: self,
                 objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                     if self.respondsToSelector("objectForKeyedSubscript:")
                     {
@@ -707,8 +795,8 @@ extension NSObject: ObjCMustacheBoxable {
 extension NSNull: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
-            value: self,
             mustacheBool: false,
+            value: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 switch info.tag.type {
                 case .Variable:
@@ -726,34 +814,44 @@ extension NSNull: ObjCMustacheBoxable {
 
 extension NSNumber: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        let objCType = String.fromCString(self.objCType)!
-        switch objCType {
-        case "c", "i", "s", "l", "q", "C", "I", "S", "L", "Q":
-            return ObjCMustacheBox(Box(Int(longLongValue)))
-        case "f", "d":
-            return ObjCMustacheBox(Box(doubleValue))
-        case "B":
-            return ObjCMustacheBox(Box(boolValue))
-        default:
-            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented yet: value is discarded.")
-            return ObjCMustacheBox(Box())
+        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            switch info.tag.type {
+            case .Variable:
+                return Rendering("\(self)")
+            case .Section:
+                if info.enumerationItem {
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                } else {
+                    return info.tag.render(info.context, error: error)
+                }
+            }
         }
+        return ObjCMustacheBox(MustacheBox(
+            value: self,
+            intValue: { self.integerValue },
+            uintValue: { UInt(self.unsignedIntegerValue) }, // Oddly, -[NSNumber unsignedIntegerValue] returns an Int
+            doubleValue: { self.doubleValue },
+            mustacheBool: self.boolValue,
+            render: render))
     }
 }
 
 extension NSString: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(Box(self as String))
+        return ObjCMustacheBox(Box(self as String).boxWithValue(self))
     }
 }
 
 extension NSSet: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
-            value: self,
             mustacheBool: (self.count > 0),
+            value: self,
+            arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } },
             objectForKeyedSubscript: { (key: String) -> MustacheBox? in
                 switch key {
+                case "isEmpty":
+                    return Box(self.count == 0)
                 case "count":
                     return Box(self.count)
                 case "anyObject":

@@ -12,8 +12,6 @@ let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheB
         return transformedDictionary(dictionary)
     } else if let array = box.arrayValue {
         return transformedCollection(array)
-    } else if let set = box.value as? NSSet {
-        return transformedCollection(map(GeneratorSequence(NSFastGenerator(set))) { BoxAnyObject($0) })
     } else {
         if error != nil {
             error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
