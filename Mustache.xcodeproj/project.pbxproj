@@ -384,7 +384,7 @@
 			path = TemplateFromMethodsTests;
 			sourceTree = "<group>";
 		};
-		5622F1F31A02E98F00B5D3F8 /* Services */ = {
+		5622F1F31A02E98F00B5D3F8 /* Goodies */ = {
 			isa = PBXGroup;
 			children = (
 				5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */,
@@ -396,7 +396,7 @@
 				5674F3721A1CC417000CE8CB /* NSFormatter.swift */,
 				569C42371A86824800748E98 /* ZipFilter.swift */,
 			);
-			path = Services;
+			path = Goodies;
 			sourceTree = "<group>";
 		};
 		563AE18D19FBE4790028C6C1 = {
@@ -428,7 +428,7 @@
 				563AE1B819FBE6E80028C6C1 /* Configuration */,
 				563AE1B319FBE4D90028C6C1 /* Parsing */,
 				563AE1D619FC4A360028C6C1 /* Rendering */,
-				5622F1F31A02E98F00B5D3F8 /* Services */,
+				5622F1F31A02E98F00B5D3F8 /* Goodies */,
 				563AE1C319FC2A2A0028C6C1 /* Shared */,
 				563AE1D119FC45350028C6C1 /* Template */,
 				563AE19A19FBE47A0028C6C1 /* Supporting Files */,
