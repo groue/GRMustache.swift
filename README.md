@@ -3,7 +3,8 @@ GRMustache.swift
 
 GRMustache.swift is an implementation of [Mustache templates](http://mustache.github.io) in Swift.
 
-It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
+It is quite similar to the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+
 
 Usage
 -----
@@ -119,7 +120,7 @@ Built-in goodies
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
-**They are all built on top of public APIs**: get inspired.
+**They are all built on top of public APIs**: get [inspired](Mustache/Services).
 
 
 ### NSFormatter
