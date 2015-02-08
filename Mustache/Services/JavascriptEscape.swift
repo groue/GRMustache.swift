@@ -45,10 +45,8 @@ class JavascriptEscape: MustacheBoxable {
         case .Variable:
             // {{ value }}
             //
-            // We can not escape `object`, because it is not a string.
-            // We want to escape its rendering.
-            // So return a rendering object that will eventually render `object`,
-            // and escape its rendering.
+            // We don't know if the box contains a String, so we'll escape its
+            // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
                     return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)

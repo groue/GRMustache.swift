@@ -98,5 +98,30 @@ class ReadMeTests: XCTestCase {
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     
+    func testReadMeExampleNSFormatter1() {
+        let percentFormatter = NSNumberFormatter()
+        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.numberStyle = .PercentStyle
+        
+        let template = Template(string: "{{ percent(x) }}")!
+        template.registerInBaseContext("percent", Box(percentFormatter))
+        
+        let data = ["x": 0.5]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "50%")
+    }
+    
+    func testReadMeExampleNSFormatter2() {
+        let percentFormatter = NSNumberFormatter()
+        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.numberStyle = .PercentStyle
+        
+        let template = Template(string: "{{# percent }}{{ x }}{{/ }}")!
+        template.registerInBaseContext("percent", Box(percentFormatter))
+        
+        let data = ["x": 0.5]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "50%")
+    }
 }
 
