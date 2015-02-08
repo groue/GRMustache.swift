@@ -176,4 +176,48 @@ class ValueTests: XCTestCase {
         XCTAssertEqual(rendering, "0123456789")
     }
     
+    func testArrayValueForArray() {
+        let originalValue = [1,2,3]
+        let box = Box(originalValue)
+        let extractedValue = box.value as [Int]
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedArray: [MustacheBox] = box.arrayValue!
+        XCTAssertEqual(map(extractedArray) { $0.intValue! }, [1,2,3])
+    }
+    
+    func testArrayValueForNSArray() {
+        let originalValue = NSArray(object: "foo")
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSArray
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedArray: [MustacheBox] = box.arrayValue!
+        XCTAssertEqual(map(extractedArray) { $0.value as String }, ["foo"])
+    }
+    
+    func testArrayValueForCollectionOfOne() {
+        let originalValue = CollectionOfOne(123)
+        let box = Box(originalValue)
+        let extractedValue = box.value as CollectionOfOne<Int>
+        XCTAssertEqual(extractedValue[extractedValue.startIndex], originalValue[originalValue.startIndex])
+        let extractedArray: [MustacheBox] = box.arrayValue!
+        XCTAssertEqual(map(extractedArray) { $0.intValue! }, [123])
+    }
+    
+    func testArrayValueForRange() {
+        let originalValue = 1...3
+        let box = Box(originalValue)
+        let extractedValue = box.value as Range<Int>
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedArray: [MustacheBox] = box.arrayValue!
+        XCTAssertEqual(map(extractedArray) { $0.intValue! }, [1,2,3])
+    }
+    
+    func testDictionaryValueForNSDictionary() {
+        let originalValue = NSDictionary(object: "value", forKey: "key")
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSDictionary
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
+        XCTAssertEqual(extractedDictionary["key"]!.value as String, "value")
+    }
 }
