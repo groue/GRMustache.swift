@@ -194,6 +194,15 @@ class ValueTests: XCTestCase {
         XCTAssertEqual(map(extractedArray) { $0.value as String }, ["foo"])
     }
     
+    func testArrayValueForNSOrderedSet() {
+        let originalValue = NSOrderedSet(object: "foo")
+        let box = Box(originalValue)
+        let extractedValue = box.value as NSOrderedSet
+        XCTAssertEqual(extractedValue, originalValue)
+        let extractedArray: [MustacheBox] = box.arrayValue!
+        XCTAssertEqual(map(extractedArray) { $0.value as String }, ["foo"])
+    }
+    
     func testArrayValueForCollectionOfOne() {
         let originalValue = CollectionOfOne(123)
         let box = Box(originalValue)
