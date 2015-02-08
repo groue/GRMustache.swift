@@ -15,6 +15,7 @@ public class Context {
         case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
     }
     
+    private var registeredKeysContext: Context?
     private let type: Type
     
     public var topBox: MustacheBox {
@@ -58,8 +59,9 @@ public class Context {
         }
     }
     
-    private init(type: Type) {
+    private init(type: Type, registeredKeysContext: Context? = nil) {
         self.type = type
+        self.registeredKeysContext = registeredKeysContext
     }
     
     public convenience init() {
@@ -74,8 +76,14 @@ public class Context {
         if box.isEmpty {
             return self
         } else {
-            return Context(type: .BoxType(box: box, parent: self))
+            return Context(type: .BoxType(box: box, parent: self), registeredKeysContext: registeredKeysContext)
         }
+    }
+    
+    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
+        var registeredKeysContext = self.registeredKeysContext ?? Context()
+        registeredKeysContext = registeredKeysContext.extendedContext(Box([key: box]))
+        return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     
     func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
@@ -113,6 +121,13 @@ public class Context {
     }
     
     public subscript(key: String) -> MustacheBox {
+        if let registeredKeysContext = registeredKeysContext {
+            let box = registeredKeysContext[key]
+            if !box.isEmpty {
+                return box
+            }
+        }
+        
         switch type {
         case .Root:
             return Box()

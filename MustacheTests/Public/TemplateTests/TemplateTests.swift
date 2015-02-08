@@ -18,7 +18,7 @@ class TemplateTests: XCTestCase {
     
     func testTemplateExtendBaseContextWithValue() {
         let template = Template(string: "{{name}}")!
-        template.registerInBaseContext("name", Box("Arthur"))
+        template.extendBaseContext(Box(["name": Box("Arthur")]))
         
         var rendering = template.render()!
         XCTAssertEqual(rendering, "Arthur")

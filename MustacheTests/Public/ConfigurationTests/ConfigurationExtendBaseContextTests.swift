@@ -12,7 +12,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.registerInBaseContext("name", Box("Arthur"))
+        configuration.extendBaseContext(Box(["name": Box("Arthur")]))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = repository.template(string: "{{name}}")!

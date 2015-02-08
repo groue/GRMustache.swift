@@ -236,8 +236,8 @@ public class Template: MustacheBoxable {
         baseContext = baseContext.extendedContext(box)
     }
     
-    public func registerInBaseContext(name: String, _ box: MustacheBox) {
-        extendBaseContext(Box([name: box]))
+    public func registerInBaseContext(key: String, _ box: MustacheBox) {
+        baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
     
     
