@@ -15,3 +15,4 @@ TODO
 - [X] Make MustacheBox.arrayValue and MustacheBox.dictionaryValue lazy
 - [X] Registered keys
 - [ ] Documentation
+- [ ] TemplateID as String is not very handy, especially for TemplateRepository.URLDataSource
