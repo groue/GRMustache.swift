@@ -114,8 +114,8 @@ let rendering = template.render(Box(data))!
 ```
 
 
-Services
---------
+Built-in goodies
+----------------
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
