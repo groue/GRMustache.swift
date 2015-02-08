@@ -17,8 +17,7 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     for box in boxes {
         if box.isEmpty {
-            // Missing collection is empty collection
-            zippedGenerators.append(GeneratorOf((EmptyCollection() as EmptyCollection<MustacheBox>).generate()))
+            // Missing collection does not provide anything
         } else if let array = box.arrayValue {
             // Array
             zippedGenerators.append(GeneratorOf(array.generate()))
