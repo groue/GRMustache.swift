@@ -3,9 +3,10 @@ GRMustache.swift
 
 GRMustache.swift is an implementation of [Mustache templates](http://mustache.github.io) in Swift.
 
-Its APIs are similar to the Objective-C version [GRMustache](https://github.com/groue/GRMustache).
+It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
 
-**The code is currently of alpha quality, and the API is not stabilized yet.**
+Usage
+-----
 
 `template.mustache`:
 
@@ -44,7 +45,7 @@ We want to let the `Hello {{name}}!` template extract the `name` key out of a us
 
 Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
 
-Helping the Mustache engine involves "boxing". Only values that conform to the `MustacheBoxable` protocol can be boxed:
+Helping the Mustache engine involves "boxing", through the `MustacheBoxable` protocol:
 
 ```swift
 // Allow Mustache engine to consume User values.
@@ -63,7 +64,7 @@ extension User: MustacheBoxable {
 }
 ```
 
-Now we can box a user with the `Box()` function:
+Now we can box and render a user:
 
 ```swift
 // Hello Arthur!

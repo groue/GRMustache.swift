@@ -14,3 +14,4 @@ TODO
 - [X] NSNumber, NSString boxing: box the original values
 - [X] Make MustacheBox.arrayValue and MustacheBox.dictionaryValue lazy
 - [X] Registered keys
+- [ ] Documentation
