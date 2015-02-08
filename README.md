@@ -122,7 +122,9 @@ GRMustache ships with a library of built-in goodies available for your templates
 **They are all built on top of public APIs**: get inspired.
 
 
-### `NSFormatter`
+### NSFormatter
+
+GRMustache provides built-in support for NSFormatter and its subclasses such as NSNumberFormatter and NSDateFormatter.
 
 #### Formatting a value
 
@@ -194,7 +196,7 @@ Precisely speaking, "values that can't be formatted" are the ones that have the 
 Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
 
 
-### `StandardLibrary.HTMLEscape`
+### StandardLibrary.HTMLEscape
 
 Usage:
 
@@ -228,7 +230,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
 
 
-### `StandardLibrary.javascriptEscape`
+### StandardLibrary.javascriptEscape
 
 Usage:
 
@@ -269,7 +271,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
 
 
-### `StandardLibrary.URLEscape`
+### StandardLibrary.URLEscape
 
 Usage:
 
@@ -287,7 +289,7 @@ When used in a section, `URLEscape` escapes all inner variable tags in a section
 
 ```html
 {{# URLEscape }}
-  <a href="http://google.com?q={{query}}&hl={{language}}">...</a>
+  <a href="http://google.com?q={{query}}&amp;hl={{language}}">...</a>
 {{/ URLEscape }}
 ```
 
@@ -295,14 +297,14 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 
 ```html
 {{# URLEscape }}
-  <a href="http://google.com?q={{query}}{{#language}}&hl={{language}}{{/language}}">...</a>
+  <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
 {{/ URLEscape }}
 ```
 
 See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
 
 
-### `StandardLibrary.each`
+### StandardLibrary.each
 
 Usage:
 
@@ -356,7 +358,7 @@ When provided with a dictionary, `each` iterates each key/value pair of the dict
 The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.
 
 
-### `StandardLibrary.Localizer`
+### StandardLibrary.Localizer
 
 Usage:
 
