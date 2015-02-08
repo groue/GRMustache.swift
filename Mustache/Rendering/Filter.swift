@@ -55,6 +55,22 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
+// UInt input (see MustacheBox#intValue)
+public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.uintValue {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
 // Double input (see MustacheBox#doubleValue)
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -133,6 +149,15 @@ public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) 
     return Filter({ (int: Int?, error: NSErrorPointer) -> MustacheBox? in
         return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(int, info, error)
+        })
+    })
+}
+
+// UInt input (see MustacheBox#intValue)
+public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(uint, info, error)
         })
     })
 }
