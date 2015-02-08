@@ -1,0 +1,284 @@
+Goodies
+=======
+
+GRMustache ships with a library of built-in goodies available for your templates.
+
+**They are all built on top of public APIs**: get [inspired](Mustache/Goodies).
+
+
+### NSFormatter
+
+GRMustache provides built-in support for NSFormatter and its subclasses such as NSNumberFormatter and NSDateFormatter.
+
+#### Formatting a value
+
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
+
+let template = Template(string: "{{ percent(x) }}")!
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering: 50%
+let data = ["x": 0.5]
+let rendering = template.render(Box(data))!
+```
+
+#### Formatting all values in a section
+
+NSFormatters are able to *format all variable tags* inside the section:
+
+`Document.mustache`:
+
+    {{# percent }}
+    hourly: {{ hourly }}
+    daily: {{ daily }}
+    weekly: {{ weekly }}
+    {{/ percent }}
+
+Rendering code:
+
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
+
+let template = Template(named: "Document")!
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering:
+//
+//   hourly: 10%
+//   daily: 150%
+//   weekly: 400%
+
+id data = [
+    "hourly": 0.1,
+    "daily": 1.5,
+    "weekly": 4,
+};
+let rendering = template.render(Box(data))!
+```
+
+Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections. However, values that can't be formatted are left untouched:
+
+`Document.mustache`:
+
+    {{# percent }}
+      {{# ingredients }}
+      - {{ name }}: {{ proportion }}  {{! name is intact, proportion is formatted. }}
+      {{/ ingredients }}
+    {{/ percent }}
+
+Would render:
+
+    - bread: 50%
+    - ham: 22%
+    - butter: 43%
+
+Precisely speaking, "values that can't be formatted" are the ones that have the `stringForObjectValue:` method return nil, as stated by [NSFormatter documentation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html#//apple_ref/occ/instm/NSFormatter/stringForObjectValue:).
+
+Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
+
+
+### StandardLibrary.HTMLEscape
+
+Usage:
+
+```swift
+Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+```
+
+As a filter, `HTMLEscape` returns its argument, HTML-escaped.
+
+```html
+<pre>
+   {{ HTMLEscape(content) }}
+</pre>
+```
+
+When used in a section, `HTMLEscape` escapes all inner variable tags in a section:
+
+    {{# HTMLEscape }}
+      {{ firstName }}
+      {{ lastName }}
+    {{/ HTMLEscape }}
+
+Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections:
+
+    {{# HTMLEscape }}
+      {{# items }}
+        {{ name }}
+      {{/}}
+    {{/ HTMLEscape }}
+
+See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
+
+
+### StandardLibrary.javascriptEscape
+
+Usage:
+
+```swift
+Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+```
+
+As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
+
+```html
+<script type="text/javascript">
+  var name = "{{ javascriptEscape(name) }}";
+</script>
+```
+
+When used in a section, `javascriptEscape` escapes all inner variable tags in a section:
+
+```html
+<script type="text/javascript">
+  {{# javascriptEscape }}
+    var firstName = "{{ firstName }}";
+    var lastName = "{{ lastName }}";
+  {{/ javascriptEscape }}
+</script>
+```
+
+Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections:
+
+```html
+<script type="text/javascript">
+  {{# javascriptEscape }}
+    var firstName = {{# firstName }}"{{ firstName }}"{{^}}null{{/}};
+    var lastName = {{# lastName }}"{{ lastName }}"{{^}}null{{/}};
+  {{/ javascriptEscape }}
+</script>
+```
+
+See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
+
+
+### StandardLibrary.URLEscape
+
+Usage:
+
+```swift
+Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary).URLEscape)
+```
+
+As a filter, `URLEscape` returns its argument, percent-escaped.
+
+```html
+<a href="http://google.com?q={{ URLEscape(query) }}">...</a>
+```
+
+When used in a section, `URLEscape` escapes all inner variable tags in a section:
+
+```html
+{{# URLEscape }}
+  <a href="http://google.com?q={{query}}&amp;hl={{language}}">...</a>
+{{/ URLEscape }}
+```
+
+Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections:
+
+```html
+{{# URLEscape }}
+  <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
+{{/ URLEscape }}
+```
+
+See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
+
+
+### StandardLibrary.each
+
+Usage:
+
+```swift
+Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
+```
+
+Iteration is natural to Mustache templates: `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the `users` key is given a list of users.
+
+The `each` filter is there to give you some extra keys:
+
+- `@index` contains the 0-based index of the item (0, 1, 2, etc.)
+- `@indexPlusOne` contains the 1-based index of the item (1, 2, 3, etc.)
+- `@indexIsEven` is true if the 0-based index is even.
+- `@first` is true for the first item only.
+- `@last` is true for the last item only.
+
+```
+One line per user:
+{{# each(users) }}
+- {{ @index }}: {{ name }}
+{{/}}
+
+Comma-separated user names:
+{{# each(users) }}{{ name }}{{^ @last }}, {{/}}{{/}}.
+```
+
+```
+One line per user:
+- 0: Alice
+- 1: Bob
+- 2: Craig
+
+Comma-separated user names: Alice, Bob, Craig.
+```
+
+When provided with a dictionary, `each` iterates each key/value pair of the dictionary, stores the key in `@key`, and sets the value as the current context:
+
+```
+{{# each(dictionary) }}
+- {{ @key }}: {{.}}
+{{/}}
+```
+
+```
+- name: Alice
+- score: 200
+- level: 5
+```
+
+The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.
+
+
+### StandardLibrary.Localizer
+
+Usage:
+
+```swift
+Mustache.DefaultConfiguration.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
+```
+
+#### Localizing a value
+
+As a filter, `localize` outputs a localized string:
+
+    {{ localize(greeting) }}
+
+This would render `Bonjour`, given `Hello` as a greeting, and a French localization for `Hello`.
+
+#### Localizing template content
+
+When used in a section, `localize` outputs the localization of a full section:
+
+    {{# localize }}Hello{{/ localize }}
+
+This would render `Bonjour`, given a French localization for `Hello`.
+
+#### Localizing template content with embedded variables
+
+When looking for the localized string, GRMustache replaces all variable tags with "%@":
+
+    {{# localize }}Hello {{name}}{{/ localize }}
+
+This would render `Bonjour Arthur`, given a French localization for `Hello %@`. `String(format:)` is used for the final interpolation.
+
+#### Localizing template content with embedded variables and conditions
+
+You can embed conditional sections inside:
+
+    {{# localize }}Hello {{#name}}{{name}}{{^}}you{{/}}{{/ localize }}
+
+Depending on the name, this would render `Bonjour Arthur` or `Bonjour toi`, given French localizations for both `Hello %@` and `Hello you`.
+
