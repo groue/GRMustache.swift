@@ -149,6 +149,8 @@
 		569C42391A86824800748E98 /* ZipFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C42371A86824800748E98 /* ZipFilter.swift */; };
 		569C423B1A87D03800748E98 /* ContextRegisteredKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */; };
 		569C423C1A87D03800748E98 /* ContextRegisteredKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */; };
+		569C423E1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */; };
+		569C423F1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */; };
 		56A0B4671A19D95A008A719F /* ContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0B4661A19D95A008A719F /* ContextTests.swift */; };
 		56A88EC81A066EC40055E40A /* RenderFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */; };
 		56AD06F719FE704700406BB8 /* Error.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56AD06F619FE704700406BB8 /* Error.swift */; };
@@ -282,6 +284,7 @@
 		5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptFunctionTests.swift; sourceTree = "<group>"; };
 		569C42371A86824800748E98 /* ZipFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFilter.swift; sourceTree = "<group>"; };
 		569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextRegisteredKeyTests.swift; sourceTree = "<group>"; };
+		569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxDocumentationTests.swift; sourceTree = "<group>"; };
 		56A0B4661A19D95A008A719F /* ContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextTests.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderFunctionTests.swift; sourceTree = "<group>"; };
 		56AD06F619FE704700406BB8 /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
@@ -643,12 +646,13 @@
 		56C8D6E21A1F1AD800F106F8 /* DocumentationTests */ = {
 			isa = PBXGroup;
 			children = (
+				561646931A23C11400F8ADE0 /* Movie.mustache */,
+				569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */,
+				561646951A23C12B00F8ADE0 /* Person.mustache */,
 				56C8D6E31A1F1AD800F106F8 /* ReadMeExample1.mustache */,
 				56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */,
 				56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */,
 				56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */,
-				561646931A23C11400F8ADE0 /* Movie.mustache */,
-				561646951A23C12B00F8ADE0 /* Person.mustache */,
 			);
 			path = DocumentationTests;
 			sourceTree = "<group>";
@@ -982,6 +986,7 @@
 				56B4B2231A27077800BD4F8F /* TemplateRepositoryBundleTests.swift in Sources */,
 				56B4B21F1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */,
 				5685DAB61A1A2074003E583B /* LocalizerTests.swift in Sources */,
+				569C423E1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */,
 				56B4B23B1A29E65E00BD4F8F /* EachFilterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1066,6 +1071,7 @@
 				56B4B2241A27077800BD4F8F /* TemplateRepositoryBundleTests.swift in Sources */,
 				56B4B2201A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */,
 				568A8E041A20CBF0005C9CB4 /* LocalizerTests.swift in Sources */,
+				569C423F1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */,
 				56B4B23C1A29E79000BD4F8F /* EachFilterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

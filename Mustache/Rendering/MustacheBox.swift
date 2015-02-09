@@ -27,21 +27,104 @@ import Foundation
 // =============================================================================
 // MARK: - Core rendering types
 
+/**
+GRMustache distinguishes Text from HTML: escaped tags such as {{name}} escape
+text values, and templates can be configured to render text or HTML.
+
+The ContentType enum represents this content type.
+*/
 public enum ContentType {
     case Text
     case HTML
 }
 
+/**
+A Rendering is a tainted String, which knows its content type, Text or HTML.
+*/
 public struct Rendering {
-    public var string: String
-    public var contentType: ContentType
+    public let string: String
+    public let contentType: ContentType
     
+    /**
+    Builds a Rendering with a String and a ContentType.
+    
+    Usage:
+    
+    ::
+    
+      Rendering("foo")        // Defaults to Text
+      Rendering("foo", .Text)
+      Rendering("foo", .HTML)
+    
+    You will meet the Rendering type when you implement custom rendering
+    functions. Example:
+    
+    ::
+    
+      let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+          return Rendering("foo")
+      }
+    
+      // Renders "foo"
+      let template = Template(string: "{{object}}")!
+      let data = ["object": Box(render)]
+      let rendering = template.render(Box(data))!
+    
+    :param: string A string
+    :param: contentType A content type
+    
+    :see: RenderFunction
+    */
     public init(_ string: String, _ contentType: ContentType = .Text) {
         self.string = string
         self.contentType = contentType
     }
 }
 
+/**
+You will meet the RenderingInfo when you implement custom rendering
+functions of type RenderFunction.
+
+A RenderFunction is invoked as soon as a variable tag {{name}} or a section
+tag {{#name}}...{{/name}} is rendered.
+
+The RenderingInfo parameter provides information about the rendered tag,
+variable or section, and the context stack.
+
+Example:
+
+::
+
+  let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+
+      switch info.tag.type {
+      case .Variable:
+          // Render the {{object}} variable tag
+
+          return Rendering("variable")
+          
+      case .Section:
+          // Render the {{#object}}...{{/object}} section tag.
+          //
+          // Extend the current context with ["value": "foo"], and proceed
+          // with regular rendering of the inner content of the section.
+
+          let context = info.context.extendedContext(Box(["value": "foo"]))
+          return info.tag.render(context, error: error)
+      }
+  }
+  let data = ["object": Box(render)]
+  
+  // Renders "variable"
+  let template1 = Template(string: "{{object}}")!
+  let rendering1 = template1.render(Box(data))!
+
+  // Renders "value: foo"
+  let template2 = Template(string: "{{#object}}value: {{value}}{{/object}}")!
+  let rendering2 = template2.render(Box(data))!
+
+:see: RenderFunction
+*/
 public struct RenderingInfo {
     public let tag: Tag
     public var context: Context
@@ -55,11 +138,35 @@ public struct RenderingInfo {
 
 // =============================================================================
 // MARK: - Core function types
-
+//
+// GRMustache defines five "core function types". Each defines a way to interact
+// with the rendering engine.
+//
+// - SubscriptFunction extracts keys: {{name}} invokes a SubscriptFunction with
+//   the "name" argument.
+//
+// - FilterFunction evaluates filter expressions: {{f(x)}} invokes a
+//   FilterFunction.
+//
+// - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
+//   both invoke a RenderFunction
+//
+// - WillRenderFunction can TODO
+//
+//
+// MARK: SubscriptFunction
 public typealias SubscriptFunction = (key: String) -> MustacheBox?
+
+// MARK: FilterFunction
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
+
+// MARK: RenderFunction
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
+
+// MARK: WillRenderFunction
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
+
+// MARK: DidRenderFunction
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 
 
