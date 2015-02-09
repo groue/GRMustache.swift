@@ -25,7 +25,241 @@ import Foundation
 
 
 // =============================================================================
-// MARK: - Core rendering types
+// MARK: - Core function types
+//
+// GRMustache defines five "core function types". Each defines a way to interact
+// with the rendering engine.
+//
+// - SubscriptFunction extracts keys: {{name}} invokes a SubscriptFunction with
+//   the "name" argument.
+//
+// - FilterFunction evaluates filter expressions: {{f(x)}} invokes a
+//   FilterFunction.
+//
+// - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
+//   both invoke a RenderFunction
+//
+// - WillRenderFunction can TODO
+// - DidRenderFunction can TODO
+//
+//
+// =============================================================================
+// MARK: SubscriptFunction
+
+public typealias SubscriptFunction = (key: String) -> MustacheBox?
+
+
+// =============================================================================
+// MARK: FilterFunction
+
+public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
+
+
+// -----------------------------------------------------------------------------
+// Arity 0 filter factories
+
+// MustacheBox input
+public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else {
+            return filter(box, error)
+        }
+    }
+}
+
+// Generic input
+public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.value as? T {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+// Int input (see MustacheBox#intValue)
+public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.intValue {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+// UInt input (see MustacheBox#intValue)
+public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.uintValue {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+// Double input (see MustacheBox#doubleValue)
+public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.doubleValue {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+// Single input (see MustacheBox#stringValue)
+public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        if partialApplication {
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            }
+            return nil
+        } else if let t = box.stringValue {
+            return filter(t, error)
+        } else {
+            return filter(nil, error)
+        }
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Arity N filter factories
+
+public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return _VariadicFilter([], filter)
+}
+
+private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        let boxes = boxes + [box]
+        if partialApplication {
+            return Box(_VariadicFilter(boxes, filter))
+        } else {
+            return filter(boxes: boxes, error: error)
+        }
+    }
+}
+
+
+// -----------------------------------------------------------------------------
+// Arity 0 rendering filter factories
+
+// MustacheBox input
+public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(box, info, error)
+        })
+    })
+}
+
+// Generic input
+public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (t: T?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(t, info, error)
+        })
+    })
+}
+
+// Int input (see MustacheBox#intValue)
+public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (int: Int?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(int, info, error)
+        })
+    })
+}
+
+// UInt input (see MustacheBox#intValue)
+public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(uint, info, error)
+        })
+    })
+}
+
+// Double input (see MustacheBox#doubleValue)
+public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (double: Double?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(double, info, error)
+        })
+    })
+}
+
+// Single input (see MustacheBox#stringValue)
+public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter({ (string: String?, error: NSErrorPointer) -> MustacheBox? in
+        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(string, info, error)
+        })
+    })
+}
+
+
+// =============================================================================
+// MARK: RenderFunction
+
+
+/**
+RenderFunction lets you implement custom rendering functions. This is how, for
+example, you implement "lambdas", in Mustache lingo.
+
+Sections and variable tags can be attached to custom render functions:
+
+::
+
+  // A custom render function
+  let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+      return Rendering("foo")
+  }
+  
+  let template = Template(string: "section:({{#section}}variable: {{variable}}{{/section}})")!
+  
+  // Attach the render function to `variable`, and render "section(variable: foo)"
+  let data1 = ["section": Box(["variable": Box(render)])]
+  let rendering1 = template.render(Box(data1))!
+
+  // Attach the render function to `section`, and render "section(foo)"
+  let data2 = ["section": Box(render)]
+  let rendering2 = template.render(Box(data2))!
+
+TODO
+*/
+public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
 /**
 GRMustache distinguishes Text from HTML: escaped tags such as {{name}} escape
@@ -100,7 +334,7 @@ Example:
           // Render the {{object}} variable tag
 
           return Rendering("variable")
-          
+
       case .Section:
           // Render the {{#object}}...{{/object}} section tag.
           //
@@ -112,7 +346,7 @@ Example:
       }
   }
   let data = ["object": Box(render)]
-  
+
   // Renders "variable"
   let template1 = Template(string: "{{object}}")!
   let rendering1 = template1.render(Box(data))!
@@ -124,42 +358,31 @@ Example:
 :see: RenderFunction
 */
 public struct RenderingInfo {
+    
+    /**
+    The currently rendered tag.
+    
+    :see: Tag
+    */
     public let tag: Tag
+    
+    /**
+    The current context stack.
+    
+    :see: Context
+    */
     public var context: Context
+    
+    
+    // -------------------------------------------------------------------------
+    // Non-public
+    
     let enumerationItem: Bool
     
     func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
         return RenderingInfo(tag: tag, context: context, enumerationItem: true)
     }
 }
-
-
-// =============================================================================
-// MARK: - Core function types
-//
-// GRMustache defines five "core function types". Each defines a way to interact
-// with the rendering engine.
-//
-// - SubscriptFunction extracts keys: {{name}} invokes a SubscriptFunction with
-//   the "name" argument.
-//
-// - FilterFunction evaluates filter expressions: {{f(x)}} invokes a
-//   FilterFunction.
-//
-// - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
-//   both invoke a RenderFunction
-//
-// - WillRenderFunction can TODO
-//
-//
-// MARK: SubscriptFunction
-public typealias SubscriptFunction = (key: String) -> MustacheBox?
-
-// MARK: FilterFunction
-public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
-
-// MARK: RenderFunction
-public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
 // MARK: WillRenderFunction
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
