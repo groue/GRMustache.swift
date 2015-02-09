@@ -82,8 +82,8 @@ public struct Rendering {
 }
 
 /**
-You will meet the RenderingInfo when you implement custom rendering
-functions of type RenderFunction.
+The RenderingInfo type has no public initializer. You will meet it when you
+implement custom rendering functions of type RenderFunction.
 
 A RenderFunction is invoked as soon as a variable tag {{name}} or a section
 tag {{#name}}...{{/name}} is rendered.
