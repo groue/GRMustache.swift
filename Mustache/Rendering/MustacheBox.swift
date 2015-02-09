@@ -86,10 +86,8 @@ The RenderingInfo type has no public initializer. You will meet it when you
 implement custom rendering functions of type RenderFunction.
 
 A RenderFunction is invoked as soon as a variable tag {{name}} or a section
-tag {{#name}}...{{/name}} is rendered.
-
-The RenderingInfo parameter provides information about the rendered tag,
-variable or section, and the context stack.
+tag {{#name}}...{{/name}} is rendered. Its RenderingInfo parameter provides
+information about the rendered tag, variable or section, and the context stack.
 
 Example:
 
