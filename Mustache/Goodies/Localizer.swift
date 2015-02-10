@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-import Foundation
-
 extension StandardLibrary {
     
     public class Localizer: MustacheBoxable {

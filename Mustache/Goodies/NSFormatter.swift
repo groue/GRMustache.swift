@@ -21,8 +21,6 @@
 // THE SOFTWARE.
 
 
-import Foundation
-
 extension NSFormatter: ObjCMustacheBoxable {
     
     private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
