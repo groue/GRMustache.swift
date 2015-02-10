@@ -1,26 +1,21 @@
 import Mustache
 
-// Define a pure Swift object:
-struct User {
-    let name: String
+let succ = Filter { (i: Int, error: NSErrorPointer) in
+    return Box(i + 1)
 }
 
-// Allow Mustache engine to consume User values.
-extension User: MustacheBoxable {
-    var mustacheBox: MustacheBox {
-        // Return a Box that is able to extract the `name` key of our user:
-        return Box(value: self) { (key: String) in
-            switch key {
-            case "name":
-                return Box(self.name)
-            default:
-                return nil
-            }
-        }
-    }
-}
+let template = Template(string: "{{ succ(x) }}")!
+template.registerInBaseContext("succ", Box(succ))
 
-// Hello Arthur!
-let user = User(name: "Arthur")
-let template = Template(string: "Hello {{name}}!")!
-let rendering = template.render(Box(user))!
+// Renders "2", "3", "4"
+var rendering: String
+rendering = template.render(Box(["x": 1]))!
+rendering = template.render(Box(["x": 2.0]))!
+rendering = template.render(Box(["x": NSNumber(float: 3.1415)]))!
+
+// Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
+var error: NSError?
+template.render(Box(["x": "string"]), error: &error)
+error?.localizedDescription
+template.render(Box(), error: &error)
+error?.localizedDescription
