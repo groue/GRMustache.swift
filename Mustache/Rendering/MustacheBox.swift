@@ -105,24 +105,186 @@ expressions such as {{ uppercase(name) }}.
 
 It turns a MustacheBox to another MustacheBox, and optionally returns an error.
 
-Filters supports partial application, which allows templates to evaluate
-filtered expression with several arguments, such as {{ sum(a,b,c) }}.
-
-You will generally not write your own FilterFunction, but rather use one of the
-various flavors of the Filter() function:
+You will generally not write your own FilterFunction, but rather use the
+Filter() function. For example, here is a filter that processes integers:
 
 ::
 
-  // A filter that requires a numeric input
   let square = Filter { (x: Int, error: NSErrorPointer) in
       return Box(x * x)
   }
 
-  // Renders "100"
   let template = Template(string: "{{square(x)}}")!
+  template.registerInBaseContext("square", Box(square))
+
+  // Renders "100"
   let rendering = template.render(Box(["x": 10]))!
 
-TODO: describe each flavor
+Filter() comes in various flavors:
+
+
+- func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter that takes a single Box argument.
+
+::
+
+  let isEmpty = Filter { (box: MustacheBox, error: NSErrorPointer) in
+      return Box(box.isEmpty)
+  }
+
+  let template = Template(string: "{{# isEmpty(value) }}no value{{^}}{{value}}{{/}}")!
+  template.registerInBaseContext("isEmpty", Box(isEmpty))
+
+  // Renders "value", and "no value"
+  var rendering = template.render(Box(["value": "value"]))!
+  rendering = template.render(Box())!
+
+
+- func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter that takes an optional single argument of a specific type.
+
+If the provided argument is not nil, and of a different type, the filter returns
+an error.
+
+::
+
+  class User: NSObject {
+      var name: NSString
+      init(name: NSString) {
+          self.name = name
+      }
+  }
+
+  let isAnonymous = Filter { (user: User?, error: NSErrorPointer) in
+      if let user = user {
+          return Box(user.name.length == 0)
+      }
+      return Box(true)
+  }
+
+  let template = Template(string: "{{# isAnonymous(user) }}Anonymous{{^}}{{user.name}}{{/}}")!
+  template.registerInBaseContext("isAnonymous", Box(isAnonymous))
+
+  // Renders "Arthur", and "Anonymous"
+  var rendering = template.render(Box(["user": User(name: "Arthur")]))!!
+  rendering = template.render(Box())!
+
+  // Error evaluating {{# isAnonymous(user) }} at line 1: Unexpected argument type
+  var error: NSError?
+  template.render(Box(["user": "Not a User"]), error: &error)
+  error?.localizedDescription
+
+
+- func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter that takes a mandatory single argument of a specific type.
+
+If the provided argument is nil, or of a different type, the filter returns an
+error.
+
+::
+
+  class User: NSObject {
+      var name: NSString
+      init(name: NSString) {
+          self.name = name
+      }
+  }
+
+  let isAnonymous = Filter { (user: User, error: NSErrorPointer) in
+      return Box(user.name.length == 0)
+  }
+
+  let template = Template(string: "{{# isAnonymous(user) }}Anonymous{{^}}{{user.name}}{{/}}")!
+  template.registerInBaseContext("isAnonymous", Box(isAnonymous))
+
+  // Renders "Arthur", and "Anonymous"
+  var rendering = template.render(Box(["user": User(name: "Arthur")]))!
+  rendering = template.render(Box(["user": User(name: "")]))!
+
+  // Error evaluating {{# isAnonymous(user) }} at line 1: Unexpected argument type
+  var error: NSError?
+  template.render(Box(), error: &error)
+  error?.localizedDescription
+  template.render(Box(["user": "Not a User"]), error: &error)
+  error?.localizedDescription
+
+
+- func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter that takes an optional single numerical argument (Float,
+Double, Int and NSNumber).
+
+If the provided argument is not nil, and not numerical, the filter returns an
+error.
+
+::
+
+  let succ = Filter { (i: Int?, error: NSErrorPointer) in
+      if let i = i {
+          return Box(i + 1)
+      }
+      return Box()
+  }
+
+  let template = Template(string: "{{ succ(x) }}")!
+  template.registerInBaseContext("succ", Box(succ))
+
+  // Renders "2", "3", "4"
+  var rendering = template.render(Box(["x": 1]))!
+  rendering = template.render(Box(["x": 2.0]))!
+  rendering = template.render(Box(["x": NSNumber(float: 3.1415)]))!
+
+  // Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
+  var error: NSError?
+  template.render(Box(["x": "2.0"]), error: &error)
+  error?.localizedDescription
+
+
+- func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter that takes a mandatory single numerical argument (Float,
+Double, Int and NSNumber).
+
+If the provided argument is not nil, or not numerical, the filter returns an
+error.
+
+::
+
+  let succ = Filter { (i: Int, error: NSErrorPointer) in
+      return Box(i + 1)
+  }
+
+  let template = Template(string: "{{ succ(x) }}")!
+  template.registerInBaseContext("succ", Box(succ))
+
+  // Renders "2", "3", "4"
+  var rendering = template.render(Box(["x": 1]))!
+  rendering = template.render(Box(["x": 2.0]))!
+  rendering = template.render(Box(["x": NSNumber(float: 3.1415)]))!
+
+  // Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
+  var error: NSError?
+  template.render(Box(), error: &error)
+  error?.localizedDescription
+
+
+- func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
@@ -153,10 +315,15 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
+        } else if box.isEmpty {
+            return filter(nil, error)
         } else if let t = box.value as? T {
             return filter(t, error)
         } else {
-            return filter(nil, error)
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+            }
+            return nil
         }
     }
 }
@@ -192,10 +359,15 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
+        } else if box.isEmpty {
+            return filter(nil, error)
         } else if let t = box.intValue {
             return filter(t, error)
         } else {
-            return filter(nil, error)
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+            }
+            return nil
         }
     }
 }
@@ -231,10 +403,15 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
+        } else if box.isEmpty {
+            return filter(nil, error)
         } else if let t = box.uintValue {
             return filter(t, error)
         } else {
-            return filter(nil, error)
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+            }
+            return nil
         }
     }
 }
@@ -270,10 +447,15 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
+        } else if box.isEmpty {
+            return filter(nil, error)
         } else if let t = box.doubleValue {
             return filter(t, error)
         } else {
-            return filter(nil, error)
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+            }
+            return nil
         }
     }
 }
@@ -304,6 +486,8 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
 // :see: FilterFunction
 public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+        // No Unexpected argument type error for this filter, since all values
+        // can be turned into a String through Box.stringValue
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -358,61 +542,61 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
 
 // TODO
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(box, info, error)
-        })
-    })
+        }
+    }
 }
 
 // TODO 1: write doc
 // TODO 2: write non-optional variant
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (t: T?, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (t: T?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(t, info, error)
-        })
-    })
+        }
+    }
 }
 
 // TODO 1: write doc
 // TODO 2: write non-optional variant
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (int: Int?, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (int: Int?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(int, info, error)
-        })
-    })
+        }
+    }
 }
 
 // TODO 1: write doc
 // TODO 2: write non-optional variant
 public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(uint, info, error)
-        })
-    })
+        }
+    }
 }
 
 // TODO 1: write doc
 // TODO 2: write non-optional variant
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (double: Double?, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (double: Double?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(double, info, error)
-        })
-    })
+        }
+    }
 }
 
 // TODO 1: write doc
 // TODO 2: write non-optional variant
 public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter({ (string: String?, error: NSErrorPointer) -> MustacheBox? in
-        return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(string, info, error)
-        })
-    })
+        }
+    }
 }
 
 
