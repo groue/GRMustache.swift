@@ -78,8 +78,9 @@ A SubscriptFunction is also the way to let your Swift types feed templates:
   // Make User conform to MustacheBoxable
   extension User: MustacheBoxable {
       var mustacheBox: MustacheBox {
-          // Simply box a SubscriptFunction
-          return Box { (key: String) -> MustacheBox? in
+          // Return a Box that wraps our user, and knows how to extract
+          // the `name` key of our user with a SubscriptFunction:
+          return Box(value: self) { (key: String) in
               switch key {
               case "name":
                   return Box(self.name)
@@ -984,24 +985,24 @@ extension MustacheBox {
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
 
-public func Box(objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
-    return MustacheBox(objectForKeyedSubscript: objectForKeyedSubscript)
+public func Box(value: Any? = nil, objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
+    return MustacheBox(value: value, objectForKeyedSubscript: objectForKeyedSubscript)
 }
 
-public func Box(filter: FilterFunction) -> MustacheBox {
-    return MustacheBox(filter: filter)
+public func Box(value: Any? = nil, filter: FilterFunction) -> MustacheBox {
+    return MustacheBox(value: value, filter: filter)
 }
 
-public func Box(render: RenderFunction) -> MustacheBox {
-    return MustacheBox(render: render)
+public func Box(value: Any? = nil, render: RenderFunction) -> MustacheBox {
+    return MustacheBox(value: value, render: render)
 }
 
-public func Box(willRender: WillRenderFunction) -> MustacheBox {
-    return MustacheBox(willRender: willRender)
+public func Box(value: Any? = nil, willRender: WillRenderFunction) -> MustacheBox {
+    return MustacheBox(value: value, willRender: willRender)
 }
 
-public func Box(didRender: DidRenderFunction) -> MustacheBox {
-    return MustacheBox(didRender: didRender)
+public func Box(value: Any? = nil, didRender: DidRenderFunction) -> MustacheBox {
+    return MustacheBox(value: value, didRender: didRender)
 }
 
 

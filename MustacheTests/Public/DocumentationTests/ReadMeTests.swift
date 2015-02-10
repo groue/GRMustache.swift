@@ -80,8 +80,9 @@ class ReadMeTests: XCTestCase {
         struct User: MustacheBoxable {
             let name: String
             var mustacheBox: MustacheBox {
-                // Return a MustacheBox that is able to extract the `name` key of our user:
-                return Box { (key: String) -> MustacheBox? in
+                // Return a Box that wraps our user, and knows how to extract
+                // the `name` key of our user:
+                return Box(value: self) { (key: String) in
                     switch key {
                     case "name":
                         return Box(self.name)
