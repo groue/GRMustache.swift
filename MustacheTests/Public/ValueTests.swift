@@ -84,64 +84,64 @@ class ValueTests: XCTestCase {
         XCTAssertEqual(extractedNSObject, NSObject)
     }
     
-    func testCustomValueFilter() {
-        // Test that one can define a filter taking a CustomValue as an argument.
-        
-        struct Boxable: MustacheBoxable {
-            let name: String
-            var mustacheBox: MustacheBox {
-                return Box(value: self)
-            }
-        }
-        
-        let filter1 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
-            if let value = value {
-                return Box(value.name)
-            } else {
-                return Box("other")
-            }
-        }
-        
-        let filter2 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
-            if let value = value {
-                return Box(value.name)
-            } else {
-                return Box("other")
-            }
-        }
-        
-        let filter3 = { (value: NSDate?, error: NSErrorPointer) -> MustacheBox? in
-            if let value = value {
-                return Box("custom3")
-            } else {
-                return Box("other")
-            }
-        }
-        
-        let template = Template(string:"{{f(custom)}},{{f(string)}}")!
-        
-        let value1 = Box([
-            "string": Box("success"),
-            "custom": Box(Boxable(name: "custom1")),
-            "f": Box(Filter(filter1))
-            ])
-        let rendering1 = template.render(value1)!
-        XCTAssertEqual(rendering1, "custom1,other")
-        
-        let value2 = Box([
-            "string": Box("success"),
-            "custom": Box(value: Boxable(name: "custom2")),
-            "f": Box(Filter(filter2))])
-        let rendering2 = template.render(value2)!
-        XCTAssertEqual(rendering2, "custom2,other")
-        
-        let value3 = Box([
-            "string": Box("success"),
-            "custom": Box(NSDate()),
-            "f": Box(Filter(filter3))])
-        let rendering3 = template.render(value3)!
-        XCTAssertEqual(rendering3, "custom3,other")
-    }
+//    func testCustomValueFilter() {
+//        // Test that one can define a filter taking a CustomValue as an argument.
+//        
+//        struct Boxable: MustacheBoxable {
+//            let name: String
+//            var mustacheBox: MustacheBox {
+//                return Box(value: self)
+//            }
+//        }
+//        
+//        let filter1 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
+//            if let value = value {
+//                return Box(value.name)
+//            } else {
+//                return Box("other")
+//            }
+//        }
+//        
+//        let filter2 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
+//            if let value = value {
+//                return Box(value.name)
+//            } else {
+//                return Box("other")
+//            }
+//        }
+//        
+//        let filter3 = { (value: NSDate?, error: NSErrorPointer) -> MustacheBox? in
+//            if let value = value {
+//                return Box("custom3")
+//            } else {
+//                return Box("other")
+//            }
+//        }
+//        
+//        let template = Template(string:"{{f(custom)}},{{f(string)}}")!
+//        
+//        let value1 = Box([
+//            "string": Box("success"),
+//            "custom": Box(Boxable(name: "custom1")),
+//            "f": Box(Filter(filter1))
+//            ])
+//        let rendering1 = template.render(value1)!
+//        XCTAssertEqual(rendering1, "custom1,other")
+//        
+//        let value2 = Box([
+//            "string": Box("success"),
+//            "custom": Box(value: Boxable(name: "custom2")),
+//            "f": Box(Filter(filter2))])
+//        let rendering2 = template.render(value2)!
+//        XCTAssertEqual(rendering2, "custom2,other")
+//        
+//        let value3 = Box([
+//            "string": Box("success"),
+//            "custom": Box(NSDate()),
+//            "f": Box(Filter(filter3))])
+//        let rendering3 = template.render(value3)!
+//        XCTAssertEqual(rendering3, "custom3,other")
+//    }
     
     func testArrayOfInt() {
         let value: Array<Int> = [0,1,2,3]

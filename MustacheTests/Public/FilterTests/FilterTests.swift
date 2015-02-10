@@ -213,23 +213,26 @@ class FilterTests: XCTestCase {
             if let x = x {
                 return Box(x * x)
             } else {
-                return Box("Not a number")
+                return Box("Nil")
             }
         }
         let template = Template(string: "{{square(x)}}")!
         template.registerInBaseContext("square", Box(square))
         
-        var rendering = template.render(Box(["x": 10]))!
-        XCTAssertEqual(rendering, "100")
+        var rendering = template.render(Box(["x": 10]))
+        XCTAssertEqual(rendering!, "100")
         
-        rendering = template.render(Box(["x": 10.0]))!
-        XCTAssertEqual(rendering, "100")
+        rendering = template.render(Box(["x": 10.0]))
+        XCTAssertEqual(rendering!, "100")
         
-        rendering = template.render(Box(["x": "foo"]))!
-        XCTAssertEqual(rendering, "Not a number")
+        rendering = template.render(Box())
+        XCTAssertEqual(rendering!, "Nil")
         
-        rendering = template.render(Box())!
-        XCTAssertEqual(rendering, "Not a number")
+        var error: NSError? = nil
+        rendering = template.render(Box(["x": "foo"]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testFilterOfInt() {
@@ -246,14 +249,16 @@ class FilterTests: XCTestCase {
         XCTAssertEqual(rendering!, "100")
         
         var error: NSError? = nil
-        rendering = template.render(Box(["x": "foo"]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-        
         rendering = template.render(Box(), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        rendering = template.render(Box(["x": "foo"]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
+    
+    // TODO: import ValueTests.testCustomValueFilter(): testFilterOfOptionalXXX, testFilterOfXXX, etc. for all supported types
 }
