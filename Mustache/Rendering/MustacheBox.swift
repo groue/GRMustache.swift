@@ -21,9 +21,6 @@
 // THE SOFTWARE.
 
 
-import Foundation
-
-
 // =============================================================================
 // MARK: - Core function types
 //
@@ -39,13 +36,63 @@ import Foundation
 // - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
 //   both invoke a RenderFunction
 //
-// - WillRenderFunction can TODO
-// - DidRenderFunction can TODO
+// - WillRenderFunction TODO
+// - DidRenderFunction TODO
 //
 //
 // =============================================================================
 // MARK: SubscriptFunction
 
+/**
+SubscriptFunction turns a string key into a value. When GRMustache evaluates
+expressions such as {{ name }} or {{ user.name }}, is extract the `name` and
+`user` keys using a SubscriptFunction.
+
+You can write and render your own SubscriptFunction:
+
+::
+
+  let s: SubscriptFunction = { (key: String) -> MustacheBox? in
+      return Box(key.uppercaseString)
+  }
+  
+  // Render "FOO & BAR"
+  let template = Template(string: "{{foo}} & {{bar}}")!
+  let rendering = template.render(Box(s))!
+
+A SubscriptFunction is also the way to let your Swift types feed templates:
+
+::
+
+  struct User {
+      let name: String
+  }
+
+  let user = User(name: "Arthur")
+  let template = Template(string: "Hello {{name}}")!
+
+  // Attempt to feed the template with the user produces a compiler error, since
+  // User can not be boxed.
+  let rendering = template.render(Box(user))!
+
+  // Make User conform to MustacheBoxable
+  extension User: MustacheBoxable {
+      var mustacheBox: MustacheBox {
+          // Simply box a SubscriptFunction
+          return Box { (key: String) -> MustacheBox? in
+              switch key {
+              case "name":
+                  return Box(self.name)
+              default:
+                  return nil
+              }
+          }
+      }
+  }
+  
+  // Render "Hello Arthur"
+  let rendering = template.render(Box(user))!
+*/
 public typealias SubscriptFunction = (key: String) -> MustacheBox?
 
 
@@ -233,7 +280,6 @@ public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering
 // =============================================================================
 // MARK: RenderFunction
 
-
 /**
 RenderFunction lets you implement custom rendering functions. This is how, for
 example, you implement "lambdas", in Mustache lingo.
@@ -247,30 +293,18 @@ Sections and variable tags can be attached to custom render functions:
       return Rendering("foo")
   }
   
-  let template = Template(string: "section:({{#section}}variable: {{variable}}{{/section}})")!
+  let template = Template(string: "{{#section}}variable: {{variable}}{{/section}}")!
   
-  // Attach the render function to `variable`, and render "section(variable: foo)"
+  // Attach the render function to `variable`, and render "variable: foo"
   let data1 = ["section": Box(["variable": Box(render)])]
   let rendering1 = template.render(Box(data1))!
 
-  // Attach the render function to `section`, and render "section(foo)"
+  // Attach the render function to `section`, and render "foo"
   let data2 = ["section": Box(render)]
   let rendering2 = template.render(Box(data2))!
-
-TODO
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
-/**
-GRMustache distinguishes Text from HTML: escaped tags such as {{name}} escape
-text values, and templates can be configured to render text or HTML.
-
-The ContentType enum represents this content type.
-*/
-public enum ContentType {
-    case Text
-    case HTML
-}
 
 /**
 A Rendering is a tainted String, which knows its content type, Text or HTML.
