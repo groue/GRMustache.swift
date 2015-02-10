@@ -29,12 +29,12 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
-            "uppercase": Box(Filter({ (string: String?, error: NSErrorPointer) -> MustacheBox? in
+            "uppercase": Box(Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
                 return Box(string?.uppercaseString)
-            })),
-            "prefix": Box(Filter({ (string: String?, error: NSErrorPointer) -> MustacheBox? in
+            }),
+            "prefix": Box(Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
                 return Box("prefix\(string!)")
-            }))
+            })
             ])
         let template = Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")!
         let rendering = template.render(box)!
@@ -49,9 +49,9 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
                 return box
-            }))
+            })
             ])
         rendering = template.render(box)!
         XCTAssertEqual(rendering, "<objectName> <objectName>")
@@ -59,9 +59,9 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
                 return Box(["name": "filterName"])
-            }))
+            })
             ])
         rendering = template.render(box)!
         XCTAssertEqual(rendering, "<filterName> <filterName>")
@@ -69,9 +69,9 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter({ (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
                 return Box(true)
-            }))
+            })
             ])
         rendering = template.render(box)!
         XCTAssertEqual(rendering, "<> <rootName>")
@@ -81,18 +81,18 @@ class FilterTests: XCTestCase {
         let box = Box([
             "test": Box("success"),
             "filtered": Box(["test": "failure"]),
-            "filter": Box(Filter({ (_: MustacheBox, _: NSErrorPointer) -> MustacheBox? in
+            "filter": Box(Filter { (_: MustacheBox, _: NSErrorPointer) -> MustacheBox? in
                 return Box(true)
-            }))])
+            })])
         let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "<success instead of failure>")
     }
     
     func testFilterNameSpace() {
-        let doubleFilter = Box(Filter({ (x: Int?, error: NSErrorPointer) -> MustacheBox? in
+        let doubleFilter = Box(Filter { (x: Int?, error: NSErrorPointer) -> MustacheBox? in
             return Box((x ?? 0) * 2)
-        }))
+        })
         let box = Box([
             "x": Box(1),
             "math": Box(["double": doubleFilter])
@@ -103,11 +103,11 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        let filterValue = Box(Filter({ (string1: String?, error: NSErrorPointer) -> MustacheBox? in
-            return Box(Filter({ (string2: String?, error: NSErrorPointer) -> MustacheBox? in
+        let filterValue = Box(Filter { (string1: String?, error: NSErrorPointer) -> MustacheBox? in
+            return Box(Filter { (string2: String?, error: NSErrorPointer) -> MustacheBox? in
                     return Box("\(string1!)\(string2!)")
-                }))
-            }))
+                })
+            })
         let box = Box([
             "prefix": Box("prefix"),
             "value": Box("value"),
@@ -118,9 +118,9 @@ class FilterTests: XCTestCase {
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let box = Box(Filter({ (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+        let box = Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
             return Box("filter")
-        }))
+        })
         let template = Template(string:"{{.(a)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "filter")
@@ -129,9 +129,9 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let box = Box([
             "name": Box("Name"),
-            "replace": Box(Filter({ (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "replace": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
                 return Box("replace")
-            }))
+            })
         ])
         
         var template = Template(string:"<{{missing(missing)}}>")!
@@ -206,5 +206,54 @@ class FilterTests: XCTestCase {
     // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsTemplatePath() {
         // TODO
+    }
+    
+    func testFilterOfOptionalInt() {
+        let square = Filter { (x: Int?, error: NSErrorPointer) in
+            if let x = x {
+                return Box(x * x)
+            } else {
+                return Box("Not a number")
+            }
+        }
+        let template = Template(string: "{{square(x)}}")!
+        template.registerInBaseContext("square", Box(square))
+        
+        var rendering = template.render(Box(["x": 10]))!
+        XCTAssertEqual(rendering, "100")
+        
+        rendering = template.render(Box(["x": 10.0]))!
+        XCTAssertEqual(rendering, "100")
+        
+        rendering = template.render(Box(["x": "foo"]))!
+        XCTAssertEqual(rendering, "Not a number")
+        
+        rendering = template.render(Box())!
+        XCTAssertEqual(rendering, "Not a number")
+    }
+    
+    func testFilterOfInt() {
+        let square = Filter { (x: Int, error: NSErrorPointer) in
+            return Box(x * x)
+        }
+        let template = Template(string: "{{square(x)}}")!
+        template.registerInBaseContext("square", Box(square))
+        
+        var rendering = template.render(Box(["x": 10]))
+        XCTAssertEqual(rendering!, "100")
+        
+        rendering = template.render(Box(["x": 10.0]))
+        XCTAssertEqual(rendering!, "100")
+        
+        var error: NSError? = nil
+        rendering = template.render(Box(["x": "foo"]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        rendering = template.render(Box(), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
 }
