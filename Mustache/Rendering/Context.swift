@@ -88,6 +88,12 @@ public class Context {
         self.init(type: .BoxType(box: box, parent: Context()))
     }
     
+    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
+        var registeredKeysContext = self.registeredKeysContext ?? Context()
+        registeredKeysContext = registeredKeysContext.extendedContext(Box([key: box]))
+        return Context(type: self.type, registeredKeysContext: registeredKeysContext)
+    }
+    
     public func extendedContext(box: MustacheBox) -> Context {
         if box.isEmpty {
             return self
@@ -96,16 +102,10 @@ public class Context {
         }
     }
     
-    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
-        var registeredKeysContext = self.registeredKeysContext ?? Context()
-        registeredKeysContext = registeredKeysContext.extendedContext(Box([key: box]))
-        return Context(type: self.type, registeredKeysContext: registeredKeysContext)
+    func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
+        return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
-    func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
-        return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self))
-    }
-        
     func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
         var usedTemplateASTs: [TemplateAST] = []
         var context = self
