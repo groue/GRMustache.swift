@@ -151,11 +151,11 @@ Returns a filter that takes a single Box argument.
 Returns a filter that takes an optional single argument of a specific type.
 
 If the provided argument is not nil, and of a different type, the filter returns
-an error.
+an error of domain GRMustacheErrorDomain and code
+GRMustacheErrorCodeRenderingError.
 
 The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error of domain GRMustacheErrorDomain and
-code GRMustacheErrorCodeRenderingError.
+your filter. Other values generate an error.
 
 The Int, UInt and Double variants accept any kind of numerical input (Float,
 Double, Int and NSNumber), which are casted to the required type.
@@ -196,14 +196,14 @@ a String through "\(value)" string interpolation.
 - func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
-Returns a filter that takes a mandatory single argument of a specific type.
+Returns a filter that takes a single argument of a specific type.
 
 If the provided argument is nil, or of a different type, the filter returns an
-error.
+error of domain GRMustacheErrorDomain and code
+GRMustacheErrorCodeRenderingError.
 
 The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error of domain GRMustacheErrorDomain and
-code GRMustacheErrorCodeRenderingError.
+your filter. Other values generate an error.
 
 The Int, UInt and Double variants accept any kind of numerical input (Float,
 Double, Int and NSNumber), which are casted to the required type.
@@ -235,6 +235,8 @@ a String through "\(value)" string interpolation.
 
 
 - func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+
 - func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction

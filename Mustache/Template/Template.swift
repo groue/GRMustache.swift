@@ -241,8 +241,7 @@ public class Template: MustacheBoxable {
     The template's base context: all rendering start from this context.
     
     Its default value comes from the configuration of the template
-    repository this template comes from. Unless specified otherwize, this
-    base context contains the standard library.
+    repository this template comes from.
     
     :see: repository
     */
