@@ -33,12 +33,8 @@ extension StandardLibrary {
             self.table = table
         }
         
-        private func filter(box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? {
-            if let string = box.stringValue {
-                return Box(localizedStringForKey(string))
-            } else {
-                return Box()
-            }
+        private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+            return Rendering(localizedStringForKey(rendering.string), rendering.contentType)
         }
         
         public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
@@ -167,7 +163,7 @@ extension StandardLibrary {
             return Box(
                 value: self,
                 render: render,
-                filter: filter,
+                filter: Filter(filter),
                 willRender: willRender,
                 didRender: didRender)
         }

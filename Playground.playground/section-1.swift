@@ -1,21 +1,14 @@
 import Mustache
 
-let succ = Filter { (i: Int, error: NSErrorPointer) in
-    return Box(i + 1)
+let twice = Filter { (rendering: Rendering, error: NSErrorPointer) in
+    let twice = rendering.string + rendering.string
+    return Rendering(twice, rendering.contentType)
 }
 
-let template = Template(string: "{{ succ(x) }}")!
-template.registerInBaseContext("succ", Box(succ))
+let template = Template(string: "{{ twice(x) }}")!
+template.registerInBaseContext("twice", Box(twice))
 
-// Renders "2", "3", "4"
+// Renders "foofoo", "123123"
 var rendering: String
-rendering = template.render(Box(["x": 1]))!
-rendering = template.render(Box(["x": 2.0]))!
-rendering = template.render(Box(["x": NSNumber(float: 3.1415)]))!
-
-// Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
-var error: NSError?
-template.render(Box(["x": "string"]), error: &error)
-error?.localizedDescription
-template.render(Box(), error: &error)
-error?.localizedDescription
+rendering = template.render(Box(["x": "foo"]))!
+rendering = template.render(Box(["x": 123]))!

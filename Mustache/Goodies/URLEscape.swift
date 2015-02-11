@@ -32,24 +32,18 @@ class URLEscape: MustacheBoxable {
         }
     }
     
-    private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
-        if let string = box.stringValue {
-            return Box(URLEscape.escapeURL(string))
-        } else {
-            return Box()
-        }
+    private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+        return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
     }
     
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
-            // {{ value }}
-            //
-            // We don't know if the box contains a String, so we'll escape its
+            // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
-                    return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
+                    return self.filter(rendering, error: error)
                 } else {
                     return nil
                 }
