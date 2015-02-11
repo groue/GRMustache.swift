@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		56966A461A8BEA3C00BFBB56 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56966A451A8BEA3C00BFBB56 /* Model.swift */; };
+		56966A501A8BFE0F00BFBB56 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56966A521A8BFE0F00BFBB56 /* Localizable.strings */; };
 		56E8B5671A8BE267000DCC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5661A8BE267000DCC81 /* AppDelegate.swift */; };
 		56E8B5691A8BE267000DCC81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5681A8BE267000DCC81 /* ViewController.swift */; };
 		56E8B56B1A8BE267000DCC81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56E8B56A1A8BE267000DCC81 /* Images.xcassets */; };
@@ -62,6 +63,7 @@
 
 /* Begin PBXFileReference section */
 		56966A451A8BEA3C00BFBB56 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		56966A511A8BFE0F00BFBB56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		56E8B5611A8BE267000DCC81 /* MustacheDemoOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheDemoOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56E8B5651A8BE267000DCC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		56E8B5661A8BE267000DCC81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -116,6 +118,7 @@
 				56E8B5661A8BE267000DCC81 /* AppDelegate.swift */,
 				56E8B5681A8BE267000DCC81 /* ViewController.swift */,
 				56966A451A8BEA3C00BFBB56 /* Model.swift */,
+				56966A521A8BFE0F00BFBB56 /* Localizable.strings */,
 				56E8B56A1A8BE267000DCC81 /* Images.xcassets */,
 				56E8B56C1A8BE267000DCC81 /* Main.storyboard */,
 				56E8B5961A8BE3C2000DCC81 /* Frameworks */,
@@ -288,6 +291,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				56E8B56B1A8BE267000DCC81 /* Images.xcassets in Resources */,
+				56966A501A8BFE0F00BFBB56 /* Localizable.strings in Resources */,
 				56E8B56E1A8BE267000DCC81 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -336,6 +340,14 @@
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
+		56966A521A8BFE0F00BFBB56 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				56966A511A8BFE0F00BFBB56 /* en */,
+			);
+			name = Localizable.strings;
+			sourceTree = "<group>";
+		};
 		56E8B56C1A8BE267000DCC81 /* Main.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
