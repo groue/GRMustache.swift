@@ -52,7 +52,7 @@ You can write and render your own SubscriptFunction:
 
 ::
 
-  let s: SubscriptFunction = { (key: String) -> MustacheBox? in
+  let s: SubscriptFunction = { (key: String) in
       return Box(key.uppercaseString)
   }
   
@@ -310,22 +310,74 @@ to HTML:
   rendering = template.render(Box(["x": "Arthur & Léa"]))!
 
 
-- func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction
-
-
 - func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
+- func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 
+Those variants return filters that are able to perform custom rendering.
+
+The RenderingInfo type is documented with the RenderFunction type below.
+
+For information about the various inputs (MustacheBox, T, Int, etc.), see above.
+
+::
+
+  // {{# pluralize(count) }}...{{/ }} renders the plural form of the section
+  // content if the `count` argument is greater than 1.
+  let pluralize = Filter { (count: Int, info: RenderingInfo, error: NSErrorPointer) in
+
+      // Pluralize the inner content of the section tag:
+      var string = info.tag.innerTemplateString
+      if count > 1 {
+          string += "s"  // naive
+      }
+
+      return Rendering(string)
+  }
+
+  let template = Template(string: "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.")!
+  template.registerInBaseContext("pluralize", Box(pluralize))
+  
+  // Renders "I have 3 cats."
+  let data = ["cats": ["Kitty", "Pussy", "Melba"]]
+  let rendering = template.render(Box(data))!
+
+
+- func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Returns a filter than accepts any number of arguments.
+
+If your filter is given too many or too few arguments, please return an NSError
+of domain GRMustacheErrorDomain and code GRMustacheErrorCodeRenderingError.
+
+::
+
+  let sum = VariadicFilter { (boxes: [MustacheBox], error: NSErrorPointer) in
+      // Extract integers out of input boxes
+      let integers = map(boxes) { $0.intValue ?? 0 }
+      
+      // Compute and box the sum
+      let sum = integers.reduce(0,+)
+      return Box(sum)
+  }
+
+  let template = Template(string: "{{ sum(a,b,c) }}")!
+  template.registerInBaseContext("sum", Box(sum))
+
+  // Renders "6"
+  let rendering = template.render(Box(["a": 1, "b": 2, "c": 3]))!
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
 
-// Returns a filter that takes a single MustacheBox argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -340,8 +392,6 @@ public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> Fil
     }
 }
 
-// Returns a filter that takes a single optional T argument.
-//
 // :see: FilterFunction
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -363,8 +413,6 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
     }
 }
 
-// Returns a filter that takes a single non-optional T argument.
-//
 // :see: FilterFunction
 public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -384,8 +432,6 @@ public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// Returns a filter that takes a single optional Int argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -407,8 +453,6 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// Returns a filter that takes a single non-optional Int argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -428,8 +472,6 @@ public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunct
     }
 }
 
-// Returns a filter that takes a single optional UInt argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -451,8 +493,6 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
     }
 }
 
-// Returns a filter that takes a single non-optional UInt argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -472,8 +512,6 @@ public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// Returns a filter that takes a single optional Double argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -495,8 +533,6 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
     }
 }
 
-// Returns a filter that takes a single non-optional Double argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -516,8 +552,6 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
     }
 }
 
-// Returns a filter that takes a single optional String argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -539,8 +573,6 @@ public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterF
     }
 }
 
-// Returns a filter that takes a single non-optional String argument.
-//
 // :see: FilterFunction
 public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -560,8 +592,6 @@ public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFu
     }
 }
 
-// Returns a filter that processes rendering
-//
 // :see: FilterFunction
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
@@ -582,8 +612,6 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
     }
 }
 
-// Returns a variadic filter.
-//
 // :see: FilterFunction
 public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return _VariadicFilter([], filter)
@@ -600,7 +628,7 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
     }
 }
 
-// TODO
+// :see: FilterFunction
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -609,8 +637,7 @@ public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rende
     }
 }
 
-// TODO 1: write doc
-// TODO 2: write non-optional variant
+// :see: FilterFunction
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (t: T?, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -619,8 +646,16 @@ public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?)
     }
 }
 
-// TODO 1: write doc
-// TODO 2: write non-optional variant
+// :see: FilterFunction
+public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (t: T, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(t, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (int: Int?, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -629,8 +664,16 @@ public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) 
     }
 }
 
-// TODO 1: write doc
-// TODO 2: write non-optional variant
+// :see: FilterFunction
+public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (int: Int, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(int, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
 public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -639,8 +682,16 @@ public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?)
     }
 }
 
-// TODO 1: write doc
-// TODO 2: write non-optional variant
+// :see: FilterFunction
+public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (uint: UInt, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(uint, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (double: Double?, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -649,10 +700,27 @@ public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering
     }
 }
 
-// TODO 1: write doc
-// TODO 2: write non-optional variant
+// :see: FilterFunction
+public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (double: Double, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(double, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
 public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return filter(string, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
+public func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (string: String, error: NSErrorPointer) -> MustacheBox? in
         return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return filter(string, info, error)
         }
