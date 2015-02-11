@@ -1,14 +1,13 @@
 import Mustache
 
-let twice = Filter { (rendering: Rendering, error: NSErrorPointer) in
-    let twice = rendering.string + rendering.string
-    return Rendering(twice, rendering.contentType)
+let strong = Filter(.HTML) { (string: String, error: NSErrorPointer) in
+    return "<strong>\(string)</strong>"
 }
 
-let template = Template(string: "{{ twice(x) }}")!
-template.registerInBaseContext("twice", Box(twice))
+let template = Template(string: "{{ strong(x) }}")!
+template.registerInBaseContext("strong", Box(strong))
 
-// Renders "foofoo", "123123"
+// Renders "<strong>Arthur &amp; Barbara</strong>", "<strong>123</strong>"
 var rendering: String
-rendering = template.render(Box(["x": "foo"]))!
+rendering = template.render(Box(["x": "Arthur & Barbara"]))!
 rendering = template.render(Box(["x": 123]))!
