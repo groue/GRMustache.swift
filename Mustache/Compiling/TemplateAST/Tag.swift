@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 // For some reason, declaring a Type enum inside the Tag class prevents
 // variables to be declared as Tag.Type.
 // So let's use a `TagType` type instead.

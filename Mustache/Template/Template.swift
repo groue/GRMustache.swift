@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 /**
 The Template class provides Mustache rendering services.
 */

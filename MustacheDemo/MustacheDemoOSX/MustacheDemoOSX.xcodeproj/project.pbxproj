@@ -1,0 +1,518 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		56966A461A8BEA3C00BFBB56 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56966A451A8BEA3C00BFBB56 /* Model.swift */; };
+		56E8B5671A8BE267000DCC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5661A8BE267000DCC81 /* AppDelegate.swift */; };
+		56E8B5691A8BE267000DCC81 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5681A8BE267000DCC81 /* ViewController.swift */; };
+		56E8B56B1A8BE267000DCC81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56E8B56A1A8BE267000DCC81 /* Images.xcassets */; };
+		56E8B56E1A8BE267000DCC81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56E8B56C1A8BE267000DCC81 /* Main.storyboard */; };
+		56E8B57A1A8BE267000DCC81 /* MustacheDemoOSXTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5791A8BE267000DCC81 /* MustacheDemoOSXTests.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		56E8B5741A8BE267000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5591A8BE267000DCC81 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 56E8B5601A8BE267000DCC81;
+			remoteInfo = MustacheDemoOSX;
+		};
+		56E8B58A1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 563AE19719FBE47A0028C6C1;
+			remoteInfo = MustacheiOS;
+		};
+		56E8B58C1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 563AE1A219FBE47A0028C6C1;
+			remoteInfo = MustacheiOSTests;
+		};
+		56E8B58E1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 561E725C1A8BDC2B004ED48B;
+			remoteInfo = MustacheOSX;
+		};
+		56E8B5901A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 561E72661A8BDC2B004ED48B;
+			remoteInfo = MustacheOSXTests;
+		};
+		56E8B5921A8BE284000DCC81 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 561E725B1A8BDC2B004ED48B;
+			remoteInfo = MustacheOSX;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		56966A451A8BEA3C00BFBB56 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
+		56E8B5611A8BE267000DCC81 /* MustacheDemoOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheDemoOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56E8B5651A8BE267000DCC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		56E8B5661A8BE267000DCC81 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		56E8B5681A8BE267000DCC81 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		56E8B56A1A8BE267000DCC81 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		56E8B56D1A8BE267000DCC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		56E8B5731A8BE267000DCC81 /* MustacheDemoOSXTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheDemoOSXTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		56E8B5781A8BE267000DCC81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		56E8B5791A8BE267000DCC81 /* MustacheDemoOSXTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustacheDemoOSXTests.swift; sourceTree = "<group>"; };
+		56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../Mustache.xcodeproj; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		56E8B55E1A8BE267000DCC81 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		56E8B5701A8BE267000DCC81 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		56E8B5581A8BE267000DCC81 = {
+			isa = PBXGroup;
+			children = (
+				56E8B5631A8BE267000DCC81 /* MustacheDemoOSX */,
+				56E8B5761A8BE267000DCC81 /* MustacheDemoOSXTests */,
+				56E8B5621A8BE267000DCC81 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		56E8B5621A8BE267000DCC81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5611A8BE267000DCC81 /* MustacheDemoOSX.app */,
+				56E8B5731A8BE267000DCC81 /* MustacheDemoOSXTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		56E8B5631A8BE267000DCC81 /* MustacheDemoOSX */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5661A8BE267000DCC81 /* AppDelegate.swift */,
+				56E8B5681A8BE267000DCC81 /* ViewController.swift */,
+				56966A451A8BEA3C00BFBB56 /* Model.swift */,
+				56E8B56A1A8BE267000DCC81 /* Images.xcassets */,
+				56E8B56C1A8BE267000DCC81 /* Main.storyboard */,
+				56E8B5961A8BE3C2000DCC81 /* Frameworks */,
+				56E8B5641A8BE267000DCC81 /* Supporting Files */,
+			);
+			path = MustacheDemoOSX;
+			sourceTree = "<group>";
+		};
+		56E8B5641A8BE267000DCC81 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5651A8BE267000DCC81 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		56E8B5761A8BE267000DCC81 /* MustacheDemoOSXTests */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5791A8BE267000DCC81 /* MustacheDemoOSXTests.swift */,
+				56E8B5771A8BE267000DCC81 /* Supporting Files */,
+			);
+			path = MustacheDemoOSXTests;
+			sourceTree = "<group>";
+		};
+		56E8B5771A8BE267000DCC81 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5781A8BE267000DCC81 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		56E8B5841A8BE278000DCC81 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B58B1A8BE278000DCC81 /* Mustache.framework */,
+				56E8B58D1A8BE278000DCC81 /* MustacheiOSTests.xctest */,
+				56E8B58F1A8BE278000DCC81 /* Mustache.framework */,
+				56E8B5911A8BE278000DCC81 /* MustacheOSXTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		56E8B5961A8BE3C2000DCC81 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */,
+			);
+			name = Frameworks;
+			path = ..;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		56E8B5601A8BE267000DCC81 /* MustacheDemoOSX */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 56E8B57D1A8BE267000DCC81 /* Build configuration list for PBXNativeTarget "MustacheDemoOSX" */;
+			buildPhases = (
+				56E8B55D1A8BE267000DCC81 /* Sources */,
+				56E8B55E1A8BE267000DCC81 /* Frameworks */,
+				56E8B55F1A8BE267000DCC81 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				56E8B5931A8BE284000DCC81 /* PBXTargetDependency */,
+			);
+			name = MustacheDemoOSX;
+			productName = MustacheDemoOSX;
+			productReference = 56E8B5611A8BE267000DCC81 /* MustacheDemoOSX.app */;
+			productType = "com.apple.product-type.application";
+		};
+		56E8B5721A8BE267000DCC81 /* MustacheDemoOSXTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 56E8B5801A8BE267000DCC81 /* Build configuration list for PBXNativeTarget "MustacheDemoOSXTests" */;
+			buildPhases = (
+				56E8B56F1A8BE267000DCC81 /* Sources */,
+				56E8B5701A8BE267000DCC81 /* Frameworks */,
+				56E8B5711A8BE267000DCC81 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				56E8B5751A8BE267000DCC81 /* PBXTargetDependency */,
+			);
+			name = MustacheDemoOSXTests;
+			productName = MustacheDemoOSXTests;
+			productReference = 56E8B5731A8BE267000DCC81 /* MustacheDemoOSXTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		56E8B5591A8BE267000DCC81 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Gwendal Roué";
+				TargetAttributes = {
+					56E8B5601A8BE267000DCC81 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					56E8B5721A8BE267000DCC81 = {
+						CreatedOnToolsVersion = 6.1.1;
+						TestTargetID = 56E8B5601A8BE267000DCC81;
+					};
+				};
+			};
+			buildConfigurationList = 56E8B55C1A8BE267000DCC81 /* Build configuration list for PBXProject "MustacheDemoOSX" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 56E8B5581A8BE267000DCC81;
+			productRefGroup = 56E8B5621A8BE267000DCC81 /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 56E8B5841A8BE278000DCC81 /* Products */;
+					ProjectRef = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				56E8B5601A8BE267000DCC81 /* MustacheDemoOSX */,
+				56E8B5721A8BE267000DCC81 /* MustacheDemoOSXTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		56E8B58B1A8BE278000DCC81 /* Mustache.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Mustache.framework;
+			remoteRef = 56E8B58A1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		56E8B58D1A8BE278000DCC81 /* MustacheiOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MustacheiOSTests.xctest;
+			remoteRef = 56E8B58C1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		56E8B58F1A8BE278000DCC81 /* Mustache.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Mustache.framework;
+			remoteRef = 56E8B58E1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		56E8B5911A8BE278000DCC81 /* MustacheOSXTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MustacheOSXTests.xctest;
+			remoteRef = 56E8B5901A8BE278000DCC81 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXResourcesBuildPhase section */
+		56E8B55F1A8BE267000DCC81 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56E8B56B1A8BE267000DCC81 /* Images.xcassets in Resources */,
+				56E8B56E1A8BE267000DCC81 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		56E8B5711A8BE267000DCC81 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		56E8B55D1A8BE267000DCC81 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56966A461A8BEA3C00BFBB56 /* Model.swift in Sources */,
+				56E8B5691A8BE267000DCC81 /* ViewController.swift in Sources */,
+				56E8B5671A8BE267000DCC81 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		56E8B56F1A8BE267000DCC81 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56E8B57A1A8BE267000DCC81 /* MustacheDemoOSXTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		56E8B5751A8BE267000DCC81 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 56E8B5601A8BE267000DCC81 /* MustacheDemoOSX */;
+			targetProxy = 56E8B5741A8BE267000DCC81 /* PBXContainerItemProxy */;
+		};
+		56E8B5931A8BE284000DCC81 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MustacheOSX;
+			targetProxy = 56E8B5921A8BE284000DCC81 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		56E8B56C1A8BE267000DCC81 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				56E8B56D1A8BE267000DCC81 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		56E8B57B1A8BE267000DCC81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		56E8B57C1A8BE267000DCC81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		56E8B57E1A8BE267000DCC81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MustacheDemoOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		56E8B57F1A8BE267000DCC81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = MustacheDemoOSX/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		56E8B5811A8BE267000DCC81 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = MustacheDemoOSXTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MustacheDemoOSX.app/Contents/MacOS/MustacheDemoOSX";
+			};
+			name = Debug;
+		};
+		56E8B5821A8BE267000DCC81 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				COMBINE_HIDPI_IMAGES = YES;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(DEVELOPER_FRAMEWORKS_DIR)",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = MustacheDemoOSXTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MustacheDemoOSX.app/Contents/MacOS/MustacheDemoOSX";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		56E8B55C1A8BE267000DCC81 /* Build configuration list for PBXProject "MustacheDemoOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				56E8B57B1A8BE267000DCC81 /* Debug */,
+				56E8B57C1A8BE267000DCC81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		56E8B57D1A8BE267000DCC81 /* Build configuration list for PBXNativeTarget "MustacheDemoOSX" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				56E8B57E1A8BE267000DCC81 /* Debug */,
+				56E8B57F1A8BE267000DCC81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		56E8B5801A8BE267000DCC81 /* Build configuration list for PBXNativeTarget "MustacheDemoOSXTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				56E8B5811A8BE267000DCC81 /* Debug */,
+				56E8B5821A8BE267000DCC81 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 56E8B5591A8BE267000DCC81 /* Project object */;
+}

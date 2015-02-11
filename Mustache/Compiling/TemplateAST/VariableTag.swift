@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class VariableTag: Tag, TemplateASTNode {
     let token: TemplateToken
     let contentType: ContentType

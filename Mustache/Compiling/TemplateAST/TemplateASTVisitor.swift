@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 enum TemplateASTVisitResult {
     case Error(NSError)
     case Success

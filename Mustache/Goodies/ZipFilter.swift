@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     // Turn collection arguments into generators. Generators can be iterated

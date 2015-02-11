@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 enum ExpressionVisitResult {
     case Error(NSError)
     case Success

@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 public typealias TemplateID = String
 
 public protocol TemplateRepositoryDataSource {

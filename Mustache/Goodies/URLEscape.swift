@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class URLEscape: MustacheBoxable {
     
     private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {

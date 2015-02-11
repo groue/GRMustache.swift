@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 // =============================================================================
 // MARK: - Core function types
 //

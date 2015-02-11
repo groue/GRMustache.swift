@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class RenderingEngine: TemplateASTVisitor {
     let contentType: ContentType
     var context: Context

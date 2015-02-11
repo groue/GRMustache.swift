@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 // Context is an immutable value.
 // However, it can not be a struct because it is recursive.
 // So it only exposes immutable APIs.

@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class SectionTag: Tag, TemplateASTNode {
     let openingToken: TemplateToken
     let templateAST: TemplateAST

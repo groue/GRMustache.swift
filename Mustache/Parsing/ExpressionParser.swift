@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class ExpressionParser {
     
     func parse(string: String, inout empty outEmpty: Bool, error: NSErrorPointer) -> Expression? {

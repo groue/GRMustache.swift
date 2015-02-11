@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 class ExpressionInvocation: ExpressionVisitor {
     private let expression: Expression
     private var result: MustacheBox

@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
 let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
     if box.isEmpty {
         return box
