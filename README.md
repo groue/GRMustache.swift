@@ -29,6 +29,7 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
+You can testflight GRMustache by running the playground included in `Mustache.xcworkspace`.
 
 Rendering of pure Swift Objects
 -------------------------------

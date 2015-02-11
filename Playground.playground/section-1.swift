@@ -1,13 +1,11 @@
+// To run this playground, select and build the MustacheOSX scheme.
+
 import Mustache
 
-let strong = Filter(.HTML) { (string: String, error: NSErrorPointer) in
-    return "<strong>\(string)</strong>"
-}
-
-let template = Template(string: "{{ strong(x) }}")!
-template.registerInBaseContext("strong", Box(strong))
-
-// Renders "<strong>Arthur &amp; Barbara</strong>", "<strong>123</strong>"
+var template: Template
 var rendering: String
-rendering = template.render(Box(["x": "Arthur & Barbara"]))!
-rendering = template.render(Box(["x": 123]))!
+
+// Renders "Hello Arthur"
+template = Template(string: "Hello {{ name }}")!
+rendering = template.render(Box(["name": "Arthur"]))!
+println(rendering)
