@@ -52,7 +52,7 @@ You can write and render your own SubscriptFunction:
 
 ::
 
-  let s: SubscriptFunction = { (key: String) in
+  let s: SubscriptFunction = { (key: String) -> MustacheBox? in
       return Box(key.uppercaseString)
   }
   
@@ -380,7 +380,7 @@ public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, e
 
 // :see: FilterFunction
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -394,7 +394,7 @@ public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> Fil
 
 // :see: FilterFunction
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -415,7 +415,7 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
 
 // :see: FilterFunction
 public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -434,7 +434,7 @@ public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunc
 
 // :see: FilterFunction
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -455,7 +455,7 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
 
 // :see: FilterFunction
 public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -474,7 +474,7 @@ public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunct
 
 // :see: FilterFunction
 public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -495,7 +495,7 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
 
 // :see: FilterFunction
 public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -514,7 +514,7 @@ public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunc
 
 // :see: FilterFunction
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -535,7 +535,7 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
 
 // :see: FilterFunction
 public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -554,7 +554,7 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
 
 // :see: FilterFunction
 public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -575,7 +575,7 @@ public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterF
 
 // :see: FilterFunction
 public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
@@ -594,14 +594,14 @@ public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFu
 
 // :see: FilterFunction
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
         } else {
-            return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            return Box { (info: RenderingInfo, error: NSErrorPointer) in
                 if let rendering = box.render(info: info, error: error) {
                     return filter(rendering, error)
                 } else {
@@ -613,25 +613,9 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
 }
 
 // :see: FilterFunction
-public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return _VariadicFilter([], filter)
-}
-
-private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
-        let boxes = boxes + [box]
-        if partialApplication {
-            return Box(_VariadicFilter(boxes, filter))
-        } else {
-            return filter(boxes: boxes, error: error)
-        }
-    }
-}
-
-// :see: FilterFunction
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (box: MustacheBox, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(box, info, error)
         }
     }
@@ -639,8 +623,8 @@ public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rende
 
 // :see: FilterFunction
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (t: T?, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (t: T?, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(t, info, error)
         }
     }
@@ -648,8 +632,8 @@ public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?)
 
 // :see: FilterFunction
 public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (t: T, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (t: T, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(t, info, error)
         }
     }
@@ -657,8 +641,8 @@ public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) 
 
 // :see: FilterFunction
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (int: Int?, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (int: Int?, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(int, info, error)
         }
     }
@@ -666,8 +650,8 @@ public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) 
 
 // :see: FilterFunction
 public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (int: Int, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (int: Int, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(int, info, error)
         }
     }
@@ -675,8 +659,8 @@ public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -
 
 // :see: FilterFunction
 public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (uint: UInt?, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (uint: UInt?, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(uint, info, error)
         }
     }
@@ -684,8 +668,8 @@ public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?)
 
 // :see: FilterFunction
 public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (uint: UInt, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (uint: UInt, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(uint, info, error)
         }
     }
@@ -693,8 +677,8 @@ public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) 
 
 // :see: FilterFunction
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (double: Double?, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (double: Double?, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(double, info, error)
         }
     }
@@ -702,8 +686,8 @@ public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering
 
 // :see: FilterFunction
 public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (double: Double, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (double: Double, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(double, info, error)
         }
     }
@@ -711,8 +695,8 @@ public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?
 
 // :see: FilterFunction
 public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (string: String?, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(string, info, error)
         }
     }
@@ -720,9 +704,27 @@ public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering
 
 // :see: FilterFunction
 public func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (string: String, error: NSErrorPointer) -> MustacheBox? in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+    return Filter { (string: String, error: NSErrorPointer) in
+        return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(string, info, error)
+        }
+    }
+}
+
+// :see: FilterFunction
+public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return _VariadicFilter([], filter)
+}
+
+private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
+        let boxes = boxes + [box]
+        if partialApplication {
+            // await another argument
+            return Box(_VariadicFilter(boxes, filter))
+        } else {
+            // no more argument: compute final value
+            return filter(boxes: boxes, error: error)
         }
     }
 }
@@ -880,6 +882,32 @@ public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String
 // MARK: - MustacheBox
 
 public struct MustacheBox {
+    
+    struct Converter {
+        let intValue: (() -> Int?)?
+        let uintValue: (() -> UInt?)?
+        let doubleValue: (() -> Double?)?
+        let stringValue: (() -> String?)?
+        let arrayValue: (() -> [MustacheBox]?)?
+        let dictionaryValue: (() -> [String: MustacheBox]?)?
+        
+        init(
+            intValue: (() -> Int?)? = nil,
+            uintValue: (() -> UInt?)? = nil,
+            doubleValue: (() -> Double?)? = nil,
+            stringValue: (() -> String?)? = nil,
+            arrayValue: (() -> [MustacheBox]?)? = nil,
+            dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
+        {
+            self.intValue = intValue
+            self.uintValue = uintValue
+            self.doubleValue = doubleValue
+            self.stringValue = stringValue
+            self.arrayValue = arrayValue
+            self.dictionaryValue = dictionaryValue
+        }
+    }
+    
     public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
@@ -888,22 +916,12 @@ public struct MustacheBox {
     public let filter: FilterFunction?
     public let willRender: WillRenderFunction?
     public let didRender: DidRenderFunction?
-    private let _intValue: (() -> Int?)?
-    private let _uintValue: (() -> UInt?)?
-    private let _doubleValue: (() -> Double?)?
-    private let _stringValue: (() -> String?)?
-    private let _arrayValue: (() -> [MustacheBox]?)?
-    private let _dictionaryValue: (() -> [String: MustacheBox]?)?
+    let converter: Converter?
     
-    private init(
+    init(
         mustacheBool: Bool? = nil,
         value: Any? = nil,
-        intValue: (() -> Int?)? = nil,
-        uintValue: (() -> UInt?)? = nil,
-        doubleValue: (() -> Double?)? = nil,
-        stringValue: (() -> String?)? = nil,
-        arrayValue: (() -> [MustacheBox]?)? = nil,
-        dictionaryValue: (() -> [String: MustacheBox]?)? = nil,
+        converter: Converter? = nil,
         objectForKeyedSubscript: SubscriptFunction? = nil,
         filter: FilterFunction? = nil,
         render: RenderFunction? = nil,
@@ -913,12 +931,7 @@ public struct MustacheBox {
         let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
-        self._intValue = intValue
-        self._uintValue = uintValue
-        self._doubleValue = doubleValue
-        self._stringValue = stringValue
-        self._arrayValue = arrayValue
-        self._dictionaryValue = dictionaryValue
+        self.converter = converter
         self.mustacheBool = mustacheBool ?? !empty
         self.objectForKeyedSubscript = objectForKeyedSubscript
         self.filter = filter
@@ -928,8 +941,8 @@ public struct MustacheBox {
             self.render = render
         } else {
             // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-            self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in return nil }
-            self.render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            self.render = { (info: RenderingInfo, error: NSErrorPointer) in return nil }
+            self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
                     if let value = value {
@@ -942,6 +955,21 @@ public struct MustacheBox {
                 }
             }
         }
+    }
+
+    // Hackish helper function which helps us boxing NSArray, NSString and
+    // NSNull: we just box a regular [MustacheBox] or Swift String, and rewrite
+    // the value to the original Objective-C value.
+    func boxWithValue(value: Any?) -> MustacheBox {
+        return MustacheBox(
+            mustacheBool: self.mustacheBool,
+            value: value,
+            converter: self.converter,
+            objectForKeyedSubscript: self.objectForKeyedSubscript,
+            filter: self.filter,
+            render: self.render,
+            willRender: self.willRender,
+            didRender: self.didRender)
     }
 }
 
@@ -965,117 +993,57 @@ public func Box(
 }
 
 
-
-// =============================================================================
-// MARK: - MustacheBox derivation
-
-extension MustacheBox {
-    private func boxWithRenderFunction(render: RenderFunction) -> MustacheBox {
-        return MustacheBox(
-            mustacheBool: self.mustacheBool,
-            value: self.value,
-            intValue: self._intValue,
-            uintValue: self._uintValue,
-            doubleValue: self._doubleValue,
-            stringValue: self._stringValue,
-            arrayValue: self._arrayValue,
-            dictionaryValue: self._dictionaryValue,
-            objectForKeyedSubscript: self.objectForKeyedSubscript,
-            filter: self.filter,
-            render: render,
-            willRender: self.willRender,
-            didRender: self.didRender)
-    }
-    
-    // Hackish helper function which helps us boxing NSArray, NSString and
-    // NSNull: we just box a regular [MustacheBox] or Swift String, and rewrite
-    // the value to the original Objective-C value.
-    private func boxWithValue(value: Any?) -> MustacheBox {
-        return MustacheBox(
-            mustacheBool: self.mustacheBool,
-            value: value,
-            intValue: self._intValue,
-            uintValue: self._uintValue,
-            doubleValue: self._doubleValue,
-            stringValue: self._stringValue,
-            arrayValue: self._arrayValue,
-            dictionaryValue: self._dictionaryValue,
-            objectForKeyedSubscript: self.objectForKeyedSubscript,
-            filter: self.filter,
-            render: self.render,
-            willRender: self.willRender,
-            didRender: self.didRender)
-    }
-}
-
-public func Box(box: MustacheBox, # render: RenderFunction) -> MustacheBox {
-    return box.boxWithRenderFunction(render)
-}
-
-
 // =============================================================================
 // MARK: - Value unwrapping
 
 extension MustacheBox {
     
-    // If the boxed value is numerical (Swift numerical types, Bool, and
-    // NSNumber), returns this value as an Int.
+    /**
+    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
+    returns this value as an Int.
+    */
     public var intValue: Int? {
-        if let intValue = _intValue {
-            return intValue()
-        } else {
-            return nil
-        }
+        return converter?.intValue?()
     }
     
-    // If the boxed value is numerical (Swift numerical types, Bool, and
-    // NSNumber), returns this value as a UInt.
+    /**
+    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
+    returns this value as a UInt.
+    */
     public var uintValue: UInt? {
-        if let uintValue = _uintValue {
-            return uintValue()
-        } else {
-            return nil
-        }
+        return converter?.uintValue?()
     }
     
-    // If the boxed value is numerical (Swift numerical types, Bool, and
-    // NSNumber), returns this value as a Double.
+    /**
+    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
+    returns this value as a Double.
+    */
     public var doubleValue: Double? {
-        if let doubleValue = _doubleValue {
-            return doubleValue()
-        } else {
-            return nil
-        }
+        return converter?.doubleValue?()
     }
     
-    // If the boxed value is a string (String and NSString), returns this value
-    // as a String.
+    /**
+    If the boxed value is a string (String and NSString), returns this value as
+    a String.
+    */
     public var stringValue: String? {
-        if let stringValue = _stringValue {
-            return stringValue()
-        } else {
-            return nil
-        }
+        return converter?.stringValue?()
     }
     
-    // If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
-    // returns a [MustacheBox].
+    /**
+    If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
+    returns a [MustacheBox].
+    */
     public var arrayValue: [MustacheBox]? {
-        if let arrayValue = _arrayValue {
-            return arrayValue()
-        } else {
-            return nil
-        }
+        return converter?.arrayValue?()
     }
     
-    // If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
-    // returns a [String: MustacheBox] dictionary.
+    /**
+    If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
+    returns a [String: MustacheBox] dictionary.
+    */
     public var dictionaryValue: [String: MustacheBox]? {
-        if let dictionaryValue = _dictionaryValue {
-            return dictionaryValue()
-        } else {
-            return nil
-        }
+        return converter?.dictionaryValue?()
     }
 
 }
@@ -1115,6 +1083,8 @@ extension MustacheBox {
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
 
+// Non-optional value to force the user to provide a value when they provide a
+// subscript function.
 public func Box(value: Any, objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
     return MustacheBox(value: value, objectForKeyedSubscript: objectForKeyedSubscript)
 }
@@ -1159,156 +1129,154 @@ extension MustacheBox: MustacheBoxable {
 
 extension Bool: MustacheBoxable {
     public var mustacheBox: MustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                // https://github.com/groue/GRMustache/issues/83
-                //
-                // {{# NSNumber }}...{{/}} renders the section if the number is
-                // not zero, and does not push the number on the top of the
-                // context stack.
-                //
-                // Be consistent with Objective-C, and make Bool behave just
-                // like [NSNumber numberWithBool:]
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return MustacheBox(
             value: self,
-            intValue: { self ? 1 : 0 },             // Behave like [NSNumber numberWithBool:]
-            uintValue: { self ? 1 : 0 },            // Behave like [NSNumber numberWithBool:]
-            doubleValue: { self ? 1.0 : 0.0 },      // Behave like [NSNumber numberWithBool:]
+            converter: MustacheBox.Converter(
+                intValue: { self ? 1 : 0 },         // Behave like [NSNumber numberWithBool:]
+                uintValue: { self ? 1 : 0 },        // Behave like [NSNumber numberWithBool:]
+                doubleValue: { self ? 1.0 : 0.0 }), // Behave like [NSNumber numberWithBool:]
             mustacheBool: self,
-            render: render)
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    // https://github.com/groue/GRMustache/issues/83
+                    //
+                    // {{# NSNumber }}...{{/}} renders the section if the number is
+                    // not zero, and does not push the number on the top of the
+                    // context stack.
+                    //
+                    // Be consistent with Objective-C, and make Bool behave just
+                    // like [NSNumber numberWithBool:]
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
     }
 }
 
 extension Int: MustacheBoxable {
     public var mustacheBox: MustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                // https://github.com/groue/GRMustache/issues/83
-                //
-                // {{# NSNumber }}...{{/}} renders the section if the number is
-                // not zero, and does not push the number on the top of the
-                // context stack.
-                //
-                // Be consistent with Objective-C, and make Int behave just
-                // like [NSNumber numberWithInteger:]
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return MustacheBox(
             value: self,
-            intValue: { self },
-            uintValue: { UInt(self) },
-            doubleValue: { Double(self) },
+            converter: MustacheBox.Converter(
+                intValue: { self },
+                uintValue: { UInt(self) },
+                doubleValue: { Double(self) }),
             mustacheBool: (self != 0),
-            render: render)
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    // https://github.com/groue/GRMustache/issues/83
+                    //
+                    // {{# NSNumber }}...{{/}} renders the section if the number is
+                    // not zero, and does not push the number on the top of the
+                    // context stack.
+                    //
+                    // Be consistent with Objective-C, and make Int behave just
+                    // like [NSNumber numberWithInteger:]
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
     }
 }
 
 extension UInt: MustacheBoxable {
     public var mustacheBox: MustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                // https://github.com/groue/GRMustache/issues/83
-                //
-                // {{# NSNumber }}...{{/}} renders the section if the number is
-                // not zero, and does not push the number on the top of the
-                // context stack.
-                //
-                // Be consistent with Objective-C, and make Int behave just
-                // like [NSNumber numberWithInteger:]
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return MustacheBox(
             value: self,
-            intValue: { Int(self) },
-            uintValue: { self },
-            doubleValue: { Double(self) },
+            converter: MustacheBox.Converter(
+                intValue: { Int(self) },
+                uintValue: { self },
+                doubleValue: { Double(self) }),
             mustacheBool: (self != 0),
-            render: render)
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    // https://github.com/groue/GRMustache/issues/83
+                    //
+                    // {{# NSNumber }}...{{/}} renders the section if the number is
+                    // not zero, and does not push the number on the top of the
+                    // context stack.
+                    //
+                    // Be consistent with Objective-C, and make Int behave just
+                    // like [NSNumber numberWithInteger:]
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
     }
 }
 
 extension Double: MustacheBoxable {
     public var mustacheBox: MustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                // https://github.com/groue/GRMustache/issues/83
-                //
-                // {{# NSNumber }}...{{/}} renders the section if the number is
-                // not zero, and does not push the number on the top of the
-                // context stack.
-                //
-                // Be consistent with Objective-C, and make Double behave just
-                // like [NSNumber numberWithDouble:]
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return MustacheBox(
             value: self,
-            intValue: { Int(self) },
-            uintValue: { UInt(self) },
-            doubleValue: { self },
+            converter: MustacheBox.Converter(
+                intValue: { Int(self) },
+                uintValue: { UInt(self) },
+                doubleValue: { self }),
             mustacheBool: (self != 0.0),
-            render: render)
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    // https://github.com/groue/GRMustache/issues/83
+                    //
+                    // {{# NSNumber }}...{{/}} renders the section if the number is
+                    // not zero, and does not push the number on the top of the
+                    // context stack.
+                    //
+                    // Be consistent with Objective-C, and make Double behave just
+                    // like [NSNumber numberWithDouble:]
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        })
     }
 }
 
 extension String: MustacheBoxable {
     public var mustacheBox: MustacheBox {
-        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
-            switch key {
-            case "length":
-                return Box(countElements(self))
-            default:
-                return nil
-            }
-        }
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-            }
-        }
         return MustacheBox(
             value: self,
-            stringValue: { self },
+            converter: MustacheBox.Converter(stringValue: { self }),
             mustacheBool: (countElements(self) > 0),
-            objectForKeyedSubscript: objectForKeyedSubscript,
-            render: render)
+            objectForKeyedSubscript: { (key: String) in
+                switch key {
+                case "length":
+                    return Box(countElements(self))
+                default:
+                    return nil
+                }
+            },
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                }
+        })
     }
 }
 
@@ -1367,8 +1335,8 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
         return MustacheBox(
             mustacheBool: (count > 0),
             value: collection,
-            arrayValue: { map(collection) { Box($0) } },
-            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+            converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
+            objectForKeyedSubscript: { (key: String) in
                 switch key {
                 case "count":
                     // Support for both Objective-C and Swift arrays.
@@ -1398,7 +1366,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                     return Box()
                 }
             },
-            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
                 } else {
@@ -1420,17 +1388,18 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
         return MustacheBox(
             mustacheBool: true,
             value: dictionary,
-            dictionaryValue: {
-                var boxDictionary: [String: MustacheBox] = [:]
-                for (key, item) in dictionary {
-                    boxDictionary[key] = Box(item)
-                }
-                return boxDictionary
-            },
-            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+            converter: MustacheBox.Converter(
+                dictionaryValue: {
+                    var boxDictionary: [String: MustacheBox] = [:]
+                    for (key, item) in dictionary {
+                        boxDictionary[key] = Box(item)
+                    }
+                    return boxDictionary
+                }),
+            objectForKeyedSubscript: { (key: String) in
                 return Box(dictionary[key])
             },
-            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
                     return Rendering("\(dictionary)")
@@ -1447,6 +1416,28 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 
 // =============================================================================
 // MARK: - Boxing of Objective-C types
+
+/**
+Conform to the GRMustacheSafeKeyAccess protocol in order to filter the keys that
+can be accessed by GRMustache templates.
+*/
+@objc public protocol GRMustacheSafeKeyAccess {
+    
+    /**
+    List the name of the keys GRMustache.swift can access on this class using
+    the `valueForKey:` method.
+    
+    When objects do not respond to this method, only declared properties can be
+    accessed. All properties of Core Data NSManagedObjects are also accessible,
+    even without property declaration.
+    
+    This method is not used for objects responding to objectForKeyedSubscript:.
+    For those objects, all keys are accessible from templates.
+    
+    @return The set of accessible keys on the class.
+    */
+    class func safeMustacheKeys() -> NSSet
+}
 
 // The MustacheBoxable protocol can not be used by Objc classes, because MustacheBox is
 // not compatible with ObjC. So let's define another protocol.
@@ -1521,28 +1512,6 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     }
 }
 
-/**
-Conform to the GRMustacheSafeKeyAccess protocol in order to filter the keys that
-can be accessed by GRMustache templates.
-*/
-@objc public protocol GRMustacheSafeKeyAccess {
-
-    /**
-    List the name of the keys GRMustache.swift can access on this class using
-    the `valueForKey:` method.
-
-    When objects do not respond to this method, only declared properties can be
-    accessed. All properties of Core Data NSManagedObjects are also accessible,
-    even without property declaration.
-
-    This method is not used for objects responding to objectForKeyedSubscript:.
-    For those objects, all keys are accessible from templates.
-
-    @return The set of accessible keys on the class.
-    */
-    class func safeMustacheKeys() -> NSSet
-}
-
 extension NSObject: ObjCMustacheBoxable {
     public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration
@@ -1556,21 +1525,22 @@ extension NSObject: ObjCMustacheBoxable {
                 return ObjCMustacheBox(MustacheBox(
                     mustacheBool: true,
                     value: self,
-                    dictionaryValue: {
-                        var boxDictionary: [String: MustacheBox] = [:]
-                        for key in GeneratorSequence(NSFastGenerator(enumerable)) {
-                            if let key = key as? String {
-                                let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                                boxDictionary[key] = BoxAnyObject(item)
+                    converter: MustacheBox.Converter(
+                        dictionaryValue: {
+                            var boxDictionary: [String: MustacheBox] = [:]
+                            for key in GeneratorSequence(NSFastGenerator(enumerable)) {
+                                if let key = key as? String {
+                                    let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
+                                    boxDictionary[key] = BoxAnyObject(item)
+                                }
                             }
-                        }
-                        return boxDictionary
-                    },
-                    objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+                            return boxDictionary
+                        }),
+                    objectForKeyedSubscript: { (key: String) in
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                         return BoxAnyObject(item)
                     },
-                    render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                    render: { (info: RenderingInfo, error: NSErrorPointer) in
                         switch info.tag.type {
                         case .Variable:
                             return Rendering("\(self)")
@@ -1596,7 +1566,7 @@ extension NSObject: ObjCMustacheBoxable {
             return ObjCMustacheBox(MustacheBox(
                 mustacheBool: true,
                 value: self,
-                objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+                objectForKeyedSubscript: { (key: String) in
                     if self.respondsToSelector("objectForKeyedSubscript:")
                     {
                         // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
@@ -1613,7 +1583,7 @@ extension NSObject: ObjCMustacheBoxable {
                         return Box()
                     }
                 },
-                render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                render: { (info: RenderingInfo, error: NSErrorPointer) in
                     switch info.tag.type {
                     case .Variable:
                         return Rendering("\(self)")
@@ -1633,25 +1603,25 @@ extension NSNull: ObjCMustacheBoxable {
 
 extension NSNumber: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            switch info.tag.type {
-            case .Variable:
-                return Rendering("\(self)")
-            case .Section:
-                if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                } else {
-                    return info.tag.render(info.context, error: error)
-                }
-            }
-        }
         return ObjCMustacheBox(MustacheBox(
             value: self,
-            intValue: { self.integerValue },
-            uintValue: { UInt(self.unsignedIntegerValue) }, // Oddly, -[NSNumber unsignedIntegerValue] returns an Int
-            doubleValue: { self.doubleValue },
+            converter: MustacheBox.Converter(
+                intValue: { self.integerValue },
+                uintValue: { UInt(self.unsignedIntegerValue) }, // Oddly, -[NSNumber unsignedIntegerValue] returns an Int
+                doubleValue: { self.doubleValue }),
             mustacheBool: self.boolValue,
-            render: render))
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                switch info.tag.type {
+                case .Variable:
+                    return Rendering("\(self)")
+                case .Section:
+                    if info.enumerationItem {
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        return info.tag.render(info.context, error: error)
+                    }
+                }
+        }))
     }
 }
 
@@ -1666,8 +1636,8 @@ extension NSSet: ObjCMustacheBoxable {
         return ObjCMustacheBox(MustacheBox(
             mustacheBool: (self.count > 0),
             value: self,
-            arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } },
-            objectForKeyedSubscript: { (key: String) -> MustacheBox? in
+            converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
+            objectForKeyedSubscript: { (key: String) in
                 switch key {
                 case "isEmpty":
                     return Box(self.count == 0)
@@ -1679,7 +1649,7 @@ extension NSSet: ObjCMustacheBoxable {
                     return nil
                 }
             },
-            render: { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {

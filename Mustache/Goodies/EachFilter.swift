@@ -45,7 +45,7 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
         let itemBox = collection[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let transformedBox = Box { (var info: RenderingInfo, error: NSErrorPointer) in
             var position: [String: MustacheBox] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -54,7 +54,8 @@ private func transformedCollection<T: CollectionType where T.Generator.Element =
             position["@last"] = Box(last)
             info.context = info.context.extendedContext(Box(position))
             return itemBox.render(info: info, error: error)
-        }))
+        }
+        mustacheBoxes.append(transformedBox)
         i = i.successor()
     }
     return Box(mustacheBoxes)
@@ -69,7 +70,7 @@ private func transformedDictionary(dictionary: [String: MustacheBox]) -> Mustach
         let (key, itemBox) = dictionary[i]
         let index = distance(start, i)
         let last = i.successor() == end
-        mustacheBoxes.append(Box(itemBox, render: { (var info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let transformedBox = Box { (var info: RenderingInfo, error: NSErrorPointer) in
             var position: [String: MustacheBox] = [:]
             position["@index"] = Box(index)
             position["@indexPlusOne"] = Box(index + 1)
@@ -79,7 +80,8 @@ private func transformedDictionary(dictionary: [String: MustacheBox]) -> Mustach
             position["@key"] = Box(key)
             info.context = info.context.extendedContext(Box(position))
             return itemBox.render(info: info, error: error)
-        }))
+        }
+        mustacheBoxes.append(transformedBox)
         i = i.successor()
     }
     return Box(mustacheBoxes)
