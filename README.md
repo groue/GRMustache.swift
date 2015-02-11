@@ -104,14 +104,14 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo, error: NSErrorPointe
 }
 
 
-// Register the pluralize filter for all Mustache renderings:
-
-Mustache.DefaultConfiguration.registerInBaseContext("pluralize", Box(pluralizeFilter))
-
-
-// I have 3 cats.
+// Register the pluralize filter in our template:
 
 let template = Template(named: "cats")!
+template.registerInBaseContext("pluralize", Box(pluralizeFilter))
+
+
+// Render "I have 3 cats."
+
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
