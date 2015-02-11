@@ -8,6 +8,6 @@
       location = "container:Mustache.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:MustacheDemo/MustacheDemoOSX/MustacheDemoOSX.xcodeproj">
+      location = "group:DemoApps/MustacheDemoOSX/MustacheDemoOSX.xcodeproj">
    </FileRef>
 </Workspace>
