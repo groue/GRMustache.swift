@@ -111,7 +111,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
       {{/}}
     {{/ HTMLEscape }}
 
-See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
+See also [javascriptEscape](#standardlibraryjavascriptescape), [URLEscape](#standardlibraryurlescape)
 
 
 ### StandardLibrary.javascriptEscape
@@ -152,7 +152,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 </script>
 ```
 
-See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
+See also [HTMLEscape](#standardlibraryhtmlescape), [URLEscape](#standardlibraryurlescape)
 
 
 ### StandardLibrary.URLEscape
@@ -185,7 +185,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 {{/ URLEscape }}
 ```
 
-See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
+See also [HTMLEscape](#standardlibraryhtmlescape), [javascriptEscape](#standardlibraryjavascriptescape)
 
 
 ### StandardLibrary.each

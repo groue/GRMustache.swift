@@ -121,12 +121,28 @@ Filter() function. For example, here is a filter that processes integers:
   // Renders "100"
   let rendering = template.render(Box(["x": 10]))!
 
-Filter() comes in various flavors:
+
+If you want to have a section like {{# section }}...{{/ section }} perform a
+custom rendering of its inner content, you do not need a FilterFunction because
+there is no parenthesis that would denote the presence of a filter. No, instead
+you need a RenderFunction (see below).
+
+However, if you want a section like {{# pluralize(count) }}...{{/ }} perform a
+custom rendering of its inner content, depending on the value of `count`, then
+you are at the right place. Keep on reading.
+
+
+The Filter() function comes in various flavors. Each one targets a use case for
+filters:
 
 
 - func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
-Returns a filter that takes a single Box argument.
+The most generic filter that takes a single Box argument and returns another
+one.
+
+If you want to process a specific type such as Int, String, or a custom class,
+you should use a variant documented below.
 
 ::
 
@@ -137,8 +153,8 @@ Returns a filter that takes a single Box argument.
   let template = Template(string: "{{# isEmpty(value) }}no value{{^}}{{value}}{{/}}")!
   template.registerInBaseContext("isEmpty", Box(isEmpty))
 
-  // Renders "value", and "no value"
-  var rendering = template.render(Box(["value": "value"]))!
+  // Renders "a value", and "no value"
+  var rendering = template.render(Box(["value": "a value"]))!
   rendering = template.render(Box())!
 
 
@@ -148,19 +164,26 @@ Returns a filter that takes a single Box argument.
 - func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
-Returns a filter that takes an optional single argument of a specific type.
+Those variants returns a filter that takes an optional single argument of a
+specific type.
 
 If the provided argument is not nil, and of a different type, the filter returns
 an error of domain GRMustacheErrorDomain and code
 GRMustacheErrorCodeRenderingError.
 
 The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error.
+your filter. Other values generate an error. The type T must be "real" type, not
+a protocol, because of the Swift inability to test for protocol conformance at
+runtime.
 
-The Int, UInt and Double variants accept any kind of numerical input (Float,
-Double, Int and NSNumber), which are casted to the required type.
+The Int, UInt and Double variants accept numerical input (Float, Double, Int and
+NSNumber), which are casted to the required type. Other values generate an
+error.
 
-The String variant accepts any kind of string input (String and NSString).
+The String variant accepts string input (String and NSString). Other values
+generate an error. If you want to process rendered strings, whatever the input
+value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
+(see below).
 
 ::
 
@@ -195,19 +218,25 @@ The String variant accepts any kind of string input (String and NSString).
 - func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
-Returns a filter that takes a single argument of a specific type.
+Those variants returns a filter that takes a single argument of a specific type.
 
 If the provided argument is nil, or of a different type, the filter returns an
 error of domain GRMustacheErrorDomain and code
 GRMustacheErrorCodeRenderingError.
 
 The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error.
+your filter. Other values generate an error. The type T must be "real" type, not
+a protocol, because of the Swift inability to test for protocol conformance at
+runtime.
 
-The Int, UInt and Double variants accept any kind of numerical input (Float,
-Double, Int and NSNumber), which are casted to the required type.
+The Int, UInt and Double variants accept numerical input (Float, Double, Int and
+NSNumber), which are casted to the required type. Other values generate an
+error.
 
-The String variant accepts any kind of string input (String and NSString).
+The String variant accepts string input (String and NSString). Other values
+generate an error. If you want to process rendered strings, whatever the input
+value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
+(see below).
 
 ::
 
@@ -234,21 +263,16 @@ The String variant accepts any kind of string input (String and NSString).
 
 - func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction
 
-Return a filter that performs post rendering.
+Returns a filter that performs post rendering.
 
 Unlike other filters that process boxed values, this one processes output: it
 turns a Rendering into another Rendering. It provides a way to process the
-strings generated by any kind of value, when Filter { (String, NSErrorPointer) }
-can only process actual string input.
-
-Beware eventual HTML-escaping has not happened yet: the rendering argument may
-contain text.
+strings generated by any kind of value.
 
 ::
 
   let twice = Filter { (rendering: Rendering, error: NSErrorPointer) in
-    let twice = rendering.string + rendering.string
-    return Rendering(twice, rendering.contentType)
+    return Rendering(rendering.string + rendering.string)
   }
   
   let template = Template(string: "{{ twice(x) }}")!
@@ -258,6 +282,32 @@ contain text.
   var rendering: String
   rendering = template.render(Box(["x": "foo"]))!
   rendering = template.render(Box(["x": 123]))!
+
+Beware eventual HTML-escaping has not happened yet: the rendering argument may
+contain text. Use the Mustache.escapeHTML() function if you need to convert Text
+to HTML:
+
+::
+
+  // Wraps its input in a <strong> HTML tag.
+  let strong = Filter { (rendering: Rendering, error: NSErrorPointer) in
+      // We return HTML, so we need to escape input if necessary.
+      var string = rendering.string
+      switch rendering.contentType {
+      case .Text:
+          string = escapeHTML(string)
+      case .HTML:
+          break
+      }
+      return Rendering("<strong>\(string)</strong>", .HTML)
+  }
+
+  let template = Template(string: "{{ strong(x) }}")!
+  template.registerInBaseContext("strong", Box(strong))
+
+  // Renders "<strong>Arthur &amp; Léa</strong>"
+  var rendering: String
+  rendering = template.render(Box(["x": "Arthur & Léa"]))!
 
 
 - func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction
@@ -527,41 +577,6 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
                 } else {
                     return nil
                 }
-            }
-        }
-    }
-}
-
-// Returns a filter that processes rendering
-//
-// TODO: this function is only needed because the escapeHTML function is not public.
-// If escapeHTML were public, library user could perform escaping using
-// Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction.
-// We should consider making Mustache.escapeHTML public.
-//
-// :see: FilterFunction
-public func Filter(outputContentType: ContentType, filter: (String, NSErrorPointer) -> String?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
-        if partialApplication {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else {
-            return Box { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if let inputRendering = box.render(info: info, error: error) {
-                    var inputString = inputRendering.string
-                    switch (inputRendering.contentType, outputContentType) {
-                    case (.Text, .HTML):
-                        inputString = escapeHTML(inputString)
-                    default:
-                        break
-                    }
-                    if let outputString = filter(inputString, error) {
-                        return Rendering(outputString, outputContentType)
-                    }
-                }
-                return nil
             }
         }
     }
@@ -1032,7 +1047,7 @@ extension MustacheBox {
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
 
-public func Box(value: Any? = nil, objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
+public func Box(value: Any, objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
     return MustacheBox(value: value, objectForKeyedSubscript: objectForKeyedSubscript)
 }
 

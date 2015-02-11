@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-func escapeHTML(string: String) -> String {
+public func escapeHTML(string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",
         ">": "&gt;",
