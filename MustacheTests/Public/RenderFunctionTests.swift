@@ -239,7 +239,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
         let altTemplate = Template(string:"{{subject}}")!
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return altTemplate.render(info, error: error)
+            return altTemplate.render(info.context, error: error)
         }
         let box = Box(["render": Box(render), "subject": Box("-")])
         let rendering = Template(string: "{{render}}")!.render(box)!
@@ -249,7 +249,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromSectionTag() {
         let altTemplate = Template(string:"{{subject}}")!
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return altTemplate.render(info, error: error)
+            return altTemplate.render(info.context, error: error)
         }
         let box = Box(["render": Box(render), "subject": Box("-")])
         let rendering = Template(string: "{{#render}}{{/render}}")!.render(box)!
@@ -261,7 +261,7 @@ class RenderFunctionTests: XCTestCase {
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return Template(string:"key:{{key}}")!.render(info, error: error)
+            return Template(string:"key:{{key}}")!.render(info.context, error: error)
         }
         let box = Box(["render": Box(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
         let rendering = Template(string: "{{render}}")!.render(box)!
@@ -521,7 +521,7 @@ class RenderFunctionTests: XCTestCase {
         let repository = TemplateRepository(templates: templates)
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{>partial}}")!
-            return altTemplate.render(info, error: error)
+            return altTemplate.render(info.context, error: error)
         }
         let box = Box(["render": Box(render), "subject": Box("-")])
         let template = repository.template(named: "template")!
@@ -540,7 +540,7 @@ class RenderFunctionTests: XCTestCase {
             "template2": Box(repository2.template(named: "template2")!),
             "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{>partial}}")!
-                return altTemplate.render(info, error: error)
+                return altTemplate.render(info.context, error: error)
             })])
         let template = repository1.template(named: "template1")!
         let rendering = template.render(box)!
@@ -552,7 +552,7 @@ class RenderFunctionTests: XCTestCase {
             "object": Box("&"),
             "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(info, error: error)
+                return altTemplate.render(info.context, error: error)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{render}}")!
@@ -565,7 +565,7 @@ class RenderFunctionTests: XCTestCase {
             "object": Box("&"),
             "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(info, error: error)
+                return altTemplate.render(info.context, error: error)
             })])
         
         let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{render}}")!
@@ -581,7 +581,7 @@ class RenderFunctionTests: XCTestCase {
             "value": Box("&"),
             "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 let altTemplate = Template(string: "{{ value }}")!
-                return altTemplate.render(info, error: error)
+                return altTemplate.render(info.context, error: error)
             })])
         let template = repository.template(named: "templateHTML")!
         let rendering = template.render(box)!
@@ -597,7 +597,7 @@ class RenderFunctionTests: XCTestCase {
         
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let altTemplate = Template(string: "{{{ value }}}")!
-            return altTemplate.render(info, error: error)
+            return altTemplate.render(info.context, error: error)
         }
         let box = Box([
             "value": Box("&"),

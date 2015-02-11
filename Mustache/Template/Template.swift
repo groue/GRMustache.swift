@@ -293,20 +293,14 @@ public class Template: MustacheBoxable {
     public let repository: TemplateRepository
     
     
-    // TODO: is it good API?
-    public func render(info: RenderingInfo, error: NSErrorPointer = nil) -> Rendering? {
-        return render(info.context, error: error)
-    }
-    
-    
     // MARK: - MustacheBoxable
     
     public var mustacheBox: MustacheBox {
-        return Box(
-            value: self,
-            render: render)
+        return Box(value: self) { (info: RenderingInfo, error: NSErrorPointer) in
+            return self.render(info.context, error: error)
+        }
     }
-    
+
     
     // MARK: - Not public
     
