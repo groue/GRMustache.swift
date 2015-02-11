@@ -534,6 +534,11 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
 
 // Returns a filter that processes rendering
 //
+// TODO: this function is only needed because the escapeHTML function is not public.
+// If escapeHTML were public, library user could perform escaping using
+// Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction.
+// We should consider making Mustache.escapeHTML public.
+//
 // :see: FilterFunction
 public func Filter(outputContentType: ContentType, filter: (String, NSErrorPointer) -> String?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox? in
