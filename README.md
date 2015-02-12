@@ -26,8 +26,8 @@ How to
 
 You'll find in the repository:
 
-- a `Mustache.xcodeproj` Xcode project to be embedded in your applications
-- a `Mustache.xcworkspace` Xcode workspace that contains a Playground and a demo application
+- a `Mustache.xcodeproj` project to be embedded in your applications
+- a `Mustache.xcworkspace` workspace that contains a Playground and a demo application
 
 
 Usage
