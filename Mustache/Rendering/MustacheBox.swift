@@ -757,6 +757,96 @@ Sections and variable tags can be attached to custom render functions:
   // Attach the render function to `section`, and render "foo"
   let data2 = ["section": Box(render)]
   let rendering2 = template.render(Box(data2))!
+
+RenderFunction are versatile: they can implement Mustache lambdas and Handlebars
+helpers, for example.
+
+The Mustache specification defines lambdas at
+https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml:
+
+> Lambdas are a special-cased data type for use in interpolations and
+> sections.
+>
+> When used as the data value for an Interpolation tag, the lambda MUST be
+> treatable as an arity 0 function, and invoked as such.  The returned value
+> MUST be rendered against the default delimiters, then interpolated in place
+> of the lambda.
+
+So here the way to write a spec-compliant lambda for a variable tag:
+
+::
+  // This RenderFunction is equivalent to the pure spec lambda:
+  //
+  // lambda() -> String {
+  //     return "Hello {{ name }}"
+  // }
+  let greeting: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+      let lambdaString = "Hello {{ name }}"
+      let template = Template(string: lambdaString)!
+      return template.render(info.context, error: error)
+  }
+
+  let template = Template(string: "{{ greeting }}")!
+
+  // Renders "Hello Arthur"
+  let rendering = template.render(Box(["greeting": Box(greeting), "name": Box("Arthur")]))!
+  println(rendering)
+
+The spec continues:
+
+> When used as the data value for a Section tag, the lambda MUST be treatable
+> as an arity 1 function, and invoked as such (passing a String containing the
+> unprocessed section contents).  The returned value MUST be rendered against
+> the current delimiters, then interpolated in place of the section.
+
+::
+
+  // The strong RenderFunction below is equivalent to the pure spec lambda:
+  //
+  // lambda(string) -> String {
+  //     return "<strong>\(string)</strong>"
+  // }
+  //
+  // To this mustache.js lambda:
+  //
+  // var data = {
+  //     strong : function() {
+  //         return function(text, render) {
+  //             return "<strong>" + render(text) + "</strong>"
+  //         }
+  //     }
+  // };
+  //
+  // To this Ruby mustache lambda:
+  //
+  // class MyView < Mustache
+  //   def strong
+  //     lambda do |text|
+  //       "<strong#{render(text)}</strong>"
+  //     end
+  //   end
+  // end
+  //
+  // To this Handlebars.js helper:
+  //
+  // Handlebars.registerHelper('strong', function(options) {
+  //   return new Handlebars.SafeString(
+  //     '<strong>'
+  //     + options.fn(this)
+  //     + '</strong>');
+  // });
+  let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+      let lambdaString = "<strong>\(info.tag.innerTemplateString)</strong>"
+      let template = Template(string: lambdaString)!
+      return template.render(info.context, error: error)
+  }
+
+  let template = Template(string: "{{#strong}}Hello {{name}}{{/strong}}")!
+  template.registerInBaseContext("strong", Box(strong))
+
+  // Renders "<strong>Hello Arthur</strong>"
+  let rendering = template.render(Box(["name": Box("Arthur")]))!
+
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
