@@ -104,9 +104,9 @@
 		561E72C51A8BDD96004ED48B /* TemplateRepositoryBundleTests in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2251A27091900BD4F8F /* TemplateRepositoryBundleTests */; };
 		561E72C61A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2261A27091900BD4F8F /* TemplateRepositoryBundleTests_partial */; };
 		561E72C71A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2271A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.mustache */; };
-		561E72C81A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
+		561E72C81A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2281A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text */; };
 		561E72C91A8BDD96004ED48B /* TemplateRepositoryBundleTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B2291A27091900BD4F8F /* TemplateRepositoryBundleTests.mustache */; };
-		561E72CA1A8BDD96004ED48B /* TemplateRepositoryBundleTests.text in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
+		561E72CA1A8BDD96004ED48B /* TemplateRepositoryBundleTests.text in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22A1A27091900BD4F8F /* TemplateRepositoryBundleTests.text */; };
 		561E72CB1A8BDD9A004ED48B /* TemplateRepositoryBundleTestsResources in Resources */ = {isa = PBXBuildFile; fileRef = 56B4B22B1A27091900BD4F8F /* TemplateRepositoryBundleTestsResources */; };
 		561E72CC1A8BDD9F004ED48B /* TemplateRepositoryFileSystemTests in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */; };
 		561E72CD1A8BDDA4004ED48B /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */; };
@@ -855,6 +855,8 @@
 			files = (
 				561E72C51A8BDD96004ED48B /* TemplateRepositoryBundleTests in Resources */,
 				561E72CE1A8BDDAD004ED48B /* TemplateRepositoryFileSystemTests_UTF8 in Resources */,
+				561E72CA1A8BDD96004ED48B /* TemplateRepositoryBundleTests.text in Resources */,
+				561E72C81A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.text in Resources */,
 				561E72C91A8BDD96004ED48B /* TemplateRepositoryBundleTests.mustache in Resources */,
 				561E72CD1A8BDDA4004ED48B /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */,
 				561E72BE1A8BDD6A004ED48B /* TagTests.mustache in Resources */,
@@ -969,10 +971,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				561E72CA1A8BDD96004ED48B /* TemplateRepositoryBundleTests.text in Sources */,
 				561E72A71A8BDC6A004ED48B /* FoundationCollectionTests.swift in Sources */,
 				561E72B41A8BDC6A004ED48B /* TemplateRepositoryDataSourceTests.swift in Sources */,
-				561E72C81A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.text in Sources */,
 				561E72AB1A8BDC6A004ED48B /* RenderFunctionTests.swift in Sources */,
 				561E72B71A8BDC6A004ED48B /* TemplateRepositoryPathTests.swift in Sources */,
 				561E72A51A8BDC6A004ED48B /* FilterTests.swift in Sources */,
