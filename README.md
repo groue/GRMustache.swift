@@ -7,7 +7,7 @@ GRMustache.swift is an implementation of [Mustache templates](http://mustache.gi
 Features
 --------
 
-- Support for the full [Mustache](http://mustache.github.io) syntax
+- Support for the full [Mustache syntax](http://mustache.github.io/mustache.5.html)
 - Ability to render Swift values as well as Objective-C objects
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance
