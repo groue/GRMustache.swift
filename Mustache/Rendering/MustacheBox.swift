@@ -36,12 +36,12 @@ import Foundation
 //   FilterFunction.
 //
 // - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
-//   both invoke a RenderFunction
+//   both invoke a RenderFunction.
 //
-// - WillRenderFunction can process a value before it gets rendered
+// - WillRenderFunction can process a value before it gets rendered.
 //
 // - DidRenderFunction is symmetric to WillRenderFunction: it is called after a
-//   value has been rendered
+//   value has been rendered.
 
 
 // =============================================================================
@@ -110,12 +110,12 @@ expressions such as {{ uppercase(name) }}.
 
 It turns a MustacheBox to another MustacheBox, and optionally returns an error.
 
-You will generally not write your own FilterFunction, but rather use the
-Filter() function. For example, here is a filter that processes integers:
+You will generally not write your own FilterFunction, but rather use one
+procuded by Filter(). For example, here is a filter that processes integers:
 
 ::
 
-  let square = Filter { (x: Int, error: NSErrorPointer) in
+  let square: FilterFunction = Filter { (x: Int, error: NSErrorPointer) in
       return Box(x * x)
   }
 
@@ -1088,8 +1088,6 @@ they are about to render.
   let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
   template.extendBaseContext(Box(willRender))
   
-  // Renders "Errol Flynn"
-  //
   // Prints:
   // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
   // {{ firstName }} at line 1 will render Errol
@@ -1104,8 +1102,6 @@ section.
 
   let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
   
-  // Renders "Errol Flynn"
-  //
   // Prints:
   // {{ lastName }} at line 1 will render Flynn
   let data = [
@@ -1208,8 +1204,10 @@ section.
   ]
   let rendering = template.render(Box(data))!
 
-TODO: document why the string argument is optional
-TODO: document how to wrap both a WillRenderFunction and DidRenderFunction
+The string argument of DidRenderFunction is optional: it is nil if and only if
+the tag could not render because of a rendering error.
+
+:see: WillRenderFunction
 */
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 
@@ -1217,14 +1215,42 @@ public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String
 // =============================================================================
 // MARK: - MustacheBox
 
+/**
+MustacheBox wraps values that feed your templates.
+
+This type has no public initializer. To produce boxes, you use the Box() and
+BoxAnyValue() functions.
+
+:see: Box()
+:see: BoxAnyValue()
+*/
 public struct MustacheBox {
     
+    // Converter wraps all the conversion closures that help MustacheBox expose
+    // its raw value (typed Any) as useful types.
+    //
+    // Without those conversions, it would be very difficult for the library
+    // user to write code that processes, for example, a boxed number. They
+    // would have to attempt to cast the Any value as Int, Double, NSNumber
+    // until they would find the correct type.
     struct Converter {
+        
+        // Conversion to Int
         let intValue: (() -> Int?)?
+        
+        // Conversion to UInt
         let uintValue: (() -> UInt?)?
+        
+        // Conversion to Double
         let doubleValue: (() -> Double?)?
+        
+        // Conversion to String
         let stringValue: (() -> String?)?
+        
+        // Conversion to Array
         let arrayValue: (() -> [MustacheBox]?)?
+        
+        // Conversion to Dictionary
         let dictionaryValue: (() -> [String: MustacheBox]?)?
         
         init(
@@ -1244,14 +1270,24 @@ public struct MustacheBox {
         }
     }
     
+    /**
+    The only empty boxes are Box() and Box(NSNull())
+    */
     public let isEmpty: Bool
+    
+    /**
+    The boxed value.
+    
+    It is difficult, at runtime, to know the exact type of a boxed value.
+    */
     public let value: Any?
-    public let mustacheBool: Bool
-    public let mustacheSubscript: SubscriptFunction?
     public let render: RenderFunction
-    public let filter: FilterFunction?
-    public let willRender: WillRenderFunction?
-    public let didRender: DidRenderFunction?
+    
+    let mustacheBool: Bool
+    let mustacheSubscript: SubscriptFunction?
+    let filter: FilterFunction?
+    let willRender: WillRenderFunction?
+    let didRender: DidRenderFunction?
     let converter: Converter?
     
     init(
