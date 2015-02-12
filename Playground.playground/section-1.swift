@@ -2,10 +2,7 @@
 
 import Mustache
 
-var template: Template
-var rendering: String
-
 // Renders "Hello Arthur"
-template = Template(string: "Hello {{ name }}")!
-rendering = template.render(Box(["name": "Arthur"]))!
+let template = Template(string: "Hello {{ name }}")!
+let rendering = template.render(Box(["name": "Arthur"]))!
 println(rendering)
