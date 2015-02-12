@@ -832,10 +832,10 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
 // MARK: RenderFunction
 
 /**
-RenderFunction lets you implement custom rendering functions. This is how, for
-example, you implement "lambdas", in Mustache lingo.
+A RenderFunction is invoked as soon as a variable tag {{name}} or a section
+tag {{#name}}...{{/name}} is rendered, and lets you implement custom rendering.
 
-Sections and variable tags can be attached to custom render functions:
+This is how, for example, you implement "Mustache lambdas".
 
 ::
 
@@ -844,18 +844,17 @@ Sections and variable tags can be attached to custom render functions:
       return Rendering("foo")
   }
   
+  // A template that contains both a section and a variable tag:
   let template = Template(string: "{{#section}}variable: {{variable}}{{/section}}")!
   
-  // Attach the render function to `variable`, and render "variable: foo"
+  // Attach the render function to `variable`: render "variable: foo"
   let data1 = ["section": Box(["variable": Box(render)])]
   let rendering1 = template.render(Box(data1))!
 
-  // Attach the render function to `section`, and render "foo"
+  // Attach the render function to `section`: render "foo"
   let data2 = ["section": Box(render)]
   let rendering2 = template.render(Box(data2))!
 
-RenderFunction are versatile: they can implement Mustache lambdas and Handlebars
-helpers, for example.
 
 The Mustache specification defines lambdas at
 https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml:
@@ -939,12 +938,14 @@ The spec continues:
   }
   
 
-  Note how the spec, mustache.js and Ruby mustache require a double parsing of
-  the inner content of the section: they all process a String containing the
-  unprocessed section contents.
+Note how the spec, mustache.js and Ruby mustache require a double parsing of
+the inner content of the section: they all process a String containing the
+unprocessed section contents.
 
-  There is a better way to write this lambda, by wrapping the rendering of the
-  already-parsed Mustache tag:
+There is a better way to write this lambda, by wrapping the rendering of the
+already-parsed Mustache tag:
+
+::
 
   // The strong RenderFunction below is equivalent to this Handlebars.js helper:
   //
