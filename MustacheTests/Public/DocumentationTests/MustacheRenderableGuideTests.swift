@@ -112,7 +112,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             var mustacheBox: MustacheBox {
-                let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
+                let mustacheSubscript = { (key: String) -> MustacheBox? in
                     switch key {
                     case "firstName":
                         return Box(self.firstName)
@@ -129,7 +129,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    objectForKeyedSubscript: objectForKeyedSubscript,
+                    mustacheSubscript: mustacheSubscript,
                     render: render)
             }
         }
@@ -138,7 +138,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             var mustacheBox: MustacheBox {
-                let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
+                let mustacheSubscript = { (key: String) -> MustacheBox? in
                     switch key {
                     case "title":
                         return Box(self.title)
@@ -155,7 +155,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 }
                 return Box(
                     value: self,
-                    objectForKeyedSubscript: objectForKeyedSubscript,
+                    mustacheSubscript: mustacheSubscript,
                     render: render)
             }
         }

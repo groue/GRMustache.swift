@@ -80,29 +80,29 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testTemplateFromString() {
         let template = Template(string: templateString)!
-        let objectForKeyedSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(objectForKeyedSubscript))!
+        let mustacheSubscript = makeSubscriptFunction("foo")
+        let rendering = template.render(Box(mustacheSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = Template(path: templatePath)!
-        let objectForKeyedSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(objectForKeyedSubscript))!
+        let mustacheSubscript = makeSubscriptFunction("foo")
+        let rendering = template.render(Box(mustacheSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = Template(URL: templateURL)!
-        let objectForKeyedSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(objectForKeyedSubscript))!
+        let mustacheSubscript = makeSubscriptFunction("foo")
+        let rendering = template.render(Box(mustacheSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = Template(named: templateName, bundle: testBundle)!
-        let objectForKeyedSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(objectForKeyedSubscript))!
+        let mustacheSubscript = makeSubscriptFunction("foo")
+        let rendering = template.render(Box(mustacheSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }

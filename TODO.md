@@ -6,7 +6,7 @@ TODO
 - [X] boxValue(WillRenderFunction)
 - [X] boxValue(DidRenderFunction)
 - [X] rename InspectFunction
-- [ ] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
+- [X] rename the objectForKeyedSubscript key to something shorter that still reminds of subscripting
 - [X] Box(AnyObject) without forcing the end user to force the ObjCMustacheBoxable cast. Maybe define a specific BoxAnyObject() function.
 - [X] Don't automatically register the standard library. Instead, provide a way to register the full standard lib, or a way to register one standard tool at a time.
 - [X] Import safe handling of valueForKey: from ObjC GRMustache

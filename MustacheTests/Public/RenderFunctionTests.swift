@@ -257,25 +257,25 @@ class RenderFunctionTests: XCTestCase {
     }
 
     func testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack() {
-        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
+        let mustacheSubscript = { (key: String) -> MustacheBox? in
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Template(string:"key:{{key}}")!.render(info.context, error: error)
         }
-        let box = Box(["render": Box(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
+        let box = Box(["render": Box(mustacheSubscript: mustacheSubscript, render: render)])
         let rendering = Template(string: "{{render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack() {
-        let objectForKeyedSubscript = { (key: String) -> MustacheBox? in
+        let mustacheSubscript = { (key: String) -> MustacheBox? in
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return info.tag.render(info.context, error: error)
         }
-        let box = Box(["render": Box(objectForKeyedSubscript: objectForKeyedSubscript, render: render)])
+        let box = Box(["render": Box(mustacheSubscript: mustacheSubscript, render: render)])
         let rendering = Template(string: "{{#render}}key:{{key}}{{/render}}")!.render(box)!
         XCTAssertEqual(rendering, "key:")
     }

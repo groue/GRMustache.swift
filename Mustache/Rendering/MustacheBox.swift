@@ -969,6 +969,27 @@ already-parsed Mustache tag:
   // Renders "<strong>Hello Arthur</strong>"
   let rendering = template.render(Box(["name": Box("Arthur")]))!
 
+
+RenderFunction is invoked for both {{ variable }} and {{# section }}...{{/}}
+tags. You can query info.tag.type in order to have a different rendering
+depending on the tag type:
+
+::
+
+  let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+      switch info.tag.type {
+      case .Variable:
+          return Rendering("variable")
+      case .Section:
+          return Rendering("section")
+      }
+  }
+
+  let template = Template(string: "{{object}}, {{#object}}...{{/object}}")!
+
+  // Renders "variable, section"
+  let rendering = template.render(Box(["object": Box(render)]))!
+
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
@@ -1125,7 +1146,7 @@ public struct MustacheBox {
     public let isEmpty: Bool
     public let value: Any?
     public let mustacheBool: Bool
-    public let objectForKeyedSubscript: SubscriptFunction?
+    public let mustacheSubscript: SubscriptFunction?
     public let render: RenderFunction
     public let filter: FilterFunction?
     public let willRender: WillRenderFunction?
@@ -1136,18 +1157,18 @@ public struct MustacheBox {
         mustacheBool: Bool? = nil,
         value: Any? = nil,
         converter: Converter? = nil,
-        objectForKeyedSubscript: SubscriptFunction? = nil,
+        mustacheSubscript: SubscriptFunction? = nil,
         filter: FilterFunction? = nil,
         render: RenderFunction? = nil,
         willRender: WillRenderFunction? = nil,
         didRender: DidRenderFunction? = nil)
     {
-        let empty = (value == nil) && (objectForKeyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
+        let empty = (value == nil) && (mustacheSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
         self.converter = converter
         self.mustacheBool = mustacheBool ?? !empty
-        self.objectForKeyedSubscript = objectForKeyedSubscript
+        self.mustacheSubscript = mustacheSubscript
         self.filter = filter
         self.willRender = willRender
         self.didRender = didRender
@@ -1179,7 +1200,7 @@ public struct MustacheBox {
             mustacheBool: self.mustacheBool,
             value: value,
             converter: self.converter,
-            objectForKeyedSubscript: self.objectForKeyedSubscript,
+            mustacheSubscript: self.mustacheSubscript,
             filter: self.filter,
             render: self.render,
             willRender: self.willRender,
@@ -1187,10 +1208,74 @@ public struct MustacheBox {
     }
 }
 
+/**
+An example of a multi-facetted type:
+
+::
+
+  class Person {
+      let firstName: String
+      let lastName: String
+    
+      init(firstName: String, lastName: String) {
+          self.firstName = firstName
+          self.lastName = lastName
+      }
+  }
+
+  extension Person: MustacheBoxable {
+      var mustacheBox: MustacheBox {
+          // A person is a multi-facetted object:
+          return Box(
+              // It has a value:
+              value: self,
+            
+              // It lets Mustache extracts values by name:
+              mustacheSubscript: mustacheSubscript,
+            
+              // It performs custom rendering:
+              render: render)
+      }
+    
+      // A SubscriptFunction is necessary for Mustache to extract values by name.
+      func mustacheSubscript(key: String) -> MustacheBox? {
+          switch key {
+          case "firstName":
+              return Box(firstName)
+          case "lastName":
+              return Box(lastName)
+          default:
+              return nil
+          }
+      }
+    
+      // The custom RenderFunction escapes default Mustache rendering
+      func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+          switch info.tag.type {
+          case .Variable:
+              // Custom rendering of {{ person }} variable tags:
+              let template = Template(string: "{{firstName}} {{lastName}}")!
+              let context = info.context.extendedContext(Box(self))
+              return template.render(context, error: error)
+          case .Section:
+              // Regular rendering of {{# person }}...{{/}} section tags:
+              // Extend the context with self, and render the content of the tag:
+              let context = info.context.extendedContext(Box(self))
+              return info.tag.render(context, error: error)
+          }
+      }
+  }
+
+  // Renders "The person is Errol Flynn"
+  let person = Person(firstName: "Errol", lastName: "Flynn")
+  let template = Template(string: "{{# person }}The person is {{.}}{{/ person }}")!
+  let rendering = template.render(Box(["person": person]))!
+*/
+
 public func Box(
     mustacheBool: Bool? = nil,
     value: Any? = nil,
-    objectForKeyedSubscript: SubscriptFunction? = nil,
+    mustacheSubscript: SubscriptFunction? = nil,
     filter: FilterFunction? = nil,
     render: RenderFunction? = nil,
     willRender: WillRenderFunction? = nil,
@@ -1199,7 +1284,7 @@ public func Box(
     return MustacheBox(
         mustacheBool: mustacheBool,
         value: value,
-        objectForKeyedSubscript: objectForKeyedSubscript,
+        mustacheSubscript: mustacheSubscript,
         filter: filter,
         render: render,
         willRender: willRender,
@@ -1284,8 +1369,8 @@ extension MustacheBox: DebugPrintable {
 extension MustacheBox {
     
     subscript(key: String) -> MustacheBox {
-        if let objectForKeyedSubscript = objectForKeyedSubscript {
-            if let box = objectForKeyedSubscript(key: key) {
+        if let mustacheSubscript = mustacheSubscript {
+            if let box = mustacheSubscript(key: key) {
                 return box
             }
         }
@@ -1299,8 +1384,8 @@ extension MustacheBox {
 
 // Non-optional value to force the user to provide a value when they provide a
 // subscript function.
-public func Box(value: Any, objectForKeyedSubscript: SubscriptFunction) -> MustacheBox {
-    return MustacheBox(value: value, objectForKeyedSubscript: objectForKeyedSubscript)
+public func Box(value: Any, mustacheSubscript: SubscriptFunction) -> MustacheBox {
+    return MustacheBox(value: value, mustacheSubscript: mustacheSubscript)
 }
 
 public func Box(value: Any? = nil, filter: FilterFunction) -> MustacheBox {
@@ -1475,7 +1560,7 @@ extension String: MustacheBoxable {
             value: self,
             converter: MustacheBox.Converter(stringValue: { self }),
             mustacheBool: (countElements(self) > 0),
-            objectForKeyedSubscript: { (key: String) in
+            mustacheSubscript: { (key: String) in
                 switch key {
                 case "length":
                     return Box(countElements(self))
@@ -1550,7 +1635,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             mustacheBool: (count > 0),
             value: collection,
             converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
-            objectForKeyedSubscript: { (key: String) in
+            mustacheSubscript: { (key: String) in
                 switch key {
                 case "count":
                     // Support for both Objective-C and Swift arrays.
@@ -1610,7 +1695,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
                     }
                     return boxDictionary
                 }),
-            objectForKeyedSubscript: { (key: String) in
+            mustacheSubscript: { (key: String) in
                 return Box(dictionary[key])
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
@@ -1750,7 +1835,7 @@ extension NSObject: ObjCMustacheBoxable {
                             }
                             return boxDictionary
                         }),
-                    objectForKeyedSubscript: { (key: String) in
+                    mustacheSubscript: { (key: String) in
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                         return BoxAnyObject(item)
                     },
@@ -1780,7 +1865,7 @@ extension NSObject: ObjCMustacheBoxable {
             return ObjCMustacheBox(MustacheBox(
                 mustacheBool: true,
                 value: self,
-                objectForKeyedSubscript: { (key: String) in
+                mustacheSubscript: { (key: String) in
                     if self.respondsToSelector("objectForKeyedSubscript:")
                     {
                         // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
@@ -1851,7 +1936,7 @@ extension NSSet: ObjCMustacheBoxable {
             mustacheBool: (self.count > 0),
             value: self,
             converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
-            objectForKeyedSubscript: { (key: String) in
+            mustacheSubscript: { (key: String) in
                 switch key {
                 case "isEmpty":
                     return Box(self.count == 0)
