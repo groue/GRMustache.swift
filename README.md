@@ -1,9 +1,33 @@
 GRMustache.swift
 ================
 
-GRMustache.swift is an implementation of [Mustache templates](http://mustache.github.io) in Swift.
+GRMustache.swift is an implementation of [Mustache templates](http://mustache.github.io) in Swift, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
 
-It is quite similar to the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+
+Features
+--------
+
+- Support for the full [Mustache](http://mustache.github.io) syntax
+- Ability to render Swift values as well as Objective-C objects
+- Filters, as `{{ uppercase(name) }}`
+- Template inheritance
+- Built-in [goodies](Guides/goodies.md)
+
+
+Requirements
+------------
+
+- iOS 7.0+ / OSX 10.9+
+- Xcode 6.1
+
+
+How to
+------
+
+You'll find in the repository:
+
+- a `Mustache.xcodeproj` Xcode project to be embedded in your applications
+- a `Mustache.xcworkspace` Xcode workspace that contains a Playground and a demo application
 
 
 Usage
@@ -29,7 +53,6 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
-You can testflight GRMustache by running the playground included in `Mustache.xcworkspace`.
 
 Rendering of pure Swift Objects
 -------------------------------
@@ -115,9 +138,3 @@ template.registerInBaseContext("pluralize", Box(pluralizeFilter))
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
-
-
-Built-in goodies
-----------------
-
-GRMustache ships with a library of built-in [goodies](Guides/goodies.md) available for your templates.

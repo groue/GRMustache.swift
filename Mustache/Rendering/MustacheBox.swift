@@ -38,12 +38,14 @@ import Foundation
 // - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
 //   both invoke a RenderFunction
 //
-// - WillRenderFunction TODO
-// - DidRenderFunction TODO
+// - WillRenderFunction can process a value before it gets rendered
 //
-//
+// - DidRenderFunction is symmetric to WillRenderFunction: it is called after a
+//   value has been rendered
+
+
 // =============================================================================
-// MARK: SubscriptFunction
+// MARK: - SubscriptFunction
 
 /**
 SubscriptFunction turns a string key into a value. When GRMustache evaluates
@@ -100,7 +102,7 @@ public typealias SubscriptFunction = (key: String) -> MustacheBox?
 
 
 // =============================================================================
-// MARK: FilterFunction
+// MARK: - FilterFunction
 
 /**
 FilterFunction is the core type that lets GRMustache evalute filtered
@@ -829,7 +831,7 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
 
 
 // =============================================================================
-// MARK: RenderFunction
+// MARK: - RenderFunction
 
 /**
 A RenderFunction is invoked as soon as a variable tag {{name}} or a section
@@ -921,22 +923,12 @@ The spec continues:
   //     end
   //   end
   // end
-  //
-  // To this Handlebars.js helper:
-  //
-  // Handlebars.registerHelper('strong', function(options) {
-  //   return new Handlebars.SafeString(
-  //     '<strong>'
-  //     + options.fn(this)
-  //     + '</strong>');
-  // });
 
   let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
       let lambdaString = "<strong>\(info.tag.innerTemplateString)</strong>"
       let template = Template(string: lambdaString)!
       return template.render(info.context, error: error)
   }
-  
 
 Note how the spec, mustache.js and Ruby mustache require a double parsing of
 the inner content of the section: they all process a String containing the
@@ -968,7 +960,6 @@ already-parsed Mustache tag:
 
   // Renders "<strong>Hello Arthur</strong>"
   let rendering = template.render(Box(["name": Box("Arthur")]))!
-
 
 RenderFunction is invoked for both {{ variable }} and {{# section }}...{{/}}
 tags. You can query info.tag.type in order to have a different rendering
@@ -1043,41 +1034,11 @@ implement custom rendering functions of type RenderFunction.
 
 A RenderFunction is invoked as soon as a variable tag {{name}} or a section
 tag {{#name}}...{{/name}} is rendered. Its RenderingInfo parameter provides
-information about the rendered tag, variable or section, and the context stack.
-
-Example:
-
-::
-
-  let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-
-      switch info.tag.type {
-      case .Variable:
-          // Render the {{object}} variable tag
-
-          return Rendering("variable")
-
-      case .Section:
-          // Render the {{#object}}...{{/object}} section tag.
-          //
-          // Extend the current context with ["value": "foo"], and proceed
-          // with regular rendering of the inner content of the section.
-
-          let context = info.context.extendedContext(Box(["value": "foo"]))
-          return info.tag.render(context, error: error)
-      }
-  }
-  let data = ["object": Box(render)]
-
-  // Renders "variable"
-  let template1 = Template(string: "{{object}}")!
-  let rendering1 = template1.render(Box(data))!
-
-  // Renders "value: foo"
-  let template2 = Template(string: "{{#object}}value: {{value}}{{/object}}")!
-  let rendering2 = template2.render(Box(data))!
+information about the rendered tag, and the context stack.
 
 :see: RenderFunction
+:see: Tag
+:see: Context
 */
 public struct RenderingInfo {
     
@@ -1106,10 +1067,16 @@ public struct RenderingInfo {
     }
 }
 
-// MARK: WillRenderFunction
+
+// =============================================================================
+// MARK: - WillRenderFunction
+
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 
-// MARK: DidRenderFunction
+
+// =============================================================================
+// MARK: - DidRenderFunction
+
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 
 
