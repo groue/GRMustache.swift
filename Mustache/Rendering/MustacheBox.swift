@@ -380,7 +380,11 @@ of domain GRMustacheErrorDomain and code GRMustacheErrorCodeRenderingError.
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -394,7 +398,11 @@ public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> Fil
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -415,7 +423,11 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -434,7 +446,11 @@ public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -455,7 +471,11 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -474,7 +494,11 @@ public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunct
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -495,7 +519,11 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -514,7 +542,11 @@ public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunc
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -535,7 +567,11 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -554,7 +590,11 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -575,7 +615,11 @@ public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterF
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -594,7 +638,11 @@ public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFu
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -614,7 +662,11 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (box: MustacheBox, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -623,7 +675,11 @@ public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rende
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (t: T?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -632,7 +688,11 @@ public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?)
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (t: T, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -641,7 +701,11 @@ public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) 
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (int: Int?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -650,7 +714,11 @@ public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) 
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (int: Int, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -659,7 +727,11 @@ public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (uint: UInt?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -668,7 +740,11 @@ public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?)
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (uint: UInt, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -677,7 +753,11 @@ public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) 
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (double: Double?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -686,7 +766,11 @@ public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (double: Double, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -695,7 +779,11 @@ public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (string: String?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -704,7 +792,11 @@ public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (string: String, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
@@ -713,7 +805,11 @@ public func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?
     }
 }
 
-// :see: FilterFunction
+/**
+This function is documented with the FilterFunction type.
+
+:see: FilterFunction
+*/
 public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return _VariadicFilter([], filter)
 }
@@ -780,6 +876,7 @@ So here the way to write a spec-compliant lambda for a variable tag:
   // lambda() -> String {
   //     return "Hello {{ name }}"
   // }
+
   let greeting: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
       let lambdaString = "Hello {{ name }}"
       let template = Template(string: lambdaString)!
@@ -790,7 +887,6 @@ So here the way to write a spec-compliant lambda for a variable tag:
 
   // Renders "Hello Arthur"
   let rendering = template.render(Box(["greeting": Box(greeting), "name": Box("Arthur")]))!
-  println(rendering)
 
 The spec continues:
 
@@ -835,10 +931,35 @@ The spec continues:
   //     + options.fn(this)
   //     + '</strong>');
   // });
+
   let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
       let lambdaString = "<strong>\(info.tag.innerTemplateString)</strong>"
       let template = Template(string: lambdaString)!
       return template.render(info.context, error: error)
+  }
+  
+
+  Note how the spec, mustache.js and Ruby mustache require a double parsing of
+  the inner content of the section: they all process a String containing the
+  unprocessed section contents.
+
+  There is a better way to write this lambda, by wrapping the rendering of the
+  already-parsed Mustache tag:
+
+  // The strong RenderFunction below is equivalent to this Handlebars.js helper:
+  //
+  // Handlebars.registerHelper('strong', function(options) {
+  //   return new Handlebars.SafeString(
+  //     '<strong>'
+  //     + options.fn(this)
+  //     + '</strong>');
+  // });
+
+  let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+      return Rendering(
+          "<strong>" +
+          info.tag.render(info.context)!.string +   // Ignore errors for this example
+          "</strong>", .HTML)
   }
 
   let template = Template(string: "{{#strong}}Hello {{name}}{{/strong}}")!
