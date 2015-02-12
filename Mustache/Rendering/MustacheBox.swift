@@ -1071,12 +1071,101 @@ public struct RenderingInfo {
 // =============================================================================
 // MARK: - WillRenderFunction
 
+/**
+Once a WillRenderFunction has entered the context stack, it is called just
+before tags are about to render, and has the opportunity to replace the value
+they are about to render.
+
+::
+
+  let willRender: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
+      println("\(tag) will render \(box.value!)")
+      return box
+  }
+  
+  // By entering the base context of the template, the willRender function
+  // will be notified of all tags.
+  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+  template.extendBaseContext(Box(willRender))
+  
+  // Renders "Errol Flynn"
+  //
+  // Prints:
+  // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
+  // {{ firstName }} at line 1 will render Errol
+  // {{ lastName }} at line 1 will render Flynn
+  let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+  let rendering = template.render(Box(data))!
+
+WillRender functions don't have to enter the base context of a template to
+perform: they can enter the context stack just like any other value, by being
+attached to a section. In this case, they are only notified of tags inside that
+section.
+
+  let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
+  
+  // Renders "Errol Flynn"
+  //
+  // Prints:
+  // {{ lastName }} at line 1 will render Flynn
+  let data = [
+      "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
+      "spy": Box(willRender)
+  ]
+  let rendering = template.render(Box(data))!
+
+TODO: document how to wrap both a WillRenderFunction and DidRenderFunction
+*/
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 
 
 // =============================================================================
 // MARK: - DidRenderFunction
 
+/**
+Once a DidRenderFunction has entered the context stack, it is called just
+after tags have been rendered.
+
+::
+
+  let didRender: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
+      println("\(tag) did render \(box.value!) as `\(string!)`")
+  }
+  
+  // By entering the base context of the template, the willRender function
+  // will be notified of all tags.
+  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+  template.extendBaseContext(Box(didRender))
+  
+  // Renders "Errol Flynn"
+  //
+  // Prints:
+  // {{ firstName }} at line 1 did render Errol as `Errol`
+  // {{ lastName }} at line 1 did render Flynn as `Flynn`
+  // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
+  // let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+  let rendering = template.render(Box(data))!
+
+DidRender functions don't have to enter the base context of a template to
+perform: they can enter the context stack just like any other value, by being
+attached to a section. In this case, they are only notified of tags inside that
+section.
+
+  let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
+  
+  // Renders "Errol Flynn"
+  //
+  // Prints:
+  // {{ lastName }} at line 1 did render Flynn as `Flynn`
+  let data = [
+      "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
+      "spy": Box(willRender)
+  ]
+  let rendering = template.render(Box(data))!
+
+TODO: document why the string argument is optional
+TODO: document how to wrap both a WillRenderFunction and DidRenderFunction
+*/
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 
 
