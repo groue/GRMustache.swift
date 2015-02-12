@@ -14,11 +14,15 @@ class ViewController: NSViewController {
     @IBOutlet var JSONTextView: NSTextView!
     @IBOutlet var renderingTextView: NSTextView!
     @IBOutlet var model: Model!
+    let font = NSFont(name: "Menlo", size: 12)
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        templateTextView.automaticQuoteSubstitutionEnabled = false;
-        JSONTextView.automaticQuoteSubstitutionEnabled = false;
+        
+        for textView in [templateTextView, JSONTextView] {
+            textView.automaticQuoteSubstitutionEnabled = false;
+            textView.textStorage?.font = font
+        }
     }
     
     @IBAction func render(sender: AnyObject) {
@@ -40,16 +44,18 @@ class ViewController: NSViewController {
 
             let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
             if let JSONObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) {
-                if let rendering = template.render(BoxAnyObject(JSONObject), error: &error) {
-                    self.renderingTextView.string = rendering
-                } else {
-                    self.renderingTextView.string = "Mustache rendering error: \(error!.localizedDescription)"
+                if let string = template.render(BoxAnyObject(JSONObject), error: &error) {
+                    presentRenderingString(string)
+                    return
                 }
-            } else {
-                self.renderingTextView.string = "JSON error: \(error!.localizedDescription)"
             }
-        } else {
-            self.renderingTextView.string = "Mustache parsing error: \(error!.localizedDescription)"
         }
+        
+        presentRenderingString("\(error!.domain): \(error!.localizedDescription)")
+    }
+    
+    func presentRenderingString(string: String) {
+        self.renderingTextView.string = string
+        self.renderingTextView.textStorage?.font = font
     }
 }
