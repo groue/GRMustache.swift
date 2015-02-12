@@ -1114,7 +1114,52 @@ section.
   ]
   let rendering = template.render(Box(data))!
 
-TODO: document how to wrap both a WillRenderFunction and DidRenderFunction
+WillRenderFunction and DidRenderFunction work nicely together:
+
+::
+
+  var indentLevel = 0
+  
+  // willRender outputs the rendered tags, and increments indentation level when
+  // it enters a section tag.
+  let willRender: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
+      print(String(count: indentLevel * 4, repeatedValue: " " as Character))
+      println(tag)
+      if tag.type == TagType.Section {
+          indentLevel++
+      }
+      return box
+  }
+  
+  // didRender decrements indentation level when it leaves a section tag.
+  let didRender: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
+      if tag.type == TagType.Section {
+          indentLevel--
+      }
+  }
+  
+  // Have both willRender and didRender enter the context stack:
+  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}\nAwards: {{# awards }}\n- {{.}}{{/ awards }}")!
+  template.extendBaseContext(Box(willRender: willRender, didRender: didRender))
+  
+  // Prints:
+  // {{# user }} at line 1
+  //     {{ firstName }} at line 1
+  //     {{ lastName }} at line 1
+  // {{# awards }} at line 2
+  //     {{.}} at line 3
+  //     {{.}} at line 3
+  //     {{.}} at line 3
+  let data = [
+      "user": [
+          "firstName": "Sean",
+          "lastName": "Connery"],
+      "awards": ["Academy Award", "BAFTA Awards", "Golden Globes"]]
+  let rendering = template.render(Box(data))!
+
+:see: DidRenderFunction
+:see: Tag
+:see: MustacheBox
 */
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 
