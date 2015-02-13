@@ -1937,83 +1937,84 @@ extension NSObject: ObjCMustacheBoxable {
     }
 }
 
-/**
-Let NSNull feed Mustache templates.
-
-NSNull never render anything:
-
-::
-
-  // Renders "null:"
-  let template = Template(string: "null:{{null}}")!
-  let data = ["null": NSNull()]
-  let rendering = template.render(Box(data))!
-
-NSNull is a falsey value:
-
-::
-
-  // Renders "null is falsey."
-  let template = Template(string: "null is {{#null}}truthy{{^}}falsey{{/}}.")!
-  let data = ["null": NSNull()]
-  let rendering = template.render(Box(data))!
-
-A Box wrapping NSNull is empty:
-
-::
-
-  let box = Box(NSNull())
-  let value = box.value as NSNull   // NSNull
-  let isEmpty = box.isEmpty         // true
-*/
 extension NSNull: ObjCMustacheBoxable {
+    /**
+    Let NSNull feed Mustache templates.
+    
+    NSNull doesn't render anything:
+    
+    ::
+    
+      // Renders "null:"
+      let template = Template(string: "null:{{null}}")!
+      let data = ["null": NSNull()]
+      let rendering = template.render(Box(data))!
+    
+    NSNull is a falsey value:
+    
+    ::
+    
+      // Renders "null is falsey."
+      let template = Template(string: "null is {{#null}}truthy{{^}}falsey{{/}}.")!
+      let data = ["null": NSNull()]
+      let rendering = template.render(Box(data))!
+    
+    A Box wrapping NSNull is empty:
+    
+    ::
+    
+      let box = Box(NSNull())
+      let value = box.value as NSNull   // NSNull
+      let isEmpty = box.isEmpty         // true
+    */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox().boxWithValue(self))
     }
 }
 
-/**
-Let NSNumber feed Mustache templates.
-
-NSNumber whose boolValue is false are falsey:
-
-::
-
-  // Renders "0 is falsey. 1 is truthy."
-  let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
-  let data = ["numbers": [NSNumber(int: 0), NSNumber(int: 1)]]
-  let rendering = template.render(Box(data))!
-
-GRMustache makes sure NSNumber and Swift types Int, UInt, and Double have the
-same behavior: whatever the actual type of boxed numbers, your templates render
-the same.
-
-Whenever you want to extract a numeric value out of a box, beware that some
-casts of the raw boxed value will fail. You may prefer the MustacheBox
-properties intValue, uintValue and doubleValue which never fail:
-
-::
-
-  let box1 = Box(NSNumber(int: 1))
-  let box2 = Box(1)
-
-  box1.value as NSNumber  // 1
-  box1.value as Int       // 1
-  //box1.value as UInt    // Error
-  //box1.value as Double  // Error
-  box2.value as NSNumber  // 1
-  box2.value as Int       // 1
-  //box2.value as UInt    // Error
-  //box2.value as Double  // Error
-  
-  box1.intValue           // 1
-  box1.uintValue          // 1
-  box1.doubleValue        // 1.0
-  box2.intValue           // 1
-  box2.uintValue          // 1
-  box2.doubleValue        // 1.0
-*/
 extension NSNumber: ObjCMustacheBoxable {
+    /**
+    Let NSNumber feed Mustache templates.
+    
+    NSNumber whose boolValue is false are falsey:
+    
+    ::
+    
+      // Renders "0 is falsey. 1 is truthy."
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["numbers": [NSNumber(int: 0), NSNumber(int: 1)]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure NSNumber and Swift types Int, UInt, and Double have the
+    same behavior: whatever the actual type of boxed numbers, your templates render
+    the same.
+    
+    Whenever you want to extract a numeric value out of a box, beware that some
+    casts of the raw boxed value will fail. You may prefer the MustacheBox
+    properties intValue, uintValue and doubleValue which never fail (as long
+    as the boxed value is numeric).
+    
+    ::
+    
+      let box1 = Box(NSNumber(int: 1))
+      let box2 = Box(1)
+    
+      box1.value as NSNumber  // 1
+      box1.value as Int       // 1
+      //box1.value as UInt    // Error
+      //box1.value as Double  // Error
+      box2.value as NSNumber  // 1
+      box2.value as Int       // 1
+      //box2.value as UInt    // Error
+      //box2.value as Double  // Error
+      
+      box1.intValue           // 1
+      box1.uintValue          // 1
+      box1.doubleValue        // 1.0
+      box2.intValue           // 1
+      box2.uintValue          // 1
+      box2.doubleValue        // 1.0
+    */
     public override var mustacheBox: ObjCMustacheBox {
         let objCType = String.fromCString(self.objCType)!
         switch objCType {
@@ -2032,31 +2033,31 @@ extension NSNumber: ObjCMustacheBoxable {
     }
 }
 
-/**
-Let NSString feed Mustache templates.
-
-Empty strings are falsey:
-
-::
-
-  // Renders "`` is falsey. `yeah` is truthy."
-  let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
-  let data = ["strings": [NSString(), "yeah" as NSString]]
-  let rendering = template.render(Box(data))!
-
-GRMustache makes sure NSString and the String Swift type have the same behavior:
-whatever the actual type of boxed strings, your templates render the same.
-
-Whenever you want to extract a string out of a box, cast the boxed value to
-String or NSString:
-
-::
-
-  let box = Box("foo" as NSString)
-  box.value as String     // "foo"
-  box.value as NSString   // "foo"
-*/
 extension NSString: ObjCMustacheBoxable {
+    /**
+    Let NSString feed Mustache templates.
+    
+    Empty strings are falsey:
+    
+    ::
+    
+      // Renders "`` is falsey. `yeah` is truthy."
+      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["strings": [NSString(), "yeah" as NSString]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure NSString and the String Swift type have the same behavior:
+    whatever the actual type of boxed strings, your templates render the same.
+    
+    Whenever you want to extract a string out of a box, cast the boxed value to
+    String or NSString:
+    
+    ::
+    
+      let box = Box("foo" as NSString)
+      box.value as String     // "foo"
+      box.value as NSString   // "foo"
+    */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(Box(self as String))
     }
