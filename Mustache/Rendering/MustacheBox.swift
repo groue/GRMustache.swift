@@ -1752,6 +1752,77 @@ extension Double: MustacheBoxable {
 }
 
 extension String: MustacheBoxable {
+    /**
+    Let String feed Mustache templates.
+    
+    Strings are rendered HTML-escaped by {{ double-mustache }} tags, and raw
+    by {{{ triple-mustache }}} tags:
+    
+    ::
+    
+      // Renders "Escaped: Arthur &amp; Barbara, Non-escaped: Arthur & Barbara"
+      var template = Template(string: "Escaped: {{string}}, Non-escaped: {{{string}}}")!
+      template.render(Box(["string": "Arthur & Barbara"]))!
+    
+    Empty strings are falsey:
+    
+    ::
+    
+      // Renders "`` is falsey. `yeah` is truthy."
+      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["strings": ["", "yeah"]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure String and NSString have the same behavior: whatever
+    the actual type of boxed strings, your templates render the same.
+    
+    Whenever you want to extract a string out of a box, cast the boxed value to
+    String or NSString:
+    
+    ::
+    
+      let box = Box("foo")
+      box.value as String     // "foo"
+      box.value as NSString   // "foo"
+    
+    If the box does not contain a String, this cast would fail. If you want to
+    process the rendering of a value ("123" for 123), consider looking at the
+    documentation of:
+    
+    - func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction
+    - RenderFunction
+    
+    For example, the `twice` filter below is able to render any value twice (not
+    only strings):
+    
+    ::
+    
+      let twice = Filter { (rendering: Rendering, error: NSErrorPointer) in
+          return Rendering(rendering.string + rendering.string)
+      }
+      
+      var template = Template(string: "{{twice(x)}}")!
+      template.registerInBaseContext("twice", Box(twice))
+      
+      // Renders "123123"
+      template.render(Box(["x": 123]))!
+    
+    This other `twice`, a RenderFunction this time, is able to render twice a
+    section:
+    
+    ::
+    
+      let twice: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+          let rendering = info.tag.render(info.context, error: error)!
+          return Rendering(rendering.string + rendering.string)
+      }
+      
+      var template = Template(string: "{{#twice}}Hello {{name}}!{{/twice}}")!
+      template.registerInBaseContext("twice", Box(twice))
+      
+      // Renders "Hello Arthur!Hello Arthur!"
+      template.render(Box(["name": "Arthur"]))!
+    */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -2190,26 +2261,7 @@ extension NSString: ObjCMustacheBoxable {
     /**
     Let NSString feed Mustache templates.
     
-    Empty strings are falsey:
-    
-    ::
-    
-      // Renders "`` is falsey. `yeah` is truthy."
-      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
-      let data = ["strings": [NSString(), "yeah" as NSString]]
-      let rendering = template.render(Box(data))!
-    
-    GRMustache makes sure NSString and the String Swift type have the same behavior:
-    whatever the actual type of boxed strings, your templates render the same.
-    
-    Whenever you want to extract a string out of a box, cast the boxed value to
-    String or NSString:
-    
-    ::
-    
-      let box = Box("foo" as NSString)
-      box.value as String     // "foo"
-      box.value as NSString   // "foo"
+    See the documentation of String.mustacheBox.
     */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(Box(self as String))
