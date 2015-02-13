@@ -2280,7 +2280,7 @@ extension NSSet: ObjCMustacheBoxable {
       // Renders "Empty"
       template.render(Box(["set": NSSet()]))!
     
-    Sets can be queried for the following key:
+    Sets can be queried for the following keys:
     
     - count: number of elements in the set
     - anyObject: any object of the set
@@ -2298,7 +2298,7 @@ extension NSSet: ObjCMustacheBoxable {
       template.render(Box(["set": NSSet()]))!
     
     In order to render a section if and only if a set is not empty, you can
-    query its count property (since 0 is falsey):
+    query its `count` property, which behaves as the false boolean when zero.
     
     ::
     
@@ -2309,8 +2309,8 @@ extension NSSet: ObjCMustacheBoxable {
     
     Sets can not be queried for the key `isEmpty` on purpose. `set.isEmpty`
     would evaluate to false in case of a missing set, and this would be soooo
-    misleading. So we recommend testing for `set.count` as above (which is
-    falsey for both empty and missing sets).
+    misleading. On the contrary, `set.count` is falsey for both empty and
+    missing sets, and this is why it is the recommended technique.
     */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
