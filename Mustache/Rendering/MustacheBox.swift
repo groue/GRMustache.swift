@@ -1509,9 +1509,9 @@ extension Bool: MustacheBoxable {
       boxedBool.value as NSNumber     // 0
       boxedBool.value as Bool         // false
       
-      boxedNSNumber.boolValue        // false
-      boxedInt.boolValue             // false
-      boxedBool.boolValue            // false
+      boxedNSNumber.boolValue         // false
+      boxedInt.boolValue              // false
+      boxedBool.boolValue             // false
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
