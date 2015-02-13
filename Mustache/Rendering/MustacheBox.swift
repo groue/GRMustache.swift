@@ -1908,10 +1908,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                     // Support for both Objective-C and Swift arrays.
                     return Box(count)
                     
-                case "isEmpty":
-                    // Support for Swift arrays.
-                    return Box(count == 0)
-                    
                 case "firstObject", "first":
                     // Support for both Objective-C and Swift arrays.
                     if count > 0 {
@@ -2286,17 +2282,11 @@ extension NSSet: ObjCMustacheBoxable {
     
     Sets can be queried for the following key:
     
-    - isEmpty: true if the set is empty
     - count: number of elements in the set
     - anyObject: any object of the set
     
     ::
     
-      // Renders "Not empty" and "Empty"
-      var template = Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!
-      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
-      template.render(Box(["set": NSSet()]))!
-      
       // Renders "3" and "0"
       template = Template(string: "{{set.count}}")!
       template.render(Box(["set": NSSet(objects: 1,2,3)]))!
@@ -2308,14 +2298,19 @@ extension NSSet: ObjCMustacheBoxable {
       template.render(Box(["set": NSSet()]))!
     
     In order to render a section if and only if a set is not empty, you can
-    query its isEmpty ou count property (since 0 is falsey):
+    query its count property (since 0 is falsey):
     
     ::
     
       // Renders "Set elements are 3,1,2," and "Set is empty"
-      var template = Template(string: "{{#set.isEmpty}}Set is empty{{^}}Set elements are: {{#set}}{{.}},{{/set}}{{/}}")!
+      var template = Template(string: "{{#set.count}}Set elements are: {{#set}}{{.}},{{/set}}{{^}}Set is empty{{/}}")!
       template.render(Box(["set": NSSet(objects: 1,2,3)]))!
       template.render(Box(["set": NSSet()]))!
+    
+    Sets can not be queried for the key `isEmpty` on purpose. `set.isEmpty`
+    would evaluate to false in case of a missing set, and this would be soooo
+    misleading. So we recommend testing for `set.count` as above (which is
+    falsey for both empty and missing sets).
     */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
@@ -2324,8 +2319,6 @@ extension NSSet: ObjCMustacheBoxable {
             converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
             mustacheSubscript: { (key: String) in
                 switch key {
-                case "isEmpty":
-                    return Box(self.count == 0)
                 case "count":
                     return Box(self.count)
                 case "anyObject":
