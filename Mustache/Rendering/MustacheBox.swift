@@ -2093,7 +2093,51 @@ extension NSObject : ObjCMustacheBoxable {
     An objet is treated as a dictionary if it conforms to NSFastEnumeration and
     responds to the objectForKeyedSubscript: selector.
     
-    TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+    ::
+    
+      let template = Template(string: "{{name}} is {{age}}.")!
+    
+      // Renders "Arthur is 36."
+      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
+      template.render(Box(dictionary))!
+
+    
+    An objet is treated as an array if it conforms to NSFastEnumeration and
+    does not respond to the objectForKeyedSubscript:.
+    
+    ::
+    
+      let template = Template(string: "{{#voyels}}{{.}}{{/voyels}}")!
+    
+      // Renders "AEIOU"
+      let data = ["voyels": ["A", "E", "I", "O", "U"] as NSArray]
+      template.render(Box(data))!
+
+    Other objects fall in the general case. Their keys are extracted with the
+    objectForKeyedSubscript: method if it is available, or with valueForKey:, as
+    long as the key is "safe". Safe keys are, by default, property getters and
+    NSManagedObject attributes. The GRMustacheSafeKeyAccess lets a class specify
+    a custom list of keys that are available through valueForKey:.
+    
+    ::
+    
+      class Person: NSObject {
+          let name: String
+          let age: UInt
+          
+          init(name: String, age: UInt) {
+              self.name = name
+              self.age = age
+          }
+      }
+      
+      let template = Template(string: "{{name}} is {{age}}.")!
+      
+      // Renders "Arthur is 36."
+      let person = Person(name: "Arthur", age: 36)
+      template.render(Box(person))!
+    
+    TODO: document ObjCMustacheBox, arrayValue, dictionaryValue
     */
     public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration
