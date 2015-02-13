@@ -260,5 +260,57 @@ class FilterTests: XCTestCase {
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
+    func testFilterOfOptionalString() {
+        let twice = Filter { (x: String?, error: NSErrorPointer) in
+            if let x = x {
+                return Box(x + x)
+            } else {
+                return Box("Nil")
+            }
+        }
+        let template = Template(string: "{{twice(x)}}")!
+        template.registerInBaseContext("twice", Box(twice))
+        
+        var rendering = template.render(Box(["x": "A"]))
+        XCTAssertEqual(rendering!, "AA")
+        
+        rendering = template.render(Box(["x": "A" as NSString]))
+        XCTAssertEqual(rendering!, "AA")
+        
+        rendering = template.render(Box())
+        XCTAssertEqual(rendering!, "Nil")
+        
+        var error: NSError? = nil
+        rendering = template.render(Box(["x": 1]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+    }
+    
+    func testFilterOfString() {
+        let twice = Filter { (x: String, error: NSErrorPointer) in
+            return Box(x + x)
+        }
+        let template = Template(string: "{{twice(x)}}")!
+        template.registerInBaseContext("twice", Box(twice))
+        
+        var rendering = template.render(Box(["x": "A"]))
+        XCTAssertEqual(rendering!, "AA")
+        
+        rendering = template.render(Box(["x": "A" as NSString]))
+        XCTAssertEqual(rendering!, "AA")
+        
+        var error: NSError? = nil
+        rendering = template.render(Box(), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        rendering = template.render(Box(["x": 1]), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+    }
+    
     // TODO: import ValueTests.testCustomValueFilter(): testFilterOfOptionalXXX, testFilterOfXXX, etc. for all supported types
 }

@@ -28,7 +28,7 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
         let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            return Box(",".join(boxes.map { $0.stringValue ?? "" }))
+            return Box(",".join(boxes.map { ($0.value as? String) ?? "" }))
         })
         let box = Box([
             "a": Box("a"),
@@ -42,9 +42,9 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanReturnFilter() {
         let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
-            let joined = ",".join(boxes.map { $0.stringValue ?? "" })
+            let joined = ",".join(boxes.map { ($0.value as? String) ?? "" })
             return Box(Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
-                return Box(joined + "+" + (box.stringValue ?? ""))
+                return Box(joined + "+" + ((box.value as? String) ?? ""))
             }))
         })
         let box = Box([

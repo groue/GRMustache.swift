@@ -40,7 +40,7 @@ class ReadMeTests: XCTestCase {
             "taxed_value": 10000 - (10000 * 0.4),
             "in_ca": true]
         let rendering = template.render(Box(data))!
-        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000 dollars!\n\nWell, 6000 dollars, after taxes.\n")
+        XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     
     func testReadmeExample2() {

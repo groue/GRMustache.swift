@@ -266,14 +266,14 @@ class HookFunctionTests: XCTestCase {
         var willRenderIndex1 = 0
         var didRenderIndex1 = 0
         let willRender1 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 willRenderIndex1 = willRenderIndex
                 willRenderIndex++
             }
             return box
         }
         let didRender1 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 didRenderIndex1 = didRenderIndex
                 didRenderIndex++
             }
@@ -282,14 +282,14 @@ class HookFunctionTests: XCTestCase {
         var willRenderIndex2 = 0
         var didRenderIndex2 = 0
         let willRender2 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 willRenderIndex2 = willRenderIndex
                 willRenderIndex++
             }
             return box
         }
         let didRender2 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 didRenderIndex2 = didRenderIndex
                 didRenderIndex++
             }
@@ -298,14 +298,14 @@ class HookFunctionTests: XCTestCase {
         var willRenderIndex3 = 0
         var didRenderIndex3 = 0
         let willRender3 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 willRenderIndex3 = willRenderIndex
                 willRenderIndex++
             }
             return box
         }
         let didRender3 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
-            if box.stringValue == "observed" {
+            if box.value as? String == "observed" {
                 didRenderIndex3 = didRenderIndex
                 didRenderIndex++
             }

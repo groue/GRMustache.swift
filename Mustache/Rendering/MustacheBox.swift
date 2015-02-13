@@ -166,7 +166,6 @@ you should use a variant documented below.
 - func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
-- func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
 Those variants returns a filter that takes an optional single argument of a
 specific type.
@@ -220,7 +219,6 @@ value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
 - func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction
-- func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 
 Those variants returns a filter that takes a single argument of a specific type.
 
@@ -323,8 +321,6 @@ to HTML:
 - func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
-- func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
-- func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 
 Those variants return filters that are able to perform custom rendering.
 
@@ -597,54 +593,6 @@ This function is documented with the FilterFunction type.
 
 :see: FilterFunction
 */
-public func Filter(filter: (String?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if box.isEmpty {
-            return filter(nil, error)
-        } else if let t = box.stringValue {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
-        }
-    }
-}
-
-/**
-This function is documented with the FilterFunction type.
-
-:see: FilterFunction
-*/
-public func Filter(filter: (String, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.stringValue {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
-        }
-    }
-}
-
-/**
-This function is documented with the FilterFunction type.
-
-:see: FilterFunction
-*/
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
@@ -777,32 +725,6 @@ public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?
     return Filter { (double: Double, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(double, info, error)
-        }
-    }
-}
-
-/**
-This function is documented with the FilterFunction type.
-
-:see: FilterFunction
-*/
-public func Filter(filter: (String?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (string: String?, error: NSErrorPointer) in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(string, info, error)
-        }
-    }
-}
-
-/**
-This function is documented with the FilterFunction type.
-
-:see: FilterFunction
-*/
-public func Filter(filter: (String, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (string: String, error: NSErrorPointer) in
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(string, info, error)
         }
     }
 }
@@ -1244,9 +1166,6 @@ public struct MustacheBox {
         // Conversion to Double
         let doubleValue: (() -> Double?)?
         
-        // Conversion to String
-        let stringValue: (() -> String?)?
-        
         // Conversion to Array
         let arrayValue: (() -> [MustacheBox]?)?
         
@@ -1257,14 +1176,12 @@ public struct MustacheBox {
             intValue: (() -> Int?)? = nil,
             uintValue: (() -> UInt?)? = nil,
             doubleValue: (() -> Double?)? = nil,
-            stringValue: (() -> String?)? = nil,
             arrayValue: (() -> [MustacheBox]?)? = nil,
             dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
         {
             self.intValue = intValue
             self.uintValue = uintValue
             self.doubleValue = doubleValue
-            self.stringValue = stringValue
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
         }
@@ -1329,9 +1246,7 @@ public struct MustacheBox {
         }
     }
 
-    // Hackish helper function which helps us boxing NSArray, NSString and
-    // NSNull: we just box a regular [MustacheBox] or Swift String, and rewrite
-    // the value to the original Objective-C value.
+    // Hackish helper function which helps us boxing NSArray and NSNull.
     func boxWithValue(value: Any?) -> MustacheBox {
         return MustacheBox(
             mustacheBool: self.mustacheBool,
@@ -1456,14 +1371,6 @@ extension MustacheBox {
     */
     public var doubleValue: Double? {
         return converter?.doubleValue?()
-    }
-    
-    /**
-    If the boxed value is a string (String and NSString), returns this value as
-    a String.
-    */
-    public var stringValue: String? {
-        return converter?.stringValue?()
     }
     
     /**
@@ -1695,7 +1602,6 @@ extension String: MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            converter: MustacheBox.Converter(stringValue: { self }),
             mustacheBool: (countElements(self) > 0),
             mustacheSubscript: { (key: String) in
                 switch key {
@@ -2031,39 +1937,128 @@ extension NSObject: ObjCMustacheBoxable {
     }
 }
 
+/**
+Let NSNull feed Mustache templates.
+
+NSNull never render anything:
+
+::
+
+  // Renders "null:"
+  let template = Template(string: "null:{{null}}")!
+  let data = ["null": NSNull()]
+  let rendering = template.render(Box(data))!
+
+NSNull is a falsey value:
+
+::
+
+  // Renders "null is falsey."
+  let template = Template(string: "null is {{#null}}truthy{{^}}falsey{{/}}.")!
+  let data = ["null": NSNull()]
+  let rendering = template.render(Box(data))!
+
+A Box wrapping NSNull is empty:
+
+::
+
+  let box = Box(NSNull())
+  let value = box.value as NSNull   // NSNull
+  let isEmpty = box.isEmpty         // true
+*/
 extension NSNull: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox().boxWithValue(self))
     }
 }
 
+/**
+Let NSNumber feed Mustache templates.
+
+NSNumber whose boolValue is false are falsey:
+
+::
+
+  // Renders "0 is falsey. 1 is truthy."
+  let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+  let data = ["numbers": [NSNumber(int: 0), NSNumber(int: 1)]]
+  let rendering = template.render(Box(data))!
+
+GRMustache makes sure NSNumber and Swift types Int, UInt, and Double have the
+same behavior: whatever the actual type of boxed numbers, your templates render
+the same.
+
+Whenever you want to extract a numeric value out of a box, beware that some
+casts of the raw boxed value will fail. You may prefer the MustacheBox
+properties intValue, uintValue and doubleValue which never fail:
+
+::
+
+  let box1 = Box(NSNumber(int: 1))
+  let box2 = Box(1)
+
+  box1.value as NSNumber  // 1
+  box1.value as Int       // 1
+  //box1.value as UInt    // Error
+  //box1.value as Double  // Error
+  box2.value as NSNumber  // 1
+  box2.value as Int       // 1
+  //box2.value as UInt    // Error
+  //box2.value as Double  // Error
+  
+  box1.intValue           // 1
+  box1.uintValue          // 1
+  box1.doubleValue        // 1.0
+  box2.intValue           // 1
+  box2.uintValue          // 1
+  box2.doubleValue        // 1.0
+*/
 extension NSNumber: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(MustacheBox(
-            value: self,
-            converter: MustacheBox.Converter(
-                intValue: { self.integerValue },
-                uintValue: { UInt(self.unsignedIntegerValue) }, // Oddly, -[NSNumber unsignedIntegerValue] returns an Int
-                doubleValue: { self.doubleValue }),
-            mustacheBool: self.boolValue,
-            render: { (info: RenderingInfo, error: NSErrorPointer) in
-                switch info.tag.type {
-                case .Variable:
-                    return Rendering("\(self)")
-                case .Section:
-                    if info.enumerationItem {
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                    } else {
-                        return info.tag.render(info.context, error: error)
-                    }
-                }
-        }))
+        let objCType = String.fromCString(self.objCType)!
+        switch objCType {
+        case "c", "i", "s", "l", "q":
+            return ObjCMustacheBox(Box(Int(longLongValue)))
+        case "C", "I", "S", "L", "Q":
+            return ObjCMustacheBox(Box(UInt(unsignedLongLongValue)))
+        case "f", "d":
+            return ObjCMustacheBox(Box(doubleValue))
+        case "B":
+            return ObjCMustacheBox(Box(boolValue))
+        default:
+            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented yet: value is discarded.")
+            return ObjCMustacheBox(Box())
+        }
     }
 }
 
+/**
+Let NSString feed Mustache templates.
+
+Empty strings are falsey:
+
+::
+
+  // Renders "`` is falsey. `yeah` is truthy."
+  let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+  let data = ["strings": [NSString(), "yeah" as NSString]]
+  let rendering = template.render(Box(data))!
+
+GRMustache makes sure NSString and the String Swift type have the same behavior:
+whatever the actual type of boxed strings, your templates render the same.
+
+Whenever you want to extract a string out of a box, cast the boxed value to
+String or NSString:
+
+::
+
+  let box = Box("foo" as NSString)
+  box.value as String     // "foo"
+  box.value as NSString   // "foo"
+*/
 extension NSString: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(Box(self as String).boxWithValue(self))
+        return ObjCMustacheBox(Box(self as String))
     }
 }
 
