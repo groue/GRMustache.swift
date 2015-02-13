@@ -1152,9 +1152,7 @@ public struct MustacheBox {
     // its raw value (typed Any) as useful types.
     //
     // Without those conversions, it would be very difficult for the library
-    // user to write code that processes, for example, a boxed number. They
-    // would have to attempt to cast the Any value as Int, Double, NSNumber
-    // until they would find the correct type.
+    // user to write code that processes, for example, a boxed number.
     struct Converter {
         
         // Conversion to Int
@@ -1464,7 +1462,14 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     }
 }
 
+// This protocol conformance is not only a matter of consistency. It is also a
+// convenience for the library implementation: it makes an array [MustacheBox]
+// boxable via the Box<CollectionType where C.Generator.Element: MustacheBoxable>()
+// function.
 extension MustacheBox: MustacheBoxable {
+    /**
+    MustacheBox is obviously boxable: its mustacheBox property return self.
+    */
     public var mustacheBox: MustacheBox {
         return self
     }
