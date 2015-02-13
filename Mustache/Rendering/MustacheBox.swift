@@ -80,7 +80,7 @@ A SubscriptFunction is also the way to let your Swift types feed templates:
   let rendering = template.render(Box(user))!
 
   // Make User conform to MustacheBoxable
-  extension User: MustacheBoxable {
+  extension User : MustacheBoxable {
       var mustacheBox: MustacheBox {
           // Return a Box that wraps our user, and knows how to extract
           // the `name` key of our user with a SubscriptFunction:
@@ -1273,7 +1273,7 @@ An example of a multi-facetted type:
       }
   }
 
-  extension Person: MustacheBoxable {
+  extension Person : MustacheBoxable {
       var mustacheBox: MustacheBox {
           // A person is a multi-facetted object:
           return Box(
@@ -1393,7 +1393,7 @@ extension MustacheBox {
 // =============================================================================
 // MARK: - DebugPrintable
 
-extension MustacheBox: DebugPrintable {
+extension MustacheBox : DebugPrintable {
     
     public var debugDescription: String {
         if let value = value {
@@ -1466,7 +1466,7 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 // convenience for the library implementation: it makes an array [MustacheBox]
 // boxable via the Box<CollectionType where C.Generator.Element: MustacheBoxable>()
 // function.
-extension MustacheBox: MustacheBoxable {
+extension MustacheBox : MustacheBoxable {
     /**
     MustacheBox is obviously boxable: its mustacheBox property return self.
     */
@@ -1475,7 +1475,7 @@ extension MustacheBox: MustacheBoxable {
     }
 }
 
-extension Bool: MustacheBoxable {
+extension Bool : MustacheBoxable {
     /**
     Let Bool feed Mustache templates.
     
@@ -1544,7 +1544,7 @@ extension Bool: MustacheBoxable {
     }
 }
 
-extension Int: MustacheBoxable {
+extension Int : MustacheBoxable {
     /**
     Let Int feed Mustache templates.
     
@@ -1613,7 +1613,7 @@ extension Int: MustacheBoxable {
     }
 }
 
-extension UInt: MustacheBoxable {
+extension UInt : MustacheBoxable {
     /**
     Let UInt feed Mustache templates.
     
@@ -1682,7 +1682,7 @@ extension UInt: MustacheBoxable {
     }
 }
 
-extension Double: MustacheBoxable {
+extension Double : MustacheBoxable {
     /**
     Let Double feed Mustache templates.
     
@@ -1751,7 +1751,7 @@ extension Double: MustacheBoxable {
     }
 }
 
-extension String: MustacheBoxable {
+extension String : MustacheBoxable {
     /**
     Let String feed Mustache templates.
     
@@ -2074,7 +2074,27 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     }
 }
 
-extension NSObject: ObjCMustacheBoxable {
+extension NSObject : ObjCMustacheBoxable {
+    /**
+    Let any NSObject feed Mustache templates.
+    
+    GRMustache ships with a few specific classes that provide their own
+    rendering behavior: NSFormatter, NSNull, NSNumber, NSString and NSSet.
+    
+    Your own subclass of NSObject can also override this method so that it
+    provides its own rendering behavior.
+    
+    NSObject's default implementation handles three general cases:
+    
+    - NSDictionary and dictionary-like object
+    - NSArray and array-like objects (NSOrderedSet for example)
+    - other objects
+    
+    An objet is treated as a dictionary if it conforms to NSFastEnumeration and
+    responds to the objectForKeyedSubscript: selector.
+    
+    TODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODOTODO
+    */
     public var mustacheBox: ObjCMustacheBox {
         if let enumerable = self as? NSFastEnumeration
         {
@@ -2157,7 +2177,7 @@ extension NSObject: ObjCMustacheBoxable {
     }
 }
 
-extension NSNull: ObjCMustacheBoxable {
+extension NSNull : ObjCMustacheBoxable {
     /**
     Let NSNull feed Mustache templates.
     
@@ -2192,7 +2212,7 @@ extension NSNull: ObjCMustacheBoxable {
     }
 }
 
-extension NSNumber: ObjCMustacheBoxable {
+extension NSNumber : ObjCMustacheBoxable {
     /**
     Let NSNumber feed Mustache templates.
     
@@ -2253,7 +2273,7 @@ extension NSNumber: ObjCMustacheBoxable {
     }
 }
 
-extension NSString: ObjCMustacheBoxable {
+extension NSString : ObjCMustacheBoxable {
     /**
     Let NSString feed Mustache templates.
     
@@ -2264,7 +2284,7 @@ extension NSString: ObjCMustacheBoxable {
     }
 }
 
-extension NSSet: ObjCMustacheBoxable {
+extension NSSet : ObjCMustacheBoxable {
     /**
     Let NSSet feed Mustache templates.
     
