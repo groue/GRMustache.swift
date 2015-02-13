@@ -228,13 +228,13 @@ class RenderingEngine: TemplateASTVisitor {
                 rendering = box.render(info: info, error: &error)
             case .Section:
                 if tag.inverted {
-                    if box.mustacheBool {
+                    if box.boolValue {
                         rendering = Rendering("")
                     } else {
                         rendering = info.tag.render(info.context, error: &error)
                     }
                 } else {
-                    if box.mustacheBool {
+                    if box.boolValue {
                         rendering = box.render(info: info, error: &error)
                     } else {
                         rendering = Rendering("")

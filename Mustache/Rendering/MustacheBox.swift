@@ -1196,9 +1196,9 @@ public struct MustacheBox {
     It is difficult, at runtime, to know the exact type of a boxed value.
     */
     public let value: Any?
+    public let boolValue: Bool
     public let render: RenderFunction
     
-    let mustacheBool: Bool
     let mustacheSubscript: SubscriptFunction?
     let filter: FilterFunction?
     let willRender: WillRenderFunction?
@@ -1206,7 +1206,7 @@ public struct MustacheBox {
     let converter: Converter?
     
     init(
-        mustacheBool: Bool? = nil,
+        boolValue: Bool? = nil,
         value: Any? = nil,
         converter: Converter? = nil,
         mustacheSubscript: SubscriptFunction? = nil,
@@ -1219,7 +1219,7 @@ public struct MustacheBox {
         self.isEmpty = empty
         self.value = value
         self.converter = converter
-        self.mustacheBool = mustacheBool ?? !empty
+        self.boolValue = boolValue ?? !empty
         self.mustacheSubscript = mustacheSubscript
         self.filter = filter
         self.willRender = willRender
@@ -1247,7 +1247,7 @@ public struct MustacheBox {
     // Hackish helper function which helps us boxing NSArray and NSNull.
     func boxWithValue(value: Any?) -> MustacheBox {
         return MustacheBox(
-            mustacheBool: self.mustacheBool,
+            boolValue: self.boolValue,
             value: value,
             converter: self.converter,
             mustacheSubscript: self.mustacheSubscript,
@@ -1323,7 +1323,7 @@ An example of a multi-facetted type:
 */
 
 public func Box(
-    mustacheBool: Bool? = nil,
+    boolValue: Bool? = nil,
     value: Any? = nil,
     mustacheSubscript: SubscriptFunction? = nil,
     filter: FilterFunction? = nil,
@@ -1332,7 +1332,7 @@ public func Box(
     didRender: DidRenderFunction? = nil) -> MustacheBox
 {
     return MustacheBox(
-        mustacheBool: mustacheBool,
+        boolValue: boolValue,
         value: value,
         mustacheSubscript: mustacheSubscript,
         filter: filter,
@@ -1476,6 +1476,43 @@ extension MustacheBox: MustacheBoxable {
 }
 
 extension Bool: MustacheBoxable {
+    /**
+    Let Bool feed Mustache templates.
+    
+    GRMustache makes sure Bool and NSNumber wrapping bools have the same
+    behavior: whatever the actual type of boxed bools, your templates render
+    the same.
+    
+    In particular, bools have all the behaviors of numbers:
+    
+    ::
+    
+      // Renders "0 is falsey. 1 is truthy."
+      let template = Template(string: "{{#bools}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["bools": [false, true]]
+      let rendering = template.render(Box(data))!
+    
+    Whenever you want to extract a Bool out of a box, beware that some casts
+    of the raw boxed value will fail. You may prefer the MustacheBox property
+    boolValue which never fails.
+    
+    ::
+    
+      let boxedNSNumber = Box(NSNumber(bool: false))
+      let boxedInt = Box(0)
+      let boxedBool = Box(false)
+      
+      boxedNSNumber.value as NSNumber // 0
+      // boxedNSNumber.value as Bool  // Error
+      boxedInt.value as NSNumber      // 0
+      // boxedInt.value as Bool       // Error
+      boxedBool.value as NSNumber     // 0
+      boxedBool.value as Bool         // false
+      
+      boxedNSNumber.boolValue        // false
+      boxedInt.boolValue             // false
+      boxedBool.boolValue            // false
+          */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -1483,7 +1520,7 @@ extension Bool: MustacheBoxable {
                 intValue: { self ? 1 : 0 },         // Behave like [NSNumber numberWithBool:]
                 uintValue: { self ? 1 : 0 },        // Behave like [NSNumber numberWithBool:]
                 doubleValue: { self ? 1.0 : 0.0 }), // Behave like [NSNumber numberWithBool:]
-            mustacheBool: self,
+            boolValue: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -1508,6 +1545,43 @@ extension Bool: MustacheBoxable {
 }
 
 extension Int: MustacheBoxable {
+    /**
+    Let Int feed Mustache templates.
+    
+    Int can be used as a boolean. 0 is the only falsey value:
+    
+    ::
+    
+      // Renders "0 is falsey. 1 is truthy."
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["numbers": [0, 1]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure Int and NSNumber wrapping integers have the same
+    behavior: whatever the actual type of boxed numbers, your templates render
+    the same.
+    
+    Whenever you want to extract a Int out of a box, beware that some casts
+    of the raw boxed value will fail. You may prefer the MustacheBox property
+    intValue which never fails as long as the boxed value is numeric.
+    
+    ::
+    
+      let boxedNSNumber = Box(NSNumber(integer: 1))
+      let boxedDouble = Box(1.0)
+      let boxedInt = Box(1)
+      
+      boxedNSNumber.value as NSNumber // 1
+      boxedNSNumber.value as Int      // 1
+      boxedDouble.value as NSNumber   // 1.0
+      // boxedDouble.value as Int     // Error
+      boxedInt.value as NSNumber      // 1
+      boxedInt.value as Int           // 1
+      
+      boxedNSNumber.intValue          // 1
+      boxedDouble.intValue            // 1
+      boxedInt.intValue               // 1
+    */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -1515,7 +1589,7 @@ extension Int: MustacheBoxable {
                 intValue: { self },
                 uintValue: { UInt(self) },
                 doubleValue: { Double(self) }),
-            mustacheBool: (self != 0),
+            boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -1540,6 +1614,43 @@ extension Int: MustacheBoxable {
 }
 
 extension UInt: MustacheBoxable {
+    /**
+    Let UInt feed Mustache templates.
+    
+    UInt can be used as a boolean. 0 is the only falsey value:
+    
+    ::
+    
+      // Renders "0 is falsey. 1 is truthy."
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["numbers": [0 as UInt, 1 as UInt]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure UInt and NSNumber wrapping uints have the same
+    behavior: whatever the actual type of boxed numbers, your templates render
+    the same.
+    
+    Whenever you want to extract a UInt out of a box, beware that some casts
+    of the raw boxed value will fail. You may prefer the MustacheBox property
+    uintValue which never fails as long as the boxed value is numeric.
+    
+    ::
+    
+      let boxedNSNumber = Box(NSNumber(unsignedInteger: 1))
+      let boxedUInt = Box(1 as UInt)
+      let boxedInt = Box(1)
+      
+      boxedNSNumber.value as NSNumber // 1
+      // boxedNSNumber.value as UInt  // Error
+      boxedUInt.value as NSNumber     // 1
+      boxedUInt.value as UInt         // 1
+      boxedInt.value as NSNumber      // 1
+      // boxedInt.value as UInt       // Error
+      
+      boxedNSNumber.uintValue         // 1
+      boxedUInt.uintValue             // 1
+      boxedInt.uintValue              // 1
+    */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -1547,7 +1658,7 @@ extension UInt: MustacheBoxable {
                 intValue: { Int(self) },
                 uintValue: { self },
                 doubleValue: { Double(self) }),
-            mustacheBool: (self != 0),
+            boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -1572,6 +1683,43 @@ extension UInt: MustacheBoxable {
 }
 
 extension Double: MustacheBoxable {
+    /**
+    Let Double feed Mustache templates.
+    
+    Double can be used as a boolean. 0.0 is the only falsey value:
+    
+    ::
+    
+      // Renders "0.0 is falsey. 1.0 is truthy."
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let data = ["numbers": [0.0, 1.0]]
+      let rendering = template.render(Box(data))!
+    
+    GRMustache makes sure Double and NSNumber wrapping doubles have the same
+    behavior: whatever the actual type of boxed numbers, your templates render
+    the same.
+    
+    Whenever you want to extract a Double out of a box, beware that some casts
+    of the raw boxed value will fail. You may prefer the MustacheBox property
+    doubleValue which never fails as long as the boxed value is numeric.
+    
+    ::
+    
+      let boxedNSNumber = Box(NSNumber(double: 1.0))
+      let boxedDouble = Box(1.0)
+      let boxedInt = Box(1)
+      
+      boxedNSNumber.value as NSNumber // 1.0
+      boxedNSNumber.value as Double   // 1.0
+      boxedDouble.value as NSNumber   // 1.0
+      boxedDouble.value as Double     // 1.0
+      boxedInt.value as NSNumber      // 1
+      // boxedInt.value as Double     // Error
+      
+      boxedNSNumber.doubleValue       // 1.0
+      boxedDouble.doubleValue         // 1.0
+      boxedInt.doubleValue            // 1.0
+    */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -1579,7 +1727,7 @@ extension Double: MustacheBoxable {
                 intValue: { Int(self) },
                 uintValue: { UInt(self) },
                 doubleValue: { self }),
-            mustacheBool: (self != 0.0),
+            boolValue: (self != 0.0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -1607,7 +1755,7 @@ extension String: MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            mustacheBool: (countElements(self) > 0),
+            boolValue: (countElements(self) > 0),
             mustacheSubscript: { (key: String) in
                 switch key {
                 case "length":
@@ -1680,7 +1828,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
     if let collection = collection {
         let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
         return MustacheBox(
-            mustacheBool: (count > 0),
+            boolValue: (count > 0),
             value: collection,
             converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
             mustacheSubscript: { (key: String) in
@@ -1733,7 +1881,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         
         return MustacheBox(
-            mustacheBool: true,
+            boolValue: true,
             value: dictionary,
             converter: MustacheBox.Converter(
                 dictionaryValue: {
@@ -1870,7 +2018,7 @@ extension NSObject: ObjCMustacheBoxable {
                 // Dictionary-like enumerable
                 
                 return ObjCMustacheBox(MustacheBox(
-                    mustacheBool: true,
+                    boolValue: true,
                     value: self,
                     converter: MustacheBox.Converter(
                         dictionaryValue: {
@@ -1911,7 +2059,7 @@ extension NSObject: ObjCMustacheBoxable {
             // Generic NSObject
             
             return ObjCMustacheBox(MustacheBox(
-                mustacheBool: true,
+                boolValue: true,
                 value: self,
                 mustacheSubscript: { (key: String) in
                     if self.respondsToSelector("objectForKeyedSubscript:")
@@ -1996,8 +2144,8 @@ extension NSNumber: ObjCMustacheBoxable {
     
     Whenever you want to extract a numeric value out of a box, beware that some
     casts of the raw boxed value will fail. You may prefer the MustacheBox
-    properties intValue, uintValue and doubleValue which never fail (as long
-    as the boxed value is numeric).
+    properties intValue, uintValue and doubleValue which never fail as long
+    as the boxed value is numeric.
     
     ::
     
@@ -2071,7 +2219,7 @@ extension NSString: ObjCMustacheBoxable {
 extension NSSet: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
-            mustacheBool: (self.count > 0),
+            boolValue: (self.count > 0),
             value: self,
             converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
             mustacheSubscript: { (key: String) in
