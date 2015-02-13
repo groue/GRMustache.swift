@@ -1512,7 +1512,7 @@ extension Bool: MustacheBoxable {
       boxedNSNumber.boolValue        // false
       boxedInt.boolValue             // false
       boxedBool.boolValue            // false
-          */
+    */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -1807,21 +1807,21 @@ extension String: MustacheBoxable {
       // Renders "123123"
       template.render(Box(["x": 123]))!
     
-    This other `twice`, a RenderFunction this time, is able to render twice a
-    section:
+    The `uppercase` RenderFunction below is able to render the uppercase version
+    of a section (regardless of the types of the values rendered inside):
     
     ::
     
-      let twice: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+      let uppercase: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
           let rendering = info.tag.render(info.context, error: error)!
-          return Rendering(rendering.string + rendering.string)
+          return Rendering(rendering.string.uppercaseString)
       }
       
-      var template = Template(string: "{{#twice}}Hello {{name}}!{{/twice}}")!
-      template.registerInBaseContext("twice", Box(twice))
+      var template = Template(string: "{{#uppercase}}{{name}} is {{age}}.{{/uppercase}}")!
+      template.registerInBaseContext("uppercase", Box(uppercase))
       
-      // Renders "Hello Arthur!Hello Arthur!"
-      template.render(Box(["name": "Arthur"]))!
+      // Renders "ARTHUR IS 36."
+      template.render(Box(["name": "Arthur", "age": 36]))!
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
