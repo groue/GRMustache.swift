@@ -2217,6 +2217,54 @@ extension NSString: ObjCMustacheBoxable {
 }
 
 extension NSSet: ObjCMustacheBoxable {
+    /**
+    Let NSSet feed Mustache templates.
+    
+    Sets are Mustache collections: they iterate their content.
+    
+    ::
+    
+      let template = Template(string: "{{#set}}{{.}},{{/set}}{{^set}}Empty{{/set}}")!
+      
+      // Renders "3,1,2," (in any order)
+      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
+      
+      // Renders "Empty"
+      template.render(Box(["set": NSSet()]))!
+    
+    Sets can be queried for the following key:
+    
+    - isEmpty: true if the set is empty
+    - count: number of elements in the set
+    - anyObject: any object of the set
+    
+    ::
+    
+      // Renders "Not empty" and "Empty"
+      var template = Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!
+      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
+      template.render(Box(["set": NSSet()]))!
+      
+      // Renders "3" and "0"
+      template = Template(string: "{{set.count}}")!
+      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
+      template.render(Box(["set": NSSet()]))!
+      
+      // Renders "1" or "2" or "3" and ""
+      template = Template(string: "{{set.anyObject}}")!
+      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
+      template.render(Box(["set": NSSet()]))!
+    
+    In order to render a section if and only if a set is not empty, you can
+    query its isEmpty ou count property (since 0 is falsey):
+    
+    ::
+    
+      // Renders "Set elements are 3,1,2," and "Set is empty"
+      var template = Template(string: "{{#set.isEmpty}}Set is empty{{^}}Set elements are: {{#set}}{{.}},{{/set}}{{/}}")!
+      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
+      template.render(Box(["set": NSSet()]))!
+    */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
             boolValue: (self.count > 0),
