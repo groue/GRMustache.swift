@@ -66,7 +66,7 @@ struct Person {
 }
 ```
 
-We want to let Mustache templates extract the `{{name}}` key out of a person.
+Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
 
 Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
 
