@@ -2127,21 +2127,27 @@ extension String : MustacheBoxable {
 // =============================================================================
 // MARK: - Boxing of Swift collections
 
-// We don't provide any boxing function for `SequenceType`, because this type
-// makes no requirement on conforming types regarding whether they will be
-// destructively "consumed" by iteration (as stated by documentation).
-//
-// Now we need to consume a sequence several times:
-//
-// - for converting it to an array for the arrayValue property.
-// - for consuming the first element to know if the sequence is empty or not.
-// - for rendering it.
-//
-// So if we could provide some support for rendering sequences, it is somewhat
-// difficult: give up for now, and provide a boxing function for
-// `CollectionType` which ensures non-destructive iteration.
 
-
+// This function is a private helper for collection types CollectionType and
+// NSSet. Collections render as the concatenation of the rendering of their
+// items.
+//
+// There are two tricks when rendering collections:
+//
+// One, items can render as Text or HTML, and our collection should render with
+// the same type. It is an error to mix content types.
+//
+// Two, we have to tell items that they are rendered as an enumeration item.
+// This allows collections to avoid enumerating their items when they are part
+// of another collections:
+//
+// ::
+//
+//   {{# arrays }}  // Each array renders as an enumeration item, and has itself enter the context stack.
+//     {{#.}}       // Each array renders "normally", and enumerates its items
+//       ...
+//     {{/.}}
+//   {{/ arrays }}
 private func renderCollection<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C, info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
     var buffer = ""
     var contentType: ContentType?
@@ -2172,6 +2178,27 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
     }
 }
 
+// We don't provide any boxing function for `SequenceType`, because this type
+// makes no requirement on conforming types regarding whether they will be
+// destructively "consumed" by iteration (as stated by documentation).
+//
+// Now we need to consume a sequence several times:
+//
+// - for converting it to an array for the arrayValue property.
+// - for consuming the first element to know if the sequence is empty or not.
+// - for rendering it.
+//
+// So if we could provide some support for rendering sequences, it is somewhat
+// difficult: give up for now, and provide a boxing function for
+// `CollectionType` which ensures non-destructive iteration.
+
+/**
+A function that wraps a collection of MustacheBoxable.
+
+::
+
+  let box = Box([1,2,3])
+*/
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
         let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
@@ -2221,6 +2248,13 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 // =============================================================================
 // MARK: - Boxing of Swift dictionaries
 
+/**
+A function that wraps a dictionary of MustacheBoxable.
+
+::
+
+  let box = Box(["firstName": "Freddy", "lastName": "Mercury"])
+*/
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         
@@ -2257,36 +2291,50 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 // MARK: - Boxing of Objective-C types
 
 /**
-Conform to the GRMustacheSafeKeyAccess protocol in order to filter the keys that
-can be accessed by GRMustache templates.
+Keys of Objective-C objects are extracted with the objectForKeyedSubscript:
+method if it is available, or with valueForKey:, as long as the key is "safe".
+Safe keys are, by default, property getters and NSManagedObject attributes. The
+GRMustacheSafeKeyAccess protocol lets a class specify a custom list of safe keys
+that are available through valueForKey:.
 */
 @objc public protocol GRMustacheSafeKeyAccess {
     
     /**
-    List the name of the keys GRMustache.swift can access on this class using
-    the `valueForKey:` method.
-    
-    When objects do not respond to this method, only declared properties can be
-    accessed. All properties of Core Data NSManagedObjects are also accessible,
-    even without property declaration.
-    
-    This method is not used for objects responding to objectForKeyedSubscript:.
-    For those objects, all keys are accessible from templates.
-    
-    @return The set of accessible keys on the class.
+    Returns the keys that GRMustache can access using the `valueForKey:` method.
     */
     class func safeMustacheKeys() -> NSSet
 }
 
-// The MustacheBoxable protocol can not be used by Objc classes, because MustacheBox is
-// not compatible with ObjC. So let's define another protocol.
+/**
+The ObjCMustacheBoxable protocol lets Objective-C classes interact with the
+Mustache engine.
+
+The NSObject class already conforms to this protocol: you will override the
+mustacheBox if you need to provide custom rendering behavior. For an example,
+look at the NSFormatter.swift source file.
+
+See the Swift-targetted MustacheBoxable protocol for more information.
+*/
 @objc public protocol ObjCMustacheBoxable {
-    // Can not return a MustacheBox, because MustacheBox is not compatible with ObjC.
-    // So let's return an ObjC object which wraps a MustacheBox.
+    /**
+    Returns a MustacheBox wrapped in a ObjCMustacheBox (this wrapping is
+    required by the constraints of the Swift type system).
+    
+    This method is invoked when a value of your conforming class is boxed with
+    the Box() function. You can not return Box(self) since this would trigger
+    an infinite loop. Instead you build a Box that explicitly describes how your
+    conforming type interacts with the Mustache engine.
+    
+    See the Swift-targetted MustacheBoxable protocol for more information.
+    */
     var mustacheBox: ObjCMustacheBox { get }
 }
 
-// The ObjC object which wraps a MustacheBox (see ObjCMustacheBoxable)
+/**
+An NSObject subclass whose sole pupose is to wrap a MustacheBox.
+
+See the documentation of the ObjCMustacheBoxable protocol.
+*/
 public class ObjCMustacheBox: NSObject {
     let box: MustacheBox
     init(_ box: MustacheBox) {
@@ -2294,6 +2342,9 @@ public class ObjCMustacheBox: NSObject {
     }
 }
 
+/**
+See the documentation of the ObjCMustacheBoxable protocol.
+*/
 public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
         return boxable.mustacheBox.box
@@ -2302,6 +2353,40 @@ public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     }
 }
 
+/**
+Due to constraints in the Swift language, there is no Box(AnyObject) function.
+
+Instead, you use the BoxAnyObject() function:
+
+::
+
+  let set = NSSet(object: "Mario")
+  let box = BoxAnyObject(set.anyObject())
+  box.value as String  // "Mario"
+
+Important caveat: this function can only box Objective-C objects and Objective-C
+briged values such as Strings.
+
+::
+
+  class Person {
+      let name: String
+      init(name: String) {
+          self.name = name
+      }
+  }
+
+  let person = Person(name: "Charlie Chaplin")
+  let set = NSSet(object: person)
+
+  // In the log:
+  // Mustache.BoxAnyObject(): value `__lldb_expr_1123.Person` does not conform to the ObjCMustacheBoxable protocol, and is discarded.
+  let box = BoxAnyObject(set.anyObject())
+
+  // nil :-(
+  box.value
+
+*/
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let object: AnyObject = object {
         if let boxable = object as? ObjCMustacheBoxable {

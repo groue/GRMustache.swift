@@ -16,3 +16,4 @@ TODO
 - [X] Registered keys
 - [ ] Documentation
 - [ ] TemplateID as String is not very handy, especially for TemplateRepository.URLDataSource
+- [ ] Use in examples: Freddy Mercury, Salvador Dali, Tom Selleck, Charles Bronson, Clark Gable, Albert Einstein, Charlie Chaplin, Errol Flynn, Groucho Marx, Hulk Hogan, Mario, Zorro
