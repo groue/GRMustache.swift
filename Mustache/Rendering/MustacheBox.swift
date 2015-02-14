@@ -1252,6 +1252,9 @@ public struct MustacheBox {
 This function is the most low-level function that lets you build MustacheBox
 for feeding templates.
 
+This function is suited for building "advanced" boxes. There are other, simpler,
+versions of the Box() function; you should check them before you use this one.
+
 It can take up to seven parameters, all optional, that define how the box
 interacts with the Mustache engine:
 
@@ -1262,6 +1265,31 @@ interacts with the Mustache engine:
 :param: render            An optional RenderFunction
 :param: willRender        An optional WillRenderFunction
 :param: didRender         An optional DidRenderFunction
+
+
+Let's look at how the {{ f(a) }} tag is rendered. This will illustrate the usage
+of all those parameters.
+
+First the `a` and `f` expressions are evaluated. The Mustache engine looks in
+the context stack for boxes whose *mustacheSubscript* return non-empty boxes for
+the keys "a" and "f". Let's call them aBox and fBox.
+
+Then the *filter* of the fBox is evaluated with aBox as an argument. It is
+likely that the result depends on the *value* of the aBox: it is the resultBox.
+
+Then the Mustache engine is ready to render resultBox. It looks in the context
+stack for boses whose *willRender* function is defined. Those willRender
+functions have the opportunity to process the resultBox, and eventually provide
+the box that will be actually rendered: the renderedBox.
+
+The renderedBox has a *render* function: it is evaluated by the Mustache engine
+which appends its result to the final rendering.
+
+Finally the Mustache engine looks in the context stack for boses whose
+*didRender* function is defined, and call them.
+
+
+Let's now describe all parameters is detail.
 
 The optional boolValue parameter tells whether the Box should trigger or prevent
 the rendering of regular {{#section}}...{{/}} and inverted {{^section}}...{{/}}.
@@ -1403,14 +1431,6 @@ For example, let's make the Person class below able to feed templates:
   let person = Person(firstName: "Errol", lastName: "Flynn")
   let template = Template(string: "{{# person }}The person is {{.}}{{/ person }}")!
   template.render(Box(["person": person]))!
-
-
-TODO Describe what happens when {{ f(a) }} is rendered.
-
-::
-
-
-
 */
 public func Box(
     boolValue: Bool? = nil,
