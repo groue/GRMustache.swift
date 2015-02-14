@@ -25,62 +25,6 @@ import Foundation
 
 extension NSFormatter: ObjCMustacheBoxable {
     
-    // The filter facet of NSFormatter: this function evaluates `formatter(x)`
-    // expressions.
-    private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
-        // NSFormatter documentation for stringForObjectValue: states:
-        //
-        // > First test the passed-in object to see if it’s of the correct
-        // > class. If it isn’t, return nil; but if it is of the right class,
-        // > return a properly formatted and, if necessary, localized string.
-        if let object = box.value as? NSObject {
-            return Box(self.stringForObjectValue(object))
-        } else {
-            // Not the correct class: return nil, i.e. empty Box.
-            return Box()
-        }
-    }
-    
-    // A WillRenderFunction: this function lets formatter change values that
-    // are about to be rendered to their formatted counterpart.
-    //
-    // It is activated as soon as the formatter enters the context stack, when
-    // used in a section {{# formatter }}...{{/ formatter }}.
-    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
-        switch tag.type {
-        case .Variable:
-            // {{ value }}
-            // Format the value if we can.
-            
-            if let object = box.value as? NSObject {
-                // NSFormatter documentation for stringForObjectValue: states:
-                //
-                // > First test the passed-in object to see if it’s of the correct
-                // > class. If it isn’t, return nil; but if it is of the right class,
-                // > return a properly formatted and, if necessary, localized string.
-                //
-                // So nil result means that object is not of the correct class. Leave
-                // it untouched.
-                
-                if let formatted = self.stringForObjectValue(object) {
-                    return Box(formatted)
-                }
-            }
-            return box
-            
-        case .Section:
-            // {{# value }}...{{/ value }}
-            // {{^ value }}...{{/ value }}
-            // Leave sections untouched, so that loops and conditions are not
-            // affected by the formatter.
-            
-            return box
-        }
-    }
-    
-    
-    // MARK: - ObjCMustacheBoxable
-    
     /**
     Let NSFormatter feed Mustache templates.
     
@@ -135,10 +79,64 @@ extension NSFormatter: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering. See the documentation of
-        // the filter and willRender methods for more information.
+        // the filter and willRender methods below for more information.
         return ObjCMustacheBox(Box(
             value: self,
             filter: Filter(filter),
             willRender: willRender))
+    }
+    
+    
+    // The filter facet of NSFormatter: this function evaluates `formatter(x)`
+    // expressions.
+    private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
+        // NSFormatter documentation for stringForObjectValue: states:
+        //
+        // > First test the passed-in object to see if it’s of the correct
+        // > class. If it isn’t, return nil; but if it is of the right class,
+        // > return a properly formatted and, if necessary, localized string.
+        if let object = box.value as? NSObject {
+            return Box(self.stringForObjectValue(object))
+        } else {
+            // Not the correct class: return nil, i.e. empty Box.
+            return Box()
+        }
+    }
+    
+    // A WillRenderFunction: this function lets formatter change values that
+    // are about to be rendered to their formatted counterpart.
+    //
+    // It is activated as soon as the formatter enters the context stack, when
+    // used in a section {{# formatter }}...{{/ formatter }}.
+    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
+        switch tag.type {
+        case .Variable:
+            // {{ value }}
+            // Format the value if we can.
+            
+            if let object = box.value as? NSObject {
+                // NSFormatter documentation for stringForObjectValue: states:
+                //
+                // > First test the passed-in object to see if it’s of the correct
+                // > class. If it isn’t, return nil; but if it is of the right class,
+                // > return a properly formatted and, if necessary, localized string.
+                //
+                // So nil result means that object is not of the correct class. Leave
+                // it untouched.
+                
+                if let formatted = self.stringForObjectValue(object) {
+                    return Box(formatted)
+                }
+            }
+            return box
+            
+        case .Section:
+            // {{# value }}...{{/ value }}
+            // {{^ value }}...{{/ value }}
+            // Leave sections untouched, so that loops and conditions are not
+            // affected by the formatter.
+            
+            return box
+        }
     }
 }

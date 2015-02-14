@@ -33,11 +33,21 @@ extension StandardLibrary {
             self.table = table
         }
         
+        public var mustacheBox: MustacheBox {
+            return Box(
+                value: self,
+                render: render,
+                filter: Filter(filter),
+                willRender: willRender,
+                didRender: didRender)
+        }
+        
+        
         private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
             return Rendering(localizedStringForKey(rendering.string), rendering.contentType)
         }
         
-        public func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
             
             /**
             * Perform a first rendering of the section tag, that will turn variable
@@ -113,7 +123,7 @@ extension StandardLibrary {
             }
         }
         
-        public func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
+        private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
             switch tag.type {
             case .Variable:
                 // {{ value }}
@@ -136,7 +146,7 @@ extension StandardLibrary {
             }
         }
         
-        public func didRender(tag: Tag, box: MustacheBox, string: String?) {
+        private func didRender(tag: Tag, box: MustacheBox, string: String?) {
             switch tag.type {
             case .Variable:
                 // {{ value }}
@@ -155,21 +165,6 @@ extension StandardLibrary {
                 break
             }
         }
-        
-        
-        // MARK: - MustacheBoxable
-        
-        public var mustacheBox: MustacheBox {
-            return Box(
-                value: self,
-                render: render,
-                filter: Filter(filter),
-                willRender: willRender,
-                didRender: didRender)
-        }
-        
-        
-        // MARK: - Private
         
         private func localizedStringForKey(key: String) -> String {
             return bundle.localizedStringForKey(key, value:"", table:table)

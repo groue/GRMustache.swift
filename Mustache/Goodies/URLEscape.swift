@@ -25,6 +25,13 @@ import Foundation
 
 class URLEscape : MustacheBoxable {
     
+    var mustacheBox: MustacheBox {
+        return Box(
+            value: self,
+            filter: Filter(filter),
+            willRender: willRender)
+    }
+    
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
     }
@@ -50,15 +57,5 @@ class URLEscape : MustacheBoxable {
         var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as NSMutableCharacterSet
         s.removeCharactersInString("?&=")
         return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
-    }
-    
-    
-    // MARK: - MustacheBoxable
-    
-    var mustacheBox: MustacheBox {
-        return Box(
-            value: self,
-            filter: Filter(filter),
-            willRender: willRender)
     }
 }

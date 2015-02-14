@@ -25,6 +25,13 @@ import Foundation
 
 class HTMLEscape : MustacheBoxable {
     
+    var mustacheBox: MustacheBox {
+        return Box(
+            value: self,
+            filter: Filter(filter),
+            willRender: willRender)
+    }
+    
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(escapeHTML(rendering.string), rendering.contentType)
     }
@@ -44,14 +51,5 @@ class HTMLEscape : MustacheBoxable {
         case .Section:
             return box
         }
-    }
-    
-    // MARK: - MustacheBoxable
-    
-    var mustacheBox: MustacheBox {
-        return Box(
-            value: self,
-            filter: Filter(filter),
-            willRender: willRender)
     }
 }

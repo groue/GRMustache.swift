@@ -25,6 +25,13 @@ import Foundation
 
 class JavascriptEscape : MustacheBoxable {
     
+    var mustacheBox: MustacheBox {
+        return Box(
+            value: self,
+            filter: Filter(filter),
+            willRender: willRender)
+    }
+    
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
     }
@@ -123,15 +130,5 @@ class JavascriptEscape : MustacheBoxable {
             }
         }
         return escaped
-    }
-    
-    
-    // MARK: - MustacheBoxable
-    
-    var mustacheBox: MustacheBox {
-        return Box(
-            value: self,
-            filter: Filter(filter),
-            willRender: willRender)
     }
 }
