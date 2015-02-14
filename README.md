@@ -73,8 +73,8 @@ Since there is no way to introspect pure Swift classes and structs, we need to h
 Helping the Mustache engine involves "boxing", through the `MustacheBoxable` protocol:
 
 ```swift
-// Allow Mustache engine to consume User values.
-extension User: MustacheBoxable {
+// Allow Mustache engine to consume Person values.
+extension Person: MustacheBoxable {
     var mustacheBox: MustacheBox {
         // Return a Box that wraps our user, and knows how to extract
         // the `name` key of our user:
