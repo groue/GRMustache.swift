@@ -76,8 +76,8 @@ Helping the Mustache engine involves "boxing", through the `MustacheBoxable` pro
 // Allow Mustache engine to consume Person values.
 extension Person: MustacheBoxable {
     var mustacheBox: MustacheBox {
-        // Return a Box that wraps our user, and knows how to extract
-        // the `name` key of our user:
+        // Return a Box that wraps our person, and knows how to extract
+        // the `name` key:
         return Box(value: self) { (key: String) in
             switch key {
             case "name":
