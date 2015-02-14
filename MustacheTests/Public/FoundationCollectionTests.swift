@@ -24,6 +24,7 @@
 import XCTest
 import Mustache;
 
+// TODO: write an equivalent test class for Swift collections
 class FoundationCollectionTests: XCTestCase {
     
     var boxedArray: MustacheBox!
@@ -64,6 +65,19 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(rendering, "")
     }
     
+    func testNSArrayIsEmpty() {
+        // Arrays can NOT be queried for the key `isEmpty` on purpose.
+        // This test makes sure no user request would activate such a bad idea.
+        //
+        // `array.isEmpty` would evaluate to false in case of a missing set, and
+        // this would be soooo misleading. On the contrary, `array.count` is
+        // falsey for both empty and missing sets, and this is why it is the
+        // recommended technique.
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet()]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet(object: "foo")]))!, "Not empty")
+    }
+    
     func testNSArrayCount() {
         let rendering = Template(string: "{{collection.count}}")!.render(boxedArray)!
         XCTAssertEqual(rendering, "1")
@@ -87,6 +101,19 @@ class FoundationCollectionTests: XCTestCase {
     func testNSSetIsNotIteratedWithNSArrayValueForKey() {
         let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedSet)!
         XCTAssertEqual(rendering, "")
+    }
+    
+    func testNSSetIsEmpty() {
+        // Sets can NOT be queried for the key `isEmpty` on purpose.
+        // This test makes sure no user request would activate such a bad idea.
+        //
+        // `set.isEmpty` would evaluate to false in case of a missing set, and
+        // this would be soooo misleading. On the contrary, `set.count` is
+        // falsey for both empty and missing sets, and this is why it is the
+        // recommended technique.
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet()]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet(object: "foo")]))!, "Not empty")
     }
     
     func testNSSetCount() {

@@ -2356,11 +2356,6 @@ extension NSSet : ObjCMustacheBoxable {
       var template = Template(string: "{{#set.count}}Set elements are: {{#set}}{{.}},{{/set}}{{^}}Set is empty{{/}}")!
       template.render(Box(["set": NSSet(objects: 1,2,3)]))!
       template.render(Box(["set": NSSet()]))!
-    
-    Sets can not be queried for the key `isEmpty` on purpose. `set.isEmpty`
-    would evaluate to false in case of a missing set, and this would be soooo
-    misleading. On the contrary, `set.count` is falsey for both empty and
-    missing sets, and this is why it is the recommended technique.
     */
     public override var mustacheBox: ObjCMustacheBox {
         return ObjCMustacheBox(MustacheBox(
