@@ -83,7 +83,7 @@ extension User: MustacheBoxable {
             case "name":
                 return Box(self.name)
             default:
-                return Box()
+                return Box() // the empty box
             }
         }
     }
@@ -93,9 +93,9 @@ extension User: MustacheBoxable {
 Now we can box and render a user:
 
 ```swift
-// Hello Arthur!
-let user = User(name: "Arthur")
-let template = Template(string: "Hello {{name}}!")!
+// Freddy Mercury has a mustache.
+let user = User(name: "Freddy Mercury")
+let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(user))!
 ```
 
