@@ -135,7 +135,7 @@ extension NSFormatter: ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering. See the documentation of
-        // render, filter and willRender methods for more information.
+        // the filter and willRender methods for more information.
         return ObjCMustacheBox(Box(
             value: self,
             filter: Filter(filter),
