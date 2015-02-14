@@ -1175,19 +1175,71 @@ public struct MustacheBox {
         }
     }
     
+    // MARK: - The boxed value
+    
+    /**
+    The boxed value.
+    */
+    public let value: Any?
+    
     /**
     The only empty boxes are Box() and Box(NSNull())
     */
     public let isEmpty: Bool
     
     /**
-    The boxed value.
+    The boolean value of the box.
     
-    It is difficult, at runtime, to know the exact type of a boxed value.
+    It tells whether the Box should trigger or prevent the rendering of regular
+    {{#section}}...{{/}} and inverted {{^section}}...{{/}}.
     */
-    public let value: Any?
     public let boolValue: Bool
+    
+    /**
+    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
+    returns this value as an Int.
+    */
+    public var intValue: Int? {
+        return converter?.intValue?()
+    }
+    
+    /**
+    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
+    returns this value as a UInt.
+    */
+    public var uintValue: UInt? {
+        return converter?.uintValue?()
+    }
+    
+    /**
+    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
+    returns this value as a Double.
+    */
+    public var doubleValue: Double? {
+        return converter?.doubleValue?()
+    }
+    
+    /**
+    If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
+    returns a [MustacheBox].
+    */
+    public var arrayValue: [MustacheBox]? {
+        return converter?.arrayValue?()
+    }
+    
+    /**
+    If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
+    returns a [String: MustacheBox] dictionary.
+    */
+    public var dictionaryValue: [String: MustacheBox]? {
+        return converter?.dictionaryValue?()
+    }
+    
+    
+    // MARK: - Box rendering
+    
     public let render: RenderFunction
+    
     
     let mustacheSubscript: SubscriptFunction?
     let filter: FilterFunction?
@@ -1400,13 +1452,16 @@ For example, let's make the Person class below able to feed templates:
               render: render)
       }
       
-      // The SubscriptFunction that lets the Mustache engin extract values by name.
+      // The SubscriptFunction that lets the Mustache engine extract values by
+      // name. Let's expose the `firstName`, `lastName` and `fullName`:
       func mustacheSubscript(key: String) -> MustacheBox {
           switch key {
           case "firstName":
               return Box(firstName)
           case "lastName":
               return Box(lastName)
+          case "fullName":
+              return Box("\(firstName) \(lastName)")
           default:
               return Box()
           }
@@ -1453,54 +1508,6 @@ public func Box(
 
 
 // =============================================================================
-// MARK: - Value unwrapping
-
-extension MustacheBox {
-    
-    /**
-    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
-    returns this value as an Int.
-    */
-    public var intValue: Int? {
-        return converter?.intValue?()
-    }
-    
-    /**
-    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
-    returns this value as a UInt.
-    */
-    public var uintValue: UInt? {
-        return converter?.uintValue?()
-    }
-    
-    /**
-    If the boxed value is numerical (Swift numerical types, Bool, and NSNumber),
-    returns this value as a Double.
-    */
-    public var doubleValue: Double? {
-        return converter?.doubleValue?()
-    }
-    
-    /**
-    If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
-    returns a [MustacheBox].
-    */
-    public var arrayValue: [MustacheBox]? {
-        return converter?.arrayValue?()
-    }
-    
-    /**
-    If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
-    returns a [String: MustacheBox] dictionary.
-    */
-    public var dictionaryValue: [String: MustacheBox]? {
-        return converter?.dictionaryValue?()
-    }
-
-}
-
-
-// =============================================================================
 // MARK: - DebugPrintable
 
 extension MustacheBox : DebugPrintable {
@@ -1520,7 +1527,15 @@ extension MustacheBox : DebugPrintable {
 
 extension MustacheBox {
     
-    subscript(key: String) -> MustacheBox {
+    /**
+    Extract a key out of a box.
+    
+    ::
+    
+      let box = Box("Arthur")
+      box["length"].intValue!    // 6
+    */
+    public subscript(key: String) -> MustacheBox {
         return mustacheSubscript?(key: key) ?? Box()
     }
 }
@@ -1529,14 +1544,64 @@ extension MustacheBox {
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
 
-// Non-optional value to force the user to provide a value when they provide a
-// subscript function.
+/**
+A function that wraps a value and a SubscriptFunction into a MustacheBox.
+
+It provides an easy way to let your custom types feed template engines:
+
+::
+
+  struct Person {
+      let firstName: String
+      let lastName: String
+  }
+
+  extension Person : MustacheBoxable {
+      var mustacheBox: MustacheBox {
+          // Return a Box that wraps our user, and exposes the `firstName`,
+          // `lastName` and `fullName` to templates:
+          return Box(value: self) { (key: String) in
+              switch key {
+              case "firstName":
+                  return Box(self.firstName)
+              case "lastName":
+                  return Box(self.lastName)
+              case "fullName":
+                  return Box("\(self.firstName) \(self.lastName)")
+              default:
+                  return Box()
+              }
+          }
+      }
+  }
+
+  // Renders "Tom Selleck"
+  let template = Template(string: "{{person.fullName}}")!
+  let person = Person(firstName: "Tom", lastName: "Selleck")
+  template.render(Box(["person": Box(person)]))!
+
+*/
 public func Box(value: Any, mustacheSubscript: SubscriptFunction) -> MustacheBox {
     return MustacheBox(value: value, mustacheSubscript: mustacheSubscript)
 }
 
-public func Box(value: Any? = nil, filter: FilterFunction) -> MustacheBox {
-    return MustacheBox(value: value, filter: filter)
+/**
+A function that wraps a FilterFunction into a MustacheBox.
+
+::
+
+  let square = Filter { (x: Int, _) in
+      return Box(x * x)
+  }
+
+  let template = Template(string: "{{ square(x) }}")!
+  template.registerInBaseContext("square", Box(square))
+
+  // Renders "100"
+  template.render(Box(["x": 10]))!
+*/
+public func Box(filter: FilterFunction) -> MustacheBox {
+    return MustacheBox(filter: filter)
 }
 
 public func Box(value: Any? = nil, render: RenderFunction) -> MustacheBox {
