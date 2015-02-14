@@ -24,21 +24,11 @@
 import XCTest
 import Mustache
 
-class SubscriptFunctionTests: XCTestCase {
+class MustacheBoxTests: XCTestCase {
     
-    func makeSubscriptFunction() -> SubscriptFunction {
-        return { (key: String) -> MustacheBox in
-            if key == "self" {
-                return Box(self.makeSubscriptFunction())
-            } else {
-                return Box(key)
-            }
-        }
-    }
-    
-    func testBoxedSubscriptFunction() {
-        let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Box(makeSubscriptFunction()))!
-        XCTAssertEqual(rendering, "a,b,c")
+    func testBoolValue() {
+        let template = Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")!
+        XCTAssertEqual(template.render(Box(boolValue: true))!, "true")
+        XCTAssertEqual(template.render(Box(boolValue: false))!, "false")
     }
 }

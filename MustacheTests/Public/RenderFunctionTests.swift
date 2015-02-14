@@ -257,7 +257,7 @@ class RenderFunctionTests: XCTestCase {
     }
 
     func testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack() {
-        let mustacheSubscript = { (key: String) -> MustacheBox? in
+        let mustacheSubscript = { (key: String) -> MustacheBox in
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -269,7 +269,7 @@ class RenderFunctionTests: XCTestCase {
     }
     
     func testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack() {
-        let mustacheSubscript = { (key: String) -> MustacheBox? in
+        let mustacheSubscript = { (key: String) -> MustacheBox in
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in

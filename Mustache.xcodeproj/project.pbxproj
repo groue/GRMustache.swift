@@ -18,6 +18,8 @@
 		560ABB691A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */; };
 		560ABB6B1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */; };
 		560ABB6D1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */; };
+		560FA5A21A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
+		560FA5A31A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
 		561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
 		561646981A23C21B00F8ADE0 /* Person.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646951A23C12B00F8ADE0 /* Person.mustache */; };
 		561E72671A8BDC2C004ED48B /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 561E725C1A8BDC2B004ED48B /* Mustache.framework */; };
@@ -236,6 +238,7 @@
 		560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests; sourceTree = "<group>"; };
 		560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_ISOLatin1; sourceTree = "<group>"; };
 		560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_UTF8; sourceTree = "<group>"; };
+		560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxTests.swift; sourceTree = "<group>"; };
 		561646931A23C11400F8ADE0 /* Movie.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Movie.mustache; sourceTree = "<group>"; };
 		561646951A23C12B00F8ADE0 /* Person.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Person.mustache; sourceTree = "<group>"; };
 		561E725C1A8BDC2B004ED48B /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -627,6 +630,7 @@
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */,
+				560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */,
 				569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */,
 				56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
@@ -1002,6 +1006,7 @@
 				561E72B31A8BDC6A004ED48B /* TemplateRepositoryBundleTests.swift in Sources */,
 				561E72B91A8BDC6A004ED48B /* TemplateTests.swift in Sources */,
 				561E729D1A8BDC6A004ED48B /* ConfigurationExtendBaseContextTests.swift in Sources */,
+				560FA5A31A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */,
 				561E72AA1A8BDC6A004ED48B /* ObjcKeyAccessTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1087,6 +1092,7 @@
 				56B4B21F1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift in Sources */,
 				5685DAB61A1A2074003E583B /* LocalizerTests.swift in Sources */,
 				569C423E1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */,
+				560FA5A21A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */,
 				56B4B23B1A29E65E00BD4F8F /* EachFilterTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

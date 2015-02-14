@@ -97,11 +97,7 @@ public class Context {
     }
     
     public func extendedContext(box: MustacheBox) -> Context {
-        if box.isEmpty {
-            return self
-        } else {
-            return Context(type: .BoxType(box: box, parent: self), registeredKeysContext: registeredKeysContext)
-        }
+        return Context(type: .BoxType(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {

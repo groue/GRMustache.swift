@@ -27,11 +27,11 @@ import Mustache
 class TemplateFromMethodsTests: XCTestCase {
     
     func makeSubscriptFunction(string: String) -> SubscriptFunction {
-        return { (key: String) -> MustacheBox? in
+        return { (key: String) -> MustacheBox in
             if key == "string" {
                 return Box(string)
             } else {
-                return nil
+                return Box()
             }
         }
     }

@@ -87,7 +87,7 @@ class ReadMeTests: XCTestCase {
                     case "name":
                         return Box(self.name)
                     default:
-                        return nil
+                        return Box()
                     }
                 }
             }

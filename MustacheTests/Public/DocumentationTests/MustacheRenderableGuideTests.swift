@@ -112,14 +112,14 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             var mustacheBox: MustacheBox {
-                let mustacheSubscript = { (key: String) -> MustacheBox? in
+                let mustacheSubscript = { (key: String) -> MustacheBox in
                     switch key {
                     case "firstName":
                         return Box(self.firstName)
                     case "lastName":
                         return Box(self.lastName)
                     default:
-                        return nil
+                        return Box()
                     }
                 }
                 let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -138,14 +138,14 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             var mustacheBox: MustacheBox {
-                let mustacheSubscript = { (key: String) -> MustacheBox? in
+                let mustacheSubscript = { (key: String) -> MustacheBox in
                     switch key {
                     case "title":
                         return Box(self.title)
                     case "director":
                         return Box(self.director)
                     default:
-                        return nil
+                        return Box()
                     }
                 }
                 let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
