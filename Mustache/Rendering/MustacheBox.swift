@@ -1676,10 +1676,61 @@ public func Box(didRender: DidRenderFunction) -> MustacheBox {
 // =============================================================================
 // MARK: - Boxing of Swift scalar types
 
+/**
+The MustacheBoxable protocol lets your custom Swift types feed Mustache
+templates.
+
+Note that Objective-C classes should conform to the ObjCMustacheBoxable protocol
+instead.
+*/
 public protocol MustacheBoxable {
+    /**
+    Returns a MustacheBox.
+    
+    This method is invoked when a value of your conforming class is boxed with
+    the Box() function. You can not return Box(self) since this would trigger
+    an infinite loop. Instead you build a Box that explicitly describes how your
+    conforming type interacts with the Mustache engine.
+    
+    For example:
+    
+    ::
+    
+      struct Person {
+          let firstName: String
+          let lastName: String
+      }
+    
+      extension Person : MustacheBoxable {
+          var mustacheBox: MustacheBox {
+              // Return a Box that wraps our user, and exposes the `firstName`,
+              // `lastName` and `fullName` to templates:
+              return Box(value: self) { (key: String) in
+                  switch key {
+                  case "firstName":
+                      return Box(self.firstName)
+                  case "lastName":
+                      return Box(self.lastName)
+                  case "fullName":
+                      return Box("\(self.firstName) \(self.lastName)")
+                  default:
+                      return Box()
+                  }
+              }
+          }
+      }
+    
+      // Renders "Tom Selleck"
+      let template = Template(string: "{{person.fullName}}")!
+      let person = Person(firstName: "Tom", lastName: "Selleck")
+      template.render(Box(["person": Box(person)]))!
+    */
     var mustacheBox: MustacheBox { get }
 }
 
+/**
+See the documentation of the MustacheBoxable protocol.
+*/
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
         return boxable.mustacheBox
