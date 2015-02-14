@@ -298,9 +298,11 @@ public class Template: MustacheBoxable {
     // MARK: - MustacheBoxable
     
     public var mustacheBox: MustacheBox {
-        return Box(value: self) { (info: RenderingInfo, error: NSErrorPointer) in
-            return self.render(info.context, error: error)
-        }
+        return Box(
+            value: self,
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+              return self.render(info.context, error: error)
+            })
     }
 
     

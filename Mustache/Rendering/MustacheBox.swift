@@ -1547,7 +1547,7 @@ extension MustacheBox {
 /**
 A function that wraps a value and a SubscriptFunction into a MustacheBox.
 
-It provides an easy way to let your custom types feed template engines:
+It provides an easy way to let your custom types feed templates:
 
 ::
 
@@ -1576,7 +1576,7 @@ It provides an easy way to let your custom types feed template engines:
   }
 
   // Renders "Tom Selleck"
-  let template = Template(string: "{{person.fullName}}")!
+  let template = Template(string: "{{ person.fullName }}")!
   let person = Person(firstName: "Tom", lastName: "Selleck")
   template.render(Box(["person": Box(person)]))!
 
