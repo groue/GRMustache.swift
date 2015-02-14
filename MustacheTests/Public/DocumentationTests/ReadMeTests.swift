@@ -77,7 +77,7 @@ class ReadMeTests: XCTestCase {
     
     func testReadmeExample3() {
         // Allow Mustache engine to consume User values.
-        struct User: MustacheBoxable {
+        struct User : MustacheBoxable {
             let name: String
             var mustacheBox: MustacheBox {
                 // Return a Box that wraps our user, and knows how to extract

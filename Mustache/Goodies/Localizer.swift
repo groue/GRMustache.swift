@@ -23,7 +23,7 @@
 
 extension StandardLibrary {
     
-    public class Localizer: MustacheBoxable {
+    public class Localizer : MustacheBoxable {
         public let bundle: NSBundle
         public let table: String?
         var formatArguments: [String]?
@@ -58,7 +58,7 @@ extension StandardLibrary {
             // Render the localizable format, being notified of tag rendering
             let context = info.context.extendedContext(Box(self))
             var error: NSError?
-            if let localizableFormatRendering = info.tag.render(context, error: &error) {
+            if let localizableFormatRendering = info.tag.renderInnerContent(context, error: &error) {
                 
                 /**
                 * Perform a second rendering that will fill our formatArguments array with
@@ -76,7 +76,7 @@ extension StandardLibrary {
                 formatArguments = []
                 
                 // Fill formatArguments
-                info.tag.render(context)
+                info.tag.renderInnerContent(context)
                 
                 
                 /**

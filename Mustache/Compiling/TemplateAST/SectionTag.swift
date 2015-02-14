@@ -41,7 +41,7 @@ class SectionTag: Tag, TemplateASTNode {
         }
     }
     
-    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
+    override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         return renderingEngine.render(templateAST, error: error)
     }

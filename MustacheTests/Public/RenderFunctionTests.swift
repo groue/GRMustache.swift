@@ -185,7 +185,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanAccessRenderedContentFromSectionTag() {
         var tagRendering: Rendering? = nil
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            tagRendering = info.tag.render(info.context, error: error)
+            tagRendering = info.tag.renderInnerContent(info.context, error: error)
             return tagRendering
         }
         
@@ -199,7 +199,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanAccessRenderedContentFromExtensionSectionTag() {
         var tagRendering: Rendering? = nil
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            tagRendering = info.tag.render(info.context, error: error)
+            tagRendering = info.tag.renderInnerContent(info.context, error: error)
             return tagRendering
         }
         
@@ -213,7 +213,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag() {
         var tagRendering: Rendering? = nil
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            tagRendering = info.tag.render(info.context, error: error)
+            tagRendering = info.tag.renderInnerContent(info.context, error: error)
             return tagRendering
         }
         
@@ -226,7 +226,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag() {
         var tagRendering: Rendering? = nil
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            tagRendering = info.tag.render(info.context, error: error)
+            tagRendering = info.tag.renderInnerContent(info.context, error: error)
             return tagRendering
         }
         
@@ -273,7 +273,7 @@ class RenderFunctionTests: XCTestCase {
             return Box("value")
         }
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context, error: error)
+            return info.tag.renderInnerContent(info.context, error: error)
         }
         let box = Box(["render": Box(mustacheSubscript: mustacheSubscript, render: render)])
         let rendering = Template(string: "{{#render}}key:{{key}}{{/render}}")!.render(box)!
@@ -293,7 +293,7 @@ class RenderFunctionTests: XCTestCase {
     
     func testRenderFunctionCanExtendValueContextStackInSectionTag() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context.extendedContext(Box(["subject2": Box("+++")])), error: error)
+            return info.tag.renderInnerContent(info.context.extendedContext(Box(["subject2": Box("+++")])), error: error)
         }
         let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = Template(string: "{{#render}}{{subject}}{{subject2}}{{/render}}")!.render(box)!
@@ -319,7 +319,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanExtendWillRenderStackInSectionTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
+            return info.tag.renderInnerContent(info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
                 ++tagWillRenderCount
                 return box
             })), error: error)
@@ -341,7 +341,7 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            return info.tag.render(info.context, error: error)
+            return info.tag.renderInnerContent(info.context, error: error)
         }
         
         let template = Template(string: "{{#render}}{{subject}}{{/render}}")!
@@ -610,11 +610,11 @@ class RenderFunctionTests: XCTestCase {
     
     func testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation() {
         let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context)!
+            let rendering = info.tag.renderInnerContent(info.context)!
             return Rendering("[1:\(rendering.string)]", rendering.contentType)
         }
         let render2 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context)!
+            let rendering = info.tag.renderInnerContent(info.context)!
             return Rendering("[2:\(rendering.string)]", rendering.contentType)
         }
         let renders = [Box(render1), Box(render2), Box(true), Box(false)]

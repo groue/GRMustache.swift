@@ -84,7 +84,7 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
             for box in zippedBoxes {
                 context = context.extendedContext(box)
             }
-            return info.tag.render(context, error: error)
+            return info.tag.renderInnerContent(context, error: error)
         }
         
         renderFunctions.append(renderFunction)

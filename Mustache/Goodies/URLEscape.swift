@@ -23,16 +23,7 @@
 
 import Foundation
 
-class URLEscape: MustacheBoxable {
-    
-    private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering("\(self)")
-        case .Section:
-            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-        }
-    }
+class URLEscape : MustacheBoxable {
     
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
@@ -67,7 +58,6 @@ class URLEscape: MustacheBoxable {
     var mustacheBox: MustacheBox {
         return Box(
             value: self,
-            render: render,
             filter: Filter(filter),
             willRender: willRender)
     }

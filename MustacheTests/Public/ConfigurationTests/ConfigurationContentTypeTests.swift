@@ -112,7 +112,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+            let rendering = info.tag.renderInnerContent(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -130,7 +130,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+            let rendering = info.tag.renderInnerContent(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -148,7 +148,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+            let rendering = info.tag.renderInnerContent(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
@@ -166,7 +166,7 @@ class ConfigurationContentTypeTests: XCTestCase {
         let testedTemplate = Template(string: "")!
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+            let rendering = info.tag.renderInnerContent(info.context, error: error)
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }

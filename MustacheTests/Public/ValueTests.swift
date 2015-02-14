@@ -84,10 +84,11 @@ class ValueTests: XCTestCase {
         XCTAssertEqual(extractedNSObject, NSObject)
     }
     
+    // TODO: why is this test commented out?
 //    func testCustomValueFilter() {
 //        // Test that one can define a filter taking a CustomValue as an argument.
 //        
-//        struct Boxable: MustacheBoxable {
+//        struct Boxable : MustacheBoxable {
 //            let name: String
 //            var mustacheBox: MustacheBox {
 //                return Box(value: self)

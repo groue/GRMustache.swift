@@ -26,7 +26,7 @@ import Foundation
 /**
 The Template class provides Mustache rendering services.
 */
-public class Template: MustacheBoxable {
+public class Template : MustacheBoxable {
     
     /**
     Parses a template string, and returns a template.

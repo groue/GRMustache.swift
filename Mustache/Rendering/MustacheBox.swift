@@ -859,7 +859,7 @@ already-parsed Mustache tag:
   let strong: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
       return Rendering(
           "<strong>" +
-          info.tag.render(info.context)!.string +   // Ignore errors for this example
+          info.tag.renderInnerContent(info.context)!.string +   // Ignore errors for this example
           "</strong>", .HTML)
   }
 
@@ -1280,7 +1280,7 @@ public struct MustacheBox {
                         return Rendering("")
                     }
                 case .Section:
-                    return info.tag.render(info.context.extendedContext(self), error: error)
+                    return info.tag.renderInnerContent(info.context.extendedContext(self), error: error)
                 }
             }
         }
@@ -1475,9 +1475,10 @@ For example, let's make the Person class below able to feed templates:
               return Rendering("\(firstName) \(lastName)")
           case .Section:
               // Regular rendering of {{# person }}...{{/}} section tags:
-              // Extend the context with self, and render the content of the tag:
+              // Extend the context with self, and render the inner content of
+              // the section tag:
               let context = info.context.extendedContext(Box(self))
-              return info.tag.render(context, error: error)
+              return info.tag.renderInnerContent(context, error: error)
           }
       }
   }
@@ -1812,9 +1813,9 @@ extension Bool : MustacheBoxable {
                     // Be consistent with Objective-C, and make Bool behave just
                     // like [NSNumber numberWithBool:]
                     if info.enumerationItem {
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
-                        return info.tag.render(info.context, error: error)
+                        return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
         })
@@ -1881,9 +1882,9 @@ extension Int : MustacheBoxable {
                     // Be consistent with Objective-C, and make Int behave just
                     // like [NSNumber numberWithInteger:]
                     if info.enumerationItem {
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
-                        return info.tag.render(info.context, error: error)
+                        return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
         })
@@ -1950,9 +1951,9 @@ extension UInt : MustacheBoxable {
                     // Be consistent with Objective-C, and make Int behave just
                     // like [NSNumber numberWithInteger:]
                     if info.enumerationItem {
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
-                        return info.tag.render(info.context, error: error)
+                        return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
         })
@@ -2019,9 +2020,9 @@ extension Double : MustacheBoxable {
                     // Be consistent with Objective-C, and make Double behave just
                     // like [NSNumber numberWithDouble:]
                     if info.enumerationItem {
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
-                        return info.tag.render(info.context, error: error)
+                        return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
         })
@@ -2090,7 +2091,7 @@ extension String : MustacheBoxable {
     ::
     
       let uppercase: RenderFunction = { (info: RenderingInfo, _) in
-          let rendering = info.tag.render(info.context)!
+          let rendering = info.tag.renderInnerContent(info.context)!
           return Rendering(rendering.string.uppercaseString)
       }
       
@@ -2111,15 +2112,7 @@ extension String : MustacheBoxable {
                 default:
                     return Box()
                 }
-            },
-            render: { (info: RenderingInfo, error: NSErrorPointer) in
-                switch info.tag.type {
-                case .Variable:
-                    return Rendering("\(self)")
-                case .Section:
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                }
-        })
+            })
     }
 }
 
@@ -2174,7 +2167,7 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
     if let contentType = contentType {
         return Rendering(buffer, contentType)
     } else {
-        return info.tag.render(info.context, error: error)
+        return info.tag.renderInnerContent(info.context, error: error)
     }
 }
 
@@ -2234,7 +2227,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
+                    return info.tag.renderInnerContent(info.context.extendedContext(Box(collection)), error: error)
                 } else {
                     return renderCollection(collection, info, error)
                 }
@@ -2271,16 +2264,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
                 }),
             mustacheSubscript: { (key: String) in
                 return Box(dictionary[key])
-            },
-            render: { (info: RenderingInfo, error: NSErrorPointer) in
-                switch info.tag.type {
-                case .Variable:
-                    return Rendering("\(dictionary)")
-                case .Section:
-                    return info.tag.render(info.context.extendedContext(Box(dictionary)), error: error)
-                }
-            }
-        )
+            })
     } else {
         return Box()
     }
@@ -2510,7 +2494,6 @@ extension NSObject : ObjCMustacheBoxable {
                 // Dictionary-like enumerable
                 
                 return ObjCMustacheBox(MustacheBox(
-                    boolValue: true,
                     value: self,
                     converter: MustacheBox.Converter(
                         dictionaryValue: {
@@ -2526,16 +2509,7 @@ extension NSObject : ObjCMustacheBoxable {
                     mustacheSubscript: { (key: String) in
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                         return BoxAnyObject(item)
-                    },
-                    render: { (info: RenderingInfo, error: NSErrorPointer) in
-                        switch info.tag.type {
-                        case .Variable:
-                            return Rendering("\(self)")
-                        case .Section:
-                            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                        }
-                    }
-                ))
+                    }))
             }
             else
             {
@@ -2551,7 +2525,6 @@ extension NSObject : ObjCMustacheBoxable {
             // Generic NSObject
             
             return ObjCMustacheBox(MustacheBox(
-                boolValue: true,
                 value: self,
                 mustacheSubscript: { (key: String) in
                     if self.respondsToSelector("objectForKeyedSubscript:")
@@ -2569,15 +2542,7 @@ extension NSObject : ObjCMustacheBoxable {
                         // Missing key
                         return Box()
                     }
-                },
-                render: { (info: RenderingInfo, error: NSErrorPointer) in
-                    switch info.tag.type {
-                    case .Variable:
-                        return Rendering("\(self)")
-                    case .Section:
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-                    }
-            }))
+                }))
         }
     }
 }
@@ -2749,7 +2714,7 @@ extension NSSet : ObjCMustacheBoxable {
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     let boxArray = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
                     return renderCollection(boxArray, info, error)

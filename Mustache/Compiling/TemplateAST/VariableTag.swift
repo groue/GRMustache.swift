@@ -43,7 +43,7 @@ class VariableTag: Tag, TemplateASTNode {
         }
     }
     
-    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
+    override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         return Rendering("", contentType)
     }
     

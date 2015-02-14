@@ -28,7 +28,7 @@ class EachFilterTests: XCTestCase {
     
     func testEachFilterTriggersRenderFunctionsInArray() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context)!
+            let rendering = info.tag.renderInnerContent(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
         let box = Box(["array": Box([Box(render)])])
@@ -40,7 +40,7 @@ class EachFilterTests: XCTestCase {
 
     func testEachFilterTriggersRenderFunctionsInDictionary() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context)!
+            let rendering = info.tag.renderInnerContent(info.context)!
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
         let box = Box(["dictionary": Box(["a": Box(render)])])

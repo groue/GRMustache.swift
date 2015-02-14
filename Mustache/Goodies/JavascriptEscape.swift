@@ -23,16 +23,7 @@
 
 import Foundation
 
-class JavascriptEscape: MustacheBoxable {
-    
-    private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            return Rendering("\(self)")
-        case .Section:
-            return info.tag.render(info.context.extendedContext(Box(self)), error: error)
-        }
-    }
+class JavascriptEscape : MustacheBoxable {
     
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
@@ -140,7 +131,6 @@ class JavascriptEscape: MustacheBoxable {
     var mustacheBox: MustacheBox {
         return Box(
             value: self,
-            render: render,
             filter: Filter(filter),
             willRender: willRender)
     }

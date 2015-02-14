@@ -41,27 +41,11 @@ extension NSFormatter: ObjCMustacheBoxable {
         }
     }
     
-    // A RenderFunction: this function lets formatter provide a custom rendering
-    // of sections: {{# formatter }}...{{/ formatter }}.
-    private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
-        switch info.tag.type {
-        case .Variable:
-            // {{ formatter }}
-            // Behave as a regular object: render self's description
-            return Rendering("\(self)")
-        case .Section:
-            // {{# formatter }}...{{/ formatter }}
-            // Render normally, but listen to all inner tags rendering, so that
-            // we can format them. See the willRender() method, below.
-            let context = info.context.extendedContext(Box(self))
-            return info.tag.render(context, error: error)
-        }
-    }
-    
     // A WillRenderFunction: this function lets formatter change values that
     // are about to be rendered to their formatted counterpart.
     //
-    // It is activated in the render() method, above.
+    // It is activated as soon as the formatter enters the context stack, when
+    // used in a section {{# formatter }}...{{/ formatter }}.
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
@@ -154,7 +138,6 @@ extension NSFormatter: ObjCMustacheBoxable {
         // render, filter and willRender methods for more information.
         return ObjCMustacheBox(Box(
             value: self,
-            render: render,
             filter: Filter(filter),
             willRender: willRender))
     }

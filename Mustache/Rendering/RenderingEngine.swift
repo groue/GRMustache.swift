@@ -231,7 +231,7 @@ class RenderingEngine: TemplateASTVisitor {
                     if box.boolValue {
                         rendering = Rendering("")
                     } else {
-                        rendering = info.tag.render(info.context, error: &error)
+                        rendering = info.tag.renderInnerContent(info.context, error: &error)
                     }
                 } else {
                     if box.boolValue {

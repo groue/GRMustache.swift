@@ -44,7 +44,7 @@ public class Tag: Printable {
         self.expression = expression
     }
     
-    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
+    public func renderInnerContent(context: Context, error: NSErrorPointer = nil) -> Rendering? {
         fatalError("Subclass must override")
     }
     
