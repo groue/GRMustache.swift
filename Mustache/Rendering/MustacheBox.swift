@@ -986,12 +986,12 @@ they are about to render.
 
 ::
 
-  let willRender: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
+  let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
       println("\(tag) will render \(box.value!)")
       return box
   }
   
-  // By entering the base context of the template, the willRender function
+  // By entering the base context of the template, the logTags function
   // will be notified of all tags.
   let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
   template.extendBaseContext(Box(willRender))
@@ -1079,14 +1079,14 @@ after tags have been rendered.
 
 ::
 
-  let didRender: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
+  let logRenderings: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
       println("\(tag) did render \(box.value!) as `\(string!)`")
   }
   
-  // By entering the base context of the template, the didRender function will
-  // be notified of all tags.
+  // By entering the base context of the template, the logRenderings function
+  // will be notified of all tags.
   let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
-  template.extendBaseContext(Box(didRender))
+  template.extendBaseContext(Box(logRenderings))
   
   // Renders "Errol Flynn"
   //
@@ -1590,7 +1590,7 @@ A function that wraps a FilterFunction into a MustacheBox.
 
 ::
 
-  let square = Filter { (x: Int, _) in
+  let square: FilterFunction = Filter { (x: Int, _) in
       return Box(x * x)
   }
 
@@ -1604,16 +1604,72 @@ public func Box(filter: FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
 }
 
-public func Box(value: Any? = nil, render: RenderFunction) -> MustacheBox {
-    return MustacheBox(value: value, render: render)
+/**
+A function that wraps a RenderFunction into a MustacheBox.
+
+::
+
+  let foo: RenderFunction = { (_, _) in Rendering("foo") }
+
+  // Renders "foo"
+  let template = Template(string: "{{ foo }}")!
+  template.render(Box(["foo": Box(foo)]))!
+*/
+public func Box(render: RenderFunction) -> MustacheBox {
+    return MustacheBox(render: render)
 }
 
-public func Box(value: Any? = nil, willRender: WillRenderFunction) -> MustacheBox {
-    return MustacheBox(value: value, willRender: willRender)
+/**
+A function that wraps a WillRenderFunction into a MustacheBox.
+
+::
+
+  let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
+      println("\(tag) will render \(box.value!)")
+      return box
+  }
+  
+  // By entering the base context of the template, the logTags function
+  // will be notified of all tags.
+  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+  template.extendBaseContext(Box(logTags))
+  
+  // Prints:
+  // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
+  // {{ firstName }} at line 1 will render Errol
+  // {{ lastName }} at line 1 will render Flynn
+  let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+  template.render(Box(data))!
+*/
+public func Box(willRender: WillRenderFunction) -> MustacheBox {
+    return MustacheBox(willRender: willRender)
 }
 
-public func Box(value: Any? = nil, didRender: DidRenderFunction) -> MustacheBox {
-    return MustacheBox(value: value, didRender: didRender)
+/**
+A function that wraps a DidRenderFunction into a MustacheBox.
+
+::
+
+  let logRenderings: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
+      println("\(tag) did render \(box.value!) as `\(string!)`")
+  }
+  
+  // By entering the base context of the template, the logRenderings function
+  // will be notified of all tags.
+  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+  template.extendBaseContext(Box(logRenderings))
+  
+  // Renders "Errol Flynn"
+  //
+  // Prints:
+  // {{ firstName }} at line 1 did render Errol as `Errol`
+  // {{ lastName }} at line 1 did render Flynn as `Flynn`
+  // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
+  let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+  template.render(Box(data))!
+*/
+public func Box(didRender: DidRenderFunction) -> MustacheBox {
+    return MustacheBox(didRender: didRender)
 }
 
 
