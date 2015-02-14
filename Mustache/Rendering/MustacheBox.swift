@@ -2252,7 +2252,6 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         
         return MustacheBox(
-            boolValue: true,
             value: dictionary,
             converter: MustacheBox.Converter(
                 dictionaryValue: {
