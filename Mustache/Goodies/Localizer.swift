@@ -151,6 +151,7 @@ extension StandardLibrary {
             case .Variable:
                 // {{ value }}
                 //
+                // TODO: update outdated comment
                 // We behave as stated in renderForMustacheTag(tag:,info:,contentType:,error:)
                 
                 if formatArguments != nil {
