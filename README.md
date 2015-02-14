@@ -61,12 +61,12 @@ GRMustache can render pure Swift objects, with a little help.
 
 ```swift
 // Define a pure Swift object:
-struct User {
+struct Person {
     let name: String
 }
 ```
 
-We want to let the `Hello {{name}}!` template extract the `name` key out of a user.
+We want to let Mustache templates extract the `{{name}}` key out of a person.
 
 Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
 
@@ -94,9 +94,9 @@ Now we can box and render a user:
 
 ```swift
 // Freddy Mercury has a mustache.
-let user = User(name: "Freddy Mercury")
+let person = Person(name: "Freddy Mercury")
 let template = Template(string: "{{name}} has a mustache.")!
-let rendering = template.render(Box(user))!
+let rendering = template.render(Box(person))!
 ```
 
 
