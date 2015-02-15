@@ -33,6 +33,16 @@ public protocol TemplateRepositoryDataSource {
 public class TemplateRepository {
     public var configuration: Configuration
     public let dataSource: TemplateRepositoryDataSource?
+    
+    private var _lockedConfiguration: Configuration?
+    private var lockedConfiguration: Configuration {
+        // Changing mutable values within the repository's configuration no
+        // longer has any effect.
+        if _lockedConfiguration == nil {
+            _lockedConfiguration = configuration
+        }
+        return _lockedConfiguration!
+    }
     private var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
@@ -58,12 +68,12 @@ public class TemplateRepository {
     }
     
     public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
-        return self.template(string: string, contentType: configuration.contentType, error: error)
+        return self.template(string: string, contentType: lockedConfiguration.contentType, error: error)
     }
     
     public func template(named name: String, error: NSErrorPointer = nil) -> Template? {
         if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: error) {
-            return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
         } else {
             return nil
         }
@@ -75,7 +85,7 @@ public class TemplateRepository {
     
     func template(#string: String, contentType: ContentType, error: NSErrorPointer) -> Template? {
         if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
-            return Template(repository: self, templateAST: templateAST, baseContext: configuration.baseContext)
+            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
         } else {
             return nil
         }
@@ -90,7 +100,7 @@ public class TemplateRepository {
                 if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &dataSourceError) {
                     let templateAST = TemplateAST()
                     templateASTForTemplateID[templateID] = templateAST
-                    if let compiledAST = self.templateAST(string: templateString, contentType: configuration.contentType, templateID: templateID, error: error) {
+                    if let compiledAST = self.templateAST(string: templateString, contentType: lockedConfiguration.contentType, templateID: templateID, error: error) {
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
                     } else {
@@ -117,7 +127,7 @@ public class TemplateRepository {
     
     func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
         let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
-        let parser = TemplateParser(tokenConsumer: compiler, configuration: configuration)
+        let parser = TemplateParser(tokenConsumer: compiler, configuration: lockedConfiguration)
         parser.parse(string, templateID: templateID)
         return compiler.templateAST(error: error)
     }

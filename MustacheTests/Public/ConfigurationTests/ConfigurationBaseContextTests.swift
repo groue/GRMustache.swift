@@ -128,15 +128,31 @@ class ConfigurationBaseContextTests: XCTestCase {
         XCTAssertEqual(rendering, "success")
     }
     
-    func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        XCTAssertEqual(rendering, "success")
+        
+        DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
+        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        XCTAssertEqual(rendering, "success")
     }
     
-    func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
-    }
-    
-    func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        XCTAssertEqual(rendering, "success")
+        
+        repository.configuration.baseContext = Context(Box(["foo": "failure"]))
+        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        XCTAssertEqual(rendering, "success")
+        
+        var configuration = Configuration()
+        configuration.baseContext = Context(Box(["foo": "failure"]))
+        repository.configuration = configuration
+        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        XCTAssertEqual(rendering, "success")
     }
 }

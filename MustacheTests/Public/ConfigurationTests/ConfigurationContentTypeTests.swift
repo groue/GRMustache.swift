@@ -314,16 +314,31 @@ class ConfigurationContentTypeTests: XCTestCase {
         XCTAssertEqual(rendering, "&amp;")
     }
     
-    func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+        
+        DefaultConfiguration.contentType = .Text
+        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        XCTAssertEqual(rendering, "&amp;")
     }
     
-    func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+        
+        repository.configuration.contentType = .Text
+        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        XCTAssertEqual(rendering, "&amp;")
+        
+        var configuration = Configuration()
+        configuration.contentType = .Text
+        repository.configuration = configuration
+        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        XCTAssertEqual(rendering, "&amp;")
     }
-    
-    func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
-    }
-    
 }

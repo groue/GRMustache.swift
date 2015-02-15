@@ -145,16 +145,34 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         XCTAssertEqual(rendering, "---")
     }
     
-    func testRepositoryConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
+        XCTAssertEqual(rendering, "foo<%foo%>")
+        
+        DefaultConfiguration.tagStartDelimiter = "<%"
+        DefaultConfiguration.tagEndDelimiter = "%>"
+        rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
+        XCTAssertEqual(rendering, "foo<%foo%>")
     }
     
-    func testDefaultConfigurationCanBeMutatedBeforeAnyTemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
+    func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
+        let repository = TemplateRepository()
+        
+        var rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
+        XCTAssertEqual(rendering, "foo<%foo%>")
+        
+        repository.configuration.tagStartDelimiter = "<%"
+        repository.configuration.tagEndDelimiter = "%>"
+        rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
+        XCTAssertEqual(rendering, "foo<%foo%>")
+        
+        var configuration = Configuration()
+        configuration.tagStartDelimiter = "<%"
+        configuration.tagEndDelimiter = "%>"
+        repository.configuration = configuration
+        rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
+        XCTAssertEqual(rendering, "foo<%foo%>")
     }
-    
-    func testRepositoryConfigurationCanNotBeMutatedAfterATemplateHasBeenCompiled() {
-        // TODO: import test from GRMustache
-    }
-
 }
