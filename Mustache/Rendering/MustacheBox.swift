@@ -1392,7 +1392,7 @@ which means that the box can not be used as a filter.
 
 The optional render parameter is a RenderFunction that is evaluated when the Box
 gets rendered. The default value is nil, which makes the box perform default
-rendering.
+Mustache rendering of values.
 
 ::
 
@@ -1412,7 +1412,9 @@ context stack.
 
   // Renders "baz baz"
   let template = Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")!
-  let box = Box(willRender: { (tag: Tag, box: MustacheBox) in Box("baz") })
+  let box = Box(willRender: { (tag: Tag, box: MustacheBox) in
+      return Box("baz")
+  })
   template.render(box)!
 
 
@@ -1456,14 +1458,10 @@ For example, let's make the Person class below able to feed templates:
       // name. Let's expose the `firstName`, `lastName` and `fullName`:
       func mustacheSubscript(key: String) -> MustacheBox {
           switch key {
-          case "firstName":
-              return Box(firstName)
-          case "lastName":
-              return Box(lastName)
-          case "fullName":
-              return Box("\(firstName) \(lastName)")
-          default:
-              return Box()
+          case "firstName": return Box(firstName)
+          case "lastName": return Box(lastName)
+          case "fullName": return Box("\(firstName) \(lastName)")
+          default: return Box()
           }
       }
       
