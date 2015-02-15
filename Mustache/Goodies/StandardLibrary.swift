@@ -21,10 +21,215 @@
 // THE SOFTWARE.
 
 
+/**
+The StandardLibrary exposes built-in goodies.
+*/
 public struct StandardLibrary {
+    /**
+    Usage:
+    
+    ::
+    
+      // To make HTMLEscape available for all templates, execute once and
+      // early in your application:
+      Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+    
+      // To make HTMLEscape available for a single template, only do:
+      template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+    
+    As a filter, `HTMLEscape` returns its argument, HTML-escaped.
+    
+    ::
+    
+      <pre>
+      {{ HTMLEscape(content) }}
+      </pre>
+    
+    When used in a section, `HTMLEscape` escapes all inner variable tags in a section:
+    
+    ::
+    
+      {{# HTMLEscape }}
+        {{ firstName }}
+        {{ lastName }}
+      {{/ HTMLEscape }}
+    
+    Variable tags buried inside inner sections are escaped as well, so that you
+    can render loop and conditional sections:
+    
+    ::
+    
+      {{# HTMLEscape }}
+        {{# items }}
+          {{ name }}
+        {{/ items }}
+      {{/ HTMLEscape }}
+    
+    :see: javascriptEscape
+    :see: URLEscape
+    */
     public static let HTMLEscape: MustacheBoxable = Mustache.HTMLEscape()
+    
+    /**
+    Usage:
+    
+    ::
+    
+      // To make URLEscape available for all templates, execute once and
+      // early in your application:
+      Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+    
+      // To make URLEscape available for a single template, only do:
+      template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+    
+    As a filter, `URLEscape` returns its argument, percent-escaped.
+    
+    ::
+    
+      <a href="http://google.com?q={{ URLEscape(query) }}">...</a>
+    
+    When used in a section, `URLEscape` escapes all inner variable tags in a
+    section:
+    
+    ::
+    
+      {{# URLEscape }}
+        <a href="http://google.com?q={{query}}&amp;hl={{language}}">...</a>
+      {{/ URLEscape }}
+    
+    Variable tags buried inside inner sections are escaped as well, so that you
+    can render loop and conditional sections:
+    
+    ::
+    
+      {{# URLEscape }}
+        <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
+      {{/ URLEscape }}
+    
+    :see: HTMLEscape
+    :see: javascriptEscape
+    */
     public static let URLEscape: MustacheBoxable = Mustache.URLEscape()
+    
+    /**
+    Usage:
+    
+    ::
+    
+      // To make javascriptEscape available for all templates, execute once and
+      // early in your application:
+      Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+    
+      // To make javascriptEscape available for a single template, only do:
+      template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+    
+    As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
+    
+    ::
+    
+      <script type="text/javascript">
+        var name = "{{ javascriptEscape(name) }}";
+      </script>
+    
+    When used in a section, `javascriptEscape` escapes all inner variable tags
+    in a section:
+    
+    ::
+    
+      <script type="text/javascript">
+        {{# javascriptEscape }}
+          var firstName = "{{ firstName }}";
+          var lastName = "{{ lastName }}";
+        {{/ javascriptEscape }}
+      </script>
+    
+    Variable tags buried inside inner sections are escaped as well, so that you
+    can render loop and conditional sections:
+    
+    ::
+    
+      <script type="text/javascript">
+        {{# javascriptEscape }}
+          var firstName = {{# firstName }}"{{ firstName }}"{{^}}null{{/}};
+          var lastName = {{# lastName }}"{{ lastName }}"{{^}}null{{/}};
+        {{/ javascriptEscape }}
+      </script>
+    
+    :see: HTMLEscape
+    :see: URLEscape
+    */
     public static let javascriptEscape: MustacheBoxable = Mustache.JavascriptEscape()
+    
+    /**
+    Usage:
+    
+    ::
+    
+      // To make `each` available for all templates, execute once and
+      // early in your application:
+      Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
+    
+      // To make `each` available for a single template, only do:
+      template.registerInBaseContext("each", Box(StandardLibrary.each))
+    
+    Iteration is natural to Mustache templates:
+    
+    `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the
+    `users` key is given a list of users.
+    
+    The `each` filter gives you some extra keys:
+    
+    - `@index` contains the 0-based index of the item (0, 1, 2, etc.)
+    - `@indexPlusOne` contains the 1-based index of the item (1, 2, 3, etc.)
+    - `@indexIsEven` is true if the 0-based index is even.
+    - `@first` is true for the first item only.
+    - `@last` is true for the last item only.
+    
+    ::
+    
+      One line per user:
+      {{# each(users) }}
+      - {{ @index }}: {{ name }}
+      {{/}}
+    
+      Comma-separated user names:
+      {{# each(users) }}{{ name }}{{^ @last }}, {{/}}{{/}}.
+    
+    The template above renders:
+    
+    ::
+    
+      One line per user:
+      - 0: Alice
+      - 1: Bob
+      - 2: Craig
+    
+      Comma-separated user names: Alice, Bob, Craig.
+    
+    When provided with a dictionary, `each` iterates each key/value pair of the
+    dictionary, stores the key in `@key`, and sets the value as the current
+    context:
+    
+    ::
+    
+      {{# each(dictionary) }}
+      - {{ @key }}: {{.}}
+      {{/}}
+    
+    Renders:
+    
+    ::
+    
+      - name: Alice
+      - score: 200
+      - level: 5
+    
+    The other positional keys `@index`, `@first`, etc. are still available when
+    iterating dictionaries.
+    */
     public static let each = EachFilter
+    
+    /**
+    */
     public static let zip = ZipFilter
 }
