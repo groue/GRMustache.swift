@@ -25,11 +25,70 @@ import Foundation
 
 public typealias TemplateID = String
 
+/**
+The protocol for a TemplateRepository's dataSource.
+
+The dataSource's responsability is to provide Mustache template strings for
+template and partial names.
+*/
 public protocol TemplateRepositoryDataSource {
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID?
+    /**
+    Returns a template ID, that is to say a string that uniquely identifies a
+    template or a template partial. There should be a single template ID for
+    each template.
+    
+    The meaning of this String is opaque: your implementation of a
+    TemplateRepositoryDataSource would define, for itself, how strings would
+    identity a template or a partial. For example, a file-based data source may
+    use paths to the templates as template IDs.
+    
+    Whenever relevant, template and partial hierarchies are supported via the
+    baseTemplateID parameter: it contains the template ID of the enclosing
+    template, or nil when the data source is asked for a template ID from a raw
+    template string (see TemplateRepository.template(string:, error:)).
+    
+    Not all data sources have to implement hierarchies: they can simply ignore
+    this parameter.
+    
+    The return value of this method can be nil: the library user would then
+    eventually get an NSError of domain GRMustacheErrorDomain and code
+    GRMustacheErrorCodeTemplateNotFound.
+    
+    :param: name           The name of the template or template partial.
+    :param: baseTemplateID The template ID of the enclosing template, or nil.
+    
+    :returns: a template ID
+    */
+    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
+    
+    /**
+    Returns the Mustache template string that matches the template ID.
+    
+    :param: templateID The template ID of the template
+    :param: error      If there is an error returning a template string, upon
+                       return contains nil, or an NSError object that describes
+                       the problem.
+    
+    :returns: a Mustache template string
+    */
+    
     func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String?
 }
 
+/**
+A template repository represents a set of templates loaded from a "data source".
+
+You can provide your own data sources, but the library ships with built-in ones
+that load templates from file paths, URLs, bundle resources, and string
+dictionaries.
+
+The services provided by template repositories are:
+
+- custom configuration.
+- a cache of template parsings.
+- absolute paths to ease loading of partial templates in a hierarchy of
+  directories and template files.
+*/
 public class TemplateRepository {
     
     // =========================================================================
@@ -82,6 +141,25 @@ public class TemplateRepository {
     
       // Loads /path/to/templates/template.mustache
       let template = repository.template(named: "template")!
+
+    
+    Eventual partial tags in template files refer to sibling template files.
+
+    If the target directory contains a hierarchy of template files and
+    sub-directories, you can navigate through this hierarchy with both relative
+    and absolute paths to partials. For example, given the following hierarchy:
+    
+    - /path/to/templates
+      - a.mustache
+      - partials
+        - b.mustache
+    
+    The a.mustache template can embed b.mustache with both {{> partials/b }}
+    and {{> /partials/b }} partial tags.
+    
+    The b.mustache template can embed a.mustache with both the {{> ../a }} and
+    {{> /a }} partial tags.
+    
     
     :param: directoryPath     The path to the directory containing template
                               files.
@@ -104,6 +182,25 @@ public class TemplateRepository {
     
       // Loads /path/to/templates/template.mustache
       let template = repository.template(named: "template")!
+    
+    
+    Eventual partial tags in template files refer to sibling template files.
+
+    If the target directory contains a hierarchy of template files and
+    sub-directories, you can navigate through this hierarchy with both relative
+    and absolute paths to partials. For example, given the following hierarchy:
+    
+    - /path/to/templates
+      - a.mustache
+      - partials
+        - b.mustache
+    
+    The a.mustache template can embed b.mustache with both {{> partials/b }}
+    and {{> /partials/b }} partial tags.
+    
+    The b.mustache template can embed a.mustache with both the {{> ../a }} and
+    {{> /a }} partial tags.
+    
     
     :param: baseURL           The base URL where to look for templates.
     :param: templateExtension The extension of template files. Default extension
@@ -170,12 +267,45 @@ public class TemplateRepository {
     // =========================================================================
     // MARK: - Loading Templates from a Repository
     
+    
+    /**
+    The template repository data source, responsible for loading template
+    strings when given template names.
+    */
     public let dataSource: TemplateRepositoryDataSource?
     
+    /**
+    Parses a template string, and returns a template.
+    
+    Depending on the way the repository has been created, partial tags such as
+    `{{>partial}}` load partial templates from URLs, file paths, keys in a
+    dictionary, or whatever is relevant to the repository's data source.
+    
+    :param: templateString A Mustache template string
+    :param: error          If there is an error loading or parsing template and
+                           partials, upon return contains an NSError object that
+                           describes the problem.
+    
+    :returns: A Mustache Template
+    */
     public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
         return self.template(string: string, contentType: lockedConfiguration.contentType, error: error)
     }
     
+    /**
+    Returns a template identified by its name.
+    
+    Depending on the way the repository has been created, the name identifies a
+    URL, a file path, a key in a dictionary, or whatever is relevant to the
+    repository's data source.
+    
+    :param: name  The template name
+    :param: error If there is an error loading or parsing template and partials,
+                  upon return contains an NSError object that describes the
+                  problem.
+    
+    :returns: A Mustache Template
+    */
     public func template(named name: String, error: NSErrorPointer = nil) -> Template? {
         if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: error) {
             return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
@@ -184,6 +314,27 @@ public class TemplateRepository {
         }
     }
     
+    /**
+    Have the template repository reload its templates.
+    
+    Template repositories cache the parsing of their templates. This speeds up
+    the loading of already parsed templates.
+    
+    Changes to the underlying template strings won't be visible until you
+    explicitely ask for a reload:
+    
+    ::
+    
+      // May reuse a cached parsing:
+      let template = repository.template(named:"profile")!
+      
+      // Forces the template reloading:
+      repository.reloadTemplates();
+      let template = repository.template(named:"profile")!
+    
+    :warning: Previously created instances of GRMustacheTemplate are not
+              reloaded.
+    */
     public func reloadTemplates() {
         templateASTForTemplateID.removeAll()
     }
@@ -201,7 +352,7 @@ public class TemplateRepository {
     }
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
-        if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID, inRepository: self) {
+        if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
             if let templateAST = templateASTForTemplateID[templateID] {
                 return templateAST
             } else {
@@ -263,7 +414,7 @@ public class TemplateRepository {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             return name
         }
         
@@ -283,7 +434,7 @@ public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -333,7 +484,7 @@ public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {
@@ -383,7 +534,7 @@ public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository: TemplateRepository) -> TemplateID? {
+        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
                 // Rebase template names starting with a /
                 if !name.isEmpty && name[name.startIndex] == "/" {

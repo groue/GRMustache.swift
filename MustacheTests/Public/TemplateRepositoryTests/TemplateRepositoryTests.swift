@@ -70,7 +70,7 @@ class TemplateRepositoryTests: XCTestCase {
             init(templates: [String: String]) {
                 self.templates = templates
             }
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
             func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {

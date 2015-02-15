@@ -28,7 +28,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
     
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?, inRepository:TemplateRepository) -> TemplateID? {
+            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
             func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
