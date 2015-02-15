@@ -85,7 +85,13 @@ Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: y
 Usage:
 
 ```swift
+// To make `HTMLEscape` available for all templates, execute once and
+// early in your application:
 Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+
+// To make `HTMLEscape` available for a single template, only do:
+let template = ...
+template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
 ```
 
 As a filter, `HTMLEscape` returns its argument, HTML-escaped.
@@ -119,7 +125,13 @@ See also [javascriptEscape](#standardlibraryjavascriptescape), [URLEscape](#stan
 Usage:
 
 ```swift
+// To make `javascriptEscape` available for all templates, execute once and
+// early in your application:
 Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+
+// To make `javascriptEscape` available for a single template, only do:
+let template = ...
+template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
 ```
 
 As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
@@ -160,7 +172,13 @@ See also [HTMLEscape](#standardlibraryhtmlescape), [URLEscape](#standardlibraryu
 Usage:
 
 ```swift
-Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary).URLEscape)
+// To make `URLEscape` available for all templates, execute once and
+// early in your application:
+Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+
+// To make `URLEscape` available for a single template, only do:
+let template = ...
+template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
 ```
 
 As a filter, `URLEscape` returns its argument, percent-escaped.
@@ -193,7 +211,13 @@ See also [HTMLEscape](#standardlibraryhtmlescape), [javascriptEscape](#standardl
 Usage:
 
 ```swift
+// To make `each` available for all templates, execute once and
+// early in your application:
 Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
+
+// To make `each` available for a single template, only do:
+let template = ...
+template.registerInBaseContext("each", Box(StandardLibrary.each))
 ```
 
 Iteration is natural to Mustache templates: `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the `users` key is given a list of users.
@@ -247,7 +271,15 @@ The other positional keys `@index`, `@first`, etc. are still available when iter
 Usage:
 
 ```swift
-Mustache.DefaultConfiguration.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
+let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
+
+// To make `localize` available for all templates, execute once and
+// early in your application:
+Mustache.DefaultConfiguration.registerInBaseContext("localize", Box(localizer))
+
+// To make `localize` available for a single template, only do:
+let template = ...
+template.registerInBaseContext("localize", Box(localizer))
 ```
 
 #### Localizing a value

@@ -35,6 +35,7 @@ public struct StandardLibrary {
       Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
     
       // To make HTMLEscape available for a single template, only do:
+      let template = ...
       template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
     
     As a filter, `HTMLEscape` returns its argument, HTML-escaped.
@@ -80,6 +81,7 @@ public struct StandardLibrary {
       Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
     
       // To make URLEscape available for a single template, only do:
+      let template = ...
       template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
     
     As a filter, `URLEscape` returns its argument, percent-escaped.
@@ -121,6 +123,7 @@ public struct StandardLibrary {
       Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
     
       // To make javascriptEscape available for a single template, only do:
+      let template = ...
       template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
     
     As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
@@ -170,6 +173,7 @@ public struct StandardLibrary {
       Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
     
       // To make `each` available for a single template, only do:
+      let template = ...
       template.registerInBaseContext("each", Box(StandardLibrary.each))
     
     Iteration is natural to Mustache templates:
