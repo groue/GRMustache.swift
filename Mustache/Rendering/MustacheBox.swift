@@ -1802,7 +1802,7 @@ extension Bool : MustacheBoxable {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
-                    return Rendering("\(self)")
+                    return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
                 case .Section:
                     // https://github.com/groue/GRMustache/issues/83
                     //
