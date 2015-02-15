@@ -31,41 +31,146 @@ public protocol TemplateRepositoryDataSource {
 }
 
 public class TemplateRepository {
-    public var configuration: Configuration
-    public let dataSource: TemplateRepositoryDataSource?
     
-    private var _lockedConfiguration: Configuration?
-    private var lockedConfiguration: Configuration {
-        // Changing mutable values within the repository's configuration no
-        // longer has any effect.
-        if _lockedConfiguration == nil {
-            _lockedConfiguration = configuration
-        }
-        return _lockedConfiguration!
-    }
-    private var templateASTForTemplateID: [TemplateID: TemplateAST]
+    // =========================================================================
+    // MARK: - Creating Template Repositories
     
+    /**
+    Returns a TemplateRepository which loads template through the provided
+    dataSource.
+    
+    The dataSource is optional: repositories without dataSource can not load
+    templates by name, and can only parse template strings:
+    
+    ::
+    
+      let repository = TemplateRepository()
+      let template = repository.template(string: "Hello {{name}}")!
+    
+    */
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
         configuration = DefaultConfiguration
         templateASTForTemplateID = [:]
         self.dataSource = dataSource
     }
     
+    /**
+    Returns a TemplateRepository that loads templates from a dictionary.
+    
+    ::
+    
+      let templates = ["template": "Hulk Hogan has a Mustache."]
+      let repository = TemplateRepository(templates: templates)
+    
+      // Renders "Hulk Hogan has a Mustache." twice
+      repository.template(named: "template")!.render()!
+      repository.template(string: "{{>template}}")!.render()!
+    
+    :param: templates A dictionary whose keys are template names and values
+                      template strings.
+    */
     convenience public init(templates: [String: String]) {
         self.init(dataSource: DictionaryDataSource(templates: templates))
     }
     
+    /**
+    Returns a TemplateRepository that loads templates from a directory.
+    
+    ::
+    
+      let repository = TemplateRepository(directoryPath: "/path/to/templates")
+    
+      // Loads /path/to/templates/template.mustache
+      let template = repository.template(named: "template")!
+    
+    :param: directoryPath     The path to the directory containing template
+                              files.
+    :param: templateExtension The extension of template files. Default extension
+                              is "mustache".
+    :param: encoding          The encoding of template files. Default encoding
+                              is NSUTF8StringEncoding.
+    */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: DirectoryDataSource(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding))
     }
     
+    /**
+    Returns a TemplateRepository that loads templates from a URL.
+    
+    ::
+    
+      let templatesURL = NSURL.fileURLWithPath("/path/to/templates")!
+      let repository = TemplateRepository(baseURL: templatesURL)
+    
+      // Loads /path/to/templates/template.mustache
+      let template = repository.template(named: "template")!
+    
+    :param: baseURL           The base URL where to look for templates.
+    :param: templateExtension The extension of template files. Default extension
+                              is "mustache".
+    :param: encoding          The encoding of template files. Default encoding
+                              is NSUTF8StringEncoding.
+    */
     convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
     
+    /**
+    Returns a TemplateRepository that loads templates stored as resources in a
+    bundle.
+    
+    ::
+    
+      let repository = TemplateRepository(bundle: nil)
+    
+      // Loads the template.mustache resource of the main bundle:
+      let template = repository.template(named: "template")!
+    
+    :param: bundle            The bundle that stores templates as resources.
+                              Nil stands for the main bundle.
+    :param: templateExtension The extension of template files. Default extension
+                              is "mustache".
+    :param: encoding          The encoding of template files. Default encoding
+                              is NSUTF8StringEncoding.
+    */
     convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
     }
+    
+    
+    // =========================================================================
+    // MARK: - Configuring Template Repositories
+    
+    /**
+    The configuration for all templates and partials built by the repository.
+    
+    It is initialized with the value of Mustache.DefaultConfiguration.
+    
+    You can alter the repository's configuration, or set it to another value:
+    
+    ::
+    
+      // Reset the configuration to the factory configuration and change tag
+      // delimiters:
+      let repository = TemplateRepository()
+      repository.configuration = Configuration()
+      repository.configuration.tagStartDelimiter = "<%"
+      repository.configuration.tagEndDelimiter = "%>"
+    
+      // Renders "Hello Luigi"
+      let template = repository.template(string: "Hello <%name%>")!
+      template.render(Box(["name": "Luigi"]))!
+    
+    Important: changing the configuration has no effect after the repository has
+    loaded one template.
+    */
+    public var configuration: Configuration
+    
+    
+    // =========================================================================
+    // MARK: - Loading Templates from a Repository
+    
+    public let dataSource: TemplateRepositoryDataSource?
     
     public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
         return self.template(string: string, contentType: lockedConfiguration.contentType, error: error)
@@ -82,6 +187,10 @@ public class TemplateRepository {
     public func reloadTemplates() {
         templateASTForTemplateID.removeAll()
     }
+    
+    
+    // =========================================================================
+    // MARK: - Internal
     
     func template(#string: String, contentType: ContentType, error: NSErrorPointer) -> Template? {
         if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
@@ -133,7 +242,19 @@ public class TemplateRepository {
     }
     
     
+    // =========================================================================
     // MARK: - Private
+    
+    private var _lockedConfiguration: Configuration?
+    private var lockedConfiguration: Configuration {
+        // Changing mutable values within the repository's configuration no
+        // longer has any effect.
+        if _lockedConfiguration == nil {
+            _lockedConfiguration = configuration
+        }
+        return _lockedConfiguration!
+    }
+    private var templateASTForTemplateID: [TemplateID: TemplateAST]
     
     private class DictionaryDataSource: TemplateRepositoryDataSource {
         let templates: [String: String]
