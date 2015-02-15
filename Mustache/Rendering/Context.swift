@@ -190,7 +190,7 @@ public class Context {
     
     :see: boxForMustacheExpression
     */
-    public subscript(key: String) -> MustacheBox {
+    public subscript (key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
             let box = registeredKeysContext[key]
             if !box.isEmpty {

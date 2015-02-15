@@ -1536,7 +1536,7 @@ extension MustacheBox {
       let box = Box("Arthur")
       box["length"].intValue!    // 6
     */
-    public subscript(key: String) -> MustacheBox {
+    public subscript (key: String) -> MustacheBox {
         return mustacheSubscript?(key: key) ?? Box()
     }
 }

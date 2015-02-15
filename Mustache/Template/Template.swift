@@ -28,16 +28,11 @@ The Template class provides Mustache rendering services.
 */
 public class Template : MustacheBoxable {
     
+    // =========================================================================
+    // MARK: - Loading templates
+    
     /**
     Parses a template string, and returns a template.
-    
-    Since templates usually compile fine, you don't have to explicitly perform
-    any error handling:
-    
-    ::
-    
-      let template = Template(string: ...)!
-      let rendering = template.render(...)!
     
     Eventual partial tags refer to resources with extension ``.mustache`` stored
     in the main bundle:
@@ -69,14 +64,6 @@ public class Template : MustacheBoxable {
     
     /**
     Parses a template file, and returns a template.
-    
-    Since templates usually compile fine, you don't have to explicitly perform
-    any error handling:
-    
-    ::
-    
-      let template = Template(path: ...)!
-      let rendering = template.render(...)!
     
     Eventual partial tags in the template refer to sibling template files using
     the same extension.
@@ -110,14 +97,6 @@ public class Template : MustacheBoxable {
     /**
     Parses a template file, and returns a template.
     
-    Since templates usually compile fine, you don't have to explicitly perform
-    any error handling:
-    
-    ::
-    
-      let template = Template(URL: ...)!
-      let rendering = template.render(...)!
-    
     Eventual partial tags in the template refer to sibling templates using
     the same extension.
     
@@ -150,14 +129,6 @@ public class Template : MustacheBoxable {
     /**
     Parses a template resource identified by the specified name and file
     extension, and returns a template.
-    
-    Since templates usually compile fine, you don't have to explicitly perform
-    any error handling:
-    
-    ::
-    
-      let template = Template(named: ...)!
-      let rendering = template.render(...)!
     
     Eventual partial tags in the template refer to template resources using
     the same extension.
@@ -193,6 +164,7 @@ public class Template : MustacheBoxable {
     }
     
     
+    // =========================================================================
     // MARK: - Rendering Templates
     
     /**
@@ -237,27 +209,77 @@ public class Template : MustacheBoxable {
     }
     
     
+    // =========================================================================
     // MARK: - Configuring Templates
     
     /**
-    The template's base context: all rendering start from this context.
+    The template's base context: all renderings start from this context.
     
     Its default value comes from the configuration of the template
     repository this template comes from.
     
-    :see: repository
+    You can set the base context to some custom context, or extend it with the
+    extendBaseContext and registerInBaseContext methods.
+    
+    ::
+    
+      // Renders "bar"
+      let template = Template(string: "{{foo}}")!
+      template.baseContext = Context(Box(["foo": "bar"]))
+      template.render()!
+    
+    :see: extendBaseContext
+    :see: registerInBaseContext
     */
     public var baseContext: Context
     
+    /**
+    Extends the base context with the provided boxed value. All renderings will
+    start from this extended context.
+    
+    ::
+    
+      // Renders "bar"
+      let template = Template(string: "{{foo}}")!
+      template.extendBaseContext(Box(["foo": "bar"]))
+      template.render()!
+    
+    :see: baseContext
+    :see: registerInBaseContext
+    :see: Context.extendedContext
+    */
     public func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
     
+    /**
+    Registers a key in the base context. All renderings will be able to access
+    the provided box through this key.
+    
+    The registered key can not be shadowed by rendered data: it will always
+    evaluate to the same value.
+    
+    ::
+    
+      // Renders "bar"
+      let template = Template(string: "{{foo}}")!
+      template.registerInBaseContext("foo", Box("bar"))
+      template.render()!
+    
+      // Renders "bar" again, because the registered key "foo" can not be
+      // shadowed.
+      template.render(Box(["foo": "qux"]))!
+    
+    :see: baseContext
+    :see: extendBaseContext
+    :see: Context.contextWithRegisteredKey
+    */
     public func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
     
     
+    // =========================================================================
     // MARK: - Accessing Sibling Templates
     
     /**
@@ -283,7 +305,7 @@ public class Template : MustacheBoxable {
       UTF8.
     
     - Templates returned by ``TemplateRepository.template(named:, error:)`` and
-      `TemplateRepository.template(string:, :error:)` belong to the invoked
+      `TemplateRepository.template(string:, error:)` belong to the invoked
       repository.
     
     :see: TemplateRepository
@@ -295,14 +317,34 @@ public class Template : MustacheBoxable {
     public let repository: TemplateRepository
     
     
+    // =========================================================================
     // MARK: - MustacheBoxable
     
+    /**
+    This method comes with the MustacheBoxable protocol. It lets templates feed
+    other templates.
+    
+    This provides a way to render partial templates which are chosen at runtime,
+    when Mustache partial tags like {{> partial }} can only render hard-coded
+    partial templates.
+    
+    ::
+    
+      let partial = Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")!
+      let data = [
+          "firstName": Box("Salvador"),
+          "lastName": Box("Dali"),
+          "url": Box("/people/123"),
+          "partial": Box(partial)
+      ]
+      
+      // <a href='/people/123'>Salvador Dali</a>
+      let template = Template(string: "{{partial}}")!
+      template.render(Box(data))!
+    
+    */
     public var mustacheBox: MustacheBox {
-        return Box(
-            value: self,
-            render: { (info: RenderingInfo, error: NSErrorPointer) in
-              return self.render(info.context, error: error)
-            })
+        return Box(value: self, render: { self.render($0.context, error: $1) })
     }
 
     

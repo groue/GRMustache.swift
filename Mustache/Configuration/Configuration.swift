@@ -131,23 +131,6 @@ public struct Configuration {
     public var baseContext: Context
     
     /**
-    The opening delimiter for Mustache tags. Its default value is `{{`.
-    
-    You can also change the delimiters right in your templates using a "Set
-    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
-    */
-    public var tagStartDelimiter: String
-    
-    /**
-    The closing delimiter for Mustache tags. Its default value is `}}`.
-    
-    You can also change the delimiters right in your templates using a "Set
-    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
-    */
-    public var tagEndDelimiter: String
-    
-    
-    /**
     Extends the base context with the provided boxed value. All templates built
     with this configuration can access its keys.
     
@@ -193,6 +176,23 @@ public struct Configuration {
     public mutating func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
+    
+    /**
+    The opening delimiter for Mustache tags. Its default value is `{{`.
+    
+    You can also change the delimiters right in your templates using a "Set
+    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
+    */
+    public var tagStartDelimiter: String
+    
+    /**
+    The closing delimiter for Mustache tags. Its default value is `}}`.
+    
+    You can also change the delimiters right in your templates using a "Set
+    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
+    */
+    public var tagEndDelimiter: String
+    
 }
 
 /**
