@@ -184,7 +184,7 @@ public struct Configuration {
     
       // Renders "bar" again, because the registered key "foo" can not be
       // shadowed.
-      template.render(Box(["foo": "baz"]))!
+      template.render(Box(["foo": "qux"]))!
     
     :see: baseContext
     :see: extendBaseContext
