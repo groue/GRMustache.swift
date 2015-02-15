@@ -3,7 +3,7 @@ Goodies
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
-**They are all built on top of public APIs**: get [inspired](../Mustache/Goodies).
+**They are all built on top of public APIs**: get [inspired](../../Mustache/Goodies).
 
 
 ### NSFormatter

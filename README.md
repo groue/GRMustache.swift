@@ -11,7 +11,7 @@ Features
 - Ability to render Swift values as well as Objective-C objects
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance
-- Built-in [goodies](Guides/goodies.md)
+- Built-in [goodies](Docs/Guides/goodies.md)
 
 
 Requirements
