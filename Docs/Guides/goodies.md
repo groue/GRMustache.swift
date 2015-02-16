@@ -8,7 +8,7 @@ GRMustache ships with a library of built-in goodies available for your templates
 - [StandardLibrary.javascriptEscape](#standardlibraryjavascriptescape)
 - [StandardLibrary.URLEscape](#standardlibraryurlescape)
 - [StandardLibrary.each](#standardlibraryeach)
-- [StandardLibrary.zip](#standardlibraryeach)
+- [StandardLibrary.zip](#standardlibraryzip)
 - [StandardLibrary.Localizer](#standardlibrarylocalizer)
 
 
