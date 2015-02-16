@@ -50,8 +50,8 @@ public class Template : MustacheBoxable {
     :returns: The created template
     */
     public convenience init?(string: String, error: NSErrorPointer = nil) {
-        let repository = RenderingEngine.currentTemplateRepository() ?? TemplateRepository(bundle: nil)
-        let contentType = RenderingEngine.currentContentType()
+        let repository = TemplateRepository(bundle: nil)
+        let contentType = repository.configuration.contentType
         if let templateAST = repository.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
@@ -202,10 +202,7 @@ public class Template : MustacheBoxable {
     */
     public func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        RenderingEngine.pushCurrentTemplateRepository(repository)
-        let rendering = renderingEngine.render(templateAST, error: error)
-        RenderingEngine.popCurrentTemplateRepository()
-        return rendering
+        return renderingEngine.render(templateAST, error: error)
     }
     
     

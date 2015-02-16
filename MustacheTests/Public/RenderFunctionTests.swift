@@ -513,100 +513,124 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "<--->")
     }
     
-    func testRenderFunctionCanAccessSiblingPartialTemplatesOfCurrentlyRenderedTemplate() {
-        let templates = [
-            "template": "{{render}}",
-            "partial": "{{subject}}",
-        ]
-        let repository = TemplateRepository(templates: templates)
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let altTemplate = Template(string: "{{>partial}}")!
-            return altTemplate.render(info.context, error: error)
-        }
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        let template = repository.template(named: "template")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "-")
-    }
-    
-    func testRenderFunctionCanAccessSiblingPartialTemplatesOfTemplateAsRenderFunction() {
-        let repository1 = TemplateRepository(templates: [
-            "template1": "{{ render }}|{{ template2 }}",
-            "partial": "partial1"])
-        let repository2 = TemplateRepository(templates: [
-            "template2": "{{ render }}",
-            "partial": "partial2"])
-        let box = Box([
-            "template2": Box(repository2.template(named: "template2")!),
-            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let altTemplate = Template(string: "{{>partial}}")!
-                return altTemplate.render(info.context, error: error)
-            })])
-        let template = repository1.template(named: "template1")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "partial1|partial2")
-    }
-    
-    func testRenderFunctionInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
-        let box = Box([
-            "object": Box("&"),
-            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(info.context, error: error)
-            })])
-        
-        let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{render}}")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "&amp;")
-    }
-    
-    func testRenderFunctionInheritTextContentTypeOfCurrentlyRenderedTemplate() {
-        let box = Box([
-            "object": Box("&"),
-            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let altTemplate = Template(string: "{{ object }}")!
-                return altTemplate.render(info.context, error: error)
-            })])
-        
-        let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{render}}")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "&")
-    }
-    
-    func testRenderFunctionInheritContentTypeFromPartial() {
-        let repository = TemplateRepository(templates: [
-            "templateHTML": "{{ render }}|{{> templateText }}",
-            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ render }}"])
-        let box = Box([
-            "value": Box("&"),
-            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let altTemplate = Template(string: "{{ value }}")!
-                return altTemplate.render(info.context, error: error)
-            })])
-        let template = repository.template(named: "templateHTML")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "&amp;|&amp;")
-    }
-    
-    func testRenderFunctionInheritContentTypeFromTemplateAsRenderFunction() {
-        let repository1 = TemplateRepository(templates: [
-            "templateHTML": "{{ render }}|{{ templateText }}"])
-        let repository2 = TemplateRepository(templates: [
-            "templateText": "{{ render }}"])
-        repository2.configuration.contentType = .Text
-        
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let altTemplate = Template(string: "{{{ value }}}")!
-            return altTemplate.render(info.context, error: error)
-        }
-        let box = Box([
-            "value": Box("&"),
-            "templateText": Box(repository2.template(named: "templateText")!),
-            "render": Box(render)])
-        let template = repository1.template(named: "templateHTML")!
-        let rendering = template.render(box)!
-        XCTAssertEqual(rendering, "&|&amp;")
-    }
+    // Those tests is commented out.
+    //
+    // They tests a feature present in Objective-C GRMustache, that is that
+    // Template(string:, error:) would load partials from the "current template
+    // repository", a hidden global, and process templates with the "current
+    // content type", another hidden global.
+    //
+    // The goal is to help RenderFunctions use the Template(string:, error:)
+    // initializers without thinking much about the context.
+    //
+    // 1. They could process tag.innerTemplateString that would contain
+    //    {{>partial}} tags: partials would be loaded from the correct template
+    //    repository.
+    // 2. They would render text or HTML depending on the rendered template.
+    //
+    // Actually this feature has a bug in Objective-C GRMustache: it does not
+    // work in a hierarchy of directories and template files, because the
+    // "current template repository" is not enough information: we also need to
+    // know the ID of the "current template" to load the correct partial.
+    //
+    // Anyway. For the sake of simplicity, we drop this feature in
+    // GRMustache.swift.
+    //
+    // Let's wait for a user request :-)
+//    func testRenderFunctionCanAccessSiblingPartialTemplatesOfCurrentlyRenderedTemplate() {
+//        let templates = [
+//            "template": "{{render}}",
+//            "partial": "{{subject}}",
+//        ]
+//        let repository = TemplateRepository(templates: templates)
+//        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//            let altTemplate = Template(string: "{{>partial}}")!
+//            return altTemplate.render(info.context, error: error)
+//        }
+//        let box = Box(["render": Box(render), "subject": Box("-")])
+//        let template = repository.template(named: "template")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "-")
+//    }
+//    
+//    func testRenderFunctionCanAccessSiblingPartialTemplatesOfTemplateAsRenderFunction() {
+//        let repository1 = TemplateRepository(templates: [
+//            "template1": "{{ render }}|{{ template2 }}",
+//            "partial": "partial1"])
+//        let repository2 = TemplateRepository(templates: [
+//            "template2": "{{ render }}",
+//            "partial": "partial2"])
+//        let box = Box([
+//            "template2": Box(repository2.template(named: "template2")!),
+//            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//                let altTemplate = Template(string: "{{>partial}}")!
+//                return altTemplate.render(info.context, error: error)
+//            })])
+//        let template = repository1.template(named: "template1")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "partial1|partial2")
+//    }
+//    
+//    func testRenderFunctionInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
+//        let box = Box([
+//            "object": Box("&"),
+//            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//                let altTemplate = Template(string: "{{ object }}")!
+//                return altTemplate.render(info.context, error: error)
+//            })])
+//        
+//        let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{render}}")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "&amp;")
+//    }
+//    
+//    func testRenderFunctionInheritTextContentTypeOfCurrentlyRenderedTemplate() {
+//        let box = Box([
+//            "object": Box("&"),
+//            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//                let altTemplate = Template(string: "{{ object }}")!
+//                return altTemplate.render(info.context, error: error)
+//            })])
+//        
+//        let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{render}}")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "&")
+//    }
+//    
+//    func testRenderFunctionInheritContentTypeFromPartial() {
+//        let repository = TemplateRepository(templates: [
+//            "templateHTML": "{{ render }}|{{> templateText }}",
+//            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ render }}"])
+//        let box = Box([
+//            "value": Box("&"),
+//            "render": Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//                let altTemplate = Template(string: "{{ value }}")!
+//                return altTemplate.render(info.context, error: error)
+//            })])
+//        let template = repository.template(named: "templateHTML")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "&amp;|&amp;")
+//    }
+//    
+//    func testRenderFunctionInheritContentTypeFromTemplateAsRenderFunction() {
+//        let repository1 = TemplateRepository(templates: [
+//            "templateHTML": "{{ render }}|{{ templateText }}"])
+//        let repository2 = TemplateRepository(templates: [
+//            "templateText": "{{ render }}"])
+//        repository2.configuration.contentType = .Text
+//        
+//        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+//            let altTemplate = Template(string: "{{{ value }}}")!
+//            return altTemplate.render(info.context, error: error)
+//        }
+//        let box = Box([
+//            "value": Box("&"),
+//            "templateText": Box(repository2.template(named: "templateText")!),
+//            "render": Box(render)])
+//        let template = repository1.template(named: "templateHTML")!
+//        let rendering = template.render(box)!
+//        XCTAssertEqual(rendering, "&|&amp;")
+//    }
     
     func testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation() {
         let render1 = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in

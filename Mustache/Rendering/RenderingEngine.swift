@@ -24,9 +24,6 @@
 import Foundation
 
 class RenderingEngine: TemplateASTVisitor {
-    let contentType: ContentType
-    var context: Context
-    var buffer: String?
     
     init(contentType: ContentType, context: Context) {
         self.contentType = contentType
@@ -47,97 +44,16 @@ class RenderingEngine: TemplateASTVisitor {
     }
     
     
-    // MARK: - Current Template Repository
-    
-    // Classes do not support (yet) stored properties.
-    // Workaround is to use a wrapper struct.
-    private struct TemplateRepositoryStack {
-        // TODO: make it thread-safe
-        static var stack: [TemplateRepository] = []
-        static func append(repository: TemplateRepository) {
-            stack.append(repository)
-        }
-        static func removeLast() {
-            stack.removeLast()
-        }
-        static func lastObject() -> TemplateRepository? {
-            if stack.isEmpty {
-                return nil
-            } else {
-                return stack[stack.endIndex.predecessor()]
-            }
-        }
-    }
-    
-    class func currentTemplateRepository() -> TemplateRepository? {
-        return TemplateRepositoryStack.lastObject()
-    }
-
-    class func pushCurrentTemplateRepository(repository: TemplateRepository) {
-        TemplateRepositoryStack.append(repository)
-    }
-    
-    class func popCurrentTemplateRepository() {
-        TemplateRepositoryStack.removeLast()
-    }
-    
-    
-    
-    
-    // MARK: - Current Content Type
-    
-    // Classes do not support (yet) stored properties.
-    // Workaround is to use a wrapper struct.
-    private struct ContentTypeStack {
-        // TODO: make it thread-safe
-        static var stack: [ContentType] = []
-        static func append(repository: ContentType) {
-            stack.append(repository)
-        }
-        static func removeLast() {
-            stack.removeLast()
-        }
-        static func lastObject() -> ContentType? {
-            if stack.isEmpty {
-                return nil
-            } else {
-                return stack[stack.endIndex.predecessor()]
-            }
-        }
-    }
-    
-    class func currentContentType() -> ContentType {
-        if let contentType = ContentTypeStack.lastObject() {
-            return contentType
-        } else if let repository = currentTemplateRepository() {
-            return repository.configuration.contentType
-        } else {
-            return DefaultConfiguration.contentType
-        }
-    }
-    
-    class func pushCurrentContentType(contentType: ContentType) {
-        ContentTypeStack.append(contentType)
-    }
-    
-    class func popCurrentContentType() {
-        ContentTypeStack.removeLast()
-    }
-    
-    
     // MARK: - TemplateASTVisitor
     
     func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
-        let ASTContentType = templateAST.contentType
-        
-        if contentType == ASTContentType {
-            RenderingEngine.pushCurrentContentType(ASTContentType)
-            let result = visit(templateAST.nodes)
-            RenderingEngine.popCurrentContentType()
-            return result
-        } else {
-            // Render separately
-            let renderingEngine = RenderingEngine(contentType: ASTContentType, context: context)
+        switch templateAST.contentType {
+        case contentType:
+            return visit(templateAST.nodes)
+        default:
+            // Render separately, so that we can HTML-escape the rendering of
+            // the TemplateAST before appending to our buffer.
+            let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
             var error: NSError?
             if let rendering = renderingEngine.render(templateAST, error: &error) {
                 switch (contentType, rendering.contentType) {
@@ -184,6 +100,10 @@ class RenderingEngine: TemplateASTVisitor {
     
     
     // MARK: - Private
+    
+    private let contentType: ContentType
+    private var context: Context
+    private var buffer: String?
     
     private func visit(nodes: [TemplateASTNode]) -> TemplateASTVisitResult {
         for node in nodes {
