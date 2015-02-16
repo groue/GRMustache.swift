@@ -25,19 +25,30 @@ import Foundation
 
 class JavascriptEscape : MustacheBoxable {
     
-    // TODO: Documentation
-    
     var mustacheBox: MustacheBox {
+        // Return a multi-facetted box, because JavascriptEscape interacts in
+        // various ways with Mustache rendering.
         return Box(
+            // It has a value:
             value: self,
+            
+            // JavascriptEscape can be used as a filter: {{ javascriptEscape(x) }}:
             filter: Filter(filter),
+            
+            // JavascriptEscape escapes all variable tags: {{# javascriptEscape }}...{{ x }}...{{/ javascriptEscape }}
             willRender: willRender)
     }
     
+    // This function is used for evaluating `javascriptEscape(x)` expressions.
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
     }
-        
+    
+    // A WillRenderFunction: this function lets JavascriptEscape change values that
+    // are about to be rendered to their escaped counterpart.
+    //
+    // It is activated as soon as the formatter enters the context stack, when
+    // used in a section {{# javascriptEscape }}...{{/ javascriptEscape }}.
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:

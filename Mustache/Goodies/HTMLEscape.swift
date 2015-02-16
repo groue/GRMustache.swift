@@ -25,22 +25,34 @@ import Foundation
 
 class HTMLEscape : MustacheBoxable {
     
-    // TODO: Documentation
-    
     var mustacheBox: MustacheBox {
+        // Return a multi-facetted box, because HTMLEscape interacts in
+        // various ways with Mustache rendering.
         return Box(
+            // It has a value:
             value: self,
+            
+            // HTMLEscape can be used as a filter: {{ HTMLEscape(x) }}:
             filter: Filter(filter),
+            
+            // HTMLEscape escapes all variable tags: {{# HTMLEscape }}...{{ x }}...{{/ HTMLEscape }}
             willRender: willRender)
     }
     
+    // This function is used for evaluating `HTMLEscape(x)` expressions.
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(escapeHTML(rendering.string), rendering.contentType)
     }
     
+    // A WillRenderFunction: this function lets HTMLEscape change values that
+    // are about to be rendered to their escaped counterpart.
+    //
+    // It is activated as soon as the formatter enters the context stack, when
+    // used in a section {{# HTMLEscape }}...{{/ HTMLEscape }}.
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
+            // {{ value }}
             // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -51,6 +63,11 @@ class HTMLEscape : MustacheBoxable {
                 }
             })
         case .Section:
+            // {{# value }}...{{/ value }}
+            // {{^ value }}...{{/ value }}
+            // Leave sections untouched, so that loops and conditions are not
+            // affected by the formatter.
+            
             return box
         }
     }

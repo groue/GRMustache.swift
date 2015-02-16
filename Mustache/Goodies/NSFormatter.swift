@@ -87,8 +87,7 @@ extension NSFormatter: ObjCMustacheBoxable {
     }
     
     
-    // The filter facet of NSFormatter: this function evaluates `formatter(x)`
-    // expressions.
+    // This function is used for evaluating `formatter(x)` expressions.
     private func filter(box: MustacheBox, error: NSErrorPointer) -> MustacheBox? {
         // NSFormatter documentation for stringForObjectValue: states:
         //

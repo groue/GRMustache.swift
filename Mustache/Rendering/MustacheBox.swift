@@ -1250,17 +1250,24 @@ public struct MustacheBox {
             self.render = render
         } else {
             // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
-            self.render = { (info: RenderingInfo, _) in return nil }
+            self.render = { (_, _) in return nil }
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
+                    // {{ box }}
                     if let value = value {
                         return Rendering("\(value)")
                     } else {
                         return Rendering("")
                     }
                 case .Section:
-                    return info.tag.renderInnerContent(info.context.extendedContext(self), error: error)
+                    if (self.boolValue) {
+                        // {{# box }}...{{/ box }}
+                        return info.tag.renderInnerContent(info.context.extendedContext(self), error: error)
+                    } else {
+                        // {{^ box }}...{{/ box }}
+                        return info.tag.renderInnerContent(info.context, error: error)
+                    }
                 }
             }
         }

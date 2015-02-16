@@ -25,19 +25,30 @@ import Foundation
 
 class URLEscape : MustacheBoxable {
     
-    // TODO: Documentation
-    
     var mustacheBox: MustacheBox {
+        // Return a multi-facetted box, because URLEscape interacts in
+        // various ways with Mustache rendering.
         return Box(
+            // It has a value:
             value: self,
+            
+            // URLEscape can be used as a filter: {{ URLEscape(x) }}:
             filter: Filter(filter),
+            
+            // URLEscape escapes all variable tags: {{# URLEscape }}...{{ x }}...{{/ URLEscape }}
             willRender: willRender)
     }
     
+    // This function is used for evaluating `URLEscape(x)` expressions.
     private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
         return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
     }
     
+    // A WillRenderFunction: this function lets URLEscape change values that
+    // are about to be rendered to their escaped counterpart.
+    //
+    // It is activated as soon as the formatter enters the context stack, when
+    // used in a section {{# URLEscape }}...{{/ URLEscape }}.
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
