@@ -150,8 +150,6 @@ For a more complete discussion, see the documentation of the `MustacheBoxable` p
 
 ### Filters
 
-GRMustache is an extensible Mustache engine.
-
 `cats.mustache`:
 
     I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
