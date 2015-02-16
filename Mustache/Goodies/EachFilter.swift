@@ -24,67 +24,82 @@
 import Foundation
 
 let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+    
+    // {{# each(nothing) }}...{{/ }}
     if box.isEmpty {
         return box
-    } else if let dictionary = box.dictionaryValue {
-        return transformedDictionary(dictionary)
-    } else if let array = box.arrayValue {
-        return transformedCollection(array)
-    } else {
-        if error != nil {
-            error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
-        }
-        return nil
     }
-}
-
-private func transformedCollection<T: CollectionType where T.Generator.Element == MustacheBox, T.Index: Comparable, T.Index.Distance == Int>(collection: T) -> MustacheBox {
-    var mustacheBoxes: [MustacheBox] = []
-    let start = collection.startIndex
-    let end = collection.endIndex
-    var i = start
-    while i < end {
-        let itemBox = collection[i]
-        let index = distance(start, i)
-        let last = i.successor() == end
-        let transformedBox = Box { (var info: RenderingInfo, error: NSErrorPointer) in
-            var position: [String: MustacheBox] = [:]
-            position["@index"] = Box(index)
-            position["@indexPlusOne"] = Box(index + 1)
-            position["@indexIsEven"] = Box(index % 2 == 0)
-            position["@first"] = Box(index == 0)
-            position["@last"] = Box(last)
-            info.context = info.context.extendedContext(Box(position))
-            return itemBox.render(info: info, error: error)
+    
+    // {{# each(dictionary) }}...{{/ }}
+    //
+    // ::
+    //
+    //   // Renders "firstName: Charles, lastName: Bronson."
+    //   let dictionary = ["firstName": "Charles", "lastName": "Bronson"]
+    //   let template = Template(string: "{{# each(dictionary) }}{{ @key }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(dictionary) }}.")!
+    //   template.registerInBaseContext("each", Box(StandardLibrary.each))
+    //   template.render(Box(["dictionary": dictionary]))!
+    //
+    // The dictionaryValue box property makes sure to return a
+    // [String: MustacheBox] whatever the boxed dictionary-like value
+    // (NSDictionary, [String: Int], [String: CustomObject], etc.
+    if let dictionary = box.dictionaryValue {
+        let count = countElements(dictionary)
+        let transformedBoxes = map(enumerate(dictionary)) { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
+            let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
+                // Push positional keys in the context stack and then perform
+                // a regular rendering.
+                var position: [String: MustacheBox] = [:]
+                position["@index"] = Box(index)
+                position["@indexPlusOne"] = Box(index + 1)
+                position["@indexIsEven"] = Box(index % 2 == 0)
+                position["@first"] = Box(index == 0)
+                position["@last"] = Box((index == count - 1))
+                position["@key"] = Box(element.key)
+                info.context = info.context.extendedContext(Box(position))
+                return element.box.render(info: info, error: error)
+            }
+            return Box(customRenderFunction)
         }
-        mustacheBoxes.append(transformedBox)
-        i = i.successor()
+        return Box(transformedBoxes)
     }
-    return Box(mustacheBoxes)
-}
-
-private func transformedDictionary(dictionary: [String: MustacheBox]) -> MustacheBox {
-    var mustacheBoxes: [MustacheBox] = []
-    let start = dictionary.startIndex
-    let end = dictionary.endIndex
-    var i = start
-    while i < end {
-        let (key, itemBox) = dictionary[i]
-        let index = distance(start, i)
-        let last = i.successor() == end
-        let transformedBox = Box { (var info: RenderingInfo, error: NSErrorPointer) in
-            var position: [String: MustacheBox] = [:]
-            position["@index"] = Box(index)
-            position["@indexPlusOne"] = Box(index + 1)
-            position["@indexIsEven"] = Box(index % 2 == 0)
-            position["@first"] = Box(index == 0)
-            position["@last"] = Box(last)
-            position["@key"] = Box(key)
-            info.context = info.context.extendedContext(Box(position))
-            return itemBox.render(info: info, error: error)
+    
+    
+    // {{# each(array) }}...{{/ }}
+    //
+    // ::
+    //
+    //   // Renders "1: bread, 2: ham, 3: butter"
+    //   let array = ["bread", "ham", "butter"]
+    //   let template = Template(string: "{{# each(array) }}{{ @indexPlusOne }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(array) }}.")!
+    //   template.registerInBaseContext("each", Box(StandardLibrary.each))
+    //   template.render(Box(["array": array]))!
+    //
+    // The arrayValue box property makes sure to return a [MustacheBox] whatever
+    // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
+    if let boxes = box.arrayValue {
+        let count = countElements(boxes)
+        let transformedBoxes = map(enumerate(boxes)) { (index: Int, box: MustacheBox) -> MustacheBox in
+            let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
+                // Push positional keys in the context stack and then perform
+                // a regular rendering.
+                var position: [String: MustacheBox] = [:]
+                position["@index"] = Box(index)
+                position["@indexPlusOne"] = Box(index + 1)
+                position["@indexIsEven"] = Box(index % 2 == 0)
+                position["@first"] = Box(index == 0)
+                position["@last"] = Box((index == count - 1))
+                info.context = info.context.extendedContext(Box(position))
+                return box.render(info: info, error: error)
+            }
+            return Box(customRenderFunction)
         }
-        mustacheBoxes.append(transformedBox)
-        i = i.successor()
+        return Box(transformedBoxes)
     }
-    return Box(mustacheBoxes)
+    
+    // Non-iterable value
+    if error != nil {
+        error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "filter argument error: not iterable"])
+    }
+    return nil
 }

@@ -3,7 +3,13 @@ Goodies
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
-**They are all built on top of public APIs**: get [inspired](../../Mustache/Goodies).
+- [NSFormatter](#nsformatter)
+- [StandardLibrary.HTMLEscape](#standardlibraryhtmlescape)
+- [StandardLibrary.javascriptEscape](#standardlibraryjavascriptescape)
+- [StandardLibrary.URLEscape](#standardlibraryurlescape)
+- [StandardLibrary.each](#standardlibraryeach)
+- [StandardLibrary.zip](#standardlibraryeach)
+- [StandardLibrary.Localizer](#standardlibrarylocalizer)
 
 
 ### NSFormatter
@@ -79,6 +85,8 @@ Precisely speaking, "values that can't be formatted" are the ones that have the 
 
 Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
 
+Support for NSFormatter is written using public APIs. You can check the [source](../../Mustache/Goodies/NSFormatter.swift) for inspiration.
+
 
 ### StandardLibrary.HTMLEscape
 
@@ -116,6 +124,8 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
         {{ name }}
       {{/}}
     {{/ HTMLEscape }}
+
+StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/HTMLEscape.swift) for inspiration.
 
 See also [javascriptEscape](#standardlibraryjavascriptescape), [URLEscape](#standardlibraryurlescape)
 
@@ -164,6 +174,8 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 </script>
 ```
 
+StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/JavascriptEscape.swift) for inspiration.
+
 See also [HTMLEscape](#standardlibraryhtmlescape), [URLEscape](#standardlibraryurlescape)
 
 
@@ -202,6 +214,8 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
   <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
 {{/ URLEscape }}
 ```
+
+StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/URLEscape.swift) for inspiration.
 
 See also [HTMLEscape](#standardlibraryhtmlescape), [javascriptEscape](#standardlibraryjavascriptescape)
 
@@ -265,6 +279,8 @@ When provided with a dictionary, `each` iterates each key/value pair of the dict
 
 The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.
 
+The `each` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/EachFilter.swift) for inspiration.
+
 
 ### StandardLibrary.zip
 
@@ -320,6 +336,8 @@ In the example above, the first step has consumed (Alice, iOS and 100), and the 
 
 The zip filter renders a section as many times as there are elements in the longest of its argument: exhausted lists simply do not add anything to the rendering context.
 
+The `zip` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/ZipFilter.swift) for inspiration.
+
 
 ### StandardLibrary.Localizer
 
@@ -369,3 +387,4 @@ You can embed conditional sections inside:
 
 Depending on the name, this would render `Bonjour Arthur` or `Bonjour toi`, given French localizations for both `Hello %@` and `Hello you`.
 
+StandardLibrary.Localizer filter is written using public APIs. You can check the [source](../../Mustache/Goodies/Localizer.swift) for inspiration.
