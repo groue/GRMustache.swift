@@ -23,6 +23,8 @@
 
 extension StandardLibrary {
     
+    // TODO: Documentation
+    
     public class Localizer : MustacheBoxable {
         public let bundle: NSBundle
         public let table: String?

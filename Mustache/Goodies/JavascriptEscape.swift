@@ -25,6 +25,8 @@ import Foundation
 
 class JavascriptEscape : MustacheBoxable {
     
+    // TODO: Documentation
+    
     var mustacheBox: MustacheBox {
         return Box(
             value: self,
