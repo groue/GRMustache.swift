@@ -109,7 +109,7 @@ public class TemplateRepository {
     */
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
         configuration = DefaultConfiguration
-        templateASTForTemplateID = [:]
+        templateASTCache = [:]
         self.dataSource = dataSource
     }
     
@@ -336,7 +336,7 @@ public class TemplateRepository {
               reloaded.
     */
     public func reloadTemplates() {
-        templateASTForTemplateID.removeAll()
+        templateASTCache.removeAll()
     }
     
     
@@ -353,18 +353,24 @@ public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
-            if let templateAST = templateASTForTemplateID[templateID] {
+            if let templateAST = templateASTCache[templateID] {
+                // Return cached AST
                 return templateAST
             } else {
                 var dataSourceError: NSError?
                 if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &dataSourceError) {
+                    // Cache an empty AST for that name so that we support
+                    // recursive partials.
                     let templateAST = TemplateAST()
-                    templateASTForTemplateID[templateID] = templateAST
+                    templateASTCache[templateID] = templateAST
+                    
                     if let compiledAST = self.templateAST(string: templateString, contentType: lockedConfiguration.contentType, templateID: templateID, error: error) {
+                        // Success: update the empty AST
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
                     } else {
-                        templateASTForTemplateID.removeValueForKey(templateID)
+                        // Failure: remove the empty AST
+                        templateASTCache.removeValueForKey(templateID)
                         return nil
                     }
                 } else {
@@ -405,7 +411,8 @@ public class TemplateRepository {
         }
         return _lockedConfiguration!
     }
-    private var templateASTForTemplateID: [TemplateID: TemplateAST]
+    
+    private var templateASTCache: [TemplateID: TemplateAST]
     
     private class DictionaryDataSource: TemplateRepositoryDataSource {
         let templates: [String: String]
