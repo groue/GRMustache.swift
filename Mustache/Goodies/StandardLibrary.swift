@@ -234,6 +234,62 @@ public struct StandardLibrary {
     public static let each = EachFilter
     
     /**
+    Usage:
+    
+    ::
+    
+      // To make `zip` available for all templates, execute once and
+      // early in your application:
+      Mustache.DefaultConfiguration.registerInBaseContext("zip", Box(StandardLibrary.zip))
+    
+      // To make `zip` available for a single template, only do:
+      let template = ...
+      template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+    
+    The zip filter iterates several lists all at once. On each step, one object
+    from each input list enters the rendering context, and makes its own keys
+    available for rendering.
+    
+    Given the Mustache input:
+    
+    ::
+    
+      {{# zip(users, teams, scores) }}
+      - {{ name }} ({{ team }}): {{ score }} points
+      {{/}}
+    
+    The following JSON input:
+    
+    ::
+    
+      {
+        "users": [
+          { "name": "Alice" },
+          { "name": "Bob" },
+        ],
+        "teams": [
+          { "team": "iOS" },
+          { "team": "Android" },
+        ],
+        "scores": [
+          { "score": 100 },
+          { "score": 200 },
+        ]
+      }
+    
+    The rendering is:
+    
+    ::
+    
+      - Alice (iOS): 100 points
+      - Bob (Android): 200 points
+    
+    In the example above, the first step has consumed (Alice, iOS and 100), and
+    the second one (Bob, Android and 200).
+    
+    The zip filter renders a section as many times as there are elements in the
+    longest of its argument: exhausted lists simply do not add anything to the
+    rendering context.
     */
     public static let zip = ZipFilter
 }
