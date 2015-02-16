@@ -79,7 +79,7 @@ The documentation contains many examples that you can paste in the Storyboard in
 We describe below a few use cases of the library:
 
 
-### Rendering of pure Objective-C Objects
+### Rendering of Objective-C Objects
 
 NSObject subclasses can trivially feed your templates:
 
