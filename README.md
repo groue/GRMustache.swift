@@ -61,13 +61,13 @@ All public types, functions and methods of the library are documented in the sou
 
 The main entry points are:
 
-- the Template class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates:
+- the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates:
     
         ```swift
         let template = Template(named: "template")!
         ```
 
-- the Box() function, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provides data to templates:
+- the `Box()` function, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provides data to templates:
     
         ```swift
         let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
