@@ -63,16 +63,16 @@ The main entry points are:
 
 - the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates:
     
-        ```swift
-        let template = Template(named: "template")!
-        ```
+    ```swift
+    let template = Template(named: "template")!
+    ```
 
 - the `Box()` function, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provides data to templates:
     
-        ```swift
-        let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
-        let rendering = template.render(Box(data))!
-        ```
+    ```swift
+    let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
+    let rendering = template.render(Box(data))!
+    ```
 
 We describe below a few use cases of the library:
 
