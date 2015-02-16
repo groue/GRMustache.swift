@@ -74,6 +74,8 @@ The main entry points are:
     let rendering = template.render(Box(data))!
     ```
 
+The documentation contains many examples that you can paste in the Storyboard included in `Mustache.xcworkspace`.
+
 We describe below a few use cases of the library:
 
 
