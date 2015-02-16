@@ -115,7 +115,7 @@ GRMustache is an extensible Mustache engine.
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = Filter { (count: Int?, info: RenderingInfo, error: NSErrorPointer) in
+let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
     
     // Pluralize the inner content of the section tag:
     var string = info.tag.innerTemplateString
