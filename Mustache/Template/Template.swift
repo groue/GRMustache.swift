@@ -51,12 +51,10 @@ public class Template : MustacheBoxable {
     */
     public convenience init?(string: String, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(bundle: nil)
-        let contentType = repository.configuration.contentType
-        if let templateAST = repository.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
+        
+        if let templateAST = repository.templateAST(string: string, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
-            // Failable initializers require all properties to be set.
-            // So be it, with dummy values.
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
             return nil
         }
@@ -82,13 +80,14 @@ public class Template : MustacheBoxable {
     :returns: The created template
     */
     public convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
-        let repository = TemplateRepository(directoryPath: path.stringByDeletingLastPathComponent, templateExtension: path.pathExtension, encoding: encoding)
-        let templateName = path.stringByDeletingPathExtension.lastPathComponent
-        if let templateAST = repository.templateAST(named: templateName, relativeToTemplateID: nil, error: error) {
+        let directoryPath = path.stringByDeletingLastPathComponent
+        let templateExtension = path.pathExtension
+        let templateName = path.lastPathComponent.stringByDeletingPathExtension
+        let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
+        
+        if let templateAST = repository.templateAST(named: templateName, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
-            // Failable initializers require all properties to be set.
-            // So be it, with dummy values.
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
             return nil
         }
@@ -114,13 +113,14 @@ public class Template : MustacheBoxable {
     :returns: The created template
     */
     public convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
-        let repository = TemplateRepository(baseURL: URL.URLByDeletingLastPathComponent!, templateExtension: URL.pathExtension, encoding: encoding)
-        let templateName = URL.URLByDeletingPathExtension?.lastPathComponent
-        if let templateAST = repository.templateAST(named: templateName!, relativeToTemplateID: nil, error: error) {
+        let baseURL = URL.URLByDeletingLastPathComponent!
+        let templateExtension = URL.pathExtension
+        let templateName = URL.lastPathComponent!.stringByDeletingPathExtension
+        let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
+        
+        if let templateAST = repository.templateAST(named: templateName, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
-            // Failable initializers require all properties to be set.
-            // So be it, with dummy values.
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
             return nil
         }
@@ -153,11 +153,10 @@ public class Template : MustacheBoxable {
     */
     public convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
-        if let templateAST = repository.templateAST(named: name, relativeToTemplateID: nil, error: error) {
+        
+        if let templateAST = repository.templateAST(named: name, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
         } else {
-            // Failable initializers require all properties to be set.
-            // So be it, with dummy values.
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
             return nil
         }

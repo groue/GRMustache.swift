@@ -289,7 +289,11 @@ public class TemplateRepository {
     :returns: A Mustache Template
     */
     public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
-        return self.template(string: string, contentType: lockedConfiguration.contentType, error: error)
+        if let templateAST = self.templateAST(string: string, error: error) {
+            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
+        } else {
+            return nil
+        }
     }
     
     /**
@@ -343,15 +347,7 @@ public class TemplateRepository {
     // =========================================================================
     // MARK: - Internal
     
-    func template(#string: String, contentType: ContentType, error: NSErrorPointer) -> Template? {
-        if let templateAST = self.templateAST(string: string, contentType: contentType, templateID: nil, error: error) {
-            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
-        } else {
-            return nil
-        }
-    }
-    
-    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
+    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil, error: NSErrorPointer) -> TemplateAST? {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
             if let templateAST = templateASTCache[templateID] {
                 // Return cached AST
@@ -364,7 +360,7 @@ public class TemplateRepository {
                     let templateAST = TemplateAST()
                     templateASTCache[templateID] = templateAST
                     
-                    if let compiledAST = self.templateAST(string: templateString, contentType: lockedConfiguration.contentType, templateID: templateID, error: error) {
+                    if let compiledAST = self.templateAST(string: templateString, templateID: templateID, error: error) {
                         // Success: update the empty AST
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
@@ -391,8 +387,8 @@ public class TemplateRepository {
         }
     }
     
-    func templateAST(#string: String, contentType: ContentType, templateID: TemplateID?, error: NSErrorPointer) -> TemplateAST? {
-        let compiler = TemplateCompiler(contentType: contentType, repository: self, templateID: templateID)
+    func templateAST(#string: String, templateID: TemplateID? = nil, error: NSErrorPointer) -> TemplateAST? {
+        let compiler = TemplateCompiler(contentType: lockedConfiguration.contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: lockedConfiguration)
         parser.parse(string, templateID: templateID)
         return compiler.templateAST(error: error)
