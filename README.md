@@ -54,10 +54,56 @@ let rendering = template.render(Box(data))!
 ```
 
 
-Rendering of pure Swift Objects
--------------------------------
+Documentation
+-------------
 
-GRMustache can render pure Swift objects, with a little help.
+All public types, functions and methods of the library are documented in the source code.
+
+The main entry points are:
+
+- the Template class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates:
+    
+        ```swift
+        let template = Template(named: "template")!
+        ```
+
+- the Box() function, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provides data to templates:
+    
+        ```swift
+        let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
+        let rendering = template.render(Box(data))!
+        ```
+
+We describe below a few use cases of the library:
+
+
+### Rendering of pure Objective-C Objects
+
+NSObject subclasses can trivially feed your templates:
+
+```swift
+// An NSObject subclass
+class Person : NSObject {
+    let name: String
+    
+    init(name: String) {
+        self.name = name
+    }
+}
+
+
+// Charlie Chaplin has a mustache.
+let person = Person(name: "Charlie Chaplin")
+let template = Template(string: "{{name}} has a mustache.")!
+let rendering = template.render(Box(person))!
+```
+
+For a full description of the rendering of NSObject, see the inline documentation of the `NSObject.mustacheBox` method in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+
+
+### Rendering of pure Swift Objects
+
+Pure Swift types can feed templates as well, with a little help.
 
 ```swift
 // Define a pure Swift object:
@@ -74,7 +120,7 @@ Helping the Mustache engine involves "boxing", through the `MustacheBoxable` pro
 
 ```swift
 // Allow Mustache engine to consume Person values.
-extension Person: MustacheBoxable {
+extension Person : MustacheBoxable {
     var mustacheBox: MustacheBox {
         // Return a Box that wraps our person, and knows how to extract
         // the `name` key:
@@ -99,9 +145,10 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
+For a more complete discussion, see the documentation of the `MustacheBoxable` protocol in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
-Mustache, and beyond
---------------------
+
+### Filters
 
 GRMustache is an extensible Mustache engine.
 
@@ -138,3 +185,43 @@ template.registerInBaseContext("pluralize", Box(pluralizeFilter))
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
+
+Filters are documented with the `FilterFunction` type in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+
+
+### Template inheritance
+
+Templates may contain *inheritable sections*:
+
+`layout.mustache`:
+
+    <html>
+    <head>
+        <title>{{$ page_title }}Default title{{/ page_title }}</title>
+    </head>
+    <body>
+        <h1>{{$ page_title }}Default title{{/ page_title }}</h1>
+        {{$ page_content }}
+            Default content
+        {{/ page_content }}}
+    </body>
+    </html>
+
+Other templates can inherit from `layout.mustache`, and override its sections:
+
+`article.mustache`:
+
+    {{< layout }}
+    
+        {{$ page_title }}{{ article.title }}{{/ page_title }}
+        
+        {{$ page_content }}
+            {{# article }}
+                {{ body }}
+                by {{ author }}
+            {{/ article }}
+        {{/ page_content }}
+        
+    {{/ layout }}
+
+When you render `article.mustache`, you get a full HTML page.

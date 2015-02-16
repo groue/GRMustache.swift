@@ -23,26 +23,6 @@
 
 import Foundation
 
-// =============================================================================
-// MARK: - Core function types
-//
-// GRMustache defines five "core function types". Each one defines a way to
-// interact with the rendering engine.
-//
-// - SubscriptFunction extracts keys: {{name}} knows which value to render by
-//   invoking a SubscriptFunction with the "name" argument.
-//
-// - FilterFunction evaluates filter expressions: {{f(x)}} invokes a
-//   FilterFunction.
-//
-// - RenderFunction renders Mustache tags: {{name}} and {{#items}}...{{/items}}
-//   both invoke a RenderFunction.
-//
-// - WillRenderFunction can process a value before it gets rendered.
-//
-// - DidRenderFunction is symmetric to WillRenderFunction: it is called after a
-//   value has been rendered.
-
 
 // =============================================================================
 // MARK: - SubscriptFunction
@@ -1557,7 +1537,7 @@ It provides an easy way to let your custom types feed templates:
 
   extension Person : MustacheBoxable {
       var mustacheBox: MustacheBox {
-          // Return a Box that wraps our user, and exposes the `firstName`,
+          // Return a Box that wraps our user, and exposes `firstName`,
           // `lastName` and `fullName` to templates:
           return Box(value: self) { (key: String) in
               switch key {
@@ -1679,8 +1659,9 @@ public func Box(didRender: DidRenderFunction) -> MustacheBox {
 The MustacheBoxable protocol lets your custom Swift types feed Mustache
 templates.
 
-Note that Objective-C classes should conform to the ObjCMustacheBoxable protocol
-instead.
+Note that GRMustache ships with the built-in ability to feed templates with
+subclasses of NSObject: this protocol is not tailored for Objective-C classes.
+See the documentation of NSObject.mustacheBox for more information.
 */
 public protocol MustacheBoxable {
     /**
