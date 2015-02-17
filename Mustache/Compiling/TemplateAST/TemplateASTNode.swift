@@ -21,7 +21,58 @@
 // THE SOFTWARE.
 
 
-protocol TemplateASTNode: class {   // class so that we get the !== operator (see Context.swift)
+import Foundation
+
+/**
+The protocol for Template AST nodes.
+
+When parsing a Mustache template, the compiler builds an abstract tree of
+objects representing raw text and various mustache tags.
+
+This abstract tree is made of objects conforming to the TemplateASTNode
+protocol.
+
+For example, the template string "hello {{name}}!" would give four AST nodes:
+
+- a TextNode that renders "hello ".
+- a VariableTag that renders the value of the `name` expression.
+- a TextNode that renders "!".
+- a PartialNode that contains the three previous nodes.
+*/
+protocol TemplateASTNode: class {   // class so that we can use the !== operator (see Context.swift)
+    
+    /**
+    Has the visitor visit the node.
+    */
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult
+    
+    /**
+    Support for template inheritance.
+    
+    Return the node that should be rendered in lieu of the node argument.
+    
+    All conforming classes return the node argument, but InheritableSectionNode
+    and InheritablePartialNode.
+    */
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode
 }
+
+/**
+A template AST visitor handles AST nodes.
+
+RenderingEngine conforms to this protocol so that it can render templates.
+*/
+protocol TemplateASTVisitor {
+    func visit(inheritablePartialNode: InheritablePartialNode) -> TemplateASTVisitResult
+    func visit(inheritableSectionNode: InheritableSectionNode) -> TemplateASTVisitResult
+    func visit(partialNode: PartialNode) -> TemplateASTVisitResult
+    func visit(variableTag: VariableTag) -> TemplateASTVisitResult
+    func visit(sectionTag: SectionTag) -> TemplateASTVisitResult
+    func visit(textNode: TextNode) -> TemplateASTVisitResult
+}
+
+enum TemplateASTVisitResult {
+    case Error(NSError)
+    case Success
+}
+

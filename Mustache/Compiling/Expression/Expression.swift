@@ -52,14 +52,21 @@ func ==(lhs: Expression, rhs: Expression) -> Bool {
     return lhs.isEqual(rhs)
 }
 
-enum ExpressionVisitResult {
-    case Success
-    case Error(NSError)
-}
+/**
+An expression visitor handles expressions.
 
+ExpressionInvocation conforms to this protocol so that it can evaluate
+expressions.
+*/
 protocol ExpressionVisitor {
     func visit(expression: FilteredExpression) -> ExpressionVisitResult
     func visit(expression: IdentifierExpression) -> ExpressionVisitResult
     func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult
     func visit(expression: ScopedExpression) -> ExpressionVisitResult
 }
+
+enum ExpressionVisitResult {
+    case Success
+    case Error(NSError)
+}
+

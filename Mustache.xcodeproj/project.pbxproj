@@ -35,7 +35,6 @@
 		561E727F1A8BDC4D004ED48B /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
 		561E72801A8BDC4D004ED48B /* TemplateAST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */; };
 		561E72811A8BDC4D004ED48B /* TemplateASTNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */; };
-		561E72821A8BDC4D004ED48B /* TemplateASTVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1EE19FC5A2E0028C6C1 /* TemplateASTVisitor.swift */; };
 		561E72831A8BDC4D004ED48B /* TextNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C619FC364B0028C6C1 /* TextNode.swift */; };
 		561E72841A8BDC4D004ED48B /* VariableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1CF19FC446A0028C6C1 /* VariableTag.swift */; };
 		561E72851A8BDC4D004ED48B /* TemplateCompiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BC19FC27040028C6C1 /* TemplateCompiler.swift */; };
@@ -143,7 +142,6 @@
 		563AE1D519FC48330028C6C1 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D419FC48330028C6C1 /* Template.swift */; };
 		563AE1D819FC4A450028C6C1 /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D719FC4A450028C6C1 /* Context.swift */; };
 		563AE1EC19FC55920028C6C1 /* RenderingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */; };
-		563AE1EF19FC5A2E0028C6C1 /* TemplateASTVisitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1EE19FC5A2E0028C6C1 /* TemplateASTVisitor.swift */; };
 		563AE1F219FC5A940028C6C1 /* InheritablePartialNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1F119FC5A940028C6C1 /* InheritablePartialNode.swift */; };
 		563AE1F519FC5ACD0028C6C1 /* InheritableSectionNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1F419FC5ACD0028C6C1 /* InheritableSectionNode.swift */; };
 		563AE1F819FC5AF80028C6C1 /* PartialNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1F719FC5AF80028C6C1 /* PartialNode.swift */; };
@@ -267,7 +265,6 @@
 		563AE1D419FC48330028C6C1 /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
 		563AE1D719FC4A450028C6C1 /* Context.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Context.swift; sourceTree = "<group>"; };
 		563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = RenderingEngine.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
-		563AE1EE19FC5A2E0028C6C1 /* TemplateASTVisitor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateASTVisitor.swift; sourceTree = "<group>"; };
 		563AE1F119FC5A940028C6C1 /* InheritablePartialNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InheritablePartialNode.swift; sourceTree = "<group>"; };
 		563AE1F419FC5ACD0028C6C1 /* InheritableSectionNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InheritableSectionNode.swift; sourceTree = "<group>"; };
 		563AE1F719FC5AF80028C6C1 /* PartialNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PartialNode.swift; sourceTree = "<group>"; };
@@ -507,7 +504,6 @@
 				563AE20019FC62330028C6C1 /* Tag.swift */,
 				563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */,
 				563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */,
-				563AE1EE19FC5A2E0028C6C1 /* TemplateASTVisitor.swift */,
 				563AE1C619FC364B0028C6C1 /* TextNode.swift */,
 				563AE1CF19FC446A0028C6C1 /* VariableTag.swift */,
 			);
@@ -939,7 +935,6 @@
 				561E728B1A8BDC4D004ED48B /* StandardLibrary.swift in Sources */,
 				561E72791A8BDC4D004ED48B /* ImplicitIteratorExpression.swift in Sources */,
 				561E727A1A8BDC4D004ED48B /* ScopedExpression.swift in Sources */,
-				561E72821A8BDC4D004ED48B /* TemplateASTVisitor.swift in Sources */,
 				561E72931A8BDC4D004ED48B /* ExpressionInvocation.swift in Sources */,
 				561E72941A8BDC4D004ED48B /* MustacheBox.swift in Sources */,
 				561E72911A8BDC4D004ED48B /* TemplateToken.swift in Sources */,
@@ -1029,7 +1024,6 @@
 				56CC2C9E1A000CEB00CBD45A /* FilteredExpression.swift in Sources */,
 				563AE1D519FC48330028C6C1 /* Template.swift in Sources */,
 				5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */,
-				563AE1EF19FC5A2E0028C6C1 /* TemplateASTVisitor.swift in Sources */,
 				563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */,
 				563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */,
 				5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */,
