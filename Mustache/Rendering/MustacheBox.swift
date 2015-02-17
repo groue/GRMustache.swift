@@ -2195,9 +2195,8 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
 // - for consuming the first element to know if the sequence is empty or not.
 // - for rendering it.
 //
-// So if we could provide some support for rendering sequences, it is somewhat
-// difficult: give up for now, and provide a boxing function for
-// `CollectionType` which ensures non-destructive iteration.
+// So we only provide a boxing function for `CollectionType` which ensures
+// non-destructive iteration.
 
 /**
 A function that wraps a collection of MustacheBoxable.
