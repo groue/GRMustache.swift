@@ -1781,19 +1781,21 @@ extension Bool : MustacheBoxable {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
+                    // {{ bool }}
                     return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
                 case .Section:
-                    // https://github.com/groue/GRMustache/issues/83
-                    //
-                    // {{# NSNumber }}...{{/}} renders the section if the number is
-                    // not zero, and does not push the number on the top of the
-                    // context stack.
-                    //
-                    // Be consistent with Objective-C, and make Bool behave just
-                    // like [NSNumber numberWithBool:]
                     if info.enumerationItem {
+                        // {{# bools }}...{{/ bools }}
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
+                        // {{# bool }}...{{/ bool }}
+                        // {{^ bool }}...{{/ bool }}
+                        //
+                        // Bools do not enter the context stack when used in a
+                        // boolean section.
+                        //
+                        // This behavior must not change:
+                        // https://github.com/groue/GRMustache/issues/83
                         return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
@@ -1852,17 +1854,18 @@ extension Int : MustacheBoxable {
                 case .Variable:
                     return Rendering("\(self)")
                 case .Section:
-                    // https://github.com/groue/GRMustache/issues/83
-                    //
-                    // {{# NSNumber }}...{{/}} renders the section if the number is
-                    // not zero, and does not push the number on the top of the
-                    // context stack.
-                    //
-                    // Be consistent with Objective-C, and make Int behave just
-                    // like [NSNumber numberWithInteger:]
                     if info.enumerationItem {
+                        // {{# ints }}...{{/ ints }}
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
+                        // {{# int }}...{{/ int }}
+                        // {{^ int }}...{{/ int }}
+                        //
+                        // Ints do not enter the context stack when used in a
+                        // boolean section.
+                        //
+                        // This behavior must not change:
+                        // https://github.com/groue/GRMustache/issues/83
                         return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
@@ -1921,17 +1924,18 @@ extension UInt : MustacheBoxable {
                 case .Variable:
                     return Rendering("\(self)")
                 case .Section:
-                    // https://github.com/groue/GRMustache/issues/83
-                    //
-                    // {{# NSNumber }}...{{/}} renders the section if the number is
-                    // not zero, and does not push the number on the top of the
-                    // context stack.
-                    //
-                    // Be consistent with Objective-C, and make Int behave just
-                    // like [NSNumber numberWithInteger:]
                     if info.enumerationItem {
+                        // {{# uints }}...{{/ uints }}
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
+                        // {{# uint }}...{{/ uint }}
+                        // {{^ uint }}...{{/ uint }}
+                        //
+                        // Uints do not enter the context stack when used in a
+                        // boolean section.
+                        //
+                        // This behavior must not change:
+                        // https://github.com/groue/GRMustache/issues/83
                         return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
@@ -1990,17 +1994,18 @@ extension Double : MustacheBoxable {
                 case .Variable:
                     return Rendering("\(self)")
                 case .Section:
-                    // https://github.com/groue/GRMustache/issues/83
-                    //
-                    // {{# NSNumber }}...{{/}} renders the section if the number is
-                    // not zero, and does not push the number on the top of the
-                    // context stack.
-                    //
-                    // Be consistent with Objective-C, and make Double behave just
-                    // like [NSNumber numberWithDouble:]
                     if info.enumerationItem {
+                        // {{# doubles }}...{{/ doubles }}
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
+                        // {{# double }}...{{/ double }}
+                        // {{^ double }}...{{/ double }}
+                        //
+                        // Doubles do not enter the context stack when used in a
+                        // boolean section.
+                        //
+                        // This behavior must not change:
+                        // https://github.com/groue/GRMustache/issues/83
                         return info.tag.renderInnerContent(info.context, error: error)
                     }
                 }
@@ -2206,8 +2211,11 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
                     return info.tag.renderInnerContent(info.context.extendedContext(Box(collection)), error: error)
                 } else {
+                    // {{# collection }}...{{/ collection }}
+                    // {{^ collection }}...{{/ collection }}
                     return renderCollection(collection, info, error)
                 }
         })
@@ -2692,8 +2700,11 @@ extension NSSet : ObjCMustacheBoxable {
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
+                    // {{# sets }}...{{/ sets }}
                     return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                 } else {
+                    // {{# set }}...{{/ set }}
+                    // {{^ set }}...{{/ set }}
                     let boxArray = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
                     return renderCollection(boxArray, info, error)
                 }
