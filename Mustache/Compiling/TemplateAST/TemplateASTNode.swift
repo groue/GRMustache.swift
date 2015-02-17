@@ -71,7 +71,7 @@ protocol TemplateASTVisitor {
 }
 
 enum TemplateASTVisitResult {
-    case Error(NSError)
     case Success
+    case Error(NSError)
 }
 

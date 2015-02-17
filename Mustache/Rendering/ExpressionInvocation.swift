@@ -34,8 +34,8 @@ class ExpressionInvocation: ExpressionVisitor {
     }
     
     enum InvocationResult {
-        case Error(NSError)
         case Success(MustacheBox)
+        case Error(NSError)
     }
     
     func invokeWithContext(context: Context) -> InvocationResult {
