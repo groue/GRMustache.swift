@@ -2442,8 +2442,8 @@ extension NSObject : ObjCMustacheBoxable {
     GRMustache ships with a few specific classes that provide their own
     rendering behavior: NSFormatter, NSNull, NSNumber, NSString and NSSet.
     
-    Your own subclass of NSObject can also override the mustacheBox so that it
-    provides its own rendering behavior.
+    Your own subclass of NSObject can also override the mustacheBox method so
+    that it provides its own rendering behavior.
     
     NSObject's default implementation handles three general cases:
     
