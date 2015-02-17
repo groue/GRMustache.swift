@@ -1118,43 +1118,6 @@ BoxAnyValue() functions.
 */
 public struct MustacheBox {
     
-    // Converter wraps all the conversion closures that help MustacheBox expose
-    // its raw value (typed Any) as useful types.
-    //
-    // Without those conversions, it would be very difficult for the library
-    // user to write code that processes, for example, a boxed number.
-    struct Converter {
-        
-        // Conversion to Int
-        let intValue: (() -> Int?)?
-        
-        // Conversion to UInt
-        let uintValue: (() -> UInt?)?
-        
-        // Conversion to Double
-        let doubleValue: (() -> Double?)?
-        
-        // Conversion to Array
-        let arrayValue: (() -> [MustacheBox]?)?
-        
-        // Conversion to Dictionary
-        let dictionaryValue: (() -> [String: MustacheBox]?)?
-        
-        init(
-            intValue: (() -> Int?)? = nil,
-            uintValue: (() -> UInt?)? = nil,
-            doubleValue: (() -> Double?)? = nil,
-            arrayValue: (() -> [MustacheBox]?)? = nil,
-            dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
-        {
-            self.intValue = intValue
-            self.uintValue = uintValue
-            self.doubleValue = doubleValue
-            self.arrayValue = arrayValue
-            self.dictionaryValue = dictionaryValue
-        }
-    }
-    
     // MARK: - The boxed value
     
     /**
@@ -1270,6 +1233,36 @@ public struct MustacheBox {
                     }
                 }
             }
+        }
+    }
+    
+    
+    // MARK: - Internal
+    
+    // Converter wraps all the conversion closures that help MustacheBox expose
+    // its raw value (typed Any) as useful types.
+    //
+    // Without those conversions, it would be very difficult for the library
+    // user to write code that processes, for example, a boxed number.
+    struct Converter {
+        let intValue: (() -> Int?)?
+        let uintValue: (() -> UInt?)?
+        let doubleValue: (() -> Double?)?
+        let arrayValue: (() -> [MustacheBox]?)?
+        let dictionaryValue: (() -> [String: MustacheBox]?)?
+        
+        init(
+            intValue: (() -> Int?)? = nil,
+            uintValue: (() -> UInt?)? = nil,
+            doubleValue: (() -> Double?)? = nil,
+            arrayValue: (() -> [MustacheBox]?)? = nil,
+            dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
+        {
+            self.intValue = intValue
+            self.uintValue = uintValue
+            self.doubleValue = doubleValue
+            self.arrayValue = arrayValue
+            self.dictionaryValue = dictionaryValue
         }
     }
 
