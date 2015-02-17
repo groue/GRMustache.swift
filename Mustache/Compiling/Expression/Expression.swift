@@ -21,12 +21,28 @@
 // THE SOFTWARE.
 
 
+import Foundation
+
+/**
+The base abstract class for expressions that appear in tags: `name`,
+`user.name`, `uppercase(user.name)`.
+
+Expression conforms to Equatable so that the Compiler can check that section
+tags have matching openings and closings: {{# person }}...{{/ person }} is OK
+but {{# foo }}...{{/ bar }} is not.
+*/
 class Expression: Equatable {
+    
+    /**
+    Has the visitor visit the expression.
+    */
     func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {
         fatalError("Subclass must override")
     }
     
-    // Polymorphic support for Equatable
+    /**
+    Polymorphic support for Equatable
+    */
     func isEqual(expression: Expression) -> Bool {
         fatalError("Subclass must override")
     }
@@ -34,4 +50,16 @@ class Expression: Equatable {
 
 func ==(lhs: Expression, rhs: Expression) -> Bool {
     return lhs.isEqual(rhs)
+}
+
+enum ExpressionVisitResult {
+    case Success
+    case Error(NSError)
+}
+
+protocol ExpressionVisitor {
+    func visit(expression: FilteredExpression) -> ExpressionVisitResult
+    func visit(expression: IdentifierExpression) -> ExpressionVisitResult
+    func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult
+    func visit(expression: ScopedExpression) -> ExpressionVisitResult
 }

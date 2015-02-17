@@ -21,10 +21,16 @@
 // THE SOFTWARE.
 
 
+/**
+A filtered expression such as `uppercase(user.name)`.
+
+A filtered expression has a single argument. Variadic filters found in templates
+are implemented as a chain of partial applications: f(x,y) <=> f(x)(y)
+*/
 class FilteredExpression: Expression {
     let filterExpression: Expression
     let argumentExpression: Expression
-    let partialApplication: Bool
+    let partialApplication: Bool    // If true, this is a partial application
     
     init(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) {
         self.filterExpression = filterExpression

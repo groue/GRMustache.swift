@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 
+/**
+A scoped expression such as `person.name`.
+*/
 class ScopedExpression: Expression {
     let baseExpression: Expression
     let identifier: String

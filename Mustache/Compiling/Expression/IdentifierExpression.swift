@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 
+/**
+An identifier expression such as `name`.
+*/
 class IdentifierExpression: Expression {
     let identifier: String
     

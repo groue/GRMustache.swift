@@ -21,6 +21,10 @@
 // THE SOFTWARE.
 
 
+/**
+The implicit iterator in Mustache lingo means the `.` expression, which
+evaluates to the current context.
+*/
 class ImplicitIteratorExpression: Expression {
     
     override func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {
