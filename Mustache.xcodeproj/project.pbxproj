@@ -150,6 +150,8 @@
 		563AE20119FC62330028C6C1 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
 		563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */; };
 		564717311A18EAE600E383F9 /* FilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564717301A18EAE600E383F9 /* FilterTests.swift */; };
+		56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
+		56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3721A1CC417000CE8CB /* NSFormatter.swift */; };
 		5674F3751A1CC7B8000CE8CB /* NSFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */; };
 		567781D61A84F2A500A6D307 /* GRMustacheSuite in Resources */ = {isa = PBXBuildFile; fileRef = 567781D51A84F2A500A6D307 /* GRMustacheSuite */; };
@@ -273,6 +275,7 @@
 		563AE20019FC62330028C6C1 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionInvocation.swift; sourceTree = "<group>"; };
 		564717301A18EAE600E383F9 /* FilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTests.swift; sourceTree = "<group>"; };
+		56660D6D1A9378B100E53CCF /* CoreFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreFunctions.swift; sourceTree = "<group>"; };
 		5674F3721A1CC417000CE8CB /* NSFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatter.swift; sourceTree = "<group>"; };
 		5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatterTests.swift; sourceTree = "<group>"; };
 		567781D51A84F2A500A6D307 /* GRMustacheSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GRMustacheSuite; sourceTree = "<group>"; };
@@ -545,6 +548,7 @@
 			isa = PBXGroup;
 			children = (
 				563AE1D719FC4A450028C6C1 /* Context.swift */,
+				56660D6D1A9378B100E53CCF /* CoreFunctions.swift */,
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
 				569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */,
 				569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */,
@@ -949,6 +953,7 @@
 				561E727E1A8BDC4D004ED48B /* SectionTag.swift in Sources */,
 				561E728E1A8BDC4D004ED48B /* ZipFilter.swift in Sources */,
 				561E727B1A8BDC4D004ED48B /* InheritedPartialNode.swift in Sources */,
+				56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */,
 				561E728D1A8BDC4D004ED48B /* NSFormatter.swift in Sources */,
 				561E727D1A8BDC4D004ED48B /* PartialNode.swift in Sources */,
 				561E72841A8BDC4D004ED48B /* VariableTag.swift in Sources */,
@@ -1033,6 +1038,7 @@
 				5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */,
 				5622F2011A054D5800B5D3F8 /* HTMLEscape.swift in Sources */,
 				563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */,
+				56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */,
 				569516FC1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */,
 				563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */,
 				569C42381A86824800748E98 /* ZipFilter.swift in Sources */,
