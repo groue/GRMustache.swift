@@ -69,10 +69,10 @@ class RenderingEngine: TemplateASTVisitor {
         }
     }
     
-    func visit(inheritablePartialNode: InheritablePartialNode) -> TemplateASTVisitResult {
+    func visit(inheritedPartialNode: InheritedPartialNode) -> TemplateASTVisitResult {
         let originalContext = context
-        context = context.extendedContext(inheritablePartialNode: inheritablePartialNode)
-        let result = visit(inheritablePartialNode.partialNode)
+        context = context.extendedContext(inheritedPartialNode: inheritedPartialNode)
+        let result = visit(inheritedPartialNode.partialNode)
         context = originalContext
         return result
     }

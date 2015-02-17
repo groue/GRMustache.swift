@@ -23,6 +23,10 @@
 
 import Foundation
 
+/**
+A VariableTag is an AST node that represents a variable tag such as {{name}} and
+{{{name}}}.
+*/
 class VariableTag: Tag, TemplateASTNode {
     let token: TemplateToken
     let contentType: ContentType
@@ -35,6 +39,10 @@ class VariableTag: Tag, TemplateASTNode {
         super.init(type: .Variable, innerTemplateString: "", inverted: false, expression: expression)
     }
     
+    /**
+    VariableTag is an internal class, but it inherits the Printable protocol
+    from its public superclass Tag. Return a nice user-friendly description:
+    */
     override var description: String {
         if let templateID = token.templateID {
             return "\(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)"
@@ -43,6 +51,9 @@ class VariableTag: Tag, TemplateASTNode {
         }
     }
     
+    /**
+    Inherited from the public super class Tag. Variable have no inner content.
+    */
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         return Rendering("", contentType)
     }

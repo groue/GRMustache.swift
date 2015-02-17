@@ -48,7 +48,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
                 return nil
-            case .InheritablePartial(openingToken: let openingToken, partialName: _):
+            case .InheritedPartial(openingToken: let openingToken, partialName: _):
                 if error != nil {
                     error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
                 }
@@ -240,11 +240,11 @@ class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-            case .InheritablePartial(content: let content):
+            case .InheritedPartial(content: let content):
                 var error: NSError?
                 var empty: Bool = false
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
-                    compilationState.pushScope(Scope(type: .InheritablePartial(openingToken: token, partialName: partialName)))
+                    compilationState.pushScope(Scope(type: .InheritedPartial(openingToken: token, partialName: partialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
@@ -322,7 +322,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                     compilationState.currentScope.appendNode(sectionTag)
                     return true
                     
-                case .InheritablePartial(openingToken: let openingToken, partialName: let closedPartialName):
+                case .InheritedPartial(openingToken: let openingToken, partialName: let closedPartialName):
                     var error: NSError?
                     var empty: Bool = false
                     let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error)
@@ -354,9 +354,9 @@ class TemplateCompiler: TemplateTokenConsumer {
                         let partialNode = PartialNode(partialName: closedPartialName, templateAST: partialTemplateAST)
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let inheritablePartialNode = InheritablePartialNode(partialNode: partialNode, templateAST: templateAST)
+                        let inheritedPartialNode = InheritedPartialNode(partialNode: partialNode, templateAST: templateAST)
                         compilationState.popCurrentScope()
-                        compilationState.currentScope.appendNode(inheritablePartialNode)
+                        compilationState.currentScope.appendNode(inheritedPartialNode)
                         return true
                     } else {
                         state = .Error(error!)
@@ -469,7 +469,7 @@ class TemplateCompiler: TemplateTokenConsumer {
             case Root
             case Section(openingToken: TemplateToken, expression: Expression)
             case InvertedSection(openingToken: TemplateToken, expression: Expression)
-            case InheritablePartial(openingToken: TemplateToken, partialName: String)
+            case InheritedPartial(openingToken: TemplateToken, partialName: String)
             case InheritableSection(openingToken: TemplateToken, inheritableSectionName: String)
         }
     }

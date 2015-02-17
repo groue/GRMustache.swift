@@ -21,6 +21,10 @@
 // THE SOFTWARE.
 
 
+/**
+An InheritableSectionNode is an AST node that represents inheritable
+sections such as `{{$name}}...{{/name}}`.
+*/
 class InheritableSectionNode: TemplateASTNode {
     let name: String
     let templateAST: TemplateAST
@@ -38,11 +42,8 @@ class InheritableSectionNode: TemplateASTNode {
         if let node = node as? InheritableSectionNode {
             if node.name == name {
                 return self
-            } else {
-                return node
             }
-        } else {
-            return node
         }
+        return node
     }
 }

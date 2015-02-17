@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 
+/**
+A TextNode is an AST node that represents text.
+*/
 class TextNode: TemplateASTNode {
     let text: String
     

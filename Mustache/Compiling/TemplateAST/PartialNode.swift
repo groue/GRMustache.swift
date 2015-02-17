@@ -21,9 +21,18 @@
 // THE SOFTWARE.
 
 
+/**
+A PartialNode is an AST node that represents partial tags such as {{>partial}}.
+*/
 class PartialNode: TemplateASTNode {
-    let partialName: String
     let templateAST: TemplateAST
+
+    // partialName is a vestigial property not used in GRMustache.swift.
+    //
+    // Objective-C GRMustache has a GRMustacheTemplateGenerator class which
+    // turns AST into template strings, and uses this name to output partial
+    // tags {{> partialName }}.
+    let partialName: String
     
     init(partialName: String, templateAST: TemplateAST) {
         self.partialName = partialName

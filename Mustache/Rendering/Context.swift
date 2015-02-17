@@ -62,7 +62,7 @@ public class Context {
     private enum Type {
         case Root
         case BoxType(box: MustacheBox, parent: Context)
-        case InheritablePartialNodeType(inheritablePartialNode: InheritablePartialNode, parent: Context)
+        case InheritedPartialNodeType(inheritedPartialNode: InheritedPartialNode, parent: Context)
     }
     
     private var registeredKeysContext: Context?
@@ -160,7 +160,7 @@ public class Context {
             return Box()
         case .BoxType(box: let box, parent: _):
             return box
-        case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
+        case .InheritedPartialNodeType(inheritedPartialNode: _, parent: let parent):
             return parent.topBox
         }
     }
@@ -208,7 +208,7 @@ public class Context {
             } else {
                 return innerBox
             }
-        case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
+        case .InheritedPartialNodeType(inheritedPartialNode: _, parent: let parent):
             return parent[key]
         }
     }
@@ -260,7 +260,7 @@ public class Context {
             } else {
                 return parent.willRenderStack
             }
-        case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
+        case .InheritedPartialNodeType(inheritedPartialNode: _, parent: let parent):
             return parent.willRenderStack
         }
     }
@@ -275,7 +275,7 @@ public class Context {
             } else {
                 return parent.didRenderStack
             }
-        case .InheritablePartialNodeType(inheritablePartialNode: _, parent: let parent):
+        case .InheritedPartialNodeType(inheritedPartialNode: _, parent: let parent):
             return parent.didRenderStack
         }
     }
@@ -285,8 +285,8 @@ public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
     
-    func extendedContext(# inheritablePartialNode: InheritablePartialNode) -> Context {
-        return Context(type: .InheritablePartialNodeType(inheritablePartialNode: inheritablePartialNode, parent: self), registeredKeysContext: registeredKeysContext)
+    func extendedContext(# inheritedPartialNode: InheritedPartialNode) -> Context {
+        return Context(type: .InheritedPartialNodeType(inheritedPartialNode: inheritedPartialNode, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
@@ -298,8 +298,8 @@ public class Context {
                 return node
             case .BoxType(box: _, parent: let parent):
                 context = parent
-            case .InheritablePartialNodeType(inheritablePartialNode: let inheritablePartialNode, parent: let parent):
-                let templateAST = inheritablePartialNode.partialNode.templateAST
+            case .InheritedPartialNodeType(inheritedPartialNode: let inheritedPartialNode, parent: let parent):
+                let templateAST = inheritedPartialNode.partialNode.templateAST
                 var used = false
                 for usedTemplateAST in usedTemplateASTs {
                     if usedTemplateAST === templateAST {
@@ -308,7 +308,7 @@ public class Context {
                     }
                 }
                 if !used {
-                    let resolvedNode = inheritablePartialNode.resolveTemplateASTNode(node)
+                    let resolvedNode = inheritedPartialNode.resolveTemplateASTNode(node)
                     if resolvedNode !== node {
                         usedTemplateASTs.append(templateAST)
                     }
@@ -327,8 +327,8 @@ extension Context: DebugPrintable {
             return "Context.Root"
         case .BoxType(box: let box, parent: let parent):
             return "Context.BoxType(\(box)):\(parent.debugDescription)"
-        case .InheritablePartialNodeType(inheritablePartialNode: let node, parent: let parent):
-            return "Context.InheritablePartialNodeType(\(node)):\(parent.debugDescription)"
+        case .InheritedPartialNodeType(inheritedPartialNode: let node, parent: let parent):
+            return "Context.InheritedPartialNodeType(\(node)):\(parent.debugDescription)"
         }
     }
 }

@@ -33,7 +33,7 @@ struct TemplateToken {
         case Partial(content: String)
         case SetDelimiters
         case Pragma(content: String)
-        case InheritablePartial(content: String)
+        case InheritedPartial(content: String)
         case InheritableSection(content: String)
     }
     

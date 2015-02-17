@@ -171,7 +171,7 @@ class TemplateParser {
                         }
                     case "<":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
-                        let token = TemplateToken(lineNumber: startLineNumber, templateString: templateString, range: tokenRange, type: .InheritablePartial(content: content), templateID: templateID)
+                        let token = TemplateToken(lineNumber: startLineNumber, templateString: templateString, range: tokenRange, type: .InheritedPartial(content: content), templateID: templateID)
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }

@@ -21,8 +21,15 @@
 // THE SOFTWARE.
 
 
-class InheritablePartialNode: TemplateASTNode {
+/**
+An InheritedPartialNode is an AST node that represents an inherited partial
+tag such as `{{<partial}}...{{$content}}...{{/content}}...{{/partial}}`.
+*/
+class InheritedPartialNode: TemplateASTNode {
+    // The partial
     let partialNode: PartialNode
+    
+    // The inner content
     let templateAST: TemplateAST
 
     init(partialNode: PartialNode, templateAST: TemplateAST) {

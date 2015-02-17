@@ -23,6 +23,10 @@
 
 import Foundation
 
+/**
+A SectionTag is an AST node that represents a regular or inverted section tag
+such as {{#section}}...{{/section}} and {{^section}}...{{/section}}.
+*/
 class SectionTag: Tag, TemplateASTNode {
     let openingToken: TemplateToken
     let templateAST: TemplateAST
@@ -33,6 +37,10 @@ class SectionTag: Tag, TemplateASTNode {
         super.init(type: .Section, innerTemplateString: innerTemplateString, inverted: inverted, expression: expression)
     }
     
+    /**
+    SectionTag is an internal class, but it inherits the Printable protocol from
+    its public superclass Tag. Return a nice user-friendly description:
+    */
     override var description: String {
         if let templateID = openingToken.templateID {
             return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber) of template \(templateID)"
@@ -41,6 +49,9 @@ class SectionTag: Tag, TemplateASTNode {
         }
     }
     
+    /**
+    Inherited from the public super class Tag
+    */
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
         return renderingEngine.render(templateAST, error: error)
