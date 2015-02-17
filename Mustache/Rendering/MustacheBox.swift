@@ -57,7 +57,8 @@ import Foundation
 //
 //   There is a Box() function for Objective-C objects.
 //
-//   Learn how NSObject, NSNull, NSString, NSNumber and NSSet are rendered.
+//   Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
+//   NSSet are rendered.
 //
 //
 // - Boxing of Core Mustache functions
@@ -146,6 +147,9 @@ public struct MustacheBox {
     // -------------------------------------------------------------------------
     // MARK: - Rendering a Box
     
+    /**
+    TODO
+    */
     public let render: RenderFunction
     
     
@@ -157,8 +161,8 @@ public struct MustacheBox {
     
     ::
     
-    let box = Box("Arthur")
-    box["length"].intValue!    // 6
+      let box = Box("Arthur")
+      box["length"].intValue!    // 6
     */
     public subscript (key: String) -> MustacheBox {
         return mustacheSubscript?(key: key) ?? Box()
@@ -278,8 +282,9 @@ extension MustacheBox : DebugPrintable {
 This function is the most low-level function that lets you build MustacheBox
 for feeding templates.
 
-This function is suited for building "advanced" boxes. There are other, simpler,
-versions of the Box() function; you should check them before you use this one.
+It is suited for building somewhat "advanced" boxes. There are other simpler
+versions of the Box() function that may well better suit your need; you should
+check them.
 
 It can take up to seven parameters, all optional, that define how the box
 interacts with the Mustache engine:
@@ -293,8 +298,8 @@ interacts with the Mustache engine:
 :param: didRender         An optional DidRenderFunction
 
 
-Let's look at how the {{ f(a) }} tag is rendered. This will illustrate the usage
-of all those parameters.
+To illustrate the usage of all those parameters, let's look at how the {{f(a)}}
+tag is rendered.
 
 First the `a` and `f` expressions are evaluated. The Mustache engine looks in
 the context stack for boxes whose *mustacheSubscript* return non-empty boxes for
@@ -311,11 +316,9 @@ the box that will be actually rendered: the renderedBox.
 The renderedBox has a *render* function: it is evaluated by the Mustache engine
 which appends its result to the final rendering.
 
-Finally the Mustache engine looks in the context stack for boses whose
+Finally the Mustache engine looks in the context stack for boxes whose
 *didRender* function is defined, and call them.
 
-
-Let's now describe all parameters is detail.
 
 The optional boolValue parameter tells whether the Box should trigger or prevent
 the rendering of regular {{#section}}...{{/}} and inverted {{^section}}...{{/}}.
@@ -331,14 +334,16 @@ build the empty box: Box().
 
 
 The optional value parameter gives the boxed value. You should generally provide
-one, although the value has absolutely no impact on template rendering, and is
-only used when evaluating filters. The default value is nil.
+one, although the value is only used when evaluating filters, and not all
+templates use filters. The default value is nil.
 
 
 The optional mustacheSubscript parameter is a SubscriptFunction that lets the
 Mustache engine extract keys out of the box. For example, the {{a}} tag would
 call the SubscriptFunction with "a" as an argument, and render the returned box.
 The default value is nil, which means that no key can be extracted.
+
+:see: SubscriptFunction for a full discussion of this type.
 
 ::
 
@@ -349,28 +354,29 @@ The default value is nil, which means that no key can be extracted.
   })
   template.render(box)!
 
-:see: SubscriptFunction for a completion discussion
-
 
 The optional filter parameter is a FilterFunction that lets the Mustache engine
 evaluate filtered expression that involve the box. The default value is nil,
 which means that the box can not be used as a filter.
 
+:see: FilterFunction for a full discussion of this type.
+
 ::
 
-  // Renders "xx"
-  let template = Template(string:"{{f(x)}}")!
-  let box = Box(filter: Filter { (string: String, _) in
-      return Box(string + string)
+  // Renders "100"
+  let template = Template(string:"{{square(x)}}")!
+  let box = Box(filter: Filter { (int: Int, _) in
+      return Box(int * int)
   })
-  template.render(Box(["f": box, "x": Box("x")]))!
-
-:see: FilterFunction for a completion discussion
+  template.render(Box(["square": box, "x": Box(10)]))!
 
 
 The optional render parameter is a RenderFunction that is evaluated when the Box
 gets rendered. The default value is nil, which makes the box perform default
-Mustache rendering of values.
+Mustache rendering of values. RenderFunctions are functions that let you
+implement, for example, Mustache lambdas.
+
+:see: RenderFunction for a full discussion of this type.
 
 ::
 
@@ -381,12 +387,13 @@ Mustache rendering of values.
   })
   template.render(box)!
 
-:see: RenderFunction for a completion discussion
-
 
 The optional willRender and didRender parameters are a WillRenderFunction and
 DidRenderFunction that are evaluated for all tags as long as the box is in the
 context stack.
+
+:see: WillRenderFunction and DidRenderFunction for a full discussion of those
+types.
 
 ::
 
@@ -397,15 +404,13 @@ context stack.
   })
   template.render(box)!
 
-:see: WillRenderFunction and DidRenderFunction for a completion discussion
 
-
-By mixing all those parameters, you can precisely define the behavior of a box.
-For example, let's make the Person class below able to feed templates:
+By mixing all those parameters, you can tune the behavior of a box. Example:
 
 ::
 
-  // Nothing special here
+  // Nothing special here:
+
   class Person {
       let firstName: String
       let lastName: String
@@ -416,12 +421,15 @@ For example, let's make the Person class below able to feed templates:
       }
   }
   
+
   // Have Person conform to MustacheBoxable so that we can box people, and
   // render them:
+
   extension Person : MustacheBoxable {
 
       // MustacheBoxable protocol requires objects to implement this property
       // and return a MustacheBox:
+
       var mustacheBox: MustacheBox {
 
           // A person is a multi-facetted object:
@@ -436,8 +444,10 @@ For example, let's make the Person class below able to feed templates:
               render: render)
       }
       
+
       // The SubscriptFunction that lets the Mustache engine extract values by
       // name. Let's expose the `firstName`, `lastName` and `fullName`:
+
       func mustacheSubscript(key: String) -> MustacheBox {
           switch key {
           case "firstName": return Box(firstName)
@@ -446,8 +456,10 @@ For example, let's make the Person class below able to feed templates:
           default: return Box()
           }
       }
+
       
-      // A custom RenderFunction that avoids default Mustache rendering
+      // A custom RenderFunction that avoids default Mustache rendering:
+
       func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
           switch info.tag.type {
           case .Variable:
@@ -495,11 +507,11 @@ public func Box(
 The MustacheBoxable protocol lets your custom Swift types feed Mustache
 templates.
 
-Note that GRMustache ships with the built-in ability to feed templates with
-subclasses of NSObject: this protocol is not tailored for Objective-C classes.
-See the documentation of NSObject.mustacheBox for more information.
+NB: this protocol is not tailored for Objective-C classes. See the
+documentation of NSObject.mustacheBox for more information.
 */
 public protocol MustacheBoxable {
+    
     /**
     Returns a MustacheBox.
     
@@ -562,6 +574,7 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 // boxable via the Box<CollectionType where C.Generator.Element: MustacheBoxable>()
 // function.
 extension MustacheBox : MustacheBoxable {
+    
     /**
     MustacheBox is obviously boxable: its mustacheBox property return self.
     */
@@ -571,6 +584,7 @@ extension MustacheBox : MustacheBoxable {
 }
 
 extension Bool : MustacheBoxable {
+    
     /**
     Let Bool feed Mustache templates.
     
@@ -642,6 +656,7 @@ extension Bool : MustacheBoxable {
 }
 
 extension Int : MustacheBoxable {
+    
     /**
     Let Int feed Mustache templates.
     
@@ -713,6 +728,7 @@ extension Int : MustacheBoxable {
 }
 
 extension UInt : MustacheBoxable {
+    
     /**
     Let UInt feed Mustache templates.
     
@@ -784,6 +800,7 @@ extension UInt : MustacheBoxable {
 }
 
 extension Double : MustacheBoxable {
+    
     /**
     Let Double feed Mustache templates.
     
@@ -855,6 +872,7 @@ extension Double : MustacheBoxable {
 }
 
 extension String : MustacheBoxable {
+    
     /**
     Let String feed Mustache templates.
     
@@ -1146,6 +1164,7 @@ look at the NSFormatter.swift source file.
 See the Swift-targetted MustacheBoxable protocol for more information.
 */
 @objc public protocol ObjCMustacheBoxable {
+    
     /**
     Returns a MustacheBox wrapped in a ObjCMustacheBox (this wrapping is
     required by the constraints of the Swift type system).
@@ -1267,6 +1286,7 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 }
 
 extension NSObject : ObjCMustacheBoxable {
+    
     /**
     Let any NSObject feed Mustache templates.
     
@@ -1394,6 +1414,7 @@ extension NSObject : ObjCMustacheBoxable {
 }
 
 extension NSNull : ObjCMustacheBoxable {
+    
     /**
     Let NSNull feed Mustache templates.
     
@@ -1429,6 +1450,7 @@ extension NSNull : ObjCMustacheBoxable {
 }
 
 extension NSNumber : ObjCMustacheBoxable {
+    
     /**
     Let NSNumber feed Mustache templates.
     
@@ -1490,6 +1512,7 @@ extension NSNumber : ObjCMustacheBoxable {
 }
 
 extension NSString : ObjCMustacheBoxable {
+    
     /**
     Let NSString feed Mustache templates.
     
@@ -1501,6 +1524,7 @@ extension NSString : ObjCMustacheBoxable {
 }
 
 extension NSSet : ObjCMustacheBoxable {
+    
     /**
     Let NSSet feed Mustache templates.
     
