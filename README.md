@@ -67,7 +67,7 @@ The main entry points are:
     let template = Template(named: "template")!
     ```
 
-- the `Box()` function, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provides data to templates:
+- the `Box()` functions, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provide data to templates:
     
     ```swift
     let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]

@@ -1359,6 +1359,8 @@ The default value is nil, which means that no key can be extracted.
   })
   template.render(box)!
 
+:see: SubscriptFunction for a completion discussion
+
 
 The optional filter parameter is a FilterFunction that lets the Mustache engine
 evaluate filtered expression that involve the box. The default value is nil,
@@ -1372,6 +1374,8 @@ which means that the box can not be used as a filter.
       return Box(string + string)
   })
   template.render(Box(["f": box, "x": Box("x")]))!
+
+:see: FilterFunction for a completion discussion
 
 
 The optional render parameter is a RenderFunction that is evaluated when the Box
@@ -1387,6 +1391,8 @@ Mustache rendering of values.
   })
   template.render(box)!
 
+:see: RenderFunction for a completion discussion
+
 
 The optional willRender and didRender parameters are a WillRenderFunction and
 DidRenderFunction that are evaluated for all tags as long as the box is in the
@@ -1400,6 +1406,8 @@ context stack.
       return Box("baz")
   })
   template.render(box)!
+
+:see: WillRenderFunction and DidRenderFunction for a completion discussion
 
 
 By mixing all those parameters, you can precisely define the behavior of a box.
@@ -1657,7 +1665,7 @@ public func Box(didRender: DidRenderFunction) -> MustacheBox {
 
 
 // =============================================================================
-// MARK: - Boxing of Swift scalar types
+// MARK: - MustacheBoxable and the Boxing of Swift scalar types
 
 /**
 The MustacheBoxable protocol lets your custom Swift types feed Mustache
@@ -1708,6 +1716,8 @@ public protocol MustacheBoxable {
       let template = Template(string: "{{person.fullName}}")!
       let person = Person(firstName: "Tom", lastName: "Selleck")
       template.render(Box(["person": Box(person)]))!
+    
+    There are several variants of the Box() function. Check their documentation.
     */
     var mustacheBox: MustacheBox { get }
 }
@@ -2109,7 +2119,7 @@ extension String : MustacheBoxable {
 
 
 // =============================================================================
-// MARK: - Boxing of Swift collections
+// MARK: - Boxing of Swift collections and dictionaries
 
 
 // This function is a private helper for collection types CollectionType and
@@ -2254,9 +2264,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 }
 
 
-// =============================================================================
-// MARK: - Boxing of Swift dictionaries
-
 /**
 A function that wraps a dictionary of MustacheBoxable.
 
@@ -2287,7 +2294,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 
 
 // =============================================================================
-// MARK: - Boxing of Objective-C types
+// MARK: - ObjCMustacheBoxable and the Boxing of Objective-C types
 
 /**
 Keys of Objective-C objects are extracted with the objectForKeyedSubscript:
