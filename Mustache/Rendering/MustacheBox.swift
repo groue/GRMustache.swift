@@ -945,9 +945,17 @@ public struct RenderingInfo {
     public var context: Context
     
     
-    // -------------------------------------------------------------------------
-    // Non-public
-    
+    // If true, the rendering is part of an enumeration. Some values don't
+    // render the same whenever they render as an enumeration item, or alone:
+    // {{# values }}...{{/ values }} vs. {{# value }}...{{/ value }}.
+    //
+    // This is the case of Int, UInt, Double, Bool: they enter the context
+    // stack when used in an iteration, and do not enter the context stack when
+    // used as a boolean.
+    //
+    // This is also the case of collections: they enter the context stack when
+    // used as an item of a collection, and enumerate their items when used as
+    // a collection.
     let enumerationItem: Bool
     
     func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
@@ -2126,18 +2134,31 @@ extension String : MustacheBoxable {
 //     {{/.}}
 //   {{/ arrays }}
 private func renderCollection<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C, info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+    
+    // Prepare the rendering. We don't known the contentType yet: it depends on items
     var buffer = ""
-    var contentType: ContentType?
+    var contentType: ContentType? = nil
+    
+    // Tell items they are rendered as an enumeration item:
     let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+    
     for item in collection {
-        let box = Box(item)
-        if let boxRendering = box.render(info: enumerationRenderingInfo, error: error) {
-            if contentType == nil {
+        if let boxRendering = Box(item).render(info: enumerationRenderingInfo, error: error) {
+            if contentType == nil
+            {
+                // First item: now we know our contentType
                 contentType = boxRendering.contentType
                 buffer += boxRendering.string
-            } else if contentType == boxRendering.contentType {
+            }
+            else if contentType == boxRendering.contentType
+            {
+                // Consistent content type: keep on buffering.
                 buffer += boxRendering.string
-            } else {
+            }
+            else
+            {
+                // Inconsistent content type: this is an error. How are we
+                // supposed to mix Text and HTML?
                 if error != nil {
                     error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
                 }
@@ -2149,8 +2170,18 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
     }
     
     if let contentType = contentType {
+        // We know our contentType, hence the collection is not empty and
+        // we render our buffer.
         return Rendering(buffer, contentType)
     } else {
+        // We don't know our contentType, hence the collection is empty.
+        //
+        // Now this code is executed. This means that the collection is
+        // rendered, despite its emptiness.
+        //
+        // So we are rendering an inverted section tag
+        // {{^ collection }}...{{/ collection }}: return the rendering of its
+        // inner content:
         return info.tag.renderInnerContent(info.context, error: error)
     }
 }
