@@ -1860,6 +1860,7 @@ extension Int : MustacheBoxable {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
+                    // {{ int }}
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
@@ -1930,6 +1931,7 @@ extension UInt : MustacheBoxable {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
+                    // {{ uint }}
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
@@ -2000,6 +2002,7 @@ extension Double : MustacheBoxable {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
+                    // {{ double }}
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
