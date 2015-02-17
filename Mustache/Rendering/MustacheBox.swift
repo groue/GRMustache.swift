@@ -1184,6 +1184,8 @@ public struct MustacheBox {
     public let render: RenderFunction
     
     
+    // MARK: - Internal
+    
     let mustacheSubscript: SubscriptFunction?
     let filter: FilterFunction?
     let willRender: WillRenderFunction?
@@ -1212,7 +1214,8 @@ public struct MustacheBox {
         if let render = render {
             self.render = render
         } else {
-            // Avoid compiler error: variable 'self.render' captured by a closure before being initialized
+            // Set self.render twice in order to avoid the compiler error:
+            // "variable 'self.render' captured by a closure before being initialized"
             self.render = { (_, _) in return nil }
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -1235,9 +1238,6 @@ public struct MustacheBox {
             }
         }
     }
-    
-    
-    // MARK: - Internal
     
     // Converter wraps all the conversion closures that help MustacheBox expose
     // its raw value (typed Any) as useful types.
