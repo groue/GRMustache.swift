@@ -956,11 +956,7 @@ public struct RenderingInfo {
     // This is also the case of collections: they enter the context stack when
     // used as an item of a collection, and enumerate their items when used as
     // a collection.
-    let enumerationItem: Bool
-    
-    func renderingInfoBySettingEnumerationItem() -> RenderingInfo {
-        return RenderingInfo(tag: tag, context: context, enumerationItem: true)
-    }
+    var enumerationItem: Bool
 }
 
 
@@ -2136,17 +2132,17 @@ extension String : MustacheBoxable {
 //       ...
 //     {{/.}}
 //   {{/ arrays }}
-private func renderCollection<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C, info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+private func renderCollection<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C, var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
     
     // Prepare the rendering. We don't known the contentType yet: it depends on items
     var buffer = ""
     var contentType: ContentType? = nil
     
     // Tell items they are rendered as an enumeration item:
-    let enumerationRenderingInfo = info.renderingInfoBySettingEnumerationItem()
+    info.enumerationItem = true
     
     for item in collection {
-        if let boxRendering = Box(item).render(info: enumerationRenderingInfo, error: error) {
+        if let boxRendering = Box(item).render(info: info, error: error) {
             if contentType == nil
             {
                 // First item: now we know our contentType
