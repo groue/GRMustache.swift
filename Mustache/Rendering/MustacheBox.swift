@@ -990,7 +990,20 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
     var buffer = ""
     var contentType: ContentType? = nil
     
-    // Tell items they are rendered as an enumeration item:
+    // Tell items they are rendered as an enumeration item.
+    //
+    // Some values don't render the same whenever they render as an enumeration
+    // item, or alone: {{# values }}...{{/ values }} vs.
+    // {{# value }}...{{/ value }}.
+    //
+    // This is the case of Int, UInt, Double, Bool: they enter the context
+    // stack when used in an iteration, and do not enter the context stack when
+    // used as a boolean.
+    //
+    // This is also the case of collections: they enter the context stack when
+    // used as an item of a collection, and enumerate their items when used as
+    // a collection.
+
     info.enumerationItem = true
     
     for item in collection {
