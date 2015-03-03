@@ -213,13 +213,9 @@ public struct MustacheBox {
                         return Rendering("")
                     }
                 case .Section:
-                    if (self.boolValue) {
-                        // {{# box }}...{{/ box }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(self), error: error)
-                    } else {
-                        // {{^ box }}...{{/ box }}
-                        return info.tag.renderInnerContent(info.context, error: error)
-                    }
+                    // {{# box }}...{{/ box }}
+                    let context = info.context.extendedContext(self)
+                    return info.tag.renderInnerContent(context, error: error)
                 }
             }
         }
@@ -641,7 +637,6 @@ extension Bool : MustacheBoxable {
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# bool }}...{{/ bool }}
-                        // {{^ bool }}...{{/ bool }}
                         //
                         // Bools do not enter the context stack when used in a
                         // boolean section.
@@ -713,7 +708,6 @@ extension Int : MustacheBoxable {
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# int }}...{{/ int }}
-                        // {{^ int }}...{{/ int }}
                         //
                         // Ints do not enter the context stack when used in a
                         // boolean section.
@@ -785,7 +779,6 @@ extension UInt : MustacheBoxable {
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# uint }}...{{/ uint }}
-                        // {{^ uint }}...{{/ uint }}
                         //
                         // Uints do not enter the context stack when used in a
                         // boolean section.
@@ -857,7 +850,6 @@ extension Double : MustacheBoxable {
                         return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# double }}...{{/ double }}
-                        // {{^ double }}...{{/ double }}
                         //
                         // Doubles do not enter the context stack when used in a
                         // boolean section.
@@ -1034,18 +1026,28 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
     }
     
     if let contentType = contentType {
+        // {{ collection }}
+        // {{# collection }}...{{/ collection }}
+        //
         // We know our contentType, hence the collection is not empty and
         // we render our buffer.
         return Rendering(buffer, contentType)
     } else {
+        // {{ collection }}
+        //
         // We don't know our contentType, hence the collection is empty.
         //
         // Now this code is executed. This means that the collection is
         // rendered, despite its emptiness.
         //
-        // So we are rendering an inverted section tag
-        // {{^ collection }}...{{/ collection }}: return the rendering of its
-        // inner content:
+        // We are not rendering a regular {{# section }} tag, because empty
+        // collections have a false boolValue, and RenderingEngine would prevent
+        // us to render.
+        //
+        // We are not rendering an inverted {{^ section }} tag, because
+        // RenderingEngine takes care of the rendering of inverted sections.
+        //
+        // So we are rendering a {{ variable }} tag. Return its empty rendering:
         return info.tag.renderInnerContent(info.context, error: error)
     }
 }
