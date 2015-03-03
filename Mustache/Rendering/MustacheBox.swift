@@ -434,10 +434,10 @@ By mixing all those parameters, you can tune the behavior of a box. Example:
               value: self,
               
               // It lets Mustache extracts values by name:
-              mustacheSubscript: mustacheSubscript,
+              mustacheSubscript: self.mustacheSubscript,
               
               // It performs custom rendering:
-              render: render)
+              render: self.render)
       }
       
 
