@@ -115,9 +115,6 @@ filters:
 The most generic filter that takes a single Box argument and returns another
 one.
 
-If you want to process a specific type such as Int, String, or a custom class,
-you should use a variant documented below.
-
 ::
 
   let isEmpty = Filter { (box: MustacheBox, _) in
@@ -131,6 +128,14 @@ you should use a variant documented below.
   template.render(Box(["value": "a value"]))!
   template.render(Box())!
 
+It is likely you will want to extract the boxed value. MustacheBox comes with
+the `value`, `boolValue`, `intValue`, `uintValue`, `doubleValue`, `arrayValue`
+and `dictionaryValue` properties. All but the first help extracting values that
+may come in different shapes. For example, the `intValue` returns a value for
+boxed ints, doubles, and NSNumber.
+
+Yet, the Filter function comes with more straightforward variants that help you
+process int, strings, custom classes, etc:
 
 - func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
 - func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
@@ -149,9 +154,9 @@ your filter. Other values generate an error. The type T must be "real" type, not
 a protocol, because of the Swift inability to test for protocol conformance at
 runtime.
 
-The Int, UInt and Double variants accept numerical input (Float, Double, Int and
-NSNumber), which are casted to the required type. Other values generate an
-error.
+The Int, UInt and Double variants accept numerical input (Float, Double, Int,
+NSNumber and Bool), which are casted to the required type. Other values generate
+an error.
 
 The String variant accepts string input (String and NSString). Other values
 generate an error. If you want to process rendered strings, whatever the input
@@ -164,7 +169,7 @@ value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
       if let i = i {
           return Box(i + 1)
       }
-      return Box("Nil")
+      return Box("Undefined")
   }
 
   let template = Template(string: "{{ succ(x) }}")!
@@ -175,12 +180,12 @@ value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
   template.render(Box(["x": 2.0]))!
   template.render(Box(["x": NSNumber(float: 3.1415)]))!
 
-  // Renders "Nil"
+  // Renders "Undefined"
   template.render(Box())!
 
   // Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
   var error: NSError?
-  template.render(Box(["x": "2.0"]), error: &error)
+  template.render(Box(["x": "foo"]), error: &error)
   error!.localizedDescription
 
 
@@ -200,9 +205,9 @@ your filter. Other values generate an error. The type T must be "real" type, not
 a protocol, because of the Swift inability to test for protocol conformance at
 runtime.
 
-The Int, UInt and Double variants accept numerical input (Float, Double, Int and
-NSNumber), which are casted to the required type. Other values generate an
-error.
+The Int, UInt and Double variants accept numerical input (Float, Double, Int,
+NSNumber and Bool), which are casted to the required type. Other values generate
+an error.
 
 The String variant accepts string input (String and NSString). Other values
 generate an error. If you want to process rendered strings, whatever the input
@@ -321,8 +326,15 @@ For information about the various inputs (MustacheBox, T, Int, etc.), see above.
 
 Returns a filter than accepts any number of arguments.
 
-If your filter is given too many or too few arguments, please return an NSError
-of domain GRMustacheErrorDomain and code GRMustacheErrorCodeRenderingError.
+If your filter is given too many or too few arguments, you should return nil and
+set error to an NSError of domain GRMustacheErrorDomain and code
+GRMustacheErrorCodeRenderingError.
+
+Variadic filters are given raw boxes, and it is likely you will want to extract
+values out of them. MustacheBox comes with the `value`, `boolValue`, `intValue`,
+`uintValue`, `doubleValue`, `arrayValue` and `dictionaryValue` properties. All
+but the first help extracting values that may come in different shapes. For
+example, the `intValue` returns a value for boxed ints, doubles, and NSNumber.
 
 ::
 
@@ -340,6 +352,7 @@ of domain GRMustacheErrorDomain and code GRMustacheErrorCodeRenderingError.
 
   // Renders "6"
   template.render(Box(["a": 1, "b": 2, "c": 3]))!
+
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
