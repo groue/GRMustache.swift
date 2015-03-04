@@ -1,7 +1,7 @@
 GRMustache.swift
 ================
 
-GRMustache.swift is an implementation of [Mustache templates](http://mustache.github.io) in Swift, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+GRMustache.swift is a [Mustache template engine](http://mustache.github.io) in Swift, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
 
 
 Features
@@ -151,6 +151,23 @@ For a more complete discussion, see the documentation of the `MustacheBoxable` p
 
 
 ### Filters
+
+GRMustache filters can process values:
+
+```swift
+let square = Filter { (int: Int, _) in
+    return Box(int * int)
+}
+
+let template = Template(string: "{{n}} × {{n}} = {{square(n)}}")!
+template.registerInBaseContext("square", Box(square))
+
+// Render "10 × 10 = 100"
+let rendering = template.render(Box(["n": 10]))!
+```
+
+
+Filters can also provide special rendering of mustache sections:
 
 `cats.mustache`:
 
