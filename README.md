@@ -10,7 +10,7 @@ Features
 - Support for the full [Mustache syntax](http://mustache.github.io/mustache.5.html)
 - Ability to render Swift values as well as Objective-C objects
 - Filters, as `{{ uppercase(name) }}`
-- Template inheritance
+- Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
 
 
