@@ -74,7 +74,14 @@ The main entry points are:
     let rendering = template.render(Box(data))!
     ```
 
-The documentation contains many examples that you can paste in the Playground included in `Mustache.xcworkspace`.
+- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering.
+    
+    ```swift
+    // Have all templates render text, and avoid HTML-escaping:
+    Mustache.DefaultConfiguration.contentType = .Text
+    ```
+
+The documentation contains many examples that you can run in the Playground included in `Mustache.xcworkspace`.
 
 We describe below a few use cases of the library:
 
