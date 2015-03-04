@@ -123,9 +123,7 @@ struct Person {
 
 Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
 
-Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
-
-Helping the Mustache engine involves the `MustacheBoxable` protocol:
+Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
 // Allow Person to feed Mustache template.
