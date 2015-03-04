@@ -186,7 +186,7 @@ Filters can also provide special rendering of mustache sections:
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
+let pluralize = Filter { (count: Int, info: RenderingInfo, _) in
     
     // Pluralize the inner content of the section tag:
     var string = info.tag.innerTemplateString
