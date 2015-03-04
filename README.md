@@ -74,7 +74,7 @@ The main entry points are:
     let rendering = template.render(Box(data))!
     ```
 
-- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering.
+- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering:
     
     ```swift
     // Have all templates render text, and avoid HTML-escaping:
