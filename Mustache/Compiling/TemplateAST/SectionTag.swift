@@ -53,8 +53,8 @@ class SectionTag: Tag, TemplateASTNode {
     Inherited from the public super class Tag
     */
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
-        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.render(templateAST, error: error)
+        let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
+        return renderingEngine.render(error: error)
     }
     
     func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {

@@ -200,8 +200,8 @@ public class Template : MustacheBoxable {
     :see: RenderFunction
     */
     public func render(context: Context, error: NSErrorPointer) -> Rendering? {
-        let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-        return renderingEngine.render(templateAST, error: error)
+        let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
+        return renderingEngine.render(error: error)
     }
     
     

@@ -25,12 +25,12 @@ import Foundation
 
 class RenderingEngine: TemplateASTVisitor {
     
-    init(contentType: ContentType, context: Context) {
-        self.contentType = contentType
+    init(templateAST: TemplateAST, context: Context) {
+        self.templateAST = templateAST
         self.context = context
     }
     
-    func render(templateAST: TemplateAST, error: NSErrorPointer) -> Rendering? {
+    func render(# error: NSErrorPointer) -> Rendering? {
         buffer = ""
         switch visit(templateAST) {
         case .Error(let visitError):
@@ -39,35 +39,12 @@ class RenderingEngine: TemplateASTVisitor {
             }
             return nil
         default:
-            return Rendering(buffer!, contentType)
+            return Rendering(buffer!, templateAST.contentType)
         }
     }
     
     
     // MARK: - TemplateASTVisitor
-    
-    func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
-        switch templateAST.contentType {
-        case contentType:
-            return visit(templateAST.nodes)
-        default:
-            // Render separately, so that we can HTML-escape the rendering of
-            // the TemplateAST before appending to our buffer.
-            let renderingEngine = RenderingEngine(contentType: templateAST.contentType, context: context)
-            var error: NSError?
-            if let rendering = renderingEngine.render(templateAST, error: &error) {
-                switch (contentType, rendering.contentType) {
-                case (.HTML, .Text):
-                    buffer = buffer! + escapeHTML(rendering.string)
-                default:
-                    buffer = buffer! + rendering.string
-                }
-                return .Success
-            } else {
-                return .Error(error!)
-            }
-        }
-    }
     
     func visit(inheritedPartialNode: InheritedPartialNode) -> TemplateASTVisitResult {
         let originalContext = context
@@ -101,9 +78,32 @@ class RenderingEngine: TemplateASTVisitor {
     
     // MARK: - Private
     
-    private let contentType: ContentType
+    private let templateAST: TemplateAST
     private var context: Context
     private var buffer: String?
+    
+    private func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
+        let targetContentType = self.templateAST.contentType!
+        if templateAST.contentType == targetContentType {
+            return visit(templateAST.nodes)
+        } else {
+            // Render separately, so that we can HTML-escape the rendering of
+            // the templateAST before appending to our buffer.
+            let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
+            var error: NSError?
+            if let rendering = renderingEngine.render(error: &error) {
+                switch (targetContentType, rendering.contentType) {
+                case (.HTML, .Text):
+                    buffer = buffer! + escapeHTML(rendering.string)
+                default:
+                    buffer = buffer! + rendering.string
+                }
+                return .Success
+            } else {
+                return .Error(error!)
+            }
+        }
+    }
     
     private func visit(nodes: [TemplateASTNode]) -> TemplateASTVisitResult {
         for node in nodes {
@@ -125,6 +125,7 @@ class RenderingEngine: TemplateASTVisitor {
         
         let expressionInvocation = ExpressionInvocation(expression: tag.expression)
         let invocationResult = expressionInvocation.invokeWithContext(context)
+        
         switch invocationResult {
         case .Error(let error):
             var userInfo = error.userInfo ?? [:]
@@ -134,6 +135,7 @@ class RenderingEngine: TemplateASTVisitor {
                 userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description)"
             }
             return .Error(NSError(domain: error.domain, code: error.code, userInfo: userInfo))
+            
         case .Success(var box):
             
             for willRender in context.willRenderStack {
@@ -164,7 +166,8 @@ class RenderingEngine: TemplateASTVisitor {
             
             if let rendering = rendering {
                 var string = rendering.string
-                switch (contentType, rendering.contentType, escapesHTML) {
+                let targetContentType = templateAST.contentType!
+                switch (targetContentType, rendering.contentType, escapesHTML) {
                 case (.HTML, .Text, true):
                     string = escapeHTML(string)
                 default:
