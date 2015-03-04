@@ -125,13 +125,13 @@ Now we want to let Mustache templates extract the `name` key out of a person so 
 
 Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine.
 
-Helping the Mustache engine involves "boxing", through the `MustacheBoxable` protocol:
+Helping the Mustache engine involves the `MustacheBoxable` protocol:
 
 ```swift
-// Allow Mustache engine to consume Person values.
+// Allow Person to feed Mustache template.
 extension Person : MustacheBoxable {
     var mustacheBox: MustacheBox {
-        // Return a Box that wraps our person, and knows how to extract
+        // Return a Box that wraps the person, and knows how to extract
         // the `name` key:
         return Box(value: self) { (key: String) in
             switch key {
