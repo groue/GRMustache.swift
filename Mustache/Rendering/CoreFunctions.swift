@@ -293,11 +293,14 @@ to HTML:
 - func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 - func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction
 
-Those variants return filters that are able to perform custom rendering.
+Those variants return filters that are able to perform custom rendering, based
+on their input.
 
-The RenderingInfo type is documented with the RenderFunction type below.
+The RenderingInfo and Rendering types are documented with the RenderFunction
+type below.
 
-For information about the various inputs (MustacheBox, T, Int, etc.), see above.
+For information about the various inputs (MustacheBox, Int, <T>, etc.), see
+above.
 
 ::
 
