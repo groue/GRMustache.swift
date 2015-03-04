@@ -773,9 +773,10 @@ https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml:
 > MUST be rendered against the default delimiters, then interpolated in place
 > of the lambda.
 
-So here the way to write a spec-compliant lambda for a variable tag:
+Here is the way to write a spec-like lambda for a variable tag:
 
 ::
+
   // This RenderFunction is equivalent to the pure spec lambda:
   //
   // lambda() -> String {
@@ -783,15 +784,17 @@ So here the way to write a spec-compliant lambda for a variable tag:
   // }
 
   let greeting: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-      let lambdaString = "Hello {{ name }}"
-      let template = Template(string: lambdaString)!
+      let template = Template(string: "Hello {{ name }}")!
       return template.render(info.context, error: error)
   }
 
   let template = Template(string: "{{ greeting }}")!
 
   // Renders "Hello Arthur"
-  template.render(Box(["greeting": Box(greeting), "name": Box("Arthur")]))!
+  let data = [
+      "name": Box("Arthur"),
+      "greeting": Box(greeting)]
+  template.render(Box(data))!
 
 The spec continues:
 
@@ -804,7 +807,7 @@ The spec continues:
 
   // The strong RenderFunction below is equivalent to the pure spec lambda:
   //
-  // lambda(string) -> String {
+  // lambda(string: String) -> String {
   //     return "<strong>\(string)</strong>"
   // }
   //
@@ -829,14 +832,12 @@ The spec continues:
   // end
 
   let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-      let lambdaString = "<strong>\(info.tag.innerTemplateString)</strong>"
-      let template = Template(string: lambdaString)!
+      let template = Template(string: "<strong>\(info.tag.innerTemplateString)</strong>")!
       return template.render(info.context, error: error)
   }
 
 Note how the spec, mustache.js and Ruby mustache require a double parsing of
-the inner content of the section: they all process a String containing the
-unprocessed section contents.
+the inner, unprocessed, content of the section.
 
 There is a better way to write this lambda, by wrapping the rendering of the
 already-parsed Mustache tag:
@@ -866,7 +867,7 @@ already-parsed Mustache tag:
 
 As seen in the example above, the returned rendering has a content type, text or
 HTML. If you return text, the rendering is HTML-escaped in the final template
-rendering (except for triple mustache tags and text templates - see the
+rendering (except for {{{triple}}} mustache tags and text templates - see the
 Configuration type for more information about text templates).
 
 ::

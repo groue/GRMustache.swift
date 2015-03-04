@@ -110,5 +110,5 @@ class ExpressionInvocation: ExpressionVisitor {
             result = result[expression.identifier]
             return .Success
         }
-    }   
+    }
 }
