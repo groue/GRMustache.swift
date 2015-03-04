@@ -203,7 +203,29 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
 
-Filters are documented with the `FilterFunction` type in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift)
+
+
+### Lambdas
+
+You can extend the Mustache engine with custom rendering functions. For example, here is how to wrap a section into a HTML tag:
+
+```swift
+let lambda: RenderFunction = { (info: RenderingInfo, _) in
+    let innerContent = info.tag.renderInnerContent(info.context)!.string
+    return Rendering("<b>\(innerContent)</b>", .HTML)
+}
+
+// Render "<b>Willy is awesome.</b>"
+
+let template = Template(string: "{{#wrapped}}{{name}} is awesome.{{/wrapped}}")!
+let data = [
+    "name": Box("Willy"),
+    "wrapped": Box(lambda)]
+let rendering = template.render(Box(data))!
+```
+
+Custom rendering functions are documented with the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift)
 
 
 ### Template inheritance
