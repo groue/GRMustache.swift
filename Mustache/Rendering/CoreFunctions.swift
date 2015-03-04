@@ -837,10 +837,8 @@ already-parsed Mustache tag:
   // });
 
   let strong: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-      return Rendering(
-          "<strong>" +
-          info.tag.renderInnerContent(info.context)!.string +   // Ignore errors for this example
-          "</strong>", .HTML)
+      let innerContent = info.tag.renderInnerContent(info.context)!.string
+      return Rendering("<strong>\(innerContent)</strong>", .HTML)
   }
 
   let template = Template(string: "{{#strong}}Hello {{name}}{{/strong}}")!
@@ -848,6 +846,27 @@ already-parsed Mustache tag:
 
   // Renders "<strong>Hello Arthur</strong>"
   template.render(Box(["name": Box("Arthur")]))!
+
+
+As seen in the example above, the returned rendering has a content type, text or
+HTML. If you return text, the rendering is HTML-escaped in the final template
+rendering (except for triple mustache tags and text templates - see the
+Configuration type for more information about text templates).
+
+::
+
+  let HTML: RenderFunction = { (info: RenderingInfo, _) in
+      return Rendering("<HTML>", .HTML)
+  }
+  let text: RenderFunction = { (info: RenderingInfo, _) in
+      return Rendering("<text>")   // default content type is text
+  }
+
+  // Renders "<HTML>, &lt;text&gt;"
+  let template = Template(string: "{{HTML}}, {{text}}")!
+  let data = ["HTML": Box(HTML), "text": Box(text)]
+  let rendering = template.render(Box(data))!
+
 
 RenderFunction is invoked for both {{ variable }} and {{# section }}...{{/}}
 tags. You can query info.tag.type in order to have a different rendering
@@ -858,8 +877,10 @@ depending on the tag type:
   let render: RenderFunction = { (info: RenderingInfo, _) in
       switch info.tag.type {
       case .Variable:
+          // {{ object }}
           return Rendering("variable")
       case .Section:
+          // {{# object }}...{{/ object }}
           return Rendering("section")
       }
   }
@@ -869,6 +890,10 @@ depending on the tag type:
   // Renders "variable, section"
   template.render(Box(["object": Box(render)]))!
 
+
+:see: RenderingInfo
+:see: Rendering
+:see: Configuration
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
@@ -917,8 +942,8 @@ public struct Rendering {
 }
 
 /**
-The RenderingInfo type has no public initializer. You will meet it when you
-implement custom rendering functions of type RenderFunction.
+You will meet RenderingInfo when you implement custom rendering functions of
+type RenderFunction.
 
 A RenderFunction is invoked as soon as a variable tag {{name}} or a section
 tag {{#name}}...{{/name}} is rendered. Its RenderingInfo parameter provides
@@ -945,6 +970,8 @@ public struct RenderingInfo {
     public var context: Context
     
     
+    // Not public
+    //
     // If true, the rendering is part of an enumeration. Some values don't
     // render the same whenever they render as an enumeration item, or alone:
     // {{# values }}...{{/ values }} vs. {{# value }}...{{/ value }}.
