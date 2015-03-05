@@ -167,7 +167,7 @@ let square = Filter { (int: Int, _) in
 let template = Template(string: "{{n}} × {{n}} = {{square(n)}}")!
 template.registerInBaseContext("square", Box(square))
 
-// Render "10 × 10 = 100"
+// 10 × 10 = 100
 let rendering = template.render(Box(["n": 10]))!
 ```
 
@@ -202,7 +202,7 @@ let template = Template(named: "cats")!
 template.registerInBaseContext("pluralize", Box(pluralizeFilter))
 
 
-// Render "I have 3 cats."
+// I have 3 cats.
 
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
@@ -223,7 +223,7 @@ let lambda: RenderFunction = { (info: RenderingInfo, _) in
     return Rendering("<b>\(innerContent)</b>", .HTML)
 }
 
-// Render "<b>Willy is awesome.</b>"
+// <b>Willy is awesome.</b>
 
 let template = Template(string: "{{#wrapped}}{{name}} is awesome.{{/wrapped}}")!
 let data = [
