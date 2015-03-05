@@ -215,7 +215,9 @@ Filters can provide special rendering of mustache sections:
 
 `cats.mustache`:
 
-    I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
+```mustache
+I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
+```
 
 ```swift
 // Define the `pluralize` filter.
@@ -280,33 +282,37 @@ Templates may contain *inheritable sections*:
 
 `layout.mustache`:
 
-    <html>
-    <head>
-        <title>{{$ page_title }}Default title{{/ page_title }}</title>
-    </head>
-    <body>
-        <h1>{{$ page_title }}Default title{{/ page_title }}</h1>
-        {{$ page_content }}
-            Default content
-        {{/ page_content }}}
-    </body>
-    </html>
+```mustache
+<html>
+<head>
+    <title>{{$ page_title }}Default title{{/ page_title }}</title>
+</head>
+<body>
+    <h1>{{$ page_title }}Default title{{/ page_title }}</h1>
+    {{$ page_content }}
+        Default content
+    {{/ page_content }}}
+</body>
+</html>
+```
 
 Other templates can inherit from `layout.mustache`, and override its sections:
 
 `article.mustache`:
 
-    {{< layout }}
+```mustache
+{{< layout }}
+
+    {{$ page_title }}{{ article.title }}{{/ page_title }}
     
-        {{$ page_title }}{{ article.title }}{{/ page_title }}
-        
-        {{$ page_content }}
-            {{# article }}
-                {{ body }}
-                by {{ author }}
-            {{/ article }}
-        {{/ page_content }}
-        
-    {{/ layout }}
+    {{$ page_content }}
+        {{# article }}
+            {{ body }}
+            by {{ author }}
+        {{/ article }}
+    {{/ page_content }}
+    
+{{/ layout }}
+```
 
 When you render `article.mustache`, you get a full HTML page.
