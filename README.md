@@ -160,19 +160,58 @@ For a more complete discussion, see the documentation of the `MustacheBoxable` p
 GRMustache filters can process values:
 
 ```swift
-let square = Filter { (int: Int, _) in
-    return Box(int * int)
+// Define the `square` filter.
+//
+// square(n) evaluates to the square of the provided integer.
+let square = Filter { (n: Int, _) in
+    return Box(n * n)
 }
+
+
+// Register the square filter in our template:
 
 let template = Template(string: "{{n}} × {{n}} = {{square(n)}}")!
 template.registerInBaseContext("square", Box(square))
 
+
 // 10 × 10 = 100
+
 let rendering = template.render(Box(["n": 10]))!
 ```
 
+Filters can take several arguments:
 
-Filters can also provide special rendering of mustache sections:
+```swift
+// Define the `sum` filter.
+//
+// sum(x, ...) evaluates to the sum of provided integers
+
+let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+    // Extract integers out of input boxes, assuming zero for non numeric values
+    let integers = map(boxes) { $0.intValue ?? 0 }
+    
+    // Compute and box the sum
+    return Box(integers.reduce(0,+))
+}
+
+
+// Register the sum filter in our template:
+
+let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
+template.registerInBaseContext("sum", Box(sum))
+
+
+// 1 + 2 + 3 = 6
+
+template.render(Box(["a": 1, "b": 2, "c": 3]))!
+```
+
+Filters can chain and generally be part of more expressions:
+
+    Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
+
+
+Filters can provide special rendering of mustache sections:
 
 `cats.mustache`:
 
@@ -215,7 +254,7 @@ When you want to format values, you don't have to write your own filters: just u
 
 ### Lambdas
 
-You can extend the Mustache engine with custom rendering functions. For example, here is how to wrap a section into a HTML tag:
+"Mustache lambdas" are functions that let you perform custom rendering. For example, here is a lambda that wraps a section into a HTML tag:
 
 ```swift
 let lambda: RenderFunction = { (info: RenderingInfo, _) in
