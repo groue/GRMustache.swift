@@ -206,7 +206,7 @@ template.registerInBaseContext("sum", Box(sum))
 template.render(Box(["a": 1, "b": 2, "c": 3]))!
 ```
 
-Filters can chain and generally be part of more expressions:
+Filters can chain and generally be part of more complex expressions:
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
