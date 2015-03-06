@@ -108,4 +108,19 @@ class TemplateRepositoryPathTests: XCTestCase {
         XCTAssertEqual(rendering, "success")
     }
     
+    func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
+        let testBundle = NSBundle(forClass: self.dynamicType)
+        let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests", ofType: nil)!
+        let repo = TemplateRepository(directoryPath: directoryPath.stringByAppendingPathComponent("partials"))
+        
+        let template = repo.template(named: "partial2")!
+        let rendering = template.render()!
+        XCTAssertEqual(rendering, "success")
+        
+        var error: NSError?
+        let badTemplate = repo.template(named: "up", error: &error)
+        XCTAssertNil(badTemplate)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+    }
 }
