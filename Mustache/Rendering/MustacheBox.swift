@@ -165,14 +165,14 @@ public struct MustacheBox {
       box["length"].intValue!    // 6
     */
     public subscript (key: String) -> MustacheBox {
-        return mustacheSubscript?(key: key) ?? Box()
+        return keyedSubscript?(key: key) ?? Box()
     }
     
     
     // -------------------------------------------------------------------------
     // MARK: - Internal
     
-    let mustacheSubscript: SubscriptFunction?
+    let keyedSubscript: KeyedSubscriptFunction?
     let filter: FilterFunction?
     let willRender: WillRenderFunction?
     let didRender: DidRenderFunction?
@@ -182,18 +182,18 @@ public struct MustacheBox {
         boolValue: Bool? = nil,
         value: Any? = nil,
         converter: Converter? = nil,
-        mustacheSubscript: SubscriptFunction? = nil,
+        keyedSubscript: KeyedSubscriptFunction? = nil,
         filter: FilterFunction? = nil,
         render: RenderFunction? = nil,
         willRender: WillRenderFunction? = nil,
         didRender: DidRenderFunction? = nil)
     {
-        let empty = (value == nil) && (mustacheSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
+        let empty = (value == nil) && (keyedSubscript == nil) && (render == nil) && (filter == nil) && (willRender == nil) && (didRender == nil)
         self.isEmpty = empty
         self.value = value
         self.converter = converter
         self.boolValue = boolValue ?? !empty
-        self.mustacheSubscript = mustacheSubscript
+        self.keyedSubscript = keyedSubscript
         self.filter = filter
         self.willRender = willRender
         self.didRender = didRender
@@ -254,7 +254,7 @@ public struct MustacheBox {
             boolValue: self.boolValue,
             value: value,
             converter: self.converter,
-            mustacheSubscript: self.mustacheSubscript,
+            keyedSubscript: self.keyedSubscript,
             filter: self.filter,
             render: self.render,
             willRender: self.willRender,
@@ -285,20 +285,20 @@ check them.
 It can take up to seven parameters, all optional, that define how the box
 interacts with the Mustache engine:
 
-:param: boolValue         An optional boolean value for the Box.
-:param: value             An optional boxed value
-:param: mustacheSubscript An optional SubscriptFunction
-:param: filter            An optional FilterFunction
-:param: render            An optional RenderFunction
-:param: willRender        An optional WillRenderFunction
-:param: didRender         An optional DidRenderFunction
+:param: boolValue      An optional boolean value for the Box.
+:param: value          An optional boxed value
+:param: keyedSubscript An optional KeyedSubscriptFunction
+:param: filter         An optional FilterFunction
+:param: render         An optional RenderFunction
+:param: willRender     An optional WillRenderFunction
+:param: didRender      An optional DidRenderFunction
 
 
 To illustrate the usage of all those parameters, let's look at how the {{f(a)}}
 tag is rendered.
 
 First the `a` and `f` expressions are evaluated. The Mustache engine looks in
-the context stack for boxes whose *mustacheSubscript* return non-empty boxes for
+the context stack for boxes whose *keyedSubscript* return non-empty boxes for
 the keys "a" and "f". Let's call them aBox and fBox.
 
 Then the *filter* of the fBox is evaluated with aBox as an argument. It is
@@ -334,18 +334,18 @@ one, although the value is only used when evaluating filters, and not all
 templates use filters. The default value is nil.
 
 
-The optional mustacheSubscript parameter is a SubscriptFunction that lets the
+The optional keyedSubscript parameter is a KeyedSubscriptFunction that lets the
 Mustache engine extract keys out of the box. For example, the {{a}} tag would
 call the SubscriptFunction with "a" as an argument, and render the returned box.
 The default value is nil, which means that no key can be extracted.
 
-:see: SubscriptFunction for a full discussion of this type.
+:see: KeyedSubscriptFunction for a full discussion of this type.
 
 ::
 
   // Renders "key:a"
   let template = Template(string:"{{a}}")!
-  let box = Box(mustacheSubscript: { (key: String) in
+  let box = Box(keyedSubscript: { (key: String) in
       return Box("key:\(key)")
   })
   template.render(box)!
@@ -434,17 +434,17 @@ By mixing all those parameters, you can tune the behavior of a box. Example:
               value: self,
               
               // It lets Mustache extracts values by name:
-              mustacheSubscript: self.mustacheSubscript,
+              keyedSubscript: self.keyedSubscript,
               
               // It performs custom rendering:
               render: self.render)
       }
       
 
-      // The SubscriptFunction that lets the Mustache engine extract values by
-      // name. Let's expose the `firstName`, `lastName` and `fullName`:
+      // The KeyedSubscriptFunction that lets the Mustache engine extract values
+      // by name. Let's expose the `firstName`, `lastName` and `fullName`:
 
-      func mustacheSubscript(key: String) -> MustacheBox {
+      func keyedSubscript(key: String) -> MustacheBox {
           switch key {
           case "firstName": return Box(firstName)
           case "lastName": return Box(lastName)
@@ -479,7 +479,7 @@ By mixing all those parameters, you can tune the behavior of a box. Example:
 public func Box(
     boolValue: Bool? = nil,
     value: Any? = nil,
-    mustacheSubscript: SubscriptFunction? = nil,
+    keyedSubscript: KeyedSubscriptFunction? = nil,
     filter: FilterFunction? = nil,
     render: RenderFunction? = nil,
     willRender: WillRenderFunction? = nil,
@@ -488,7 +488,7 @@ public func Box(
     return MustacheBox(
         boolValue: boolValue,
         value: value,
-        mustacheSubscript: mustacheSubscript,
+        keyedSubscript: keyedSubscript,
         filter: filter,
         render: render,
         willRender: willRender,
@@ -940,7 +940,7 @@ extension String : MustacheBoxable {
         return MustacheBox(
             value: self,
             boolValue: (countElements(self) > 0),
-            mustacheSubscript: { (key: String) in
+            keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
                     return Box(countElements(self))
@@ -1079,7 +1079,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             boolValue: (count > 0),
             value: collection,
             converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
-            mustacheSubscript: { (key: String) in
+            keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
                     // Support for both Objective-C and Swift arrays.
@@ -1142,7 +1142,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
                     }
                     return boxDictionary
                 }),
-            mustacheSubscript: { (key: String) in
+            keyedSubscript: { (key: String) in
                 return Box(dictionary[key])
             })
     } else {
@@ -1388,7 +1388,7 @@ extension NSObject : ObjCMustacheBoxable {
                             }
                             return boxDictionary
                         }),
-                    mustacheSubscript: { (key: String) in
+                    keyedSubscript: { (key: String) in
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                         return BoxAnyObject(item)
                     }))
@@ -1408,7 +1408,7 @@ extension NSObject : ObjCMustacheBoxable {
             
             return ObjCMustacheBox(MustacheBox(
                 value: self,
-                mustacheSubscript: { (key: String) in
+                keyedSubscript: { (key: String) in
                     if self.respondsToSelector("objectForKeyedSubscript:")
                     {
                         // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
@@ -1588,7 +1588,7 @@ extension NSSet : ObjCMustacheBoxable {
             boolValue: (self.count > 0),
             value: self,
             converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
-            mustacheSubscript: { (key: String) in
+            keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
                     return Box(self.count)
@@ -1618,9 +1618,9 @@ extension NSSet : ObjCMustacheBoxable {
 // MARK: - Boxing of Core Mustache functions
 
 /**
-A function that wraps a value and a SubscriptFunction into a MustacheBox.
+A function that wraps a value and a KeyedSubscriptFunction into a MustacheBox.
 
-:see: SubscriptFunction
+:see: KeyedSubscriptFunction
 
 ::
 
@@ -1653,8 +1653,8 @@ A function that wraps a value and a SubscriptFunction into a MustacheBox.
   let person = Person(firstName: "Tom", lastName: "Selleck")
   template.render(Box(["person": Box(person)]))!
 */
-public func Box(value: Any, mustacheSubscript: SubscriptFunction) -> MustacheBox {
-    return MustacheBox(value: value, mustacheSubscript: mustacheSubscript)
+public func Box(value: Any, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox {
+    return MustacheBox(value: value, keyedSubscript: keyedSubscript)
 }
 
 /**

@@ -25,26 +25,26 @@ import Foundation
 
 
 // =============================================================================
-// MARK: - SubscriptFunction
+// MARK: - KeyedSubscriptFunction
 
 /**
-SubscriptFunction turns a string key into a value. When GRMustache evaluates
-expressions such as {{ name }} or {{ user.name }}, is extract the `name` and
-`user` keys using a SubscriptFunction.
+KeyedSubscriptFunction turns a string key into a boxed value. When GRMustache
+evaluates expressions such as {{ name }} or {{ user.name }}, is extract both
+`name` and `user` using a KeyedSubscriptFunction.
 
-You can write and render your own SubscriptFunction:
+You can write and render your own KeyedSubscriptFunction:
 
 ::
 
-  let s: SubscriptFunction = { (key: String) -> MustacheBox in
+  let keyedSubscript: KeyedSubscriptFunction = { (key: String) -> MustacheBox in
       return Box(key.uppercaseString)
   }
   
   // Render "FOO & BAR"
   let template = Template(string: "{{foo}} & {{bar}}")!
-  template.render(Box(s))!
+  template.render(Box(keyedSubscript))!
 
-A SubscriptFunction is also the way to let your Swift types feed templates:
+A KeyedSubscriptFunction is also the way to let your Swift types feed templates:
 
 ::
 
@@ -63,7 +63,7 @@ A SubscriptFunction is also the way to let your Swift types feed templates:
   extension User : MustacheBoxable {
       var mustacheBox: MustacheBox {
           // Return a Box that wraps our user, and knows how to extract
-          // the `name` key of our user with a SubscriptFunction:
+          // the `name` key of our user with a KeyedSubscriptFunction:
           return Box(value: self) { (key: String) in
               switch key {
               case "name":
@@ -78,7 +78,7 @@ A SubscriptFunction is also the way to let your Swift types feed templates:
   // Render "Hello Arthur"
   template.render(Box(user))!
 */
-public typealias SubscriptFunction = (key: String) -> MustacheBox
+public typealias KeyedSubscriptFunction = (key: String) -> MustacheBox
 
 
 // =============================================================================

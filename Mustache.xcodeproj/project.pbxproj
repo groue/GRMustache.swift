@@ -80,7 +80,7 @@
 		561E72AD1A8BDC6A004ED48B /* LocalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5685DAB51A1A2074003E583B /* LocalizerTests.swift */; };
 		561E72AE1A8BDC6A004ED48B /* NSFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */; };
 		561E72AF1A8BDC6A004ED48B /* StandardLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */; };
-		561E72B01A8BDC6A004ED48B /* SubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */; };
+		561E72B01A8BDC6A004ED48B /* KeyedSubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */; };
 		561E72B11A8BDC6A004ED48B /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
 		561E72B21A8BDC6A004ED48B /* ValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */; };
 		561E72B31A8BDC6A004ED48B /* TemplateRepositoryBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2221A27077800BD4F8F /* TemplateRepositoryBundleTests.swift */; };
@@ -160,7 +160,7 @@
 		569516FA1A863F2100FF7D86 /* GRMustacheKeyAccess_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		569516FC1A863F2100FF7D86 /* GRMustacheKeyAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */; };
 		569517021A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */; };
-		5698D0271A1626240039D564 /* SubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */; };
+		5698D0271A1626240039D564 /* KeyedSubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */; };
 		569C42381A86824800748E98 /* ZipFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C42371A86824800748E98 /* ZipFilter.swift */; };
 		569C423B1A87D03800748E98 /* ContextRegisteredKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */; };
 		569C423E1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */; };
@@ -284,7 +284,7 @@
 		569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GRMustacheKeyAccess_private.h; sourceTree = "<group>"; };
 		569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRMustacheKeyAccess.m; sourceTree = "<group>"; };
 		569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjcKeyAccessTests.swift; sourceTree = "<group>"; };
-		5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptFunctionTests.swift; sourceTree = "<group>"; };
+		5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyedSubscriptFunctionTests.swift; sourceTree = "<group>"; };
 		569C42371A86824800748E98 /* ZipFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ZipFilter.swift; sourceTree = "<group>"; };
 		569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextRegisteredKeyTests.swift; sourceTree = "<group>"; };
 		569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxDocumentationTests.swift; sourceTree = "<group>"; };
@@ -626,11 +626,11 @@
 				56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */,
 				56BF069C1A064FE900926BEB /* GRMustacheSuite */,
 				56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */,
+				5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */,
 				560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */,
 				569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */,
 				56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
-				5698D0261A1626240039D564 /* SubscriptFunctionTests.swift */,
 				56B4019D1A1F643B002D5CD7 /* TagTests */,
 				56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */,
 				56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */,
@@ -982,7 +982,7 @@
 				561E72A61A8BDC6A004ED48B /* VariadicFilterTests.swift in Sources */,
 				561E729E1A8BDC6A004ED48B /* ConfigurationTagDelimitersTests.swift in Sources */,
 				561E729B1A8BDC6A004ED48B /* ConfigurationBaseContextTests.swift in Sources */,
-				561E72B01A8BDC6A004ED48B /* SubscriptFunctionTests.swift in Sources */,
+				561E72B01A8BDC6A004ED48B /* KeyedSubscriptFunctionTests.swift in Sources */,
 				561E72B21A8BDC6A004ED48B /* ValueTests.swift in Sources */,
 				561E729C1A8BDC6A004ED48B /* ConfigurationContentTypeTests.swift in Sources */,
 				561E72BA1A8BDC6A004ED48B /* TemplateFromMethodsTests.swift in Sources */,
@@ -1066,7 +1066,7 @@
 				56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */,
 				569517021A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */,
 				56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */,
-				5698D0271A1626240039D564 /* SubscriptFunctionTests.swift in Sources */,
+				5698D0271A1626240039D564 /* KeyedSubscriptFunctionTests.swift in Sources */,
 				56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */,
 				560ABAE71A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,

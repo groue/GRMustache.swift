@@ -26,7 +26,7 @@ import Mustache
 
 class TemplateFromMethodsTests: XCTestCase {
     
-    func makeSubscriptFunction(string: String) -> SubscriptFunction {
+    func makeKeyedSubscriptFunction(string: String) -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in
             if key == "string" {
                 return Box(string)
@@ -80,29 +80,29 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testTemplateFromString() {
         let template = Template(string: templateString)!
-        let mustacheSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(mustacheSubscript))!
+        let keyedSubscript = makeKeyedSubscriptFunction("foo")
+        let rendering = template.render(Box(keyedSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = Template(path: templatePath)!
-        let mustacheSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(mustacheSubscript))!
+        let keyedSubscript = makeKeyedSubscriptFunction("foo")
+        let rendering = template.render(Box(keyedSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = Template(URL: templateURL)!
-        let mustacheSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(mustacheSubscript))!
+        let keyedSubscript = makeKeyedSubscriptFunction("foo")
+        let rendering = template.render(Box(keyedSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = Template(named: templateName, bundle: testBundle)!
-        let mustacheSubscript = makeSubscriptFunction("foo")
-        let rendering = template.render(Box(mustacheSubscript))!
+        let keyedSubscript = makeKeyedSubscriptFunction("foo")
+        let rendering = template.render(Box(keyedSubscript))!
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }
