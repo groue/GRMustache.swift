@@ -489,7 +489,7 @@ public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: error)
+            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: error) as? String
         }
     }
     
@@ -532,7 +532,7 @@ public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-            return NSString(contentsOfFile: templateID, encoding: encoding, error: error)
+            return NSString(contentsOfFile: templateID, encoding: encoding, error: error) as? String
         }
     }
 }

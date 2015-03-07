@@ -216,7 +216,7 @@ extension StandardLibrary {
         }
         
         private func stringWithFormat(#format: String, argumentsArray args:[String]) -> String {
-            switch countElements(args) {
+            switch count(args) {
             case 0:
                 return format
             case 1:
@@ -240,7 +240,7 @@ extension StandardLibrary {
             case 10:
                 return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9])
             default:
-                fatalError("Not implemented: format with \(countElements(args)) parameters")
+                fatalError("Not implemented: format with \(count(args)) parameters")
             }
         }
         

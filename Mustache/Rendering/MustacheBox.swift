@@ -150,7 +150,7 @@ public struct MustacheBox {
     /**
     TODO
     */
-    public let render: RenderFunction
+    public private(set) var render: RenderFunction
     
     
     // -------------------------------------------------------------------------
@@ -939,11 +939,11 @@ extension String : MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            boolValue: (countElements(self) > 0),
+            boolValue: (count(self) > 0),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
-                    return Box(countElements(self))
+                    return Box(count(self))
                 default:
                     return Box()
                 }
@@ -1166,7 +1166,7 @@ that are available through valueForKey:.
     /**
     Returns the keys that GRMustache can access using the `valueForKey:` method.
     */
-    class func safeMustacheKeys() -> NSSet
+    static func safeMustacheKeys() -> NSSet
 }
 
 /**
@@ -1375,6 +1375,7 @@ extension NSObject : ObjCMustacheBoxable {
             {
                 // Dictionary-like enumerable
                 
+                let dictionary: AnyObject = self
                 return ObjCMustacheBox(MustacheBox(
                     value: self,
                     converter: MustacheBox.Converter(
@@ -1382,20 +1383,18 @@ extension NSObject : ObjCMustacheBoxable {
                             var boxDictionary: [String: MustacheBox] = [:]
                             for key in GeneratorSequence(NSFastGenerator(enumerable)) {
                                 if let key = key as? String {
-                                    let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                                    boxDictionary[key] = BoxAnyObject(item)
+                                    boxDictionary[key] = BoxAnyObject(dictionary[key])
                                 }
                             }
                             return boxDictionary
                         }),
                     keyedSubscript: { (key: String) in
-                        let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                        return BoxAnyObject(item)
+                        return BoxAnyObject(dictionary[key])
                     }))
             }
             else
             {
-                // Array-like enumerable
+                // Array
                 
                 let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
                 let box = Box(array).boxWithValue(self)
@@ -1412,7 +1411,8 @@ extension NSObject : ObjCMustacheBoxable {
                     if self.respondsToSelector("objectForKeyedSubscript:")
                     {
                         // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
-                        return BoxAnyObject((self as AnyObject)[key]) // Cast to AnyObject so that we can access subscript notation.
+                        let dictionary: AnyObject = self
+                        return BoxAnyObject(dictionary[key]) // Cast to AnyObject so that we can access subscript notation.
                     }
                     else if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self)
                     {
@@ -1653,7 +1653,7 @@ A function that wraps a value and a KeyedSubscriptFunction into a MustacheBox.
   let person = Person(firstName: "Tom", lastName: "Selleck")
   template.render(Box(["person": Box(person)]))!
 */
-public func Box(value: Any, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox {
+public func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox {
     return MustacheBox(value: value, keyedSubscript: keyedSubscript)
 }
 

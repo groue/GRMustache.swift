@@ -477,7 +477,7 @@ class TemplateCompiler: TemplateTokenConsumer {
     private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
-        if countElements(inheritableSectionName) == 0 {
+        if count(inheritableSectionName) == 0 {
             if error != nil {
                 error.memory = parseErrorAtToken(token, description: "Missing inheritable section name")
             }
@@ -496,7 +496,7 @@ class TemplateCompiler: TemplateTokenConsumer {
     private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
-        if countElements(partialName) == 0 {
+        if count(partialName) == 0 {
             if error != nil {
                 error.memory = parseErrorAtToken(token, description: "Missing template name")
             }

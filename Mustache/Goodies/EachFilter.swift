@@ -44,7 +44,7 @@ let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheB
     // [String: MustacheBox] whatever the boxed dictionary-like value
     // (NSDictionary, [String: Int], [String: CustomObject], etc.
     if let dictionary = box.dictionaryValue {
-        let count = countElements(dictionary)
+        let count = Swift.count(dictionary)
         let transformedBoxes = map(enumerate(dictionary)) { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
             let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
                 // Push positional keys in the context stack and then perform
@@ -78,7 +78,7 @@ let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheB
     // The arrayValue box property makes sure to return a [MustacheBox] whatever
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
     if let boxes = box.arrayValue {
-        let count = countElements(boxes)
+        let count = Swift.count(boxes)
         let transformedBoxes = map(enumerate(boxes)) { (index: Int, box: MustacheBox) -> MustacheBox in
             let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
                 // Push positional keys in the context stack and then perform

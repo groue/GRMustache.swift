@@ -71,11 +71,11 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     func valueForStringPropertyInRendering(rendering: String) -> String? {
-        return valueForKey("string", inRendering: rendering) as String?
+        return valueForKey("string", inRendering: rendering) as! String?
     }
     
     func extensionOfTemplateFileInRendering(rendering: String) -> String? {
-        return (valueForKey("fileName", inRendering: rendering) as String?)?.pathExtension
+        return (valueForKey("fileName", inRendering: rendering) as! String?)?.pathExtension
     }
     
     func testTemplateFromString() {

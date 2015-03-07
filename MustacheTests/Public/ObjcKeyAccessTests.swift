@@ -65,18 +65,18 @@ class ObjcKeyAccessTests: XCTestCase {
         XCTAssertTrue(object.dynamicType.respondsToSelector("safeMustacheKeys"))
         XCTAssertTrue(object.dynamicType.safeMustacheKeys().containsObject("foo"))
         XCTAssertTrue(object.dynamicType.safeMustacheKeys().containsObject("bar"))
-        XCTAssertEqual(object.objectForKeyedSubscript("foo") as String, "foo")
-        XCTAssertEqual(object.objectForKeyedSubscript("bar") as String, "bar")
-        XCTAssertEqual(object.valueForKey("foo") as String, "FOO")
-        XCTAssertEqual(object.valueForKey("bar") as String, "BAR")
+        XCTAssertEqual(object.objectForKeyedSubscript("foo") as! String, "foo")
+        XCTAssertEqual(object.objectForKeyedSubscript("bar") as! String, "bar")
+        XCTAssertEqual(object.valueForKey("foo") as! String, "FOO")
+        XCTAssertEqual(object.valueForKey("bar") as! String, "BAR")
         
         // test context
         let context = Context(Box(object))
-        XCTAssertEqual(context["foo"].value as String, "foo")
-        XCTAssertEqual(context["bar"].value as String, "bar")
+        XCTAssertEqual(context["foo"].value as! String, "foo")
+        XCTAssertEqual(context["bar"].value as! String, "bar")
         
         // test that GRMustacheSafeKeyAccess is not used
-        XCTAssertEqual(context["baz"].value as String, "baz")
+        XCTAssertEqual(context["baz"].value as! String, "baz")
     }
     
     func testPropertiesAreSafeAndAvailable() {
@@ -86,11 +86,11 @@ class ObjcKeyAccessTests: XCTestCase {
         XCTAssertFalse(object.dynamicType.respondsToSelector("safeMustacheKeys"))
         XCTAssertFalse(object.respondsToSelector("objectForKeyedSubscript:"))
         XCTAssertEqual(object.property, "property")
-        XCTAssertEqual(object.valueForKey("property") as String, "property")
+        XCTAssertEqual(object.valueForKey("property") as! String, "property")
         
         // test context
         let context = Context(Box(object))
-        XCTAssertEqual(context["property"].value as String, "property")
+        XCTAssertEqual(context["property"].value as! String, "property")
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
@@ -100,7 +100,7 @@ class ObjcKeyAccessTests: XCTestCase {
         XCTAssertFalse(object.dynamicType.respondsToSelector("safeMustacheKeys"))
         XCTAssertFalse(object.respondsToSelector("objectForKeyedSubscript:"))
         XCTAssertEqual(object.method(), "method")
-        XCTAssertEqual(object.valueForKey("method") as String, "method")
+        XCTAssertEqual(object.valueForKey("method") as! String, "method")
     
         // test context
         let context = Context(Box(object))
@@ -117,12 +117,12 @@ class ObjcKeyAccessTests: XCTestCase {
         XCTAssertFalse(object.respondsToSelector("objectForKeyedSubscript:"))
         XCTAssertEqual(object.disallowedProperty, "disallowedProperty")
         XCTAssertEqual(object.allowedMethod(), "allowedMethod")
-        XCTAssertEqual(object.valueForKey("disallowedProperty") as String, "disallowedProperty")
-        XCTAssertEqual(object.valueForKey("allowedMethod") as String, "allowedMethod")
+        XCTAssertEqual(object.valueForKey("disallowedProperty") as! String, "disallowedProperty")
+        XCTAssertEqual(object.valueForKey("allowedMethod") as! String, "allowedMethod")
     
         // test context
         let context = Context(Box(object))
         XCTAssertTrue(context["disallowedProperty"].value == nil)
-        XCTAssertEqual(context["allowedMethod"].value as String, "allowedMethod")
+        XCTAssertEqual(context["allowedMethod"].value as! String, "allowedMethod")
     }
 }

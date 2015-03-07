@@ -120,7 +120,7 @@ class VariadicFilterTests: XCTestCase {
                 var result = ""
                 for box in boxes {
                     if let dictionary = box.dictionaryValue {
-                        result += String(countElements(dictionary))
+                        result += String(count(dictionary))
                     }
                 }
                 return Box(result)

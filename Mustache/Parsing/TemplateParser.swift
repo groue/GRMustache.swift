@@ -219,7 +219,7 @@ class TemplateParser {
                 } else if atString(delimiters.setDelimitersEnd) {
                     let tagInitialIndex = advance(stateStart, delimiters.setDelimitersStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
-                    let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { countElements($0) > 0 }
+                    let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { count($0) > 0 }
                     if (newDelimiters.count != 2) {
                         failWithParseError(lineNumber: lineNumber, templateID: templateID, description: "Invalid set delimiters tag")
                         return;

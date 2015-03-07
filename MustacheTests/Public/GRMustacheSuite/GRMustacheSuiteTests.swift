@@ -61,20 +61,20 @@ class GRMustacheSuiteTests: XCTestCase {
         }
         
         var error: NSError?
-        let testSuite = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(0), error: &error) as NSDictionary!
+        let testSuite = NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(0), error: &error) as! NSDictionary!
         if testSuite == nil {
             XCTFail("\(error)")
             return
         }
         
-        let tests = testSuite["tests"] as NSArray!
+        let tests = testSuite["tests"] as! NSArray!
         if tests == nil {
             XCTFail("Missing tests in \(path)")
             return
         }
         
         for testDictionary in tests {
-            let test = Test(path: path, dictionary: testDictionary as NSDictionary)
+            let test = Test(path: path, dictionary: testDictionary as! NSDictionary)
             test.run()
         }
     }
@@ -111,13 +111,13 @@ class GRMustacheSuiteTests: XCTestCase {
         //
         
         var description: String { return "test `\(name)` at \(path)" }
-        var name: String { return dictionary["name"] as String }
-        var partialsDictionary: [String: String]? { return dictionary["partials"] as [String: String]? }
-        var templateString: String? { return dictionary["template"] as String? }
-        var templateName: String? { return dictionary["template_name"] as String? }
+        var name: String { return dictionary["name"] as! String }
+        var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
+        var templateString: String? { return dictionary["template"] as! String? }
+        var templateName: String? { return dictionary["template_name"] as! String? }
         var renderedValue: MustacheBox { return BoxAnyObject(dictionary["data"]) }
-        var expectedRendering: String? { return dictionary["expected"] as String? }
-        var expectedError: String? { return dictionary["expected_error"] as String? }
+        var expectedRendering: String? { return dictionary["expected"] as! String? }
+        var expectedError: String? { return dictionary["expected_error"] as! String? }
         
         var templates: [Template] {
             if let partialsDictionary = partialsDictionary {
@@ -217,7 +217,7 @@ class GRMustacheSuiteTests: XCTestCase {
                 if let reg = NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(0), error: &regError) {
                     let errorMessage = error.localizedDescription
                     let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(0), range:NSMakeRange(0, (errorMessage as NSString).length))
-                    if countElements(matches) == 0 {
+                    if count(matches) == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
                     }

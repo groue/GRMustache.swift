@@ -69,12 +69,12 @@ class ValueTests: XCTestCase {
         let boxedClass = Box(value: Class(name: "Class"))
         let boxedNSObject = Box(NSObject)
         
-        let extractedBoxableStruct = boxedBoxableStruct.value as BoxableStruct
-        let extractedStruct = boxedStruct.value as Struct
-        let extractedBoxableClass = boxedBoxableClass.value as BoxableClass
+        let extractedBoxableStruct = boxedBoxableStruct.value as! BoxableStruct
+        let extractedStruct = boxedStruct.value as! Struct
+        let extractedBoxableClass = boxedBoxableClass.value as! BoxableClass
         let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
-        let extractedClass = boxedClass.value as Class
-        let extractedNSObject = boxedNSObject.value as NSDate
+        let extractedClass = boxedClass.value as! Class
+        let extractedNSObject = boxedNSObject.value as! NSDate
         
         XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
         XCTAssertEqual(extractedStruct.name, "Struct")
@@ -196,7 +196,7 @@ class ValueTests: XCTestCase {
     func testArrayValueForArray() {
         let originalValue = [1,2,3]
         let box = Box(originalValue)
-        let extractedValue = box.value as [Int]
+        let extractedValue = box.value as! [Int]
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(map(extractedArray) { $0.intValue! }, [1,2,3])
@@ -205,25 +205,25 @@ class ValueTests: XCTestCase {
     func testArrayValueForNSArray() {
         let originalValue = NSArray(object: "foo")
         let box = Box(originalValue)
-        let extractedValue = box.value as NSArray
+        let extractedValue = box.value as! NSArray
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as String }, ["foo"])
+        XCTAssertEqual(map(extractedArray) { $0.value as! String }, ["foo"])
     }
     
     func testArrayValueForNSOrderedSet() {
         let originalValue = NSOrderedSet(object: "foo")
         let box = Box(originalValue)
-        let extractedValue = box.value as NSOrderedSet
+        let extractedValue = box.value as! NSOrderedSet
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as String }, ["foo"])
+        XCTAssertEqual(map(extractedArray) { $0.value as! String }, ["foo"])
     }
     
     func testArrayValueForCollectionOfOne() {
         let originalValue = CollectionOfOne(123)
         let box = Box(originalValue)
-        let extractedValue = box.value as CollectionOfOne<Int>
+        let extractedValue = box.value as! CollectionOfOne<Int>
         XCTAssertEqual(extractedValue[extractedValue.startIndex], originalValue[originalValue.startIndex])
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(map(extractedArray) { $0.intValue! }, [123])
@@ -232,7 +232,7 @@ class ValueTests: XCTestCase {
     func testArrayValueForRange() {
         let originalValue = 1...3
         let box = Box(originalValue)
-        let extractedValue = box.value as Range<Int>
+        let extractedValue = box.value as! Range<Int>
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(map(extractedArray) { $0.intValue! }, [1,2,3])
@@ -241,16 +241,16 @@ class ValueTests: XCTestCase {
     func testDictionaryValueForNSDictionary() {
         let originalValue = NSDictionary(object: "value", forKey: "key")
         let box = Box(originalValue)
-        let extractedValue = box.value as NSDictionary
+        let extractedValue = box.value as! NSDictionary
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
-        XCTAssertEqual(extractedDictionary["key"]!.value as String, "value")
+        XCTAssertEqual(extractedDictionary["key"]!.value as! String, "value")
     }
     
     func testIntValueForNSNumber() {
         let originalValue = NSNumber(integer: 123)
         let box = Box(originalValue)
-        let extractedValue = box.value as NSNumber
+        let extractedValue = box.value as! NSNumber
         XCTAssertEqual(extractedValue, originalValue)
         let extractedInt = box.intValue!
         XCTAssertEqual(extractedInt, 123)
@@ -259,7 +259,7 @@ class ValueTests: XCTestCase {
     func testIntValueForBool() {
         let originalValue: Bool = false
         let box = Box(originalValue)
-        let extractedValue = box.value as Bool
+        let extractedValue = box.value as! Bool
         XCTAssertEqual(extractedValue, originalValue)
         let extractedInt = box.intValue!
         XCTAssertEqual(extractedInt, 0)
@@ -268,7 +268,7 @@ class ValueTests: XCTestCase {
     func testIntValueForInt() {
         let originalValue: Int = 123
         let box = Box(originalValue)
-        let extractedValue = box.value as Int
+        let extractedValue = box.value as! Int
         XCTAssertEqual(extractedValue, originalValue)
         let extractedInt = box.intValue!
         XCTAssertEqual(extractedInt, 123)
@@ -277,7 +277,7 @@ class ValueTests: XCTestCase {
     func testIntValueForDouble() {
         let originalValue: Double = 123.0
         let box = Box(originalValue)
-        let extractedValue = box.value as Double
+        let extractedValue = box.value as! Double
         XCTAssertEqual(extractedValue, originalValue)
         let extractedInt = box.intValue!
         XCTAssertEqual(extractedInt, 123)
@@ -286,7 +286,7 @@ class ValueTests: XCTestCase {
     func testUIntValueForNSNumber() {
         let originalValue = NSNumber(integer: 123)
         let box = Box(originalValue)
-        let extractedValue = box.value as NSNumber
+        let extractedValue = box.value as! NSNumber
         XCTAssertEqual(extractedValue, originalValue)
         let extractedUInt = box.uintValue!
         XCTAssertEqual(extractedUInt, UInt(123))
@@ -295,7 +295,7 @@ class ValueTests: XCTestCase {
     func testUIntValueForBool() {
         let originalValue: Bool = false
         let box = Box(originalValue)
-        let extractedValue = box.value as Bool
+        let extractedValue = box.value as! Bool
         XCTAssertEqual(extractedValue, originalValue)
         let extractedUInt = box.uintValue!
         XCTAssertEqual(extractedUInt, UInt(0))
@@ -304,7 +304,7 @@ class ValueTests: XCTestCase {
     func testUIntValueForInt() {
         let originalValue: Int = 123
         let box = Box(originalValue)
-        let extractedValue = box.value as Int
+        let extractedValue = box.value as! Int
         XCTAssertEqual(extractedValue, originalValue)
         let extractedUInt = box.uintValue!
         XCTAssertEqual(extractedUInt, UInt(123))
@@ -313,7 +313,7 @@ class ValueTests: XCTestCase {
     func testUIntValueForDouble() {
         let originalValue: Double = 123.0
         let box = Box(originalValue)
-        let extractedValue = box.value as Double
+        let extractedValue = box.value as! Double
         XCTAssertEqual(extractedValue, originalValue)
         let extractedUInt = box.uintValue!
         XCTAssertEqual(extractedUInt, UInt(123))
@@ -322,7 +322,7 @@ class ValueTests: XCTestCase {
     func testDoubleValueForNSNumber() {
         let originalValue = NSNumber(double: 123.5)
         let box = Box(originalValue)
-        let extractedValue = box.value as NSNumber
+        let extractedValue = box.value as! NSNumber
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDouble = box.doubleValue!
         XCTAssertEqual(extractedDouble, 123.5)
@@ -331,7 +331,7 @@ class ValueTests: XCTestCase {
     func testDoubleValueForBool() {
         let originalValue: Bool = false
         let box = Box(originalValue)
-        let extractedValue = box.value as Bool
+        let extractedValue = box.value as! Bool
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDouble = box.doubleValue!
         XCTAssertEqual(extractedDouble, 0.0)
@@ -340,7 +340,7 @@ class ValueTests: XCTestCase {
     func testDoubleValueForInt() {
         let originalValue: Int = 123
         let box = Box(originalValue)
-        let extractedValue = box.value as Int
+        let extractedValue = box.value as! Int
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDouble = box.doubleValue!
         XCTAssertEqual(extractedDouble, 123.0)
@@ -349,7 +349,7 @@ class ValueTests: XCTestCase {
     func testDoubleValueForDouble() {
         let originalValue: Double = 123.5
         let box = Box(originalValue)
-        let extractedValue = box.value as Double
+        let extractedValue = box.value as! Double
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDouble = box.doubleValue!
         XCTAssertEqual(extractedDouble, 123.5)
