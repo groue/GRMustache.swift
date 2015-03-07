@@ -43,11 +43,11 @@ class ViewController: NSViewController {
 //            template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
 
             let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
-            if let JSONObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error) {
-                if let string = template.render(BoxAnyObject(JSONObject), error: &error) {
-                    presentRenderingString(string)
-                    return
-                }
+            if let JSONObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error),
+               let string = template.render(BoxAnyObject(JSONObject), error: &error)
+            {
+                presentRenderingString(string)
+                return
             }
         }
         

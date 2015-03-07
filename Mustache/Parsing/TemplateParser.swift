@@ -51,7 +51,7 @@ class TemplateParser {
         var lineNumber = 1
         var startLineNumber = lineNumber
         
-        var atString = { (string: String?) -> Bool in
+        let atString = { (string: String?) -> Bool in
             return string != nil && templateString.substringFromIndex(i).hasPrefix(string!)
         }
         
@@ -305,7 +305,7 @@ class TemplateParser {
     }
     
     private func failWithParseError(#lineNumber: Int, templateID: TemplateID?, description: String) {
-        var localizedDescription: String
+        let localizedDescription: String
         if let templateID = templateID {
             localizedDescription = "Parse error at line \(lineNumber) of template \(templateID): \(description)"
         } else {

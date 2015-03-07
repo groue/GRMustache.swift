@@ -113,7 +113,7 @@ extension StandardLibrary {
                 info.tag.renderInnerContent(context)
                 
                 
-                var rendering: Rendering
+                let rendering: Rendering
                 if formatArguments!.isEmpty
                 {
                     // There is no format argument, which means no inner
@@ -139,8 +139,7 @@ extension StandardLibrary {
                     //
                     // The format string will then be "%%d %@", as needed.
                     
-                    var localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%")
-                    localizableFormat = localizableFormat.stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
+                    let localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%").stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
                     
                     // Now localize the format
                     let localizedFormat = localizedStringForKey(localizableFormat)

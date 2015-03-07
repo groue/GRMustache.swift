@@ -144,6 +144,14 @@ class ValueTests: XCTestCase {
 //        XCTAssertEqual(rendering3, "custom3,other")
 //    }
     
+    func testSetOfInt() {
+        let value: Set<Int> = [0,1,2]
+        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let box = Box(value)
+        let rendering = template.render(box)!
+        XCTAssertTrue(find(["012", "021", "102", "120", "201", "210"], rendering) != nil)
+    }
+    
     func testArrayOfInt() {
         let value: Array<Int> = [0,1,2,3]
         let template = Template(string: "{{#.}}{{.}}{{/}}")!
@@ -353,5 +361,18 @@ class ValueTests: XCTestCase {
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDouble = box.doubleValue!
         XCTAssertEqual(extractedDouble, 123.5)
+    }
+    
+    func testBoxAnyObjectWithMustacheBoxable() {
+        class Class: MustacheBoxable {
+            var mustacheBox: MustacheBox {
+                return Box { (key: String) in
+                    return Box(key)
+                }
+            }
+        }
+        
+        let box = BoxAnyObject(Class() as AnyObject)
+        XCTAssertEqual(box["foo"].value as! String, "foo")
     }
 }

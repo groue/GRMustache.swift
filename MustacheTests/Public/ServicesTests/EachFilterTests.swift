@@ -26,6 +26,22 @@ import Mustache
 
 class EachFilterTests: XCTestCase {
     
+    func testEachFilterEnumeratesSet() {
+        let set = Set(["a", "b"])
+        let template = Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        let rendering = template.render(Box(["set": set]))!
+        XCTAssertTrue(find(["(0,a)(1,b)", "(0,b)(1,a)"], rendering) != nil)
+    }
+    
+    func testEachFilterEnumeratesNSSet() {
+        let set = NSSet(objects: "a", "b")
+        let template = Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        let rendering = template.render(Box(["set": set]))!
+        XCTAssertTrue(find(["(0,a)(1,b)", "(0,b)(1,a)"], rendering) != nil)
+    }
+    
     func testEachFilterTriggersRenderFunctionsInArray() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             let rendering = info.tag.renderInnerContent(info.context)!

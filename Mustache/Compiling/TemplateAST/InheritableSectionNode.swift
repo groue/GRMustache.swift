@@ -39,10 +39,8 @@ class InheritableSectionNode: TemplateASTNode {
     }
     
     func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
-        if let node = node as? InheritableSectionNode {
-            if node.name == name {
-                return self
-            }
+        if let node = node as? InheritableSectionNode where node.name == name {
+            return self
         }
         return node
     }

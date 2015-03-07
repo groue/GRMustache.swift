@@ -28,25 +28,29 @@ import Mustache;
 class FoundationCollectionTests: XCTestCase {
     
     var boxedArray: MustacheBox!
+    var boxedNSArray: MustacheBox!
     var boxedSet: MustacheBox!
-    var boxedOrderedSet: MustacheBox!
+    var boxedNSSet: MustacheBox!
+    var boxedNSOrderedSet: MustacheBox!
     
     override func setUp() {
-        boxedArray = {
+        boxedArray = Box(["collection": [["key": "value"]]])
+        boxedNSArray = {
             var array = NSMutableArray()
             array.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(array, forKey: "collection")
             return Box(data)
         }()
-        boxedSet = {
+        boxedSet = Box(["collection": Set([["key": "value"]])])
+        boxedNSSet = {
             var set = NSMutableSet()
             set.addObject(["key": "value"])
             var data = NSMutableDictionary()
             data.setObject(set, forKey: "collection")
             return Box(data)
             }()
-        boxedOrderedSet = {
+        boxedNSOrderedSet = {
             var orderedSet = NSMutableOrderedSet()
             orderedSet.addObject(["key": "value"])
             var data = NSMutableDictionary()
@@ -56,12 +60,12 @@ class FoundationCollectionTests: XCTestCase {
     }
     
     func testNSArrayIsIterated() {
-        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedArray)!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedNSArray)!
         XCTAssertEqual(rendering, "value")
     }
     
-    func testNSArrayIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedArray)!
+    func testNSArrayIsNotIteratedWithValueForKey() {
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedNSArray)!
         XCTAssertEqual(rendering, "")
     }
     
@@ -73,33 +77,71 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `array.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet()]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet(object: "foo")]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSArray()]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSArray(object: "foo")]))!, "Not empty")
     }
     
     func testNSArrayCount() {
-        let rendering = Template(string: "{{collection.count}}")!.render(boxedArray)!
+        let rendering = Template(string: "{{collection.count}}")!.render(boxedNSArray)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSArrayFirstObject() {
-        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(boxedArray)!
+        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(boxedNSArray)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSArrayLastObject() {
+        let rendering = Template(string: "{{collection.lastObject.key}}")!.render(boxedNSArray)!
+        XCTAssertEqual(rendering, "value")
+    }
+    
+    func testArrayIsIterated() {
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedArray)!
+        XCTAssertEqual(rendering, "value")
+    }
+    
+    func testArrayIsNotIteratedWithValueForKey() {
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedArray)!
+        XCTAssertEqual(rendering, "")
+    }
+    
+    func testArrayIsEmpty() {
+        // Arrays can NOT be queried for the key `isEmpty` on purpose.
+        // This test makes sure no user request would activate such a bad idea.
+        //
+        // `array.isEmpty` would evaluate to false in case of a missing set, and
+        // this would be soooo misleading. On the contrary, `array.count` is
+        // falsey for both empty and missing sets, and this is why it is the
+        // recommended technique.
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":[]]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":["foo"]]))!, "Not empty")
+    }
+    
+    func testArrayCount() {
+        let rendering = Template(string: "{{collection.count}}")!.render(boxedArray)!
+        XCTAssertEqual(rendering, "1")
+    }
+    
+    func testArrayFirstObject() {
+        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(boxedArray)!
+        XCTAssertEqual(rendering, "value")
+    }
+    
+    func testArrayLastObject() {
         let rendering = Template(string: "{{collection.lastObject.key}}")!.render(boxedArray)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSSetIsIterated() {
-        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedSet)!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedNSSet)!
         XCTAssertEqual(rendering, "value")
     }
     
-    func testNSSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedSet)!
+    func testNSSetIsNotIteratedWithValueForKey() {
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedNSSet)!
         XCTAssertEqual(rendering, "")
     }
     
@@ -111,43 +153,76 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `set.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet()]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#set.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["set":NSSet(object: "foo")]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSSet()]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSSet(object: "foo")]))!, "Not empty")
     }
     
     func testNSSetCount() {
-        let rendering = Template(string: "{{collection.count}}")!.render(boxedSet)!
+        let rendering = Template(string: "{{collection.count}}")!.render(boxedNSSet)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSSetAnyObject() {
+        let rendering = Template(string: "{{collection.anyObject.key}}")!.render(boxedNSSet)!
+        XCTAssertEqual(rendering, "value")
+    }
+    
+    func testSetIsIterated() {
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedSet)!
+        XCTAssertEqual(rendering, "value")
+    }
+    
+    func testSetIsNotIteratedWithValueForKey() {
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedSet)!
+        XCTAssertEqual(rendering, "")
+    }
+    
+    func testSetIsEmpty() {
+        // Sets can NOT be queried for the key `isEmpty` on purpose.
+        // This test makes sure no user request would activate such a bad idea.
+        //
+        // `set.isEmpty` would evaluate to false in case of a missing set, and
+        // this would be soooo misleading. On the contrary, `set.count` is
+        // falsey for both empty and missing sets, and this is why it is the
+        // recommended technique.
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":Set<String>()]))!, "Not empty")
+        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":Set(["foo"])]))!, "Not empty")
+    }
+    
+    func testSetCount() {
+        let rendering = Template(string: "{{collection.count}}")!.render(boxedSet)!
+        XCTAssertEqual(rendering, "1")
+    }
+    
+    func testSetAnyObject() {
         let rendering = Template(string: "{{collection.anyObject.key}}")!.render(boxedSet)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetIsIterated() {
-        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedOrderedSet)!
+        let rendering = Template(string: "{{#collection}}{{key}}{{/collection}}")!.render(boxedNSOrderedSet)!
         XCTAssertEqual(rendering, "value")
     }
     
-    func testNSOrderedSetIsNotIteratedWithNSArrayValueForKey() {
-        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedOrderedSet)!
+    func testNSOrderedSetIsNotIteratedWithValueForKey() {
+        let rendering = Template(string: "{{#collection.key}}{{.}}{{/collection.key}}")!.render(boxedNSOrderedSet)!
         XCTAssertEqual(rendering, "")
     }
     
     func testNSOrderedSetCount() {
-        let rendering = Template(string: "{{collection.count}}")!.render(boxedOrderedSet)!
+        let rendering = Template(string: "{{collection.count}}")!.render(boxedNSOrderedSet)!
         XCTAssertEqual(rendering, "1")
     }
     
     func testNSOrderedSetFirstObject() {
-        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(boxedOrderedSet)!
+        let rendering = Template(string: "{{collection.firstObject.key}}")!.render(boxedNSOrderedSet)!
         XCTAssertEqual(rendering, "value")
     }
     
     func testNSOrderedSetLastObject() {
-        let rendering = Template(string: "{{collection.lastObject.key}}")!.render(boxedOrderedSet)!
+        let rendering = Template(string: "{{collection.lastObject.key}}")!.render(boxedNSOrderedSet)!
         XCTAssertEqual(rendering, "value")
     }
     

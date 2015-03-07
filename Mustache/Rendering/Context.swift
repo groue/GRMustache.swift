@@ -137,8 +137,7 @@ public class Context {
     same value.
     */
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
-        var registeredKeysContext = self.registeredKeysContext ?? Context()
-        registeredKeysContext = registeredKeysContext.extendedContext(Box([key: box]))
+        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     

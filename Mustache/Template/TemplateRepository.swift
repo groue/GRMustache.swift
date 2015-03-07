@@ -448,35 +448,34 @@ public class TemplateRepository {
         }
         
         func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
-            let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
-                // Rebase template names starting with a /
-                if !name.isEmpty && name[name.startIndex] == "/" {
-                    return (name.substringFromIndex(name.startIndex.successor()), nil)
-                } else {
-                    return (name, baseTemplateID)
-                }
-                }()
-            
+            // Rebase template names starting with a /
+            let normalizedName: String
+            let normalizedBaseTemplateID: TemplateID?
+            if !name.isEmpty && name[name.startIndex] == "/" {
+                normalizedName = name.substringFromIndex(name.startIndex.successor())
+                normalizedBaseTemplateID = nil
+            } else {
+                normalizedName = name
+                normalizedBaseTemplateID = baseTemplateID
+            }
+        
             if normalizedName.isEmpty {
                 return normalizedBaseTemplateID
             }
             
-            let templateFilename: String = {
-                if let templateExtension = self.templateExtension {
-                    if !templateExtension.isEmpty {
-                        return normalizedName.stringByAppendingPathExtension(templateExtension)!
-                    }
-                }
-                return normalizedName
-                }()
+            let templateFilename: String
+            if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
+                templateFilename = normalizedName.stringByAppendingPathExtension(templateExtension)!
+            } else {
+                templateFilename = normalizedName
+            }
             
-            let templateBaseURL: NSURL = {
-                if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                    return NSURL(string: normalizedBaseTemplateID)!
-                } else {
-                    return self.baseURL
-                }
-            }()
+            let templateBaseURL: NSURL
+            if let normalizedBaseTemplateID = normalizedBaseTemplateID {
+                templateBaseURL = NSURL(string: normalizedBaseTemplateID)!
+            } else {
+                templateBaseURL = self.baseURL
+            }
             
             let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
             if let templateAbsoluteString = templateURL.absoluteString {
@@ -509,22 +508,23 @@ public class TemplateRepository {
         }
         
         func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
-            let (normalizedName, normalizedBaseTemplateID) = { () -> (String, TemplateID?) in
-                // Rebase template names starting with a /
-                if !name.isEmpty && name[name.startIndex] == "/" {
-                    return (name.substringFromIndex(name.startIndex.successor()), nil)
-                } else {
-                    return (name, baseTemplateID)
-                }
-                }()
+            // Rebase template names starting with a /
+            let normalizedName: String
+            let normalizedBaseTemplateID: TemplateID?
+            if !name.isEmpty && name[name.startIndex] == "/" {
+                normalizedName = name.substringFromIndex(name.startIndex.successor())
+                normalizedBaseTemplateID = nil
+            } else {
+                normalizedName = name
+                normalizedBaseTemplateID = baseTemplateID
+            }
             
             if normalizedName.isEmpty {
                 return normalizedBaseTemplateID
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                var relativePath = normalizedBaseTemplateID.stringByDeletingLastPathComponent
-                relativePath = relativePath.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
+                let relativePath = normalizedBaseTemplateID.stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
                 return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.pathForResource(normalizedName, ofType: templateExtension)

@@ -340,7 +340,6 @@ class TemplateCompiler: TemplateTokenConsumer {
                     }
                     
                     if let partialTemplateAST = repository.templateAST(named: closedPartialName, relativeToTemplateID:templateID, error: &error) {
-                        
                         switch partialTemplateAST.type {
                         case .Undefined:
                             break
@@ -391,16 +390,13 @@ class TemplateCompiler: TemplateTokenConsumer {
             case .Partial(content: let content):
                 var error: NSError?
                 var empty: Bool = false
-                if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
-                    if let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error) {
-                        let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
-                        compilationState.currentScope.appendNode(partialNode)
-                        compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        return true
-                    } else {
-                        state = .Error(error!)
-                        return false
-                    }
+                if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error),
+                   let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error)
+                {
+                    let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
+                    compilationState.currentScope.appendNode(partialNode)
+                    compilationState.compilerContentType = .Locked(compilationState.contentType)
+                    return true
                 } else {
                     state = .Error(error!)
                     return false

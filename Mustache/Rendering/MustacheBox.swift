@@ -1131,7 +1131,6 @@ A function that wraps a dictionary of MustacheBoxable.
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
-        
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
@@ -1229,73 +1228,15 @@ Instead, you use the BoxAnyObject() function:
   let box = BoxAnyObject(set.anyObject())
   box.value as String  // "Mario"
 
-Important caveat: this function can only box Objective-C objects and Objective-C
-briged values such as Strings.
-
-::
-
-  class Person {
-      let name: String
-      init(name: String) {
-          self.name = name
-      }
-  }
-
-  let person = Person(name: "Charlie Chaplin")
-  let set = NSSet(object: person)
-
-  // In the log:
-  // Mustache.BoxAnyObject(): value `__lldb_expr_1123.Person` does not conform to the ObjCMustacheBoxable protocol, and is discarded.
-  let box = BoxAnyObject(set.anyObject())
-
-  // nil :-(
-  box.value
-
 */
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
-    if let object: AnyObject = object {
-        if let boxable = object as? ObjCMustacheBoxable {
-            return Box(boxable)
-        } else {
-            // This code path will only run if object is not a NSObject
-            // instance, since NSObject conforms to ObjCMustacheBoxable.
-            //
-            // This may mean that the class of object is NSProxy or any other
-            // Objective-C class that does not derive from NSObject.
-            //
-            // This may also mean that object is an instance of a pure Swift
-            // class.
-            //
-            // Objective-C objects and containers can contain pure Swift
-            // instances. For example, given the following array:
-            //
-            //     class C: MustacheBoxable { ... }
-            //     var array = NSMutableArray()
-            //     array.addObject(C())
-            //
-            // GRMustache *can not* known that the array contains a valid
-            // boxable value, because NSArray exposes its contents as AnyObject,
-            // and AnyObject can not be tested for MustacheBoxable conformance:
-            //
-            // https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Protocols.html#//apple_ref/doc/uid/TP40014097-CH25-XID_363
-            // > you need to mark your protocols with the @objc attribute if you want to be able to check for protocol conformance.
-            //
-            // So GRMustache, when given an AnyObject, generally assumes that it
-            // is an Objective-C value, even when it is wrong, and ends up here.
-            //
-            // As a conclusion: let's apologize.
-            //
-            // TODO: document caveat with something like:
-            //
-            // If GRMustache.BoxAnyObject was called from your own code, check
-            // the type of the value you provide. If not, it is likely that an
-            // Objective-C collection like NSArray, NSDictionary, NSSet or any
-            // other Objective-C object contains a value that is not an
-            // Objective-C object. GRMustache does not support such mixing of
-            // Objective-C and Swift values.
-            NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to the ObjCMustacheBoxable protocol, and is discarded.")
-            return Box()
-        }
+    if let boxable = object as? MustacheBoxable {
+        return Box(boxable)
+    } else if let boxable = object as? ObjCMustacheBoxable {
+        return Box(boxable)
+    } else if let object: AnyObject = object {
+        NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.")
+        return Box()
     } else {
         return Box()
     }

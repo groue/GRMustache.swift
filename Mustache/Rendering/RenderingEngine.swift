@@ -144,7 +144,7 @@ class RenderingEngine: TemplateASTVisitor {
             
             let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
             var error: NSError?
-            var rendering: Rendering?
+            let rendering: Rendering?
             switch tag.type {
             case .Variable:
                 rendering = box.render(info: info, error: &error)
@@ -165,13 +165,12 @@ class RenderingEngine: TemplateASTVisitor {
             }
             
             if let rendering = rendering {
-                var string = rendering.string
-                let targetContentType = templateAST.contentType!
-                switch (targetContentType, rendering.contentType, escapesHTML) {
+                let string: String
+                switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
                 case (.HTML, .Text, true):
-                    string = escapeHTML(string)
+                    string = escapeHTML(rendering.string)
                 default:
-                    break
+                    string = rendering.string
                 }
                 
                 buffer = buffer! + string
