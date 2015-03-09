@@ -1181,6 +1181,44 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 */
 @objc public protocol ObjCMustacheBoxable {
     
+    // Why do we need this ObjC-dedicated protocol, when we already have the
+    // MustacheBoxable protocol?
+    //
+    // It is because MustacheBoxable, as a Swift protocol, has limitations:
+    //
+    // 1. Swift 1.1 does not allow to test for a Swift protocol conformance
+    //    at runtime. This would prevent us to box objects returned by methods
+    //    of type AnyObject. See the BoxAnyObject() function.
+    //
+    // 2. Swift 1.1 and 1.2 do not allow a class extension to override a method
+    //    that is inherited from an extension to its superclass and incompatible
+    //    with Objective-C. This prevents NSObject subclasses such as NSNull,
+    //    NSNumber, etc. to override NSObject.mustacheBox, and provide custom
+    //    rendering behavior.
+    //
+    //    For an example of this limitation, see example below:
+    //
+    //    ::
+    //
+    //      import Foundation
+    //
+    //      struct MustacheBox { }
+    //      protocol MustacheBoxable { var mustacheBox: MustacheBox { get } }
+    //      
+    //      // So far so good
+    //      extension NSObject : MustacheBoxable {
+    //          var mustacheBox: MustacheBox { return MustacheBox() }
+    //      }
+    //      
+    //      // Error: declarations in extensions cannot override yet
+    //      extension NSNull {
+    //          override var mustacheBox: MustacheBox { return MustacheBox() }
+    //      }
+    //
+    // Because of those two reasons, we chose to dedicate MustacheBoxable to
+    // Swift values, and ObjCMustacheBoxable to Objective-C values. When Swift
+    // improves, we may alleviate this inconsistency.
+    
     /**
     Returns a MustacheBox wrapped in a ObjCMustacheBox (this wrapping is
     required by the constraints of the Swift type system).
