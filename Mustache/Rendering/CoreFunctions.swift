@@ -131,8 +131,8 @@ one.
 It is likely you will want to extract the boxed value. MustacheBox comes with
 the `value`, `boolValue`, `intValue`, `uintValue`, `doubleValue`, `arrayValue`
 and `dictionaryValue` properties. All but the first help extracting values that
-may come in different shapes. For example, the `intValue` returns a value for
-boxed ints, doubles, and NSNumber.
+may come in different shapes. For example, the `intValue` returns an Int for
+boxed ints (obviously), but also doubles and NSNumbers.
 
 Yet, the Filter function comes with more straightforward variants that help you
 process int, strings, custom classes, etc:
@@ -337,7 +337,8 @@ Variadic filters are given raw boxes, and it is likely you will want to extract
 values out of them. MustacheBox comes with the `value`, `boolValue`, `intValue`,
 `uintValue`, `doubleValue`, `arrayValue` and `dictionaryValue` properties. All
 but the first help extracting values that may come in different shapes. For
-example, the `intValue` returns a value for boxed ints, doubles, and NSNumber.
+example, `intValue` returns an Int for boxed ints (obviously), but also doubles
+and NSNumbers.
 
 ::
 
