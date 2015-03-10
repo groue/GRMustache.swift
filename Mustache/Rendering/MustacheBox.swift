@@ -976,6 +976,11 @@ extension String : MustacheBoxable {
 //       ...
 //     {{/.}}
 //   {{/ arrays }}
+//
+// Implementation node: this function used to consume a generic collection
+// instead of an explicit array. (See commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
+// Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has revelead
+// that the generic function would not compile in Release configuration.
 private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
     
     // Prepare the rendering. We don't known the contentType yet: it depends on items
