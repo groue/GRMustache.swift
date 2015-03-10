@@ -124,5 +124,27 @@ class ReadMeTests: XCTestCase {
         let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "50%")
     }
+    
+    func testDemo() {
+        let templateString = "Hello {{name}}\n" +
+        "Your luggage will arrive on {{format(date)}}.\n" +
+        "{{#late}}\n" +
+        "Well, on {{format(real_date)}} due to Martian attack.\n" +
+        "{{/late}}"
+        
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .MediumStyle
+        
+        let template = Template(string: templateString)!
+        template.registerInBaseContext("format", Box(dateFormatter))
+        
+        let data = [
+            "name": "Arthur",
+            "date": NSDate(),
+            "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
+            "late": true
+        ]
+        let rendering = template.render(Box(data))!
+    }
 }
 
