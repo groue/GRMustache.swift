@@ -325,3 +325,8 @@ Other templates can inherit from `layout.mustache`, and override its sections:
 ```
 
 When you render `article.mustache`, you get a full HTML page.
+
+
+### Built-in goodies
+
+The library ships with built-in [goodies](Docs/Guides/goodies.md) that will help you render your templates: format values, render array indexes, localize templates, etc.
