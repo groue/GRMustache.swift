@@ -976,7 +976,7 @@ extension String : MustacheBoxable {
 //       ...
 //     {{/.}}
 //   {{/ arrays }}
-private func renderCollection<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C, var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
     
     // Prepare the rendering. We don't known the contentType yet: it depends on items
     var buffer = ""
@@ -998,8 +998,8 @@ private func renderCollection<C: CollectionType where C.Generator.Element: Musta
 
     info.enumerationItem = true
     
-    for item in collection {
-        if let boxRendering = Box(item).render(info: info, error: error) {
+    for box in boxes {
+        if let boxRendering = box.render(info: info, error: error) {
             if contentType == nil
             {
                 // First item: now we know our contentType
@@ -1113,7 +1113,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
                     // {{^ collection }}...{{/ collection }}
-                    return renderCollection(collection, info, error)
+                    return renderBoxArray(map(collection) { Box($0) }, info, error)
                 }
         })
     } else {
@@ -1644,8 +1644,8 @@ extension NSSet : ObjCMustacheBoxable {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
                     // {{^ set }}...{{/ set }}
-                    let boxArray = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
-                    return renderCollection(boxArray, info, error)
+                    let boxes = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
+                    return renderBoxArray(boxes, info, error)
                 }
             }))
     }
