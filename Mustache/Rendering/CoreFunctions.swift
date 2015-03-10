@@ -357,6 +357,26 @@ and NSNumbers.
   // Renders "6"
   template.render(Box(["a": 1, "b": 2, "c": 3]))!
 
+:param: box                The argument of the filter.
+
+:param: partialApplication This parameter is used for multi-argument filter
+                           expressions such as {{ f(a,b,c) }}.
+
+                           If true, the filter should return another filter
+                           that will accept the next argument. If false, box
+                           parameter is the last argument of the Mustache filter
+                           expression, and the filter should return the result.
+
+                           For single-argument filter expressions such as f(x),
+                           partialApplication is always false.
+                           
+                           We recommend that you do not implement multi-argument
+                           filters with this parameter, but instead use the
+                           VariadicFilter function. See its documentation.
+
+:param: error              If there is a problem evaluating the result, upon
+                           return contains an NSError object that describes the
+                           problem.
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
@@ -369,6 +389,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -387,6 +408,7 @@ This function is documented with the FilterFunction type.
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -412,6 +434,7 @@ This function is documented with the FilterFunction type.
 public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -435,6 +458,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -460,6 +484,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -483,6 +508,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -508,6 +534,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -531,6 +558,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -556,6 +584,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -579,6 +608,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
