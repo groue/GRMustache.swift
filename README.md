@@ -34,7 +34,7 @@ Usage
 Hello {{name}}
 Your beard trimmer will arrive on {{format(date)}}.
 {{#late}}
-Well, on {{format(real_date)}} due to Martian attack.
+Well, on {{format(real_date)}} because of a Martian attack.
 {{/late}}
 ```
 
