@@ -512,6 +512,7 @@
 				56FD0F5F1AAED3C3005C55A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		56FD0F601AAED3C3005C55A7 /* Build configuration list for PBXNativeTarget "MustacheDemoiOSTests" */ = {
 			isa = XCConfigurationList;
@@ -520,6 +521,7 @@
 				56FD0F621AAED3C3005C55A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
