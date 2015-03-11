@@ -1052,7 +1052,12 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
         // We are not rendering an inverted {{^ section }} tag, because
         // RenderingEngine takes care of the rendering of inverted sections.
         //
-        // So we are rendering a {{ variable }} tag. Return its empty rendering:
+        // So we are rendering a {{ variable }} tag. As en empty collection, we
+        // must return an empty rendering.
+        //
+        // Renderings have a content type. In order to render an empty
+        // rendering that has the contentType of the tag, let's use the
+        // renderInnerContent method of the tag.
         return info.tag.renderInnerContent(info.context, error: error)
     }
 }
