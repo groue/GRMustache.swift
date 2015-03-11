@@ -3,6 +3,10 @@ GRMustache.swift
 
 GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
 
+It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
+
+Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
+
 
 Features
 --------
@@ -21,15 +25,6 @@ Requirements
 - Xcode 6.1
 
 
-How to
-------
-
-You'll find in the repository:
-
-- a `Mustache.xcodeproj` project to be embedded in your applications
-- a `Mustache.xcworkspace` workspace that contains a Playground and a demo application
-
-
 Usage
 -----
 
@@ -37,27 +32,39 @@ Usage
 
 ```mustache
 Hello {{name}}
-You have just won {{value}} dollars!
-{{#in_ca}}
-Well, {{taxed_value}} dollars, after taxes.
-{{/in_ca}}
+Your beard trimmer will arrive on {{format(date)}}.
+{{#late}}
+Well, on {{format(real_date)}} because of a Martian attack.
+{{/late}}
 ```
 
 ```swift
 import Mustache
 
 let template = Template(named: "template")!
+
+let dateFormatter = NSDateFormatter()
+dateFormatter.dateStyle = .MediumStyle
+template.registerInBaseContext("format", Box(dateFormatter))
+
 let data = [
-    "name": "Chris",
-    "value": 10000,
-    "taxed_value": 10000 - (10000 * 0.4),
-    "in_ca": true]
+    "name": "Arthur",
+    "date": NSDate(),
+    "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
+    "late": true
+]
 let rendering = template.render(Box(data))!
 ```
 
 
 Documentation
 -------------
+
+You'll find in the repository:
+
+- a `Mustache.xcodeproj` project to be embedded in your applications so that you can import the Mustache module.
+- a `Mustache.xcworkspace` workspace that contains a Playground and a demo application
+
 
 All public types, functions and methods of the library are documented in the source code.
 
@@ -318,3 +325,8 @@ Other templates can inherit from `layout.mustache`, and override its sections:
 ```
 
 When you render `article.mustache`, you get a full HTML page.
+
+
+### Built-in goodies
+
+The library ships with built-in [goodies](Docs/Guides/goodies.md) that will help you render your templates: format values, render array indexes, localize templates, etc.

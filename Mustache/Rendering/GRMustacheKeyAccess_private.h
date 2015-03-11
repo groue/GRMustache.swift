@@ -22,8 +22,31 @@
 
 #import <Foundation/Foundation.h>
 
+// This code comes from Objective-C GRMustache.
+//
+// It is still written in Objective-C because
+// +[GRMustacheKeyAccess isSafeMustacheKey:forObject:] needs to call
+// [[object class] safeMustacheKeys] if [object class] conforms to the
+// GRMustacheSafeKeyAccess protocol.
+//
+// But Swift won't let do that (see example below):
+//
+// ::
+//
+//   @objc protocol P {
+//       class func f() -> String
+//   }
+//   
+//   class C : NSObject, P {
+//       class func f() -> String { return "C" }
+//   }
+//   
+//   let c: NSObject = C()
+//   if let p = c as? P {
+//       // error: accessing members of protocol type value 'P.Type' is unimplemented
+//       p.dynamicType.f()
+//   }
 @interface GRMustacheKeyAccess : NSObject
-
 + (BOOL)isSafeMustacheKey:(NSString *)key forObject:(id)object;
 
 @end

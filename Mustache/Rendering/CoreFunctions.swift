@@ -131,8 +131,8 @@ one.
 It is likely you will want to extract the boxed value. MustacheBox comes with
 the `value`, `boolValue`, `intValue`, `uintValue`, `doubleValue`, `arrayValue`
 and `dictionaryValue` properties. All but the first help extracting values that
-may come in different shapes. For example, the `intValue` returns a value for
-boxed ints, doubles, and NSNumber.
+may come in different shapes. For example, the `intValue` returns an Int for
+boxed ints (obviously), but also doubles and NSNumbers.
 
 Yet, the Filter function comes with more straightforward variants that help you
 process int, strings, custom classes, etc:
@@ -337,7 +337,8 @@ Variadic filters are given raw boxes, and it is likely you will want to extract
 values out of them. MustacheBox comes with the `value`, `boolValue`, `intValue`,
 `uintValue`, `doubleValue`, `arrayValue` and `dictionaryValue` properties. All
 but the first help extracting values that may come in different shapes. For
-example, the `intValue` returns a value for boxed ints, doubles, and NSNumber.
+example, `intValue` returns an Int for boxed ints (obviously), but also doubles
+and NSNumbers.
 
 ::
 
@@ -356,6 +357,26 @@ example, the `intValue` returns a value for boxed ints, doubles, and NSNumber.
   // Renders "6"
   template.render(Box(["a": 1, "b": 2, "c": 3]))!
 
+:param: box                The argument of the filter.
+
+:param: partialApplication This parameter is used for multi-argument filter
+                           expressions such as {{ f(a,b,c) }}.
+
+                           If true, the filter should return another filter
+                           that will accept the next argument. If false, box
+                           parameter is the last argument of the Mustache filter
+                           expression, and the filter should return the result.
+
+                           For single-argument filter expressions such as f(x),
+                           partialApplication is always false.
+                           
+                           We recommend that you do not implement multi-argument
+                           filters with this parameter, but instead use the
+                           VariadicFilter function. See its documentation.
+
+:param: error              If there is a problem evaluating the result, upon
+                           return contains an NSError object that describes the
+                           problem.
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
@@ -368,6 +389,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -386,6 +408,7 @@ This function is documented with the FilterFunction type.
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -411,6 +434,7 @@ This function is documented with the FilterFunction type.
 public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -434,6 +458,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -459,6 +484,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -482,6 +508,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -507,6 +534,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -530,6 +558,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -555,6 +584,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -578,6 +608,7 @@ This function is documented with the FilterFunction type.
 public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         if partialApplication {
+            // This is a single-argument filter: we do not wait for another one.
             if error != nil {
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
@@ -600,6 +631,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (box: MustacheBox, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(box, info, error)
@@ -613,6 +650,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (t: T?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(t, info, error)
@@ -626,6 +669,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (t: T, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(t, info, error)
@@ -639,6 +688,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (int: Int?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(int, info, error)
@@ -652,6 +707,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (int: Int, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(int, info, error)
@@ -665,6 +726,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (uint: UInt?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(uint, info, error)
@@ -678,6 +745,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (uint: UInt, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(uint, info, error)
@@ -691,6 +764,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (double: Double?, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(double, info, error)
@@ -704,6 +783,12 @@ This function is documented with the FilterFunction type.
 :see: FilterFunction
 */
 public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    // The roles of core functions are clear:
+    // - transforming values is the role of FilterFunction
+    // - performing custom rendering is the role of RenderFunction
+    //
+    // Hence, a "filter that performs custom rendering" is simply a
+    // FilterFunction which returns a RenderFunction:
     return Filter { (double: Double, error: NSErrorPointer) in
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
             return filter(double, info, error)
@@ -724,10 +809,10 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
         let boxes = boxes + [box]
         if partialApplication {
-            // await another argument
+            // Wait for another argument
             return Box(_VariadicFilter(boxes, filter))
         } else {
-            // no more argument: compute final value
+            // No more argument: compute final value
             return filter(boxes: boxes, error: error)
         }
     }
