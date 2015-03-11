@@ -889,6 +889,18 @@ extension String : MustacheBoxable {
     GRMustache makes sure String and NSString have the same behavior: whatever
     the actual type of boxed strings, your templates render the same.
     
+    
+    Strings can be queried for the `length` key, which evaluates to the number
+    of characters in the string.
+    
+    ::
+    
+      // Renders "北京 has 2 characters."
+      let template = Template(string: "{{string}} has {{string.length}} characters.")!
+      let rendering = template.render(Box(["string": "北京"]))!
+      println(rendering)
+    
+    
     Whenever you want to extract a string out of a box, cast the boxed value to
     String or NSString:
     
@@ -1078,9 +1090,44 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
 /**
 A function that wraps a collection of MustacheBoxable.
 
+Collections iterate their content:
+
 ::
 
-  let box = Box([1,2,3])
+  let template = Template(string: "{{#items}}{{.}},{{/items}}{{^items}}Empty{{/items}}")!
+
+  // Renders "1,2,3,"
+  template.render(Box(["items": [1,2,3]]))!
+
+  // Renders "Empty"
+  template.render(Box(["items": []]))!
+
+
+Collections can be queried for the following keys:
+
+- count: number of elements in the collection
+- first: the first object in the collection
+- firstObject: the first object in the collection
+- last: the last object in the collection
+- lastObject: the last object in the collection
+
+::
+
+  // Renders "3 items, from 1 to 3."
+  let template = Template(string: "{{items.count}} items, from {{items.first}} to {{items.last}}.")!
+  template.render(Box(["items": [1,2,3]]))!
+
+
+In order to render a section if and only if a collection is not empty, you can
+query its `count` property, which behaves as the false boolean when zero.
+
+::
+
+  // Renders "Not empty", and then "Empty".
+  let template = Template(string: "{{#items.count}}Not empty{{/items.count}}{{^items.count}}Empty{{/items.count}}")!
+  template.render(Box(["items": [1,2,3]]))!
+  template.render(Box(["items": []]))!
+
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -1592,7 +1639,7 @@ extension NSSet : ObjCMustacheBoxable {
     /**
     Let NSSet feed Mustache templates.
     
-    Sets are Mustache collections: they iterate their content.
+    Sets are Mustache collections: they iterate their content:
     
     ::
     
