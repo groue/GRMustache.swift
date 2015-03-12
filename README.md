@@ -275,7 +275,10 @@ When you want to format values, you don't have to write your own filters: just u
 let squareRoot = Filter { (x: Double, error: NSErrorPointer) in
     if x < 0 {
         if error != nil {
-            error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Invalid negative value"])
+            error.memory = NSError(
+                domain: GRMustacheErrorDomain,
+                code: GRMustacheErrorCodeRenderingError,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid negative value"])
         }
         return nil
     } else {
