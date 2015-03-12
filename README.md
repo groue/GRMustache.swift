@@ -99,7 +99,7 @@ We describe below a few use cases of the library:
 
 Errors are not funny, but they happen.
 
-You may get errors when loading templates, such as I/O errors:
+You may get errors when loading templates, such as system I/O errors:
 
 ```swift
 // The file “template” couldn’t be opened because there is no such file.
