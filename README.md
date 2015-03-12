@@ -95,6 +95,53 @@ The documentation contains many examples that you can run in the Playground incl
 We describe below a few use cases of the library:
 
 
+### Errors
+
+Errors are not funny, but they happen.
+
+You may get errors when loading templates, such as system I/O errors:
+
+```swift
+// The file “template” couldn’t be opened because there is no such file.
+var error: NSError?
+Template(path: "/path/to/missing/template", error: &error)
+error!.localizedDescription
+```
+
+Errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeTemplateNotFound`:
+
+```swift
+// No such template: `inexistant`
+Template(named: "inexistant", error: &error)
+error!.localizedDescription
+```
+
+Parse errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeParseError`:
+
+```swift
+// Parse error at line 1: Unclosed Mustache tag
+Template(string: "Hello {{name", error: &error)
+error!.localizedDescription
+```
+
+Rendering errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
+
+```swift
+// Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+template = Template(string: "{{undefinedFilter(x)}}")!
+template.render(error: &error)
+error!.localizedDescription
+```
+
+When you render trusted valid templates with trusted valid data, you can avoid error handling:
+
+```swift
+// Assume valid parsing and rendering
+template = Template(string: "{{name}} has a Mustache.")!
+template.render(Box(data))!
+```
+
+
 ### Rendering of Objective-C Objects
 
 NSObject subclasses can trivially feed your templates:
@@ -116,7 +163,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a full description of the rendering of NSObject, see the inline documentation of the `NSObject.mustacheBox` method in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
 
 ### Rendering of pure Swift Objects
@@ -161,12 +208,12 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a more complete discussion, see the documentation of the `MustacheBoxable` protocol in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a more complete discussion, see the "Boxing of Swift types" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
 
 ### Filters
 
-GRMustache filters can process values:
+**Filters process values:**
 
 ```swift
 // Define the `square` filter.
@@ -188,7 +235,8 @@ template.registerInBaseContext("square", Box(square))
 let rendering = template.render(Box(["n": 10]))!
 ```
 
-Filters can take several arguments:
+
+**Filters can take several arguments:**
 
 ```swift
 // Define the `sum` filter.
@@ -215,12 +263,13 @@ template.registerInBaseContext("sum", Box(sum))
 template.render(Box(["a": 1, "b": 2, "c": 3]))!
 ```
 
-Filters can chain and generally be part of more complex expressions:
+
+**Filters can chain and generally be part of more complex expressions:**
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
 
-Filters can provide special rendering of mustache sections:
+**Filters can provide special rendering of mustache sections:**
 
 `cats.mustache`:
 
@@ -261,6 +310,47 @@ let rendering = template.render(Box(data))!
 Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
+
+
+**Filters can validate their arguments and return errors:**
+
+```swift
+// Define the `squareRoot` filter.
+//
+// squareRoot(x) evaluates to the square root of the provided double, and
+// returns an error for negative values.
+let squareRoot = Filter { (x: Double, error: NSErrorPointer) in
+    if x < 0 {
+        if error != nil {
+            error.memory = NSError(
+                domain: GRMustacheErrorDomain,
+                code: GRMustacheErrorCodeRenderingError,
+                userInfo: [NSLocalizedDescriptionKey: "Invalid negative value"])
+        }
+        return nil
+    } else {
+        return Box(sqrt(x))
+    }
+}
+
+
+// Register the squareRoot filter in our template:
+
+let template = Template(string: "√{{x}} = {{squareRoot(x)}}")!
+template.registerInBaseContext("squareRoot", Box(squareRoot))
+
+
+// √100 = 10.0
+
+let rendering = template.render(Box(["x": 100]))!
+
+
+// Error evaluating {{squareRoot(x)}} at line 1: Invalid negative value
+
+var error: NSError?
+template.render(Box(["x": -1]), error: &error)
+error!.localizedDescription
+```
 
 
 ### Lambdas
