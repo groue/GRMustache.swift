@@ -95,6 +95,53 @@ The documentation contains many examples that you can run in the Playground incl
 We describe below a few use cases of the library:
 
 
+### Errors
+
+Errors are not funny, but they happen.
+
+You may get errors when loading templates, such as I/O errors:
+
+```swift
+// The file “template” couldn’t be opened because there is no such file.
+var error: NSError?
+Template(path: "/path/to/missing/template", error: &error)
+error!.localizedDescription
+```
+
+Errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeTemplateNotFound`:
+
+```swift
+// No such template: `inexistant`
+Template(named: "inexistant", error: &error)
+error!.localizedDescription
+```
+
+Parse errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeParseError`:
+
+```swift
+// Parse error at line 1: Unclosed Mustache tag
+Template(string: "Hello {{name", error: &error)
+error!.localizedDescription
+```
+
+Rendering errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
+
+```swift
+// Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+template = Template(string: "{{undefinedFilter(x)}}")!
+template.render(error: &error)
+error!.localizedDescription
+```
+
+When you render trusted valid templates with trusted valid data, you can avoid error handling:
+
+```swift
+// Assume valid parsing and rendering
+template = Template(string: "{{name}} has a Mustache.")!
+template.render(Box(data))!
+```
+
+
 ### Rendering of Objective-C Objects
 
 NSObject subclasses can trivially feed your templates:
