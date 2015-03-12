@@ -166,7 +166,7 @@ For a more complete discussion, see the "Boxing of Swift types" section in [Must
 
 ### Filters
 
-#### Filters process values:
+**Filters process values:**
 
 ```swift
 // Define the `square` filter.
@@ -189,7 +189,7 @@ let rendering = template.render(Box(["n": 10]))!
 ```
 
 
-#### Filters can take several arguments:
+**Filters can take several arguments:**
 
 ```swift
 // Define the `sum` filter.
@@ -217,12 +217,12 @@ template.render(Box(["a": 1, "b": 2, "c": 3]))!
 ```
 
 
-#### Filters can chain and generally be part of more complex expressions:
+**Filters can chain and generally be part of more complex expressions:**
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
 
-#### Filters can provide special rendering of mustache sections:
+**Filters can provide special rendering of mustache sections:**
 
 `cats.mustache`:
 
@@ -265,7 +265,7 @@ Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](M
 When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
 
 
-#### Filters can validate their arguments and return errors:
+**Filters can validate their arguments and return errors:**
 
 ```swift
 // Define the `squareRoot` filter.
