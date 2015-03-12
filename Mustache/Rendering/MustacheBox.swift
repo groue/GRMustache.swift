@@ -39,7 +39,7 @@ import Foundation
 //   Describes the MustacheBox type, and the most generic Box() function
 //
 //
-// - MustacheBoxable and the Boxing of Swift scalar types
+// - MustacheBoxable and the Boxing of Swift types
 //
 //   The MustacheBoxable protocol makes any Swift type able to be boxed with
 //   the Box(MustacheBoxable?) function.
@@ -497,7 +497,7 @@ public func Box(
 
 
 // =============================================================================
-// MARK: - MustacheBoxable and the Boxing of Swift scalar types
+// MARK: - MustacheBoxable and the Boxing of Swift types
 
 /**
 The MustacheBoxable protocol lets your custom Swift types feed Mustache
@@ -1748,7 +1748,7 @@ A function that wraps a value and a KeyedSubscriptFunction into a MustacheBox.
   let person = Person(firstName: "Tom", lastName: "Selleck")
   template.render(Box(["person": Box(person)]))!
 */
-public func Box(value: Any, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox {
+public func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox {
     return MustacheBox(value: value, keyedSubscript: keyedSubscript)
 }
 

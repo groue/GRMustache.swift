@@ -116,7 +116,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a full description of the rendering of NSObject, see the inline documentation of the `NSObject.mustacheBox` method in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
 
 ### Rendering of pure Swift Objects
@@ -161,7 +161,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a more complete discussion, see the documentation of the `MustacheBoxable` protocol in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a more complete discussion, see the "Boxing of Swift types" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
 
 ### Filters
