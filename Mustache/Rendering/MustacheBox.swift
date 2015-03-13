@@ -1259,6 +1259,7 @@ See the Swift-targetted MustacheBoxable protocol for more information.
     //
     //      import Foundation
     //
+    //      // A protocol that is not compatible with Objective-C
     //      struct MustacheBox { }
     //      protocol MustacheBoxable { var mustacheBox: MustacheBox { get } }
     //      
@@ -1271,6 +1272,30 @@ See the Swift-targetted MustacheBoxable protocol for more information.
     //      extension NSNull {
     //          override var mustacheBox: MustacheBox { return MustacheBox() }
     //      }
+    //
+    //    This problem does not apply to Objc-C compatible protocols:
+    //
+    //    ::
+    //
+    //      import Foundation
+    //
+    //      // A protocol that is compatible with Objective-C
+    //      protocol ObjCCompatibleProtocol {
+    //          var prop: String { get }
+    //      }
+    //
+    //      // So far so good
+    //      extension NSObject : ObjCCompatibleProtocol {
+    //          var prop: String { return "NSObject" }
+    //      }
+    //
+    //      // No error
+    //      extension NSNull {
+    //          override var prop: String { return "NSNull" }
+    //      }
+    //
+    //      NSObject().prop // "NSObject"
+    //      NSNull().prop   // "NSNull"
     //
     // Because of those two reasons, we chose to dedicate MustacheBoxable to
     // Swift values, and ObjCMustacheBoxable to Objective-C values. When Swift
