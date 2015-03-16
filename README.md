@@ -97,43 +97,35 @@ We describe below a few use cases of the library:
 
 ### Errors
 
-Errors are not funny, but they happen.
+Not funny, but they happen. You may get errors of domain `GRMustacheErrorDomain`:
 
-You may get errors when loading templates, such as system I/O errors:
+- Code `GRMustacheErrorCodeTemplateNotFound`:
+    
+    ```swift
+    // No such template: `inexistant`
+    var error: NSError?
+    Template(named: "inexistant", error: &error)
+    error!.localizedDescription
+    ```
+    
+- Code `GRMustacheErrorCodeParseError`:
+    
+    ```swift
+    // Parse error at line 1: Unclosed Mustache tag
+    Template(string: "Hello {{name", error: &error)
+    error!.localizedDescription
+    ```
+    
+- Code `GRMustacheErrorCodeRenderingError`:
+    
+    ```swift
+    // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+    template = Template(string: "{{undefinedFilter(x)}}")!
+    template.render(error: &error)
+    error!.localizedDescription
+    ```
 
-```swift
-// The file “template” couldn’t be opened because there is no such file.
-var error: NSError?
-Template(path: "/path/to/missing/template", error: &error)
-error!.localizedDescription
-```
-
-Errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeTemplateNotFound`:
-
-```swift
-// No such template: `inexistant`
-Template(named: "inexistant", error: &error)
-error!.localizedDescription
-```
-
-Parse errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeParseError`:
-
-```swift
-// Parse error at line 1: Unclosed Mustache tag
-Template(string: "Hello {{name", error: &error)
-error!.localizedDescription
-```
-
-Rendering errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
-
-```swift
-// Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-template = Template(string: "{{undefinedFilter(x)}}")!
-template.render(error: &error)
-error!.localizedDescription
-```
-
-When you render trusted valid templates with trusted valid data, you can avoid error handling:
+When you render trusted valid templates with trusted valid data, you can avoid error handling: ignore the `error` argument, and use the bang `!` to force the unwrapping of templates and their renderings, as in this example:
 
 ```swift
 // Assume valid parsing and rendering
