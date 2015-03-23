@@ -200,8 +200,13 @@ public struct MustacheBox {
         if let render = render {
             self.render = render
         } else {
-            // Set self.render twice in order to avoid the compiler error:
-            // "variable 'self.render' captured by a closure before being initialized"
+            // The default render function: it renders {{variable}} tags as the
+            // boxed value, and {{#section}}...{{/}} tags by adding the box to
+            // the context stack.
+            //
+            // We have to set self.render twice in order to avoid the compiler
+            // error: "variable 'self.render' captured by a closure before being
+            // initialized"
             self.render = { (_, _) in return nil }
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -222,10 +227,12 @@ public struct MustacheBox {
     }
     
     // Converter wraps all the conversion closures that help MustacheBox expose
-    // its raw value (typed Any) as useful types.
+    // its raw value (typed Any) as useful types such as Int, Double, etc.
     //
     // Without those conversions, it would be very difficult for the library
-    // user to write code that processes, for example, a boxed number.
+    // user to write code that processes, for example, a boxed number: she
+    // would have to try casting the boxed value to Int, UInt, Double, NSNumber
+    // etc. until she finds its actual type.
     struct Converter {
         let intValue: (() -> Int?)?
         let uintValue: (() -> UInt?)?
