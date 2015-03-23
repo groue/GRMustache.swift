@@ -168,9 +168,9 @@ public class Template {
     
     /**
     Renders a template with a context stack initialized with the provided value
-    on top of the base context.
+    on top of the templates's base context.
     
-    :param: value A value used for evaluating Mustache tags
+    :param: box   A boxed value used for evaluating Mustache tags
     :param: error If there is an error rendering the tag, upon return contains
                   an NSError object that describes the problem.
     
@@ -185,13 +185,13 @@ public class Template {
     }
     
     /**
-    Returns the rendering of the receiver, given a rendering context.
+    Returns the rendering of the receiver, given a context.
     
     This method does not return a String, but a Rendering value that wraps both
     the rendered string and its content type (HTML or Text). It is intended to
     be used when you want to perform custom rendering in a RenderFunction.
     
-    :param: context A rendering context
+    :param: context A context
     :param: error   If there is an error rendering the tag, upon return contains
                     an NSError object that describes the problem.
     
