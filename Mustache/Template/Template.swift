@@ -135,7 +135,7 @@ public class Template {
     
     ::
     
-      // `{{>partial}}` in `template.mustache` resouce loads `partial.mustache`:
+      // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
       let template = Template(named: "template")!
     
     :param: name               The name of a bundle resource.
