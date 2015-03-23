@@ -312,7 +312,7 @@ Then the *filter* of the fBox is evaluated with aBox as an argument. It is
 likely that the result depends on the *value* of the aBox: it is the resultBox.
 
 Then the Mustache engine is ready to render resultBox. It looks in the context
-stack for boses whose *willRender* function is defined. Those willRender
+stack for boxes whose *willRender* function is defined. Those willRender
 functions have the opportunity to process the resultBox, and eventually provide
 the box that will be actually rendered: the renderedBox.
 
