@@ -26,7 +26,7 @@ import Foundation
 /**
 The Template class provides Mustache rendering services.
 */
-public class Template : MustacheBoxable {
+public class Template {
     
     // =========================================================================
     // MARK: - Loading templates
@@ -313,9 +313,24 @@ public class Template : MustacheBoxable {
     public let repository: TemplateRepository
     
     
-    // =========================================================================
-    // MARK: - MustacheBoxable
+    // MARK: - Not public
     
+    private let templateAST: TemplateAST
+    
+    init(repository: TemplateRepository, templateAST: TemplateAST, baseContext: Context) {
+        self.repository = repository
+        self.templateAST = templateAST
+        self.baseContext = baseContext
+    }
+    
+}
+
+
+// =========================================================================
+// MARK: - MustacheBoxable
+
+extension Template : MustacheBoxable {
+
     /**
     This method comes with the MustacheBoxable protocol. It lets templates feed
     other templates.
@@ -333,7 +348,7 @@ public class Template : MustacheBoxable {
           "url": Box("/people/123"),
           "partial": Box(partial)
       ]
-      
+    
       // <a href='/people/123'>Salvador Dali</a>
       let template = Template(string: "{{partial}}")!
       template.render(Box(data))!
@@ -342,16 +357,4 @@ public class Template : MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return Box(value: self, render: { self.render($0.context, error: $1) })
     }
-
-    
-    // MARK: - Not public
-    
-    private let templateAST: TemplateAST
-    
-    init(repository: TemplateRepository, templateAST: TemplateAST, baseContext: Context) {
-        self.repository = repository
-        self.templateAST = templateAST
-        self.baseContext = baseContext
-    }
-    
 }
