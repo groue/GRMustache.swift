@@ -157,10 +157,12 @@ let rendering = template.render(Box(person))!
 
 For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
 
+When extracting values from your NSObject subclasses, GRMustache.swift uses the Objective-C `objectForKeyedSubscript:` method when available, or the Key-Value Coding method `valueForKey:`. Key-Value Coding is not available for Swift classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift classes can still feed templates, though:
+
 
 ### Rendering of pure Swift Objects
 
-Pure Swift types can feed templates as well, with a little help.
+Pure Swift types can feed templates, with a little help.
 
 ```swift
 // Define a pure Swift object:
@@ -171,14 +173,14 @@ struct Person {
 
 Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
 
-Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine by conforming to the `MustacheBoxable` protocol:
+Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
 // Allow Person to feed Mustache template.
 extension Person : MustacheBoxable {
+    
+    // Wrap the person in a Box that knows how to extract the `name` key:
     var mustacheBox: MustacheBox {
-        // Return a Box that wraps the person, and knows how to extract
-        // the `name` key:
         return Box(value: self) { (key: String) in
             switch key {
             case "name":
