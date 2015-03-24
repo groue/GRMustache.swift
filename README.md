@@ -28,7 +28,7 @@ Requirements
 Usage
 -----
 
-`template.mustache`:
+`document.mustache`:
 
 ```mustache
 Hello {{name}}
@@ -41,7 +41,7 @@ Well, on {{format(real_date)}} because of a Martian attack.
 ```swift
 import Mustache
 
-let template = Template(named: "template")!
+let template = Template(named: "document")!
 
 let dateFormatter = NSDateFormatter()
 dateFormatter.dateStyle = .MediumStyle
