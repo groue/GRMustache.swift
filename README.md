@@ -230,34 +230,6 @@ let rendering = template.render(Box(["n": 10]))!
 ```
 
 
-**Filters can take several arguments:**
-
-```swift
-// Define the `sum` filter.
-//
-// sum(x, ...) evaluates to the sum of provided integers
-
-let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-    // Extract integers out of input boxes, assuming zero for non numeric values
-    let integers = map(boxes) { $0.intValue ?? 0 }
-    
-    // Compute and box the sum
-    return Box(integers.reduce(0,+))
-}
-
-
-// Register the sum filter in our template:
-
-let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
-template.registerInBaseContext("sum", Box(sum))
-
-
-// 1 + 2 + 3 = 6
-
-template.render(Box(["a": 1, "b": 2, "c": 3]))!
-```
-
-
 **Filters can chain and generally be part of more complex expressions:**
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
@@ -306,6 +278,34 @@ Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](M
 When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
 
 
+**Filters can take several arguments:**
+
+```swift
+// Define the `sum` filter.
+//
+// sum(x, ...) evaluates to the sum of provided integers
+
+let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+    // Extract integers out of input boxes, assuming zero for non numeric values
+    let integers = map(boxes) { $0.intValue ?? 0 }
+    
+    // Compute and box the sum
+    return Box(integers.reduce(0,+))
+}
+
+
+// Register the sum filter in our template:
+
+let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
+template.registerInBaseContext("sum", Box(sum))
+
+
+// 1 + 2 + 3 = 6
+
+template.render(Box(["a": 1, "b": 2, "c": 3]))!
+```
+
+
 **Filters can validate their arguments and return errors:**
 
 ```swift
@@ -345,7 +345,6 @@ var error: NSError?
 template.render(Box(["x": -1]), error: &error)
 error!.localizedDescription
 ```
-
 
 ### Lambdas
 
