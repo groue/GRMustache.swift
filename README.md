@@ -28,7 +28,7 @@ Requirements
 Usage
 -----
 
-`template.mustache`:
+`document.mustache`:
 
 ```mustache
 Hello {{name}}
@@ -41,7 +41,7 @@ Well, on {{format(real_date)}} because of a Martian attack.
 ```swift
 import Mustache
 
-let template = Template(named: "template")!
+let template = Template(named: "document")!
 
 let dateFormatter = NSDateFormatter()
 dateFormatter.dateStyle = .MediumStyle
@@ -76,7 +76,7 @@ The main entry points are:
     let template = Template(named: "template")!
     ```
 
-- the `Box()` functions, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provide data to templates:
+- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates:
     
     ```swift
     let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
@@ -97,43 +97,35 @@ We describe below a few use cases of the library:
 
 ### Errors
 
-Errors are not funny, but they happen.
+Not funny, but they happen. You may get errors of domain `GRMustacheErrorDomain`:
 
-You may get errors when loading templates, such as system I/O errors:
+- Code `GRMustacheErrorCodeTemplateNotFound`:
+    
+    ```swift
+    // No such template: `inexistant`
+    var error: NSError?
+    Template(named: "inexistant", error: &error)
+    error!.localizedDescription
+    ```
+    
+- Code `GRMustacheErrorCodeParseError`:
+    
+    ```swift
+    // Parse error at line 1: Unclosed Mustache tag
+    Template(string: "Hello {{name", error: &error)
+    error!.localizedDescription
+    ```
+    
+- Code `GRMustacheErrorCodeRenderingError`:
+    
+    ```swift
+    // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+    template = Template(string: "{{undefinedFilter(x)}}")!
+    template.render(error: &error)
+    error!.localizedDescription
+    ```
 
-```swift
-// The file “template” couldn’t be opened because there is no such file.
-var error: NSError?
-Template(path: "/path/to/missing/template", error: &error)
-error!.localizedDescription
-```
-
-Errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeTemplateNotFound`:
-
-```swift
-// No such template: `inexistant`
-Template(named: "inexistant", error: &error)
-error!.localizedDescription
-```
-
-Parse errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeParseError`:
-
-```swift
-// Parse error at line 1: Unclosed Mustache tag
-Template(string: "Hello {{name", error: &error)
-error!.localizedDescription
-```
-
-Rendering errors of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
-
-```swift
-// Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-template = Template(string: "{{undefinedFilter(x)}}")!
-template.render(error: &error)
-error!.localizedDescription
-```
-
-When you render trusted valid templates with trusted valid data, you can avoid error handling:
+When you render trusted valid templates with trusted valid data, you can avoid error handling: ignore the `error` argument, and use the bang `!` to force the unwrapping of templates and their renderings, as in this example:
 
 ```swift
 // Assume valid parsing and rendering
@@ -163,12 +155,14 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [Box.swift](Mustache/Rendering/Box.swift)
+
+When extracting values from your NSObject subclasses, GRMustache.swift uses the [subscripting](http://clang.llvm.org/docs/ObjectiveCLiterals.html#dictionary-style-subscripting) method `objectForKeyedSubscript:` method when available, or the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`. Key-Value Coding is not available for Swift classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift classes can still feed templates, though:
 
 
 ### Rendering of pure Swift Objects
 
-Pure Swift types can feed templates as well, with a little help.
+Pure Swift types can feed templates, with a little help.
 
 ```swift
 // Define a pure Swift object:
@@ -179,14 +173,14 @@ struct Person {
 
 Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
 
-Since there is no way to introspect pure Swift classes and structs, we need to help the Mustache engine by conforming to the `MustacheBoxable` protocol:
+Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
 // Allow Person to feed Mustache template.
 extension Person : MustacheBoxable {
+    
+    // Wrap the person in a Box that knows how to extract the `name` key:
     var mustacheBox: MustacheBox {
-        // Return a Box that wraps the person, and knows how to extract
-        // the `name` key:
         return Box(value: self) { (key: String) in
             switch key {
             case "name":
@@ -208,7 +202,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a more complete discussion, see the "Boxing of Swift types" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
 
 
 ### Filters
@@ -233,34 +227,6 @@ template.registerInBaseContext("square", Box(square))
 // 10 × 10 = 100
 
 let rendering = template.render(Box(["n": 10]))!
-```
-
-
-**Filters can take several arguments:**
-
-```swift
-// Define the `sum` filter.
-//
-// sum(x, ...) evaluates to the sum of provided integers
-
-let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-    // Extract integers out of input boxes, assuming zero for non numeric values
-    let integers = map(boxes) { $0.intValue ?? 0 }
-    
-    // Compute and box the sum
-    return Box(integers.reduce(0,+))
-}
-
-
-// Register the sum filter in our template:
-
-let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
-template.registerInBaseContext("sum", Box(sum))
-
-
-// 1 + 2 + 3 = 6
-
-template.render(Box(["a": 1, "b": 2, "c": 3]))!
 ```
 
 
@@ -312,6 +278,34 @@ Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](M
 When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
 
 
+**Filters can take several arguments:**
+
+```swift
+// Define the `sum` filter.
+//
+// sum(x, ...) evaluates to the sum of provided integers
+
+let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+    // Extract integers out of input boxes, assuming zero for non numeric values
+    let integers = map(boxes) { $0.intValue ?? 0 }
+    
+    // Compute and box the sum
+    return Box(integers.reduce(0,+))
+}
+
+
+// Register the sum filter in our template:
+
+let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
+template.registerInBaseContext("sum", Box(sum))
+
+
+// 1 + 2 + 3 = 6
+
+template.render(Box(["a": 1, "b": 2, "c": 3]))!
+```
+
+
 **Filters can validate their arguments and return errors:**
 
 ```swift
@@ -351,7 +345,6 @@ var error: NSError?
 template.render(Box(["x": -1]), error: &error)
 error!.localizedDescription
 ```
-
 
 ### Lambdas
 
