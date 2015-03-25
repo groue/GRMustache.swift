@@ -76,7 +76,7 @@ The main entry points are:
     let template = Template(named: "template")!
     ```
 
-- the `Box()` functions, documented in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift), which provide data to templates:
+- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates:
     
     ```swift
     let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
@@ -155,7 +155,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [Box.swift](Mustache/Rendering/Box.swift)
 
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [subscripting](http://clang.llvm.org/docs/ObjectiveCLiterals.html#dictionary-style-subscripting) method `objectForKeyedSubscript:` method when available, or the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`. Key-Value Coding is not available for Swift classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift classes can still feed templates, though:
 
@@ -202,7 +202,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a more complete discussion, see the "Boxing of Swift types" section in [MustacheBox.swift](Mustache/Rendering/MustacheBox.swift)
+For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
 
 
 ### Filters

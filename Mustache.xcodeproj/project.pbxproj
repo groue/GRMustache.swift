@@ -18,6 +18,8 @@
 		560ABB691A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */; };
 		560ABB6B1A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */; };
 		560ABB6D1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */ = {isa = PBXBuildFile; fileRef = 560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */; };
+		560DE2631AC33D0D005C0312 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE2621AC33D0D005C0312 /* Box.swift */; };
+		560DE2641AC33D0D005C0312 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE2621AC33D0D005C0312 /* Box.swift */; };
 		560FA5A21A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
 		560FA5A31A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
 		561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
@@ -236,6 +238,7 @@
 		560ABB661A2754FD009A004A /* TemplateRepositoryFileSystemTests */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests; sourceTree = "<group>"; };
 		560ABB671A2754FD009A004A /* TemplateRepositoryFileSystemTests_ISOLatin1 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_ISOLatin1; sourceTree = "<group>"; };
 		560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_UTF8; sourceTree = "<group>"; };
+		560DE2621AC33D0D005C0312 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxTests.swift; sourceTree = "<group>"; };
 		561646931A23C11400F8ADE0 /* Movie.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Movie.mustache; sourceTree = "<group>"; };
 		561646951A23C12B00F8ADE0 /* Person.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Person.mustache; sourceTree = "<group>"; };
@@ -547,6 +550,7 @@
 		563AE1D619FC4A360028C6C1 /* Rendering */ = {
 			isa = PBXGroup;
 			children = (
+				560DE2621AC33D0D005C0312 /* Box.swift */,
 				563AE1D719FC4A450028C6C1 /* Context.swift */,
 				56660D6D1A9378B100E53CCF /* CoreFunctions.swift */,
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
@@ -931,6 +935,7 @@
 				561E72781A8BDC4D004ED48B /* IdentifierExpression.swift in Sources */,
 				561E72921A8BDC4D004ED48B /* Context.swift in Sources */,
 				561E72951A8BDC4D004ED48B /* RenderingEngine.swift in Sources */,
+				560DE2641AC33D0D005C0312 /* Box.swift in Sources */,
 				561E727C1A8BDC4D004ED48B /* InheritableSectionNode.swift in Sources */,
 				561E72891A8BDC4D004ED48B /* JavascriptEscape.swift in Sources */,
 				561E72831A8BDC4D004ED48B /* TextNode.swift in Sources */,
@@ -1016,6 +1021,7 @@
 				563AE1D019FC446A0028C6C1 /* VariableTag.swift in Sources */,
 				56BD79401A0E381900937A76 /* MustacheBox.swift in Sources */,
 				563AE1FB19FC5B860028C6C1 /* SectionTag.swift in Sources */,
+				560DE2631AC33D0D005C0312 /* Box.swift in Sources */,
 				56BF06581A063DC800926BEB /* URLEscape.swift in Sources */,
 				563AE1C919FC38B80028C6C1 /* ExpressionParser.swift in Sources */,
 				563AE1FE19FC5DEC0028C6C1 /* TranslateCharacters.swift in Sources */,
