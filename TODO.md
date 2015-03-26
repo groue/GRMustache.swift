@@ -7,4 +7,4 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [ ] Is this function useful? func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox
 - [X] Make Box(NSNull()) stop the lookup in context stack
-- [ ] Box(collection of optionals)
+- [X] Box(collection of optionals) (done in Swift1.2 branch)
