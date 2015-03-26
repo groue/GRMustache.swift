@@ -160,6 +160,14 @@ class BoxTests: XCTestCase {
         XCTAssertEqual(rendering, "0123")
     }
     
+    func testArrayOfOptionalInt() {
+        let value: Array<Int?> = [0,1,2,3, nil]
+        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let box = Box(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "0123")
+    }
+    
     func testArrayOfArrayOfInt() {
         let value: Array<Array<Int>> = [[0,1],[2,3]]
         let template = Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")!

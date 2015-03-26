@@ -750,6 +750,60 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
     }
 }
 
+/**
+A function that wraps a collection of optional MustacheBoxable.
+
+See
+*/
+public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+    if let collection = collection {
+        let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
+        return MustacheBox(
+            boolValue: (count > 0),
+            value: collection,
+            converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
+            keyedSubscript: { (key: String) in
+                switch key {
+                case "count":
+                    // Support for both Objective-C and Swift arrays.
+                    return Box(count)
+                    
+                case "firstObject", "first":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.startIndex])
+                    } else {
+                        return Box()
+                    }
+                    
+                case "lastObject", "last":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
+                    } else {
+                        return Box()
+                    }
+                    
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return info.tag.renderInnerContent(info.context.extendedContext(Box(collection)), error: error)
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    // {{^ collection }}...{{/ collection }}
+                    return renderBoxArray(map(collection) { Box($0) }, info, error)
+                }
+        })
+    } else {
+        return Box()
+    }
+}
+
 
 /**
 A function that wraps a dictionary of MustacheBoxable.
