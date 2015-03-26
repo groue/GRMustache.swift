@@ -810,11 +810,11 @@ A function that wraps a dictionary of MustacheBoxable.
 
 ::
 
-  let box = Box(["firstName": "Freddy", "lastName": "Mercury"])
+  let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let box = Box(dictionary)
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
-        
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
@@ -828,6 +828,38 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
             keyedSubscript: { (key: String) in
                 return Box(dictionary[key])
             })
+    } else {
+        return Box()
+    }
+}
+
+/**
+A function that wraps a dictionary of optional MustacheBoxable.
+
+::
+
+  let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let box = Box(dictionary)
+*/
+public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
+    if let dictionary = dictionary {
+        return MustacheBox(
+            value: dictionary,
+            converter: MustacheBox.Converter(
+                dictionaryValue: {
+                    var boxDictionary: [String: MustacheBox] = [:]
+                    for (key, item) in dictionary {
+                        boxDictionary[key] = Box(item)
+                    }
+                    return boxDictionary
+            }),
+            keyedSubscript: { (key: String) in
+                if let value = dictionary[key] {
+                    return Box(value)
+                } else {
+                    return Box()
+                }
+        })
     } else {
         return Box()
     }
