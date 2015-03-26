@@ -44,7 +44,7 @@ public struct MustacheBox {
     public let value: Any?
     
     /**
-    The only empty boxes are Box() and Box(NSNull())
+    The only empty box is Box(). In particular, Box(NSNull()) is not empty.
     */
     public let isEmpty: Bool
     
@@ -208,7 +208,7 @@ public struct MustacheBox {
         }
     }
 
-    // Hackish helper function which helps us boxing NSArray and NSNull.
+    // Hackish helper function which helps us boxing NSArray.
     func boxWithValue(value: Any?) -> MustacheBox {
         return MustacheBox(
             boolValue: self.boolValue,
