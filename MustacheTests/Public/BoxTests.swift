@@ -144,6 +144,22 @@ class BoxTests: XCTestCase {
 //        XCTAssertEqual(rendering3, "custom3,other")
 //    }
     
+    func testDictionaryOfInt() {
+        let value: Dictionary<String, Int> = ["name": 1]
+        let template = Template(string: "{{name}}")!
+        let box = Box(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "1")
+    }
+    
+    func testDictionaryOfOptionalInt() {
+        let value: Dictionary<String, Int?> = ["name": 1]
+        let template = Template(string: "{{name}}")!
+        let box = Box(value)
+        let rendering = template.render(box)!
+        XCTAssertEqual(rendering, "1")
+    }
+    
     func testArrayOfInt() {
         let value: Array<Int> = [0,1,2,3]
         let template = Template(string: "{{#.}}{{.}}{{/}}")!
