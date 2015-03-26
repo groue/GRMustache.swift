@@ -415,6 +415,8 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
             return nil
         } else if box.isEmpty {
             return filter(nil, error)
+        } else if box.value is NSNull {
+            return filter(nil, error)
         } else if let t = box.value as? T {
             return filter(t, error)
         } else {
@@ -464,6 +466,8 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
             }
             return nil
         } else if box.isEmpty {
+            return filter(nil, error)
+        } else if box.value is NSNull {
             return filter(nil, error)
         } else if let t = box.intValue {
             return filter(t, error)
@@ -515,6 +519,8 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
             return nil
         } else if box.isEmpty {
             return filter(nil, error)
+        } else if box.value is NSNull {
+            return filter(nil, error)
         } else if let t = box.uintValue {
             return filter(t, error)
         } else {
@@ -564,6 +570,8 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
             }
             return nil
         } else if box.isEmpty {
+            return filter(nil, error)
+        } else if box.value is NSNull {
             return filter(nil, error)
         } else if let t = box.doubleValue {
             return filter(t, error)

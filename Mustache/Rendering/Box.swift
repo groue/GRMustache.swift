@@ -1144,16 +1144,21 @@ extension NSNull : ObjCMustacheBoxable {
       let data = ["null": NSNull()]
       template.render(Box(data))!
     
-    A Box wrapping NSNull is empty:
+    A Box wrapping NSNull is not empty:
     
     ::
     
       let box = Box(NSNull())
       let value = box.value as NSNull   // NSNull
-      let isEmpty = box.isEmpty         // true
+      let isEmpty = box.isEmpty         // false
     */
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(MustacheBox().boxWithValue(self))
+        return ObjCMustacheBox(MustacheBox(
+            boolValue: false,
+            value: self,
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                return Rendering("")
+        }))
     }
 }
 

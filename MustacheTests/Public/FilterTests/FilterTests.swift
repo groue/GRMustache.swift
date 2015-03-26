@@ -228,6 +228,9 @@ class FilterTests: XCTestCase {
         rendering = template.render(Box())
         XCTAssertEqual(rendering!, "Nil")
         
+        rendering = template.render(Box(["x": NSNull()]))
+        XCTAssertEqual(rendering!, "Nil")
+        
         var error: NSError? = nil
         rendering = template.render(Box(["x": "foo"]), error: &error)
         XCTAssertNil(rendering)
@@ -250,6 +253,11 @@ class FilterTests: XCTestCase {
         
         var error: NSError? = nil
         rendering = template.render(Box(), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        rendering = template.render(Box(["x": NSNull()]), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -280,6 +288,9 @@ class FilterTests: XCTestCase {
         rendering = template.render(Box())
         XCTAssertEqual(rendering!, "Nil")
         
+        rendering = template.render(Box(["x": NSNull()]))
+        XCTAssertEqual(rendering!, "Nil")
+        
         var error: NSError? = nil
         rendering = template.render(Box(["x": 1]), error: &error)
         XCTAssertNil(rendering)
@@ -302,6 +313,11 @@ class FilterTests: XCTestCase {
         
         var error: NSError? = nil
         rendering = template.render(Box(), error: &error)
+        XCTAssertNil(rendering)
+        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
+        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        
+        rendering = template.render(Box(["x": NSNull()]), error: &error)
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
