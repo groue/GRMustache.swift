@@ -84,7 +84,7 @@
 		561E72AF1A8BDC6A004ED48B /* StandardLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */; };
 		561E72B01A8BDC6A004ED48B /* KeyedSubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */; };
 		561E72B11A8BDC6A004ED48B /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
-		561E72B21A8BDC6A004ED48B /* ValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */; };
+		561E72B21A8BDC6A004ED48B /* BoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */; };
 		561E72B31A8BDC6A004ED48B /* TemplateRepositoryBundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2221A27077800BD4F8F /* TemplateRepositoryBundleTests.swift */; };
 		561E72B41A8BDC6A004ED48B /* TemplateRepositoryDataSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21B1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift */; };
 		561E72B51A8BDC6A004ED48B /* TemplateRepositoryDictionaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B21E1A27026800BD4F8F /* TemplateRepositoryDictionaryTests.swift */; };
@@ -192,7 +192,7 @@
 		56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06AF1A064FE900926BEB /* GRMustacheSuiteTests.swift */; };
 		56BF06C51A0650B400926BEB /* FoundationCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */; };
 		56C8D6DC1A1DCB9500F106F8 /* StandardLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */; };
-		56C8D6E11A1F1A4700F106F8 /* ValueTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */; };
+		56C8D6E11A1F1A4700F106F8 /* BoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */; };
 		56C8D6E61A1F1AD800F106F8 /* ReadMeExample1.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56C8D6E31A1F1AD800F106F8 /* ReadMeExample1.mustache */; };
 		56C8D6E71A1F1AD800F106F8 /* ReadMeExample2.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */; };
 		56C8D6E81A1F1AD800F106F8 /* ReadMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */; };
@@ -317,7 +317,7 @@
 		56BF06AF1A064FE900926BEB /* GRMustacheSuiteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRMustacheSuiteTests.swift; sourceTree = "<group>"; };
 		56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FoundationCollectionTests.swift; sourceTree = "<group>"; };
 		56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StandardLibraryTests.swift; sourceTree = "<group>"; };
-		56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ValueTests.swift; sourceTree = "<group>"; };
+		56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BoxTests.swift; sourceTree = "<group>"; };
 		56C8D6E31A1F1AD800F106F8 /* ReadMeExample1.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMeExample1.mustache; sourceTree = "<group>"; };
 		56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ReadMeExample2.mustache; sourceTree = "<group>"; };
 		56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadMeTests.swift; sourceTree = "<group>"; };
@@ -623,6 +623,7 @@
 		56BF069B1A064FE900926BEB /* Public */ = {
 			isa = PBXGroup;
 			children = (
+				56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */,
 				56FC9C831A17CD0C0020AAF8 /* ConfigurationTests */,
 				56FC9C881A17CD0C0020AAF8 /* ContextTests */,
 				56C8D6E21A1F1AD800F106F8 /* DocumentationTests */,
@@ -636,7 +637,6 @@
 				56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */,
 				5685DAAD1A1A201E003E583B /* ServicesTests */,
 				56B4019D1A1F643B002D5CD7 /* TagTests */,
-				56C8D6E01A1F1A4700F106F8 /* ValueTests.swift */,
 				56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */,
 				56B4B2131A25BC4200BD4F8F /* TemplateTests */,
 			);
@@ -988,7 +988,7 @@
 				561E729E1A8BDC6A004ED48B /* ConfigurationTagDelimitersTests.swift in Sources */,
 				561E729B1A8BDC6A004ED48B /* ConfigurationBaseContextTests.swift in Sources */,
 				561E72B01A8BDC6A004ED48B /* KeyedSubscriptFunctionTests.swift in Sources */,
-				561E72B21A8BDC6A004ED48B /* ValueTests.swift in Sources */,
+				561E72B21A8BDC6A004ED48B /* BoxTests.swift in Sources */,
 				561E729C1A8BDC6A004ED48B /* ConfigurationContentTypeTests.swift in Sources */,
 				561E72BA1A8BDC6A004ED48B /* TemplateFromMethodsTests.swift in Sources */,
 				561E72B51A8BDC6A004ED48B /* TemplateRepositoryDictionaryTests.swift in Sources */,
@@ -1077,7 +1077,7 @@
 				560ABAE71A2753AC009A004A /* TemplateRepositoryPathTests.swift in Sources */,
 				56BF06C11A064FE900926BEB /* GRMustacheSuiteTests.swift in Sources */,
 				56C8D6E81A1F1AD800F106F8 /* ReadMeTests.swift in Sources */,
-				56C8D6E11A1F1A4700F106F8 /* ValueTests.swift in Sources */,
+				56C8D6E11A1F1A4700F106F8 /* BoxTests.swift in Sources */,
 				569C423B1A87D03800748E98 /* ContextRegisteredKeyTests.swift in Sources */,
 				5674F3751A1CC7B8000CE8CB /* NSFormatterTests.swift in Sources */,
 				56FC9C8E1A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift in Sources */,
