@@ -79,6 +79,24 @@
       "expected": "<--->"
     },
     {
+      "name": "Missing keys in current object should be looked up in the context stack.",
+      "data": { "object": "root", "subject": { } },
+      "template": "<{{#subject}}{{object}}{{/subject}}>",
+      "expected": "<root>"
+    },
+    {
+      "name": "Present keys in current object should prevent looking up in the context stack.",
+      "data": { "object": "root", "subject": { "object": "subject" } },
+      "template": "<{{#subject}}{{object}}{{/subject}}>",
+      "expected": "<subject>"
+    },
+    {
+      "name": "Explicit null should prevent looking up in the context stack.",
+      "data": { "object": "root", "subject": { "object": null } },
+      "template": "<{{#subject}}{{object}}{{/subject}}>",
+      "expected": "<>"
+    },
+    {
       "name": "Non-empty string should trigger the section rendering.",
       "data": { "subject": "---" },
       "template": "<{{#subject}}---{{/subject}}>",
