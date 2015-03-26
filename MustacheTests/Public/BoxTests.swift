@@ -24,7 +24,7 @@
 import XCTest
 import Mustache
 
-class ValueTests: XCTestCase {
+class BoxTests: XCTestCase {
     
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from MustacheBox.
