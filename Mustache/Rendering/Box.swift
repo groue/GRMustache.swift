@@ -756,8 +756,24 @@ A function that wraps a dictionary of MustacheBoxable.
 
 ::
 
+  // Renders "Freddy Mercury"
   let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let box = Box(dictionary)
+  let template = Template(string: "{{firstName}} {{lastName}}")!
+  let rendering = template.render(Box(dictionary))!
+
+The genuine Mustache won't let you iterate over the key/value pairs of a
+dictionary. Yet GRMustache ships with an `each` filter that performs that very
+job:
+
+::
+
+  // Attach StandardLibrary.each to the key "each":
+  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+  template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+  // Renders "<firstName:Freddy, lastName:Mercury,>"
+  let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let rendering = template.render(Box(["dictionary": dictionary]))!
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -784,8 +800,24 @@ A function that wraps a dictionary of optional MustacheBoxable.
 
 ::
 
+  // Renders "Freddy Mercury"
   let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let box = Box(dictionary)
+  let template = Template(string: "{{firstName}} {{lastName}}")!
+  let rendering = template.render(Box(dictionary))!
+
+The genuine Mustache won't let you iterate over the key/value pairs of a
+dictionary. Yet GRMustache ships with an `each` filter that performs that very
+job:
+
+::
+
+  // Attach StandardLibrary.each to the key "each":
+  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+  template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+  // Renders "<firstName:Freddy, lastName:Mercury,>"
+  let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let rendering = template.render(Box(["dictionary": dictionary]))!
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -1042,6 +1074,9 @@ extension NSObject : ObjCMustacheBoxable {
     - NSArray and array-like objects (NSOrderedSet for example)
     - other objects
     
+    
+    ## Dictionaries
+    
     An objet is treated as a dictionary if it conforms to NSFastEnumeration and
     responds to the objectForKeyedSubscript: selector.
     
@@ -1054,8 +1089,27 @@ extension NSObject : ObjCMustacheBoxable {
       template.render(Box(dictionary))!
     
     
+    The genuine Mustache won't let you iterate over the key/value pairs of a
+    dictionary. Yet GRMustache ships with an `each` filter that performs that very
+    job:
+    
+    ::
+    
+      // Attach StandardLibrary.each to the key "each":
+      let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+      template.registerInBaseContext("each", Box(StandardLibrary.each))
+    
+      // Renders "<name:Arthur, age:36, >"
+      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
+      let rendering = template.render(Box(["dictionary": dictionary]))!
+    
+    
+    ## Arrays
+    
     An objet is treated as an array if it conforms to NSFastEnumeration and
-    does not respond to the objectForKeyedSubscript:.
+    does not respond to the objectForKeyedSubscript:. This is the case of
+    NSArray and NSOrderedSet, for example. Note that NSSet has its own custom
+    Mustache rendering: see the documentation of NSSet.mustacheBox.
     
     ::
     
@@ -1064,7 +1118,36 @@ extension NSObject : ObjCMustacheBoxable {
       // Renders "AEIOU"
       let data = ["voyels": ["A", "E", "I", "O", "U"] as NSArray]
       template.render(Box(data))!
-
+    
+    
+    Arrays can be queried for the following keys:
+    
+    - count: number of elements in the collection
+    - first: the first object in the array
+    - firstObject: the first object in the array
+    - last: the last object in the array
+    - lastObject: the last object in the array
+    
+    ::
+    
+      // Renders "3 items, from 1 to 3."
+      let template = Template(string: "{{items.count}} items, from {{items.first}} to {{items.last}}.")!
+      template.render(Box(["items": [1,2,3] as NSArray]))!
+    
+    
+    In order to render a section if and only if a collection is not empty, you can
+    query its `count` property, which behaves as the false boolean when zero.
+    
+    ::
+    
+      // Renders "Not empty", and then "Empty".
+      let template = Template(string: "{{#items.count}}Not empty{{/items.count}}{{^items.count}}Empty{{/items.count}}")!
+      template.render(Box(["items": [1,2,3] as NSArray]))!
+      template.render(Box(["items": [] as NSArray]))!
+    
+    
+    ## Other objects
+    
     Other objects fall in the general case. Their keys are extracted with the
     objectForKeyedSubscript: method if it is available, or with valueForKey:, as
     long as the key is "safe". Safe keys are, by default, property getters and
