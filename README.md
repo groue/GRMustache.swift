@@ -160,7 +160,7 @@ When extracting values from your NSObject subclasses, GRMustache.swift uses the 
 Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though:
 
 
-### Rendering of pure Swift Objects
+### Rendering of pure Swift values
 
 Pure Swift types can feed templates, with a little help.
 
