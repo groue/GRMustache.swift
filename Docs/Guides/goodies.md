@@ -306,7 +306,7 @@ The zip filter iterates several lists all at once. On each step, one object from
 {{/}}
 ```
 
-`data.json``:
+`data.json`:
 
 ```json
 {
