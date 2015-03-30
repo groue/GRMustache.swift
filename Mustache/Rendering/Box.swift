@@ -23,49 +23,52 @@
 import Foundation
 
 
-// "It's all boxes all the way down."
-//
-// Mustache templates don't eat raw values: they eat boxed values.
-//
-// To box something, you use the Box() function. It comes in several
-// variants so that nearly anything can be boxed and feed templates.
-//
-// This file is organized in five sections with many examples. You can use the
-// Playground included in `Mustache.xcworkspace` to run those examples.
-//
-//
-// - MustacheBoxable and the Boxing of Swift types
-//
-//   The MustacheBoxable protocol makes any Swift type able to be boxed with
-//   the Box(MustacheBoxable?) function.
-//
-//   Learn how the Swift types Bool, Int, UInt, Double, and String are rendered.
-//
-//
-// - Boxing of Swift collections and dictionaries
-//
-//   There is one Box() function for collections, and another one for
-//   dictionaries.
-//
-//
-// - ObjCMustacheBoxable and the Boxing of Objective-C objects
-//
-//   There is a Box() function for Objective-C objects.
-//
-//   Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
-//   NSSet are rendered.
-//
-//
-// - Boxing of Core Mustache functions
-//
-//   The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
-//   can be boxed as well so that you can feed templates with filters,
-//   Mustache lambdas, and more.
-//
-//
-// - Boxing of multi-facetted values
-//
-//   Describes the most advanced Box() function.
+/**
+
+"It's all boxes all the way down."
+
+Mustache templates don't eat raw values: they eat boxed values.
+
+To box something, you use the Box() function. It comes in several variants so
+that nearly anything can be boxed and feed templates.
+
+This file is organized in five sections with many examples. You can use the
+Playground included in `Mustache.xcworkspace` to run those examples.
+
+
+- MustacheBoxable and the Boxing of Swift types
+
+  The MustacheBoxable protocol makes any Swift type able to be boxed with the
+  Box(MustacheBoxable?) function.
+
+  Learn how the Swift types Bool, Int, UInt, Double, and String are rendered.
+
+
+- Boxing of Swift collections and dictionaries
+
+  There is one Box() function for collections, and another one for dictionaries.
+
+
+- ObjCMustacheBoxable and the Boxing of Objective-C objects
+
+  There is a Box() function for Objective-C objects.
+
+  Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
+  NSSet are rendered.
+
+
+- Boxing of Core Mustache functions
+
+  The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
+  can be boxed as well so that you can feed templates with filters, Mustache
+  lambdas, and more.
+
+
+- Boxing of multi-facetted values
+
+  Describes the most advanced Box() function.
+
+*/
 
 
 // =============================================================================
@@ -137,15 +140,18 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     }
 }
 
-// This protocol conformance is not only a matter of consistency. It is also a
-// convenience for the library implementation: it makes an array [MustacheBox]
-// boxable via the Box<CollectionType where C.Generator.Element: MustacheBoxable>()
-// function.
+
+/**
+MustacheBox is obviously boxable: its mustacheBox property return self.
+*/
 extension MustacheBox : MustacheBoxable {
     
-    /**
-    MustacheBox is obviously boxable: its mustacheBox property return self.
-    */
+    // IMPLEMENTATION NOTE
+    //
+    // This protocol conformance is not only a matter of consistency. It is also
+    // a convenience for the library implementation: it makes an array
+    // [MustacheBox] boxable via Box<CollectionType where C.Generator.Element: MustacheBoxable>()
+    
     public var mustacheBox: MustacheBox {
         return self
     }
@@ -540,6 +546,8 @@ extension String : MustacheBoxable {
 // MARK: - Boxing of Swift collections and dictionaries
 
 
+// IMPLEMENTATION NOTE
+//
 // This function is a private helper for collection types CollectionType and
 // NSSet. Collections render as the concatenation of the rendering of their
 // items.
@@ -646,6 +654,9 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
     }
 }
 
+
+// IMPLEMENTATION NOTE
+//
 // We don't provide any boxing function for `SequenceType`, because this type
 // makes no requirement on conforming types regarding whether they will be
 // destructively "consumed" by iteration (as stated by documentation).
@@ -874,6 +885,8 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 */
 @objc public protocol ObjCMustacheBoxable {
     
+    // IMPLEMENTATION NOTE
+    //
     // Why do we need this ObjC-dedicated protocol, when we already have the
     // MustacheBoxable protocol?
     //
