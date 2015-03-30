@@ -966,7 +966,7 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 }
 
 /**
-An NSObject subclass whose sole pupose is to wrap a MustacheBox.
+An NSObject subclass whose sole purpose is to wrap a MustacheBox.
 
 See the documentation of the ObjCMustacheBoxable protocol.
 */
