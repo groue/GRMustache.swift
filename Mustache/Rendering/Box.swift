@@ -752,7 +752,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    // {{^ collection }}...{{/ collection }}
                     return renderBoxArray(map(collection) { Box($0) }, info, error)
                 }
         })
@@ -1430,7 +1429,6 @@ extension NSSet : ObjCMustacheBoxable {
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
-                    // {{^ set }}...{{/ set }}
                     let boxes = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
                     return renderBoxArray(boxes, info, error)
                 }
