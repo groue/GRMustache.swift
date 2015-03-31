@@ -7,3 +7,4 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [ ] Is this function useful? func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox
 - [ ] Consider having {{#template}}...{{/template}} provide dynamic partial inheritance, just as {{template}} already provides dynamic partial inclusion.
+- [ ] Tests for the Lambda functions.

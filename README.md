@@ -350,24 +350,31 @@ When you want to format values, you don't have to write your own filters: just u
 
 ### Lambdas
 
-"Mustache lambdas" are functions that let you perform custom rendering. For example, here is a lambda that wraps a section into a HTML tag:
+"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags. For example:
 
 ```swift
-let lambda: RenderFunction = { (info: RenderingInfo, _) in
-    let innerContent = info.tag.renderInnerContent(info.context)!.string
-    return Rendering("<b>\(innerContent)</b>", .HTML)
-}
+// `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
+// a <b> HTML tag.
+let wrapped = Lambda { "<b>\($0)</b>" }
 
-// <b>Willy is awesome.</b>
+// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
+let fullName = Lambda { "{{firstName}} {{lastName}}" }
 
-let template = Template(string: "{{#wrapped}}{{name}} is awesome.{{/wrapped}}")!
+// <b>Frank Zappa is awesome.</b>
+
+let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
+let template = Template(string: templateString)!
 let data = [
-    "name": Box("Willy"),
-    "wrapped": Box(lambda)]
+    "firstName": Box("Frank"),
+    "lastName": Box("Zappa"),
+    "fullName": Box(fullName),
+    "wrapped": Box(wrapped)]
 let rendering = template.render(Box(data))!
 ```
 
-Custom rendering functions are documented with the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+The `Lambda` function produces spec-compliant "Mustache lambdas". They are a special case of rendering functions.
+
+The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
 ### Template inheritance
