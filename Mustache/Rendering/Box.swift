@@ -149,8 +149,9 @@ extension MustacheBox : MustacheBoxable {
     // IMPLEMENTATION NOTE
     //
     // This protocol conformance is not only a matter of consistency. It is also
-    // a convenience for the library implementation: it makes an array
-    // [MustacheBox] boxable via Box<CollectionType where C.Generator.Element: MustacheBoxable>()
+    // a convenience for the library implementation: it makes arrays
+    // [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
+    // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
     
     public var mustacheBox: MustacheBox {
         return self
