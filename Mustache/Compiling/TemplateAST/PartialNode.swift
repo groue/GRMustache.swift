@@ -32,9 +32,9 @@ class PartialNode: TemplateASTNode {
     // Objective-C GRMustache has a GRMustacheTemplateGenerator class which
     // turns AST into template strings, and uses this name to output partial
     // tags {{> partialName }}.
-    let partialName: String
+    let partialName: String?
     
-    init(partialName: String, templateAST: TemplateAST) {
+    init(templateAST: TemplateAST, partialName: String? = nil) {
         self.partialName = partialName
         self.templateAST = templateAST
     }
