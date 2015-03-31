@@ -206,6 +206,35 @@ let rendering = template.render(Box(person))!
 For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
 
 
+### Lambdas
+
+"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags. For example:
+
+```swift
+// `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
+// a <b> HTML tag.
+let wrapped = Lambda { "<b>\($0)</b>" }
+
+// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
+let fullName = Lambda { "{{firstName}} {{lastName}}" }
+
+// <b>Frank Zappa is awesome.</b>
+
+let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
+let template = Template(string: templateString)!
+let data = [
+    "firstName": Box("Frank"),
+    "lastName": Box("Zappa"),
+    "fullName": Box(fullName),
+    "wrapped": Box(wrapped)]
+let rendering = template.render(Box(data))!
+```
+
+The `Lambda` function produces spec-compliant "Mustache lambdas". They are a special case of rendering functions.
+
+The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+
+
 ### Filters
 
 **Filters process values:**
@@ -348,38 +377,11 @@ Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](M
 When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
 
 
-### Lambdas
-
-"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags. For example:
-
-```swift
-// `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
-// a <b> HTML tag.
-let wrapped = Lambda { "<b>\($0)</b>" }
-
-// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
-let fullName = Lambda { "{{firstName}} {{lastName}}" }
-
-// <b>Frank Zappa is awesome.</b>
-
-let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
-let template = Template(string: templateString)!
-let data = [
-    "firstName": Box("Frank"),
-    "lastName": Box("Zappa"),
-    "fullName": Box(fullName),
-    "wrapped": Box(wrapped)]
-let rendering = template.render(Box(data))!
-```
-
-The `Lambda` function produces spec-compliant "Mustache lambdas". They are a special case of rendering functions.
-
-The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-
 ### Template inheritance
 
-Templates may contain *inheritable sections*:
+GRMustache Template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
+
+Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` section may be overriden by other templates:
 
 `layout.mustache`:
 
@@ -397,7 +399,7 @@ Templates may contain *inheritable sections*:
 </html>
 ```
 
-Other templates can inherit from `layout.mustache`, and override its sections:
+The `article.mustache` below inherits from `layout.mustache`, and overrides its sections:
 
 `article.mustache`:
 
@@ -407,10 +409,8 @@ Other templates can inherit from `layout.mustache`, and override its sections:
     {{$ page_title }}{{ article.title }}{{/ page_title }}
     
     {{$ page_content }}
-        {{# article }}
-            {{ body }}
-            by {{ author }}
-        {{/ article }}
+        {{{ article.html_body }}}
+        by {{ article.author }}
     {{/ page_content }}
     
 {{/ layout }}
