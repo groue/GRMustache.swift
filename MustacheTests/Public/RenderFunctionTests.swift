@@ -497,7 +497,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
-    func testTemplateAsRenderFunction() {
+    func testDynamicPartial() {
         let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
         let template = repository.template(named: "partial")!
         let box = Box(["partial": Box(template), "subject": Box("---")])
@@ -505,12 +505,22 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "---")
     }
     
-    func testTemplateAsRenderFunctionInNotHTMLEscaped() {
+    func testDynamicPartialIsNotHTMLEscaped() {
         let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
         let template = repository.template(named: "partial")!
         let box = Box(["partial": Box(template), "subject": Box("---")])
         let rendering = Template(string: "{{partial}}")!.render(box)!
         XCTAssertEqual(rendering, "<--->")
+    }
+    
+    func testDynamicInheritedPartial() {
+        let repository = TemplateRepository(templates: [
+            "layout": "<{{$a}}Default{{/a}},{{$b}}Ignored{{/b}}>",
+            "partial": "[{{#layout}}---{{$b}}Overriden{{/b}}---{{/layout}}]"])
+        let layout = repository.template(named: "layout")!
+        let box = Box(["layout": Box(layout)])
+        let rendering = repository.template(named: "partial")!.render(box)!
+        XCTAssertEqual(rendering, "[<Default,Overriden>]")
     }
     
     // Those tests is commented out.
