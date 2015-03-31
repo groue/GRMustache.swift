@@ -16,7 +16,7 @@ Features
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
 
-GRMustache.swift does not rely on the Objective-C runtime, but for your convenience. It can render your pure Swift values just as well as Objective-C objects.
+GRMustache.swift does not rely on the Objective-C runtime, but for your convenience. All Swift values can feed templates : Objective-C objects of course, but also pure Swift values, including your own custom types.
 
 
 Requirements
