@@ -381,7 +381,7 @@ When you want to format values, you don't have to write your own filters: just u
 
 GRMustache template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` section may be overriden by other templates:
+Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` sections may be overriden by other templates:
 
 `layout.mustache`:
 
