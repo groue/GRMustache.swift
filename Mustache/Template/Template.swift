@@ -374,14 +374,15 @@ extension Template : MustacheBoxable {
                 // We need an InheritedPartialNode, which wraps the inherited
                 // partial (self), and the template AST which contains
                 // overrides (the section).
-                let partialNode = PartialNode(templateAST: self.templateAST)
-                let sectionAST = (info.tag as SectionTag).templateAST
-                let inheritablePartialNode = InheritedPartialNode(partialNode: partialNode, templateAST: sectionAST)
+                let inheritablePartialNode = InheritedPartialNode(
+                    partialNode: PartialNode(templateAST: self.templateAST),
+                    templateAST: (info.tag as SectionTag).templateAST)
                 
                 // Only RenderingEngine knows how to render InheritedPartialNode.
                 // So wrap the node into a TemplateAST, and render.
-                let renderedAST = TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType)
-                let renderingEngine = RenderingEngine(templateAST: renderedAST, context: info.context)
+                let renderingEngine = RenderingEngine(
+                    templateAST: TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType),
+                    context: info.context)
                 return renderingEngine.render(error: error)
             }
         })
