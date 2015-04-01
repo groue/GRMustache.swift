@@ -515,15 +515,17 @@ class RenderFunctionTests: XCTestCase {
     
     func testDynamicInheritedPartial() {
         let repository = TemplateRepository(templates: [
-            "layout": "<{{$a}}Default{{/a}},{{$b}}Ignored{{/b}}>",
-            "partial": "[{{#layout}}---{{$b}}Overriden{{/b}}---{{/layout}}]"])
-        let layout = repository.template(named: "layout")!
-        let box = Box(["layout": Box(layout)])
-        let rendering = repository.template(named: "partial")!.render(box)!
-        XCTAssertEqual(rendering, "[<Default,Overriden>]")
+            "layout": "<{{$a}}Default{{subject}}{{/a}},{{$b}}Ignored{{/b}}>",
+            "partial": "[{{#layout}}---{{$b}}Overriden{{subject}}{{/b}}---{{/layout}}]"])
+        let template = repository.template(named: "partial")!
+        let data = [
+            "layout": Box(repository.template(named: "layout")!),
+            "subject": Box("---")]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "[<Default---,Overriden--->]")
     }
     
-    // Those tests is commented out.
+    // Those tests are commented out.
     //
     // They tests a feature present in Objective-C GRMustache, that is that
     // Template(string:, error:) would load partials from the "current template
