@@ -208,18 +208,27 @@ For a more complete discussion, see the "Boxing of Swift types" section in [Box.
 
 ### Lambdas
 
-"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags. For example:
+"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
+
+Quoting the [Mustache specification](https://github.com/mustache/spec/blob/master/specs/~lambdas.yml):
+
+> Lambdas are a special-cased data type for use in interpolations and sections.
+> 
+> When used as the data value for an Variable {{tag}}, the lambda MUST be treatable as an arity 0 function, and invoked as such.  The returned value MUST be rendered against the default delimiters, then interpolated in place of the lambda.
+> 
+> When used as the data value for a Section {{#tag}}...{{/tag}}, the lambda MUST be treatable as an arity 1 function, and invoked as such (passing a String containing the unprocessed section contents).  The returned value MUST be rendered against the current delimiters, then interpolated in place of the section.
+
+The `Lambda` function produces spec-compliant "Mustache lambdas":
 
 ```swift
+// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
+let fullName = Lambda { "{{firstName}} {{lastName}}" }
+
 // `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
 // a <b> HTML tag.
 let wrapped = Lambda { "<b>\($0)</b>" }
 
-// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
-let fullName = Lambda { "{{firstName}} {{lastName}}" }
-
 // <b>Frank Zappa is awesome.</b>
-
 let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
 let template = Template(string: templateString)!
 let data = [
@@ -230,9 +239,7 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
-The `Lambda` function produces spec-compliant "Mustache lambdas". They are a special case of rendering functions.
-
-The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
 ### Filters
