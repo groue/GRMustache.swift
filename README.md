@@ -15,8 +15,7 @@ Features
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
-
-GRMustache.swift does not rely on the Objective-C runtime, but for your convenience. All Swift values can feed templates : Objective-C objects of course, but also pure Swift values, including your own custom types.
+- Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime, and does not force you to feed your templates with ad-hoc values. You can use your existing models.
 
 
 Requirements
@@ -177,19 +176,11 @@ Now we want to let Mustache templates extract the `name` key out of a person so 
 Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
-// Allow Person to feed Mustache template.
 extension Person : MustacheBoxable {
     
-    // Wrap the person in a Box that knows how to extract the `name` key:
+    // Here we simply feed templates with a dictionary:
     var mustacheBox: MustacheBox {
-        return Box(value: self) { (key: String) in
-            switch key {
-            case "name":
-                return Box(self.name)
-            default:
-                return Box() // the empty box
-            }
-        }
+        return Box(["name": self.name])
     }
 }
 ```
