@@ -497,7 +497,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
-    func testTemplateAsRenderFunction() {
+    func testDynamicPartial() {
         let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
         let template = repository.template(named: "partial")!
         let box = Box(["partial": Box(template), "subject": Box("---")])
@@ -505,7 +505,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "---")
     }
     
-    func testTemplateAsRenderFunctionInNotHTMLEscaped() {
+    func testDynamicPartialIsNotHTMLEscaped() {
         let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
         let template = repository.template(named: "partial")!
         let box = Box(["partial": Box(template), "subject": Box("---")])
@@ -513,7 +513,19 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "<--->")
     }
     
-    // Those tests is commented out.
+    func testDynamicInheritedPartial() {
+        let repository = TemplateRepository(templates: [
+            "layout": "<{{$a}}Default{{subject}}{{/a}},{{$b}}Ignored{{/b}}>",
+            "partial": "[{{#layout}}---{{$b}}Overriden{{subject}}{{/b}}---{{/layout}}]"])
+        let template = repository.template(named: "partial")!
+        let data = [
+            "layout": Box(repository.template(named: "layout")!),
+            "subject": Box("---")]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "[<Default---,Overriden--->]")
+    }
+    
+    // Those tests are commented out.
     //
     // They tests a feature present in Objective-C GRMustache, that is that
     // Template(string:, error:) would load partials from the "current template

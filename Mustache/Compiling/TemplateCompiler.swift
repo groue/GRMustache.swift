@@ -350,7 +350,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         
-                        let partialNode = PartialNode(partialName: closedPartialName, templateAST: partialTemplateAST)
+                        let partialNode = PartialNode(templateAST: partialTemplateAST, partialName: closedPartialName)
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
                         let inheritedPartialNode = InheritedPartialNode(partialNode: partialNode, templateAST: templateAST)
@@ -393,7 +393,7 @@ class TemplateCompiler: TemplateTokenConsumer {
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error),
                    let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error)
                 {
-                    let partialNode = PartialNode(partialName: partialName, templateAST: partialTemplateAST)
+                    let partialNode = PartialNode(templateAST: partialTemplateAST, partialName: partialName)
                     compilationState.currentScope.appendNode(partialNode)
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true

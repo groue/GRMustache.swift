@@ -249,6 +249,10 @@ public class Context {
         return nil
     }
     
+    
+    // =========================================================================
+    // MARK: - Not public
+    
     var willRenderStack: [WillRenderFunction] {
         switch type {
         case .Root:

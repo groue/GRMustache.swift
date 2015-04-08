@@ -23,49 +23,52 @@
 import Foundation
 
 
-// "It's all boxes all the way down."
-//
-// Mustache templates don't eat raw values: they eat boxed values.
-//
-// To box something, you use the Box() function. It comes in several
-// variants so that nearly anything can be boxed and feed templates.
-//
-// This file is organized in five sections with many examples. You can use the
-// Playground included in `Mustache.xcworkspace` to run those examples.
-//
-//
-// - MustacheBoxable and the Boxing of Swift types
-//
-//   The MustacheBoxable protocol makes any Swift type able to be boxed with
-//   the Box(MustacheBoxable?) function.
-//
-//   Learn how the Swift types Bool, Int, UInt, Double, and String are rendered.
-//
-//
-// - Boxing of Swift collections and dictionaries
-//
-//   There is one Box() function for collections, and another one for
-//   dictionaries.
-//
-//
-// - ObjCMustacheBoxable and the Boxing of Objective-C objects
-//
-//   There is a Box() function for Objective-C objects.
-//
-//   Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
-//   NSSet are rendered.
-//
-//
-// - Boxing of Core Mustache functions
-//
-//   The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
-//   can be boxed as well so that you can feed templates with filters,
-//   Mustache lambdas, and more.
-//
-//
-// - Boxing of multi-facetted values
-//
-//   Describes the most advanced Box() function.
+/**
+
+"It's all boxes all the way down."
+
+Mustache templates don't eat raw values: they eat boxed values.
+
+To box something, you use the Box() function. It comes in several variants so
+that nearly anything can be boxed and feed templates.
+
+This file is organized in five sections with many examples. You can use the
+Playground included in `Mustache.xcworkspace` to run those examples.
+
+
+- MustacheBoxable and the Boxing of Swift types
+
+  The MustacheBoxable protocol makes any Swift type able to be boxed with the
+  Box(MustacheBoxable?) function.
+
+  Learn how the Swift types Bool, Int, UInt, Double, and String are rendered.
+
+
+- Boxing of Swift collections and dictionaries
+
+  There is one Box() function for collections, and another one for dictionaries.
+
+
+- ObjCMustacheBoxable and the Boxing of Objective-C objects
+
+  There is a Box() function for Objective-C objects.
+
+  Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
+  NSSet are rendered.
+
+
+- Boxing of Core Mustache functions
+
+  The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
+  can be boxed as well so that you can feed templates with filters, Mustache
+  lambdas, and more.
+
+
+- Boxing of multi-facetted values
+
+  Describes the most advanced Box() function.
+
+*/
 
 
 // =============================================================================
@@ -137,15 +140,19 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     }
 }
 
-// This protocol conformance is not only a matter of consistency. It is also a
-// convenience for the library implementation: it makes an array [MustacheBox]
-// boxable via the Box<CollectionType where C.Generator.Element: MustacheBoxable>()
-// function.
+
+/**
+MustacheBox is obviously boxable: its mustacheBox property return self.
+*/
 extension MustacheBox : MustacheBoxable {
     
-    /**
-    MustacheBox is obviously boxable: its mustacheBox property return self.
-    */
+    // IMPLEMENTATION NOTE
+    //
+    // This protocol conformance is not only a matter of consistency. It is also
+    // a convenience for the library implementation: it makes arrays
+    // [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
+    // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
+    
     public var mustacheBox: MustacheBox {
         return self
     }
@@ -540,6 +547,8 @@ extension String : MustacheBoxable {
 // MARK: - Boxing of Swift collections and dictionaries
 
 
+// IMPLEMENTATION NOTE
+//
 // This function is a private helper for collection types CollectionType and
 // NSSet. Collections render as the concatenation of the rendering of their
 // items.
@@ -646,6 +655,9 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
     }
 }
 
+
+// IMPLEMENTATION NOTE
+//
 // We don't provide any boxing function for `SequenceType`, because this type
 // makes no requirement on conforming types regarding whether they will be
 // destructively "consumed" by iteration (as stated by documentation).
@@ -741,7 +753,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    // {{^ collection }}...{{/ collection }}
                     return renderBoxArray(map(collection) { Box($0) }, info, error)
                 }
         })
@@ -810,8 +821,25 @@ A function that wraps a dictionary of MustacheBoxable.
 
 ::
 
+  // Renders "Freddy Mercury"
   let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let box = Box(dictionary)
+  let template = Template(string: "{{firstName}} {{lastName}}")!
+  let rendering = template.render(Box(dictionary))!
+
+The genuine Mustache won't let you iterate over the key/value pairs of a
+dictionary. Yet GRMustache ships with an `each` filter that performs that very
+job:
+
+::
+
+  // Attach StandardLibrary.each to the key "each":
+  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+  template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+  // Renders "<firstName:Freddy, lastName:Mercury,>"
+  let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let rendering = template.render(Box(["dictionary": dictionary]))!
+
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -838,8 +866,25 @@ A function that wraps a dictionary of optional MustacheBoxable.
 
 ::
 
+  // Renders "Freddy Mercury"
   let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let box = Box(dictionary)
+  let template = Template(string: "{{firstName}} {{lastName}}")!
+  let rendering = template.render(Box(dictionary))!
+
+The genuine Mustache won't let you iterate over the key/value pairs of a
+dictionary. Yet GRMustache ships with an `each` filter that performs that very
+job:
+
+::
+
+  // Attach StandardLibrary.each to the key "each":
+  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+  template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+  // Renders "<firstName:Freddy, lastName:Mercury,>"
+  let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
+  let rendering = template.render(Box(["dictionary": dictionary]))!
+
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -896,6 +941,8 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 */
 @objc public protocol ObjCMustacheBoxable {
     
+    // IMPLEMENTATION NOTE
+    //
     // Why do we need this ObjC-dedicated protocol, when we already have the
     // MustacheBoxable protocol?
     //
@@ -974,7 +1021,7 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 }
 
 /**
-An NSObject subclass whose sole pupose is to wrap a MustacheBox.
+An NSObject subclass whose sole purpose is to wrap a MustacheBox.
 
 See the documentation of the ObjCMustacheBoxable protocol.
 */
@@ -1026,32 +1073,26 @@ extension NSObject : ObjCMustacheBoxable {
     /**
     Let any NSObject feed Mustache templates.
     
-    GRMustache ships with a few specific classes that provide their own
-    rendering behavior: NSFormatter, NSNull, NSNumber, NSString and NSSet.
+    NSObject's default implementation handles two general cases:
     
-    Your own subclass of NSObject can also override the mustacheBox method so
-    that it provides its own rendering behavior.
+    - Enumerable objects that conform to the NSFastEnumeration protocol, such as
+      NSArray and NSOrderedSet.
+    - Other objects
     
-    NSObject's default implementation handles three general cases:
+    GRMustache ships with a few specific classes that escape the general cases
+    and provide their own rendering behavior: NSFormatter, NSNull, NSNumber,
+    NSString, NSDictionary and NSSet.
     
-    - NSDictionary and dictionary-like objects
-    - NSArray and array-like objects (NSOrderedSet for example)
-    - other objects
-    
-    An objet is treated as a dictionary if it conforms to NSFastEnumeration and
-    responds to the objectForKeyedSubscript: selector.
-    
-    ::
-    
-      let template = Template(string: "{{name}} is {{age}}.")!
-    
-      // Renders "Arthur is 36."
-      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
-      template.render(Box(dictionary))!
+    Your own subclasses of NSObject can also override the mustacheBox method so
+    that they provide their own rendering behavior.
     
     
-    An objet is treated as an array if it conforms to NSFastEnumeration and
-    does not respond to the objectForKeyedSubscript:.
+    ## Arrays
+    
+    An objet is treated as an array if it conforms to NSFastEnumeration. This is
+    the case of NSArray and NSOrderedSet, for example. Note that NSDictionary
+    and NSSet have their own custom Mustache rendering: see the documentation of
+    NSDictionary.mustacheBox and NSSet.mustacheBox.
     
     ::
     
@@ -1060,7 +1101,36 @@ extension NSObject : ObjCMustacheBoxable {
       // Renders "AEIOU"
       let data = ["voyels": ["A", "E", "I", "O", "U"] as NSArray]
       template.render(Box(data))!
-
+    
+    
+    Arrays can be queried for the following keys:
+    
+    - count: number of elements in the collection
+    - first: the first object in the array
+    - firstObject: the first object in the array
+    - last: the last object in the array
+    - lastObject: the last object in the array
+    
+    ::
+    
+      // Renders "3 items, from 1 to 3."
+      let template = Template(string: "{{items.count}} items, from {{items.first}} to {{items.last}}.")!
+      template.render(Box(["items": [1,2,3] as NSArray]))!
+    
+    
+    In order to render a section if and only if a collection is not empty, you can
+    query its `count` property, which behaves as the false boolean when zero.
+    
+    ::
+    
+      // Renders "Not empty", and then "Empty".
+      let template = Template(string: "{{#items.count}}Not empty{{/items.count}}{{^items.count}}Empty{{/items.count}}")!
+      template.render(Box(["items": [1,2,3] as NSArray]))!
+      template.render(Box(["items": [] as NSArray]))!
+    
+    
+    ## Other objects
+    
     Other objects fall in the general case. Their keys are extracted with the
     objectForKeyedSubscript: method if it is available, or with valueForKey:, as
     long as the key is "safe". Safe keys are, by default, property getters and
@@ -1087,42 +1157,15 @@ extension NSObject : ObjCMustacheBoxable {
       template.render(Box(person))!
     */
     public var mustacheBox: ObjCMustacheBox {
-        if let enumerable = self as? NSFastEnumeration
-        {
+        if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
-            if respondsToSelector("objectForKeyedSubscript:")
-            {
-                // Dictionary-like enumerable
-                
-                let dictionary: AnyObject = self
-                return ObjCMustacheBox(MustacheBox(
-                    value: self,
-                    converter: MustacheBox.Converter(
-                        dictionaryValue: {
-                            var boxDictionary: [String: MustacheBox] = [:]
-                            for key in GeneratorSequence(NSFastGenerator(enumerable)) {
-                                if let key = key as? String {
-                                    boxDictionary[key] = BoxAnyObject(dictionary[key])
-                                }
-                            }
-                            return boxDictionary
-                        }),
-                    keyedSubscript: { (key: String) in
-                        return BoxAnyObject(dictionary[key])
-                    }))
-            }
-            else
-            {
-                // Array
-                
-                let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
-                let box = Box(array).boxWithValue(self)
-                return ObjCMustacheBox(box)
-            }
-        }
-        else
-        {
+            // Box an Array<MustacheBox>, but keep the original NSArray value
+            let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
+            let box = Box(array).boxWithValue(self)
+            return ObjCMustacheBox(box)
+            
+        } else {
             // Generic NSObject
             
             return ObjCMustacheBox(MustacheBox(
@@ -1264,6 +1307,55 @@ extension NSString : ObjCMustacheBoxable {
     }
 }
 
+extension NSDictionary : ObjCMustacheBoxable {
+    
+    /**
+    Let NSDictionary feed Mustache templates.
+    
+    ::
+    
+      let template = Template(string: "{{name}} is {{age}}.")!
+    
+      // Renders "Arthur is 36."
+      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
+      template.render(Box(dictionary))!
+    
+    
+    The genuine Mustache won't let you iterate over the key/value pairs of a
+    dictionary. Yet GRMustache ships with an `each` filter that performs that
+    very job:
+    
+    ::
+    
+      // Attach StandardLibrary.each to the key "each":
+      let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+      template.registerInBaseContext("each", Box(StandardLibrary.each))
+    
+      // Renders "<name:Arthur, age:36, >"
+      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
+      let rendering = template.render(Box(["dictionary": dictionary]))!
+
+    */
+    public override var mustacheBox: ObjCMustacheBox {
+        return ObjCMustacheBox(MustacheBox(
+            value: self,
+            converter: MustacheBox.Converter(
+                dictionaryValue: {
+                    return reduce(GeneratorSequence(NSFastGenerator(self)), [:] as [String: MustacheBox]) { (var boxDictionary, key) in
+                        if let key = key as? String {
+                            let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
+                            boxDictionary[key] = BoxAnyObject(item)
+                        }
+                        return boxDictionary
+                    }
+            }),
+            keyedSubscript: { (key: String) in
+                let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
+                return BoxAnyObject(item)
+        }))
+    }
+}
+
 extension NSSet : ObjCMustacheBoxable {
     
     /**
@@ -1330,7 +1422,6 @@ extension NSSet : ObjCMustacheBoxable {
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
-                    // {{^ set }}...{{/ set }}
                     let boxes = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
                     return renderBoxArray(boxes, info, error)
                 }

@@ -4,12 +4,12 @@ Goodies
 GRMustache ships with a library of built-in goodies available for your templates.
 
 - [NSFormatter](#nsformatter)
-- [StandardLibrary.HTMLEscape](#standardlibraryhtmlescape)
-- [StandardLibrary.javascriptEscape](#standardlibraryjavascriptescape)
-- [StandardLibrary.URLEscape](#standardlibraryurlescape)
-- [StandardLibrary.each](#standardlibraryeach)
-- [StandardLibrary.zip](#standardlibraryzip)
-- [StandardLibrary.Localizer](#standardlibrarylocalizer)
+- [HTMLEscape](#htmlescape)
+- [javascriptEscape](#javascriptescape)
+- [URLEscape](#urlescape)
+- [each](#each)
+- [zip](#zip)
+- [Localizer](#localizer)
 
 
 ### NSFormatter
@@ -88,7 +88,7 @@ Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: y
 Support for NSFormatter is written using public APIs. You can check the [source](../../Mustache/Goodies/NSFormatter.swift) for inspiration.
 
 
-### StandardLibrary.HTMLEscape
+### HTMLEscape
 
 Usage:
 
@@ -127,10 +127,10 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 
 StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/HTMLEscape.swift) for inspiration.
 
-See also [javascriptEscape](#standardlibraryjavascriptescape), [URLEscape](#standardlibraryurlescape)
+See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
 
 
-### StandardLibrary.javascriptEscape
+### javascriptEscape
 
 Usage:
 
@@ -176,10 +176,10 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 
 StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/JavascriptEscape.swift) for inspiration.
 
-See also [HTMLEscape](#standardlibraryhtmlescape), [URLEscape](#standardlibraryurlescape)
+See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
 
 
-### StandardLibrary.URLEscape
+### URLEscape
 
 Usage:
 
@@ -217,10 +217,10 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 
 StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/URLEscape.swift) for inspiration.
 
-See also [HTMLEscape](#standardlibraryhtmlescape), [javascriptEscape](#standardlibraryjavascriptescape)
+See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
 
 
-### StandardLibrary.each
+### each
 
 Usage:
 
@@ -282,7 +282,7 @@ The other positional keys `@index`, `@first`, etc. are still available when iter
 The `each` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/EachFilter.swift) for inspiration.
 
 
-### StandardLibrary.zip
+### zip
 
 Usage:
 
@@ -306,7 +306,7 @@ The zip filter iterates several lists all at once. On each step, one object from
 {{/}}
 ```
 
-`data.json``:
+`data.json`:
 
 ```json
 {
@@ -339,7 +339,7 @@ The zip filter renders a section as many times as there are elements in the long
 The `zip` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/ZipFilter.swift) for inspiration.
 
 
-### StandardLibrary.Localizer
+### Localizer
 
 Usage:
 

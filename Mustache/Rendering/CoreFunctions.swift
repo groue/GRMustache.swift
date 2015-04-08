@@ -1007,6 +1007,44 @@ depending on the tag type:
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
+/**
+TODO: doc & tests
+*/
+public func Lambda(lambda: String -> String) -> RenderFunction {
+    return { (info: RenderingInfo, error: NSErrorPointer) in
+        switch info.tag.type {
+        case .Variable:
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Section lambda used in a variable tag."])
+            }
+            return nil
+        case .Section:
+            let templateString = lambda(info.tag.innerTemplateString)
+            let template = Template(string: templateString)
+            return template?.render(info.context, error: error)
+        }
+    }
+}
+
+/**
+TODO: doc & tests
+*/
+public func Lambda(lambda: () -> String) -> RenderFunction {
+    return { (info: RenderingInfo, error: NSErrorPointer) in
+        switch info.tag.type {
+        case .Variable:
+            let templateString = lambda()
+            let template = Template(string: templateString)
+            return template?.render(info.context, error: error)
+        case .Section:
+            if error != nil {
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Section lambda used in a variable tag."])
+            }
+            return nil
+        }
+    }
+}
+
 
 /**
 A Rendering is a tainted String, which knows its content type, Text or HTML.

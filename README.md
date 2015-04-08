@@ -12,10 +12,10 @@ Features
 --------
 
 - Support for the full [Mustache syntax](http://mustache.github.io/mustache.5.html)
-- Ability to render Swift values as well as Objective-C objects
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
+- Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime, and does not force you to feed your templates with ad-hoc values. You can use your existing models.
 
 
 Requirements
@@ -155,12 +155,12 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [Box.swift](Mustache/Rendering/Box.swift)
+When extracting values from your NSObject subclasses, GRMustache.swift uses the [subscripting](http://clang.llvm.org/docs/ObjectiveCLiterals.html#dictionary-style-subscripting) method `objectForKeyedSubscript:` method when available, or the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`. For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [Box.swift](Mustache/Rendering/Box.swift).
 
-When extracting values from your NSObject subclasses, GRMustache.swift uses the [subscripting](http://clang.llvm.org/docs/ObjectiveCLiterals.html#dictionary-style-subscripting) method `objectForKeyedSubscript:` method when available, or the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`. Key-Value Coding is not available for Swift classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift classes can still feed templates, though:
+Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though:
 
 
-### Rendering of pure Swift Objects
+### Rendering of pure Swift values
 
 Pure Swift types can feed templates, with a little help.
 
@@ -176,19 +176,11 @@ Now we want to let Mustache templates extract the `name` key out of a person so 
 Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
-// Allow Person to feed Mustache template.
 extension Person : MustacheBoxable {
     
-    // Wrap the person in a Box that knows how to extract the `name` key:
+    // Here we simply feed templates with a dictionary:
     var mustacheBox: MustacheBox {
-        return Box(value: self) { (key: String) in
-            switch key {
-            case "name":
-                return Box(self.name)
-            default:
-                return Box() // the empty box
-            }
-        }
+        return Box(["name": self.name])
     }
 }
 ```
@@ -203,6 +195,42 @@ let rendering = template.render(Box(person))!
 ```
 
 For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
+
+
+### Lambdas
+
+"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
+
+Quoting the [Mustache specification](https://github.com/mustache/spec/blob/master/specs/~lambdas.yml):
+
+> Lambdas are a special-cased data type for use in interpolations and sections.
+> 
+> When used as the data value for an Variable {{tag}}, the lambda MUST be treatable as an arity 0 function, and invoked as such.  The returned value MUST be rendered against the default delimiters, then interpolated in place of the lambda.
+> 
+> When used as the data value for a Section {{#tag}}...{{/tag}}, the lambda MUST be treatable as an arity 1 function, and invoked as such (passing a String containing the unprocessed section contents).  The returned value MUST be rendered against the current delimiters, then interpolated in place of the section.
+
+The `Lambda` function produces spec-compliant "Mustache lambdas":
+
+```swift
+// `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
+let fullName = Lambda { "{{firstName}} {{lastName}}" }
+
+// `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
+// a <b> HTML tag.
+let wrapped = Lambda { "<b>\($0)</b>" }
+
+// <b>Frank Zappa is awesome.</b>
+let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
+let template = Template(string: templateString)!
+let data = [
+    "firstName": Box("Frank"),
+    "lastName": Box("Zappa"),
+    "fullName": Box(fullName),
+    "wrapped": Box(wrapped)]
+let rendering = template.render(Box(data))!
+```
+
+Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
 ### Filters
@@ -273,10 +301,6 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
 
-Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
-
 
 **Filters can take several arguments:**
 
@@ -346,31 +370,16 @@ template.render(Box(["x": -1]), error: &error)
 error!.localizedDescription
 ```
 
-### Lambdas
+Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
-"Mustache lambdas" are functions that let you perform custom rendering. For example, here is a lambda that wraps a section into a HTML tag:
-
-```swift
-let lambda: RenderFunction = { (info: RenderingInfo, _) in
-    let innerContent = info.tag.renderInnerContent(info.context)!.string
-    return Rendering("<b>\(innerContent)</b>", .HTML)
-}
-
-// <b>Willy is awesome.</b>
-
-let template = Template(string: "{{#wrapped}}{{name}} is awesome.{{/wrapped}}")!
-let data = [
-    "name": Box("Willy"),
-    "wrapped": Box(lambda)]
-let rendering = template.render(Box(data))!
-```
-
-Custom rendering functions are documented with the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
 
 
 ### Template inheritance
 
-Templates may contain *inheritable sections*:
+GRMustache template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
+
+Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` sections may be overriden by other templates:
 
 `layout.mustache`:
 
@@ -388,7 +397,7 @@ Templates may contain *inheritable sections*:
 </html>
 ```
 
-Other templates can inherit from `layout.mustache`, and override its sections:
+The `article.mustache` below inherits from `layout.mustache`, and overrides its sections:
 
 `article.mustache`:
 
@@ -398,10 +407,8 @@ Other templates can inherit from `layout.mustache`, and override its sections:
     {{$ page_title }}{{ article.title }}{{/ page_title }}
     
     {{$ page_content }}
-        {{# article }}
-            {{ body }}
-            by {{ author }}
-        {{/ article }}
+        {{{ article.html_body }}}
+        by {{ article.author }}
     {{/ page_content }}
     
 {{/ layout }}
