@@ -33,7 +33,7 @@ Tag instances represent Mustache tags that render values:
 
 - variable tags {{ name }}
 - section tags {{# name }}...{{/ name })
-- inverted section tags {{# name }}...{{/ name })
+- inverted section tags {{^ name }}...{{/ name })
 
 You may meet the Tag class when you implement your own RenderFunction,
 WillRenderFunction or DidRenderFunction.
