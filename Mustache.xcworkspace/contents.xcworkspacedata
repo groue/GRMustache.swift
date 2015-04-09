@@ -5,9 +5,6 @@
       location = "group:Playground.playground">
    </FileRef>
    <FileRef
-      location = "group:Docs/Playgrounds/UseCases.playground">
-   </FileRef>
-   <FileRef
       location = "container:Mustache.xcodeproj">
    </FileRef>
    <FileRef
