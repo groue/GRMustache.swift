@@ -1090,23 +1090,59 @@ public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
 //
 //   protocol MustacheBoxable {}
 //   class Thing: MustacheBoxable {}
-//
+//   
 //   func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
 //   func Box(x: AnyObject?) -> String { return "AnyObject" }
-//
+//   
 //   // Wrong: uses the AnyObject variant
 //   Box(Thing())
-//
+//   
 //   // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
-//   let box1: MustacheBoxable = Thing()
-//   Box(box1)
-//
+//   Box(Thing() as MustacheBoxable)
+//   
 //   // Error: Crash the compiler
-//   let box2: MustacheBoxable? = Thing()
-//   Box(box2)
+//   Box(Thing() as MustacheBoxable?)
 //
-// So... We can not have a Box(AnyObject?) variant, in the current state of
-// Swift. Let's define the BoxAnyObject(object: AnyObject?) instead.
+// And if we turn the func Box(x: AnyObject) into a generic one? Well, it gets
+// better:
+//
+// ::
+//
+//   protocol MustacheBoxable {}
+//   class Thing: MustacheBoxable {}
+//   
+//   func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//   func Box<T:AnyObject>(object: T?) -> String { return "AnyObject" }
+//   
+//   // OK: uses the MustacheBox variant
+//   Box(Thing())
+//   
+//   // OK: uses the MustacheBox variant
+//   Box(Thing() as MustacheBoxable)
+//   
+//   // OK: uses the MustacheBox variant
+//   Box(Thing() as MustacheBoxable?)
+//   
+//   // OK: uses the AnyObject variant
+//   Box(Thing() as AnyObject)
+//   
+//   // OK: uses the AnyObject variant
+//   Box(Thing() as AnyObject?)
+//
+// This looks OK, doesn't it? Well, it's not satisfying yet.
+//
+// According to http://airspeedvelocity.net/2015/03/26/protocols-and-generics-2/
+// there are reasons for preferring func Box<T: MustacheBoxable>(x: T?) over
+// func Box(x: MustacheBoxable?). The example above have shown that the boxing
+// of AnyObject with an overloaded version of Box() would make this choice for
+// us.
+//
+// It's better not to make any choice right now, until we have a better
+// knowledge of Swift performances and optimization, and of the way Swift
+// resolves overloaded functions.
+// 
+// So let's avoid having any Box(AnyObject?) variant in the public API, and
+// let's expose the BoxAnyObject(object: AnyObject?) instead.
 
 /**
 Due to constraints in the Swift language, there is no Box(AnyObject) function.
