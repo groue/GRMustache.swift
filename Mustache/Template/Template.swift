@@ -26,7 +26,7 @@ import Foundation
 /**
 The Template class provides Mustache rendering services.
 */
-public class Template {
+final public class Template {
     
     // =========================================================================
     // MARK: - Loading templates

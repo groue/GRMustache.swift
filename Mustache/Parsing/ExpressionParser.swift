@@ -23,7 +23,7 @@
 
 import Foundation
 
-class ExpressionParser {
+final class ExpressionParser {
     
     func parse(string: String, inout empty outEmpty: Bool, error: NSErrorPointer) -> Expression? {
         

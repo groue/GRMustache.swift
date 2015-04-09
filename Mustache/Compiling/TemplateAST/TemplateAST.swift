@@ -24,7 +24,7 @@
 /**
 The abstract syntax tree of a template
 */
-class TemplateAST {
+final class TemplateAST {
     
     // A template AST can be "defined" or "undefined".
     //

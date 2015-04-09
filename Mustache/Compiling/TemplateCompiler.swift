@@ -21,7 +21,7 @@
 // THE SOFTWARE.
 
 
-class TemplateCompiler: TemplateTokenConsumer {
+final class TemplateCompiler: TemplateTokenConsumer {
     private var state: CompilerState
     private let repository: TemplateRepository
     private let templateID: TemplateID?

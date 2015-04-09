@@ -58,7 +58,7 @@ finds a value:
 :see: TemplateRepository
 :see: RenderFunction
 */
-public class Context {
+final public class Context {
     private enum Type {
         case Root
         case BoxType(box: MustacheBox, parent: Context)

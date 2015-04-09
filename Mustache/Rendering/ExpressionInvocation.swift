@@ -23,7 +23,7 @@
 
 import Foundation
 
-class ExpressionInvocation: ExpressionVisitor {
+final class ExpressionInvocation: ExpressionVisitor {
     private let expression: Expression
     private var result: MustacheBox
     private var context: Context?

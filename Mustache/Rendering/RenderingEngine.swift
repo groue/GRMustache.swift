@@ -23,7 +23,7 @@
 
 import Foundation
 
-class RenderingEngine: TemplateASTVisitor {
+final class RenderingEngine: TemplateASTVisitor {
     
     init(templateAST: TemplateAST, context: Context) {
         self.templateAST = templateAST

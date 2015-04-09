@@ -28,7 +28,7 @@ protocol TemplateTokenConsumer {
     func parser(parser:TemplateParser, didFailWithError error:NSError)
 }
 
-class TemplateParser {
+final class TemplateParser {
     let tokenConsumer: TemplateTokenConsumer
     private let tagStartDelimiter: String
     private let tagEndDelimiter: String

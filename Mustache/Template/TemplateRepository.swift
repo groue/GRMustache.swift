@@ -89,7 +89,7 @@ The services provided by template repositories are:
 - absolute paths to ease loading of partial templates in a hierarchy of
   directories and template files.
 */
-public class TemplateRepository {
+final public class TemplateRepository {
     
     // =========================================================================
     // MARK: - Creating Template Repositories
