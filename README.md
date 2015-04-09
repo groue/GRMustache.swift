@@ -1,7 +1,7 @@
 GRMustache.swift
 ================
 
-GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift 1.2, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
 
 It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
 
@@ -22,7 +22,7 @@ Requirements
 ------------
 
 - iOS 7.0+ / OSX 10.9+
-- Xcode 6.1
+- Xcode 6.3
 
 
 Usage
