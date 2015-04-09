@@ -33,19 +33,20 @@
 //
 // ::
 //
+//   import Foundation
+//
 //   @objc protocol P {
-//       class func f() -> String
+//       static func f() -> String
 //   }
-//   
+//
 //   class C : NSObject, P {
 //       class func f() -> String { return "C" }
 //   }
-//   
-//   let c: NSObject = C()
-//   if let p = c as? P {
-//       // error: accessing members of protocol type value 'P.Type' is unimplemented
-//       p.dynamicType.f()
-//   }
+//
+//   // Expect "C", But we get the error:
+//   // accessing members of protocol type value 'P.Type' is unimplemented
+//   (C.self as P.Type).f()
+//
 @interface GRMustacheKeyAccess : NSObject
 + (BOOL)isSafeMustacheKey:(NSString *)key forObject:(id)object;
 

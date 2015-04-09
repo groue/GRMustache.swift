@@ -186,16 +186,17 @@ extension Bool : MustacheBoxable {
       let boxedInt = Box(0)
       let boxedBool = Box(false)
       
-      boxedNSNumber.value as NSNumber // 0
-      // boxedNSNumber.value as Bool  // Error
-      boxedInt.value as NSNumber      // 0
-      // boxedInt.value as Bool       // Error
-      boxedBool.value as NSNumber     // 0
-      boxedBool.value as Bool         // false
+      boxedNSNumber.value as! NSNumber // 0
+      // boxedNSNumber.value as! Bool  // Could not cast value of type 'Swift.Int' to 'Swift.Bool'
+      boxedInt.value as! NSNumber      // 0
+      // boxedInt.value as! Bool       // Could not cast value of type 'Swift.Int' to 'Swift.Bool'
+      boxedBool.value as! NSNumber     // 0
+      boxedBool.value as! Bool         // false
       
       boxedNSNumber.boolValue         // false
       boxedInt.boolValue              // false
       boxedBool.boolValue             // false
+    
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -254,19 +255,20 @@ extension Int : MustacheBoxable {
     ::
     
       let boxedNSNumber = Box(NSNumber(integer: 1))
-      let boxedDouble = Box(1.0)
+      let boxedDouble = Box(1)
       let boxedInt = Box(1)
       
-      boxedNSNumber.value as NSNumber // 1
-      boxedNSNumber.value as Int      // 1
-      boxedDouble.value as NSNumber   // 1.0
-      // boxedDouble.value as Int     // Error
-      boxedInt.value as NSNumber      // 1
-      boxedInt.value as Int           // 1
+      boxedNSNumber.value as! NSNumber // 1
+      boxedNSNumber.value as! Int      // 1
+      boxedDouble.value as! NSNumber   // 1
+      boxedDouble.value as! Int        // Could not cast value of type 'Swift.Double' to 'Swift.Int'
+      boxedInt.value as! NSNumber      // 1
+      boxedInt.value as! Int           // 1
       
       boxedNSNumber.intValue          // 1
       boxedDouble.intValue            // 1
       boxedInt.intValue               // 1
+    
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -328,16 +330,17 @@ extension UInt : MustacheBoxable {
       let boxedUInt = Box(1 as UInt)
       let boxedInt = Box(1)
       
-      boxedNSNumber.value as NSNumber // 1
-      // boxedNSNumber.value as UInt  // Error
-      boxedUInt.value as NSNumber     // 1
-      boxedUInt.value as UInt         // 1
-      boxedInt.value as NSNumber      // 1
-      // boxedInt.value as UInt       // Error
+      boxedNSNumber.value as! NSNumber // 1
+      // boxedNSNumber.value as! UInt  // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
+      boxedUInt.value as! NSNumber     // 1
+      boxedUInt.value as! UInt         // 1
+      boxedInt.value as! NSNumber      // 1
+      // boxedInt.value as! UInt       // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
       
       boxedNSNumber.uintValue         // 1
       boxedUInt.uintValue             // 1
       boxedInt.uintValue              // 1
+    
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -399,16 +402,17 @@ extension Double : MustacheBoxable {
       let boxedDouble = Box(1.0)
       let boxedInt = Box(1)
       
-      boxedNSNumber.value as NSNumber // 1.0
-      boxedNSNumber.value as Double   // 1.0
-      boxedDouble.value as NSNumber   // 1.0
-      boxedDouble.value as Double     // 1.0
-      boxedInt.value as NSNumber      // 1
-      // boxedInt.value as Double     // Error
+      boxedNSNumber.value as! NSNumber // 1.0
+      boxedNSNumber.value as! Double   // 1.0
+      boxedDouble.value as! NSNumber   // 1.0
+      boxedDouble.value as! Double     // 1.0
+      boxedInt.value as! NSNumber      // 1
+      // boxedInt.value as! Double     // Could not cast value of type 'Swift.Int' (0x102610fa8) to 'Swift.Double'
       
       boxedNSNumber.doubleValue       // 1.0
       boxedDouble.doubleValue         // 1.0
       boxedInt.doubleValue            // 1.0
+    
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -946,65 +950,62 @@ See the Swift-targetted MustacheBoxable protocol for more information.
     // Why do we need this ObjC-dedicated protocol, when we already have the
     // MustacheBoxable protocol?
     //
-    // It is because MustacheBoxable, as a Swift protocol, has limitations:
+    // Swift does not allow a class extension to override a method that is
+    // inherited from an extension to its superclass and incompatible with
+    // Objective-C. This prevents NSObject subclasses such as NSNull, NSNumber,
+    // etc. to override NSObject.mustacheBox, and provide custom rendering
+    // behavior.
     //
-    // 1. Swift 1.1 does not allow to test for a Swift protocol conformance
-    //    at runtime. This would prevent us to box objects returned by methods
-    //    of type AnyObject. See the BoxAnyObject() function.
+    // For an example of this limitation, see example below:
     //
-    // 2. Swift 1.1 and 1.2 do not allow a class extension to override a method
-    //    that is inherited from an extension to its superclass and incompatible
-    //    with Objective-C. This prevents NSObject subclasses such as NSNull,
-    //    NSNumber, etc. to override NSObject.mustacheBox, and provide custom
-    //    rendering behavior.
+    // ::
     //
-    //    For an example of this limitation, see example below:
+    //   import Foundation
     //
-    //    ::
+    //   // A protocol that is not compatible with Objective-C
+    //   struct MustacheBox { }
+    //   protocol MustacheBoxable {
+    //       var mustacheBox: MustacheBox { get }
+    //   }
+    //   
+    //   // So far so good
+    //   extension NSObject : MustacheBoxable {
+    //       var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
+    //   
+    //   // Error: declarations in extensions cannot override yet
+    //   extension NSNull {
+    //       override var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
     //
-    //      import Foundation
+    // This problem does not apply to Objc-C compatible protocols:
     //
-    //      // A protocol that is not compatible with Objective-C
-    //      struct MustacheBox { }
-    //      protocol MustacheBoxable { var mustacheBox: MustacheBox { get } }
-    //      
-    //      // So far so good
-    //      extension NSObject : MustacheBoxable {
-    //          var mustacheBox: MustacheBox { return MustacheBox() }
-    //      }
-    //      
-    //      // Error: declarations in extensions cannot override yet
-    //      extension NSNull {
-    //          override var mustacheBox: MustacheBox { return MustacheBox() }
-    //      }
+    // ::
     //
-    //    This problem does not apply to Objc-C compatible protocols:
+    //   import Foundation
     //
-    //    ::
+    //   // A protocol that is compatible with Objective-C
+    //   protocol ObjCCompatibleProtocol {
+    //       var prop: String { get }
+    //   }
     //
-    //      import Foundation
+    //   // So far so good
+    //   extension NSObject : ObjCCompatibleProtocol {
+    //       var prop: String { return "NSObject" }
+    //   }
     //
-    //      // A protocol that is compatible with Objective-C
-    //      protocol ObjCCompatibleProtocol {
-    //          var prop: String { get }
-    //      }
+    //   // No error
+    //   extension NSNull {
+    //       override var prop: String { return "NSNull" }
+    //   }
     //
-    //      // So far so good
-    //      extension NSObject : ObjCCompatibleProtocol {
-    //          var prop: String { return "NSObject" }
-    //      }
+    //   NSObject().prop // "NSObject"
+    //   NSNull().prop   // "NSNull"
     //
-    //      // No error
-    //      extension NSNull {
-    //          override var prop: String { return "NSNull" }
-    //      }
-    //
-    //      NSObject().prop // "NSObject"
-    //      NSNull().prop   // "NSNull"
-    //
-    // Because of those two reasons, we chose to dedicate MustacheBoxable to
-    // Swift values, and ObjCMustacheBoxable to Objective-C values. When Swift
-    // improves, we may alleviate this inconsistency.
+    // So we chose to dedicate the Swift-only protocol MustacheBoxable to Swift
+    // values, and the Objective-C compatible protocol ObjCMustacheBoxable to
+    // Objective-C values. When Swift eventually improves, we may alleviate
+    // this inconsistency.
     
     /**
     Returns a MustacheBox wrapped in a ObjCMustacheBox (this wrapping is
@@ -1043,6 +1044,70 @@ public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
     }
 }
 
+// IMPLEMENTATION NOTE
+//
+// Why is there a BoxAnyObject(AnyObject?) function, but no Box(AnyObject?)
+//
+// GRMustache aims at having a single boxing function: Box(), with many
+// overloaded variants. This lets the user box anything, standard Swift types
+// (Bool, String, etc.), custom types, as well as opaque types (such as
+// StandardLibrary.javascriptEscape).
+//
+// For example:
+//
+// ::
+//
+//   public func Box(boxable: MustacheBoxable?) -> MustacheBox
+//   public func Box(filter: FilterFunction) -> MustacheBox
+//
+// Sometimes values come out of Foundation objects:
+//
+// ::
+//
+//     class NSDictionary {
+//         subscript (key: NSCopying) -> AnyObject? { get }
+//     }
+//
+// So we need a Box(AnyObject?) function, right?
+//
+// Unfortunately, this will not work:
+//
+// ::
+//
+//   protocol MustacheBoxable {}
+//   class Thing: MustacheBoxable {}
+//
+//   func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//   func Box(x: AnyObject?) -> String { return "AnyObject" }
+//
+//   // error: ambiguous use of 'Box'
+//   Box(Thing())
+//
+// Maybe if we turn the func Box(x: MustacheBoxable?) into a generic one? Well,
+// it does not make the job either:
+//
+// ::
+//
+//   protocol MustacheBoxable {}
+//   class Thing: MustacheBoxable {}
+//
+//   func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
+//   func Box(x: AnyObject?) -> String { return "AnyObject" }
+//
+//   // Wrong: uses the AnyObject variant
+//   Box(Thing())
+//
+//   // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
+//   let box1: MustacheBoxable = Thing()
+//   Box(box1)
+//
+//   // Error: Crash the compiler
+//   let box2: MustacheBoxable? = Thing()
+//   Box(box2)
+//
+// So... We can not have a Box(AnyObject?) variant, in the current state of
+// Swift. Let's define the BoxAnyObject(object: AnyObject?) instead.
+
 /**
 Due to constraints in the Swift language, there is no Box(AnyObject) function.
 
@@ -1061,6 +1126,38 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     } else if let boxable = object as? ObjCMustacheBoxable {
         return Box(boxable)
     } else if let object: AnyObject = object {
+        
+        // IMPLEMENTATION NOTE
+        //
+        // In the example below, the Thing class can not be turned into any
+        // relevant MustacheBox.
+        // 
+        // Yet we can not prevent the user from trying to box it, because the
+        // Thing class conforms to the AnyObject protocol, just as all Swift
+        // classes.
+        //
+        // ::
+        //
+        //   class Thing { }
+        //   
+        //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
+        //   Box(Thing())
+        //   
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   BoxAnyObject(Thing())
+        //   
+        //   // Foundation collections can also contain unsupported classes:
+        //   let array = NSArray(object: Thing())
+        //   
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   Box(array)
+        //   
+        //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
+        //   Box(array[0])
+        //   
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   BoxAnyObject(array[0])
+        
         NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.")
         return Box()
     } else {
@@ -1260,15 +1357,15 @@ extension NSNumber : ObjCMustacheBoxable {
     
       let box1 = Box(NSNumber(int: 1))
       let box2 = Box(1)
-    
-      box1.value as NSNumber  // 1
-      box1.value as Int       // 1
-      //box1.value as UInt    // Error
-      //box1.value as Double  // Error
-      box2.value as NSNumber  // 1
-      box2.value as Int       // 1
-      //box2.value as UInt    // Error
-      //box2.value as Double  // Error
+      
+      box1.value as! NSNumber  // 1
+      box1.value as! Int       // 1
+      // box1.value as! UInt   // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
+      // box1.value as! Double // Could not cast value of type 'Swift.Int' to 'Swift.Double'
+      box2.value as! NSNumber  // 1
+      box2.value as! Int       // 1
+      // box2.value as! UInt   // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
+      // box2.value as! Double // Could not cast value of type 'Swift.Int' to 'Swift.Double'
       
       box1.intValue           // 1
       box1.uintValue          // 1
@@ -1276,6 +1373,7 @@ extension NSNumber : ObjCMustacheBoxable {
       box2.intValue           // 1
       box2.uintValue          // 1
       box2.doubleValue        // 1.0
+    
     */
     public override var mustacheBox: ObjCMustacheBox {
         let objCType = String.fromCString(self.objCType)!
