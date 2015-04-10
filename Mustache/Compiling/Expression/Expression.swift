@@ -24,49 +24,58 @@
 import Foundation
 
 /**
-The base abstract class for expressions that appear in tags: `name`,
-`user.name`, `uppercase(user.name)`.
+The type for expressions that appear in tags: `name`, `user.name`,
+`uppercase(user.name)`, etc.
 
 Expression conforms to Equatable so that the Compiler can check that section
 tags have matching openings and closings: {{# person }}...{{/ person }} is OK
 but {{# foo }}...{{/ bar }} is not.
 */
-class Expression: Equatable {
+enum Expression: Equatable {
+    case ImplicitIterator
+    case Identifier(identifier: String)
+    case Scoped(baseExpression: ExpressionWrapper, identifier: String)
+    case Filter(filterExpression: ExpressionWrapper, argumentExpression: ExpressionWrapper, partialApplication: Bool)
     
-    /**
-    Has the visitor visit the expression.
-    */
-    func acceptExpressionVisitor(visitor: ExpressionVisitor) -> ExpressionVisitResult {
-        fatalError("Subclass must override")
+    // Allow recursive enum
+    class ExpressionWrapper {
+        let expression: Expression
+        init(_ expression: Expression) {
+            self.expression = expression
+        }
     }
     
-    /**
-    Polymorphic support for Equatable
-    */
-    func isEqual(expression: Expression) -> Bool {
-        fatalError("Subclass must override")
+    // For the sake of brevity
+    init(identifier: String) {
+        self = .Identifier(identifier: identifier)
+    }
+    
+    // For the sake of brevity
+    init(baseExpression: Expression, identifier: String) {
+        self = .Scoped(baseExpression: ExpressionWrapper(baseExpression), identifier: identifier)
+    }
+    
+    // For the sake of brevity
+    init(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) {
+        self = .Filter(filterExpression: ExpressionWrapper(filterExpression), argumentExpression: ExpressionWrapper(argumentExpression), partialApplication: partialApplication)
     }
 }
 
 func ==(lhs: Expression, rhs: Expression) -> Bool {
-    return lhs.isEqual(rhs)
+    switch (lhs, rhs) {
+    case (.ImplicitIterator, .ImplicitIterator):
+        return true
+        
+    case (.Identifier(let lIdentifier), .Identifier(let rIdentifier)):
+        return lIdentifier == rIdentifier
+        
+    case (.Scoped(let lBase, let lIdentifier), .Scoped(let rBase, let rIdentifier)):
+        return lBase.expression == rBase.expression && lIdentifier == rIdentifier
+        
+    case (.Filter(let lFilter, let lArgument, let lPartialApplication), .Filter(let rFilter, let rArgument, let rPartialApplication)):
+        return lFilter.expression == rFilter.expression && lArgument.expression == rArgument.expression && lPartialApplication == rPartialApplication
+        
+    default:
+        return false
+    }
 }
-
-/**
-An expression visitor handles expressions.
-
-ExpressionInvocation conforms to this protocol so that it can evaluate
-expressions.
-*/
-protocol ExpressionVisitor {
-    func visit(expression: FilteredExpression) -> ExpressionVisitResult
-    func visit(expression: IdentifierExpression) -> ExpressionVisitResult
-    func visit(expression: ImplicitIteratorExpression) -> ExpressionVisitResult
-    func visit(expression: ScopedExpression) -> ExpressionVisitResult
-}
-
-enum ExpressionVisitResult {
-    case Success
-    case Error(NSError)
-}
-

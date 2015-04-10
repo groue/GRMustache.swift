@@ -47,16 +47,9 @@ The tokens are consumed by a [TemplateCompiler](Mustache/Compiling/TemplateCompi
 
 Both SectionTag and VariableTag inherit from [Tag](Mustache/Compiling/TemplateAST/Tag.swift).
 
-Both tags also hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. Expression is a recursive data structure. Some expressions contain one or two sub-expressions:
+Both tags also hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. They are created by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
 
-- [FilteredExpression](Mustache/Compiling/Expression/FilteredExpression.swift) represents expressions like `<expression>(<expression>)`, such as `f(x)` and `Math.sqrt(circle.radius)`.
-- [IdentifierExpression](Mustache/Compiling/Expression/IdentifierExpression.swift) represents a plain identifier expression such as `name`.
-- [ImplicitIteratorExpression](Mustache/Compiling/Expression/ImplicitIteratorExpression.swift) represents the `.` (dot) expression, which evaluates to the current context.
-- [ScopedExpression](Mustache/Compiling/Expression/ScopedExpression.swift) represents expressions like `<expression>.<identifier>`, such as `person.name` and `square(complex).real`.
-
-Expressions are created by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
-
-Both TemplateASTNode and Expression are passive data classes that are involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): Template AST Nodes are consumed by the protocol [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift), and Expressions are consumed by the protocol [ExpressionVisitor](Mustache/Compiling/Expression/Expression.swift).
+TemplateASTNode is a passive data class that are involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): it is consumed by the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol.
 
 
 ---
@@ -115,7 +108,7 @@ Each AST node on its turn gets rendered by the rendering engine, with a special 
 
 ## Evaluation and Rendering of Expressions
 
-Tag expressions are evaluated by [ExpressionInvocation](Mustache/Rendering/ExpressionInvocation.swift). ExpressionInvocation conforms to the [ExpressionVisitor](Mustache/Compiling/Expression/Expression.swift) protocol, and is able to visit an expression and evaluate it againts the [Context](Mustache/Rendering/Context.swift) stack. The context stack contains boxes that wrap the user data, and the invocation triggers the key extraction and filter facets of those boxes, until it gets the final result.
+[ExpressionInvocation](Mustache/Rendering/ExpressionInvocation.swift) evaluates a tag expression againts the [Context](Mustache/Rendering/Context.swift) stack. The context stack contains boxes that wrap the user data, and the invocation triggers the key extraction and filter facets of those boxes, until it gets the final result.
 
 In our specific example, the only expression is `name`, and it is enough to use the key extraction facet: `Box(["name": "Arthur"])["name"] => Box("Arthur")`.
 
