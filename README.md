@@ -97,14 +97,14 @@ We describe below a few use cases of the library:
 
 ### Errors
 
-Not funny, but they happen. You may get errors of domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Whenever the library needs to access the file system or other system resources, you may get standard errors of domain like NSCocoaErrorDomain, etc. Mustache-specific errors are covered by the domain `GRMustacheErrorDomain`:
 
 - Code `GRMustacheErrorCodeTemplateNotFound`:
     
     ```swift
-    // No such template: `inexistant`
+    // No such template: `inexistent`
     var error: NSError?
-    Template(named: "inexistant", error: &error)
+    Template(named: "inexistent", error: &error)
     error!.localizedDescription
     ```
     
