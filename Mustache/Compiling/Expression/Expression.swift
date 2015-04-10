@@ -32,18 +32,18 @@ tags have matching openings and closings: {{# person }}...{{/ person }} is OK
 but {{# foo }}...{{/ bar }} is not.
 */
 enum Expression: Equatable {
+    // {{ . }}
     case ImplicitIterator
+
+    // {{ identifier }}
     case Identifier(identifier: String)
+    
+    // {{ <expression>.identifier }}
     case Scoped(baseExpression: ExpressionWrapper, identifier: String)
+    
+    // {{ <expression>(<expression>) }}
     case Filter(filterExpression: ExpressionWrapper, argumentExpression: ExpressionWrapper, partialApplication: Bool)
     
-    // Allow recursive enum
-    class ExpressionWrapper {
-        let expression: Expression
-        init(_ expression: Expression) {
-            self.expression = expression
-        }
-    }
     
     // For the sake of brevity
     init(identifier: String) {
@@ -58,6 +58,15 @@ enum Expression: Equatable {
     // For the sake of brevity
     init(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) {
         self = .Filter(filterExpression: ExpressionWrapper(filterExpression), argumentExpression: ExpressionWrapper(argumentExpression), partialApplication: partialApplication)
+    }
+    
+    
+    // Recursive enums need wrapper class
+    class ExpressionWrapper {
+        let expression: Expression
+        init(_ expression: Expression) {
+            self.expression = expression
+        }
     }
 }
 
