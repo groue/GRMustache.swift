@@ -22,6 +22,8 @@
 
 #import <Foundation/Foundation.h>
 
+// IMPLEMENTATION NOTE
+//
 // This code comes from Objective-C GRMustache.
 //
 // It is still written in Objective-C because
