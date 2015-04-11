@@ -231,11 +231,8 @@ class FilterTests: XCTestCase {
         rendering = template.render(Box(["x": NSNull()]))
         XCTAssertEqual(rendering!, "Nil")
         
-        var error: NSError? = nil
-        rendering = template.render(Box(["x": "foo"]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        rendering = template.render(Box(["x": "foo"]))
+        XCTAssertEqual(rendering!, "Nil")
     }
     
     func testFilterOfInt() {
@@ -291,11 +288,8 @@ class FilterTests: XCTestCase {
         rendering = template.render(Box(["x": NSNull()]))
         XCTAssertEqual(rendering!, "Nil")
         
-        var error: NSError? = nil
-        rendering = template.render(Box(["x": 1]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
+        rendering = template.render(Box(["x": 1]))
+        XCTAssertEqual(rendering!, "Nil")
     }
     
     func testFilterOfString() {

@@ -206,6 +206,54 @@ public struct MustacheBox {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
         }
+        
+        
+        // IMPLEMENTATION NOTE
+        //
+        // It looks like Swift does not provide any way to perform a safe
+        // conversion between its numeric types.
+        //
+        // For example, there exists a UInt(Int) initializer, but it fails
+        // with EXC_BAD_INSTRUCTION when given a negative Int.
+        //
+        // So we implement below our own numeric conversion functions.
+        
+        static func uint(x: Int) -> UInt? {
+            if x >= 0 {
+                return UInt(x)
+            } else {
+                return nil
+            }
+        }
+        
+        static func uint(x: Double) -> UInt? {
+            if x == Double(UInt.max) {
+                return UInt.max
+            } else if x >= 0 && x < Double(UInt.max) {
+                return UInt(x)
+            } else {
+                return nil
+            }
+        }
+        
+        static func int(x: UInt) -> Int? {
+            if x <= UInt(Int.max) {
+                return Int(x)
+            } else {
+                return nil
+            }
+        }
+        
+        static func int(x: Double) -> Int? {
+            if x == Double(Int.max) {
+                return Int.max
+            } else if x >= Double(Int.min) && x < Double(Int.max) {
+                return Int(x)
+            } else {
+                return nil
+            }
+        }
+
     }
 
     // Hackish helper function which helps us boxing NSArray.

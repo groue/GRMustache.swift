@@ -145,21 +145,16 @@ process int, strings, custom classes, etc:
 Those variants returns a filter that takes an optional single argument of a
 specific type.
 
-If the provided argument is not nil, and of a different type, the filter returns
-an error of domain GRMustacheErrorDomain and code
-GRMustacheErrorCodeRenderingError.
+If the filtered value is nil, or of a different type, the filter gets
+nil as its argument.
 
-The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error. The type T must be "real" type, not
-a protocol, because of the Swift inability to test for protocol conformance at
-runtime.
-
-The Int, UInt and Double variants accept numerical input (Float, Double, Int,
-NSNumber and Bool), which are casted to the required type. Other values generate
-an error.
+The Int, UInt and Double variants accept any numerical input (Float, Double,
+Int, NSNumber and Bool), which are casted to the required type. Out of bounds
+numerical input is turned into nil (an Int filter gets nil if provided with
+UInt.max, for example).
 
 The String variant accepts string input (String and NSString). Other values
-generate an error. If you want to process rendered strings, whatever the input
+are turned into nil. If you want to process rendered strings, whatever the input
 value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
 (see below).
 
@@ -175,18 +170,14 @@ value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
   let template = Template(string: "{{ succ(x) }}")!
   template.registerInBaseContext("succ", Box(succ))
 
-  // Renders "2", "3", "4"
+  // Render "2", "3", "4"
   template.render(Box(["x": 1]))!
   template.render(Box(["x": 2.0]))!
   template.render(Box(["x": NSNumber(float: 3.1415)]))!
 
-  // Renders "Undefined"
+  // Render "Undefined"
   template.render(Box())!
-
-  // Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
-  var error: NSError?
-  template.render(Box(["x": "foo"]), error: &error)
-  error!.localizedDescription
+  template.render(Box(["x": "foo"]))!
 
 
 - func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction
@@ -200,14 +191,9 @@ If the provided argument is nil, or of a different type, the filter returns an
 error of domain GRMustacheErrorDomain and code
 GRMustacheErrorCodeRenderingError.
 
-The generic <T> variant is strict about its input: only values of type T enter
-your filter. Other values generate an error. The type T must be "real" type, not
-a protocol, because of the Swift inability to test for protocol conformance at
-runtime.
-
 The Int, UInt and Double variants accept numerical input (Float, Double, Int,
-NSNumber and Bool), which are casted to the required type. Other values generate
-an error.
+NSNumber and Bool), which are casted to the required type. Other values and out
+of bounds numerical input generate an error.
 
 The String variant accepts string input (String and NSString). Other values
 generate an error. If you want to process rendered strings, whatever the input
@@ -228,12 +214,11 @@ value, you should use the (Rendering, NSErrorPointer) -> Rendering? variant
   template.render(Box(["x": 2.0]))!
   template.render(Box(["x": NSNumber(float: 3.1415)]))!
 
-  // Error evaluating {{ succ(x) }} at line 1: Unexpected argument type
+  // Error evaluating {{ succ(x) }} at line 1: Unexpected argument
   var error: NSError?
-  template.render(Box(["x": "string"]), error: &error)
-  error!.localizedDescription
   template.render(Box(), error: &error)
-  error!.localizedDescription
+  template.render(Box(["x": UInt.max]), error: &error)
+  template.render(Box(["x": "string"]), error: &error)
 
 
 - func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction
@@ -413,17 +398,10 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if box.isEmpty {
-            return filter(nil, error)
-        } else if box.value is NSNull {
-            return filter(nil, error)
         } else if let t = box.value as? T {
             return filter(t, error)
         } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
+            return filter(nil, error)
         }
     }
 }
@@ -445,7 +423,7 @@ public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunc
             return filter(t, error)
         } else {
             if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
             }
             return nil
         }
@@ -465,17 +443,10 @@ public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunc
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if box.isEmpty {
-            return filter(nil, error)
-        } else if box.value is NSNull {
-            return filter(nil, error)
         } else if let t = box.intValue {
             return filter(t, error)
         } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
+            return filter(nil, error)
         }
     }
 }
@@ -497,7 +468,7 @@ public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunct
             return filter(t, error)
         } else {
             if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
             }
             return nil
         }
@@ -517,17 +488,10 @@ public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFun
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if box.isEmpty {
-            return filter(nil, error)
-        } else if box.value is NSNull {
-            return filter(nil, error)
         } else if let t = box.uintValue {
             return filter(t, error)
         } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
+            return filter(nil, error)
         }
     }
 }
@@ -549,7 +513,7 @@ public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunc
             return filter(t, error)
         } else {
             if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
             }
             return nil
         }
@@ -569,17 +533,10 @@ public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterF
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if box.isEmpty {
-            return filter(nil, error)
-        } else if box.value is NSNull {
-            return filter(nil, error)
         } else if let t = box.doubleValue {
             return filter(t, error)
         } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
-            }
-            return nil
+            return filter(nil, error)
         }
     }
 }
@@ -601,7 +558,7 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
             return filter(t, error)
         } else {
             if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument type"])
+                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
             }
             return nil
         }

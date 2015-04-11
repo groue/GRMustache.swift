@@ -275,7 +275,7 @@ extension Int : MustacheBoxable {
             value: self,
             converter: MustacheBox.Converter(
                 intValue: { self },
-                uintValue: { UInt(self) },
+                uintValue: { MustacheBox.Converter.uint(self) },
                 doubleValue: { Double(self) }),
             boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
@@ -346,7 +346,7 @@ extension UInt : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { Int(self) },
+                intValue: { MustacheBox.Converter.int(self) },
                 uintValue: { self },
                 doubleValue: { Double(self) }),
             boolValue: (self != 0),
@@ -418,8 +418,8 @@ extension Double : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { Int(self) },
-                uintValue: { UInt(self) },
+                intValue: { MustacheBox.Converter.int(self) },
+                uintValue: { MustacheBox.Converter.uint(self) },
                 doubleValue: { self }),
             boolValue: (self != 0.0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
