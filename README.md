@@ -305,7 +305,7 @@ let pluralize = Filter { (count: Int, info: RenderingInfo, _) in
 // Register the pluralize filter in our template:
 
 let template = Template(named: "cats")!
-template.registerInBaseContext("pluralize", Box(pluralizeFilter))
+template.registerInBaseContext("pluralize", Box(pluralize))
 
 
 // I have 3 cats.
