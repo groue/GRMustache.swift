@@ -97,14 +97,14 @@ We describe below a few use cases of the library:
 
 ### Errors
 
-Not funny, but they happen. You may get errors of domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Whenever the library needs to access the file system or other system resources, you may get standard errors of domain like NSCocoaErrorDomain, etc. Mustache-specific errors are covered by the domain `GRMustacheErrorDomain`:
 
 - Code `GRMustacheErrorCodeTemplateNotFound`:
     
     ```swift
-    // No such template: `inexistant`
+    // No such template: `inexistent`
     var error: NSError?
-    Template(named: "inexistant", error: &error)
+    Template(named: "inexistent", error: &error)
     error!.localizedDescription
     ```
     
@@ -134,7 +134,7 @@ template.render(Box(data))!
 ```
 
 
-### Rendering of Objective-C Objects
+### Rendering of NSObject and its subclasses
 
 NSObject subclasses can trivially feed your templates:
 
@@ -157,12 +157,25 @@ let rendering = template.render(Box(person))!
 
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [subscripting](http://clang.llvm.org/docs/ObjectiveCLiterals.html#dictionary-style-subscripting) method `objectForKeyedSubscript:` method when available, or the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`. For a full description of the rendering of NSObject, see the "Boxing of Objective-C objects" section in [Box.swift](Mustache/Rendering/Box.swift).
 
-Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though:
+
+### Rendering of AnyObject
+
+Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example. AnyObject can be turned into a Mustache box. However, due to constraints in the Swift language, you have to use the dedicated `BoxAnyObject()` function:
+
+```swift
+// Decode some JSON data
+let data = "{ \"name\": \"Lionel Richie\" }".dataUsingEncoding(NSUTF8StringEncoding)!
+let json: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)!
+
+// Lionel Richie has a Mustache.
+let template = Template(string: "{{ name }} has a Mustache.")!
+let rendering = template.render(BoxAnyObject(json))
+```
 
 
 ### Rendering of pure Swift values
 
-Pure Swift types can feed templates, with a little help.
+Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though, with a little help.
 
 ```swift
 // Define a pure Swift object:
