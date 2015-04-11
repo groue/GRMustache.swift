@@ -325,9 +325,8 @@ let rendering = template.render(Box(data))!
 let sum = VariadicFilter { (boxes: [MustacheBox], _) in
     // Extract integers out of input boxes, assuming zero for non numeric values
     let integers = map(boxes) { $0.intValue ?? 0 }
-    
-    // Compute and box the sum
-    return Box(integers.reduce(0,+))
+    let sum = reduce(integers, 0, +)
+    return Box(sum)
 }
 
 
