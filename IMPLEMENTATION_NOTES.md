@@ -49,7 +49,7 @@ Both SectionTag and VariableTag inherit from [Tag](Mustache/Compiling/TemplateAS
 
 Both tags also hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. They are created by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
 
-TemplateASTNode is a passive data class that are involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): it is consumed by the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol.
+TemplateASTNode is a passive data class, involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): it is consumed by the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol. Nodes will be visited during the rendering phase (see below).
 
 
 ---
