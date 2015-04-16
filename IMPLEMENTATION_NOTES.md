@@ -45,7 +45,7 @@ The tokens are consumed by a [TemplateCompiler](Mustache/Compiling/TemplateCompi
 - [TextNode](Mustache/Compiling/TemplateAST/TextNode.swift) represents text.
 - [VariableTag](Mustache/Compiling/TemplateAST/VariableTag.swift) represents escaped `{{name}}` and non-escaped `{{{name}}}` variable tags.
 
-Both SectionTag and VariableTag hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. They are created by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift), which turns strings like `name` or `uppercase(person.name)` into expressions.
+Both SectionTag and VariableTag hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. Strings like `name` or `uppercase(person.name)` are turned into expressions by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
 
 TemplateASTNode is a passive data class, involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): it is consumed by the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol. Nodes will be visited during the rendering phase (see below).
 
