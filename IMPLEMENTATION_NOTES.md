@@ -26,7 +26,7 @@ let template = Template(string: "Hello {{name}}")!
 
 The `template` variable holds a [Template](Mustache/Template/Template.swift).
 
-The Template initializer uses a [TemplateRepository](Mustache/Template/TemplateRepository.swift), a type that manages a collection of templates. This allows eventual partial tags `{{>partial}}` in the template string to be loaded from the resources of the Main Bundle.
+The Template initializer uses an internal [TemplateRepository](Mustache/Template/TemplateRepository.swift), an object that manages a collection of templates. In our specific case, this allows eventual partial tags `{{>partial}}` in the template string to be loaded from the resources of the Main Bundle. Template repositories can also be explicitly created by the library user, so that they load templates from bundle resources, file system, dictionaries of template strings, or custom containers through the [TemplateRepositoryDataSource](Mustache/Template/TemplateRepository.swift) protocol.
 
 ## Parsing
 
