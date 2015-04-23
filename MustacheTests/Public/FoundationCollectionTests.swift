@@ -77,9 +77,10 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `array.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSArray()]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSArray(object: "foo")]))!, "Not empty")
+        let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
+        XCTAssertEqual(Template(string: templateString)!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":NSArray()]))!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":NSArray(object: "foo")]))!, "Not empty")
     }
     
     func testNSArrayCount() {
@@ -115,9 +116,10 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `array.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":[]]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":["foo"]]))!, "Not empty")
+        let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
+        XCTAssertEqual(Template(string: templateString)!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":[]]))!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":["foo"]]))!, "Not empty")
     }
     
     func testArrayCount() {
@@ -153,9 +155,10 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `set.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSSet()]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":NSSet(object: "foo")]))!, "Not empty")
+        let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
+        XCTAssertEqual(Template(string: templateString)!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":NSSet()]))!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":NSSet(object: "foo")]))!, "Not empty")
     }
     
     func testNSSetCount() {
@@ -186,9 +189,10 @@ class FoundationCollectionTests: XCTestCase {
         // this would be soooo misleading. On the contrary, `set.count` is
         // falsey for both empty and missing sets, and this is why it is the
         // recommended technique.
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render()!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":Set<String>()]))!, "Not empty")
-        XCTAssertEqual(Template(string: "{{#collection.isEmpty}}Empty{{^}}Not empty{{/}}")!.render(Box(["collection":Set(["foo"])]))!, "Not empty")
+        let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
+        XCTAssertEqual(Template(string: templateString)!.render()!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":Set<String>()]))!, "Not empty")
+        XCTAssertEqual(Template(string: templateString)!.render(Box(["collection":Set(["foo"])]))!, "Not empty")
     }
     
     func testSetCount() {

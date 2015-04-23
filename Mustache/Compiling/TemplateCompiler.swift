@@ -141,40 +141,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .Section(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
-                
-                if expression == nil && !empty {
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
-                    return false
-                }
-                
-                var extended: (Expression, TemplateToken)?
-                switch compilationState.currentScope.type {
-                case .InvertedSection(openingToken: let openingToken, expression: let openingExpression):
-                    if (expression == nil && empty) || (openingExpression == expression) {
-                        extended = (openingExpression, openingToken)
-                    }
-                default:
-                    break
-                }
-
-                if let (extendedExpression, extentedToken) = extended {
-                    let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    
-//                    // TODO: uncomment and make it compile
-//                    if token.templateString !== extentedToken.templateString {
-//                        fatalError("Not implemented")
-//                    }
-                    let templateString = token.templateString
-                    let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: true, templateAST: templateAST, openingToken: extentedToken, innerTemplateString: templateString[innerContentRange])
-                    
-                    compilationState.popCurrentScope()
-                    compilationState.currentScope.appendNode(sectionTag)
-                    compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: extendedExpression)))
-                    return true
-                } else if let expression = expression {
+                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
@@ -186,40 +153,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .InvertedSection(content: let content):
                 var error: NSError?
                 var empty = false
-                let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
-                
-                if expression == nil && !empty {
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
-                    return false
-                }
-                
-                var extended: (Expression, TemplateToken)?
-                switch compilationState.currentScope.type {
-                case .Section(openingToken: let openingToken, expression: let openingExpression):
-                    if (expression == nil && empty) || (openingExpression == expression) {
-                        extended = (openingExpression, openingToken)
-                    }
-                default:
-                    break
-                }
-                
-                if let (extendedExpression, extentedToken) = extended {
-                    let templateASTNodes = compilationState.currentScope.templateASTNodes
-                    let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    
-//                    // TODO: uncomment and make it compile
-//                    if token.templateString !== extentedToken.templateString {
-//                        fatalError("Not implemented")
-//                    }
-                    let templateString = token.templateString
-                    let innerContentRange = extentedToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: extendedExpression, inverted: false, templateAST: templateAST, openingToken: extentedToken, innerTemplateString: templateString[innerContentRange])
-                    
-                    compilationState.popCurrentScope()
-                    compilationState.currentScope.appendNode(sectionTag)
-                    compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: extendedExpression)))
-                    return true
-                } else if let expression = expression {
+                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true

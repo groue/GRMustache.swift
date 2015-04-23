@@ -153,8 +153,8 @@ public struct StandardLibrary {
     
       <script type="text/javascript">
         {{# javascriptEscape }}
-          var firstName = {{# firstName }}"{{ firstName }}"{{^}}null{{/}};
-          var lastName = {{# lastName }}"{{ lastName }}"{{^}}null{{/}};
+          var firstName = {{# firstName }}"{{ firstName }}"{{/}}{{^ firstName }}null{{/}};
+          var lastName = {{# lastName }}"{{ lastName }}"{{/}}{{^ lastName }}null{{/}};
         {{/ javascriptEscape }}
       </script>
     

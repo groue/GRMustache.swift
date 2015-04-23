@@ -172,7 +172,7 @@ extension Bool : MustacheBoxable {
     ::
     
       // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#bools}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#bools}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["bools": [false, true]]
       template.render(Box(data))!
     
@@ -240,7 +240,7 @@ extension Int : MustacheBoxable {
     ::
     
       // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["numbers": [0, 1]]
       template.render(Box(data))!
     
@@ -312,7 +312,7 @@ extension UInt : MustacheBoxable {
     ::
     
       // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["numbers": [0 as UInt, 1 as UInt]]
       template.render(Box(data))!
     
@@ -384,7 +384,7 @@ extension Double : MustacheBoxable {
     ::
     
       // Renders "0.0 is falsey. 1.0 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["numbers": [0.0, 1.0]]
       template.render(Box(data))!
     
@@ -465,7 +465,7 @@ extension String : MustacheBoxable {
     ::
     
       // Renders "`` is falsey. `yeah` is truthy."
-      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["strings": ["", "yeah"]]
       template.render(Box(data))!
     
@@ -1344,7 +1344,7 @@ extension NSNull : ObjCMustacheBoxable {
     ::
     
       // Renders "null is falsey."
-      let template = Template(string: "null is {{#null}}truthy{{^}}falsey{{/}}.")!
+      let template = Template(string: "null is {{#null}}truthy{{/}}{{^null}}falsey{{/}}.")!
       let data = ["null": NSNull()]
       template.render(Box(data))!
     
@@ -1376,7 +1376,7 @@ extension NSNumber : ObjCMustacheBoxable {
     ::
     
       // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{^}}falsey{{/}}.{{/}}")!
+      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
       let data = ["numbers": [NSNumber(int: 0), NSNumber(int: 1)]]
       template.render(Box(data))!
     
@@ -1530,7 +1530,7 @@ extension NSSet : ObjCMustacheBoxable {
     ::
     
       // Renders "Set elements are 3,1,2," and "Set is empty"
-      var template = Template(string: "{{#set.count}}Set elements are: {{#set}}{{.}},{{/set}}{{^}}Set is empty{{/}}")!
+      var template = Template(string: "{{#set.count}}Set elements are: {{#set}}{{.}},{{/set}}{{/}}{{^set.count}}Set is empty{{/}}")!
       template.render(Box(["set": NSSet(objects: 1,2,3)]))!
       template.render(Box(["set": NSSet()]))!
     */

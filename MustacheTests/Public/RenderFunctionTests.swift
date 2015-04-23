@@ -162,16 +162,6 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
-    func testRenderFunctionCanAccessInnerTemplateStringFromExtensionSectionTag() {
-        var innerTemplateString: String? = nil
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            innerTemplateString = info.tag.innerTemplateString
-            return Rendering("")
-        }
-        Template(string: "{{^.}}{{#.}}{{subject}}{{/.}}")!.render(Box(render))
-        XCTAssertEqual(innerTemplateString!, "{{subject}}")
-    }
-
     func testRenderFunctionCanAccessInnerTemplateStringFromVariableTag() {
         var innerTemplateString: String? = nil
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
@@ -191,20 +181,6 @@ class RenderFunctionTests: XCTestCase {
         
         let box = Box(["render": Box(render), "subject": Box("-")])
         Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}")!.render(box)
-        
-        XCTAssertEqual(tagRendering!.string, "-=-")
-        XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
-    }
-    
-    func testRenderFunctionCanAccessRenderedContentFromExtensionSectionTag() {
-        var tagRendering: Rendering? = nil
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            tagRendering = info.tag.renderInnerContent(info.context, error: error)
-            return tagRendering
-        }
-        
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        Template(string: "{{^render}}{{#render}}{{subject}}={{subject}}{{/render}}")!.render(box)
         
         XCTAssertEqual(tagRendering!.string, "-=-")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)

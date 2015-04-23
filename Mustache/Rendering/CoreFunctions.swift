@@ -121,7 +121,7 @@ one.
       return Box(box.isEmpty)
   }
 
-  let template = Template(string: "{{# isEmpty(value) }}no value{{^}}{{value}}{{/}}")!
+  let template = Template(string: "{{# isEmpty(value) }}no value{{/}}{{^ isEmpty(value) }}{{value}}{{/}}")!
   template.registerInBaseContext("isEmpty", Box(isEmpty))
 
   // Renders "a value", and "no value"

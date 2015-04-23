@@ -149,7 +149,7 @@
       "data": {
         "array": ["a", "b", "c", "d"]
       },
-      "template": "{{# each(array) }}{{^ @first }}{{# @last }} and {{^}}, {{/}}{{/}}{{.}}{{/}}",
+      "template": "{{# each(array) }}{{^ @first }}{{# @last }} and {{/}}{{^ @last }}, {{/}}{{/}}{{.}}{{/}}",
       "expected": "a, b, c and d"
     },
     {
@@ -173,7 +173,7 @@
       "data": {
         "array": ["a", "b", "c", "d"]
       },
-      "template": "{{# each(array) }}{{# @indexIsEven }}e{{^}}o{{/}}{{/}}",
+      "template": "{{# each(array) }}{{# @indexIsEven }}e{{/}}{{^ @indexIsEven }}o{{/}}{{/}}",
       "expected": "eoeo"
     },
     {
@@ -181,7 +181,7 @@
       "data": {
         "array": []
       },
-      "template": "{{# each(array) }}---{{^}}+++{{/}}",
+      "template": "{{# each(array) }}---{{/}}{{^ each(array) }}+++{{/}}",
       "expected": "+++"
     },
     {
@@ -193,7 +193,7 @@
     {
       "name": "`each` filter should render independently all lists of an array.",
       "data": { "array": [["a", "b"], [], [0, 1]] },
-      "template": "<{{# each(array) }}{{@index}}:({{#.}}{{.}}{{^}}-{{/}}){{/}}>",
+      "template": "<{{# each(array) }}{{@index}}:({{#.}}{{.}}{{/}}{{^.}}-{{/}}){{/}}>",
       "expected": "<0:(ab)1:(-)2:(01)>"
     },
     {
@@ -209,7 +209,7 @@
       "data": {
         "dictionary": { "key1": "value", "key2": "value", "key3": "value" }
       },
-      "template": "{{# each(dictionary) }}{{^ @first }}{{# @last }} and {{^}}, {{/}}{{/}}{{.}}{{/}}",
+      "template": "{{# each(dictionary) }}{{^ @first }}{{# @last }} and {{/}}{{^ @last }}, {{/}}{{/}}{{.}}{{/}}",
       "expected": "value, value and value"
     },
     {
@@ -233,7 +233,7 @@
       "data": {
         "dictionary": { "key1": "value", "key2": "value", "key3": "value" }
       },
-      "template": "{{# each(dictionary) }}{{# @indexIsEven }}e{{^}}o{{/}}{{/}}",
+      "template": "{{# each(dictionary) }}{{# @indexIsEven }}e{{/}}{{^ @indexIsEven }}o{{/}}{{/}}",
       "expected": "eoe"
     },
     {
@@ -241,7 +241,7 @@
       "data": {
         "dictionary": {}
       },
-      "template": "{{# each(dictionary) }}---{{^}}+++{{/}}",
+      "template": "{{# each(dictionary) }}---{{/}}{{^ each(dictionary) }}+++{{/}}",
       "expected": "+++"
     },
     {
@@ -287,7 +287,7 @@
       "data": {
         "emptyArray": []
       },
-      "template": "{{# zip(emptyArray, emptyArray) }}---{{^}}+++{{/}}",
+      "template": "{{# zip(emptyArray, emptyArray) }}---{{/}}{{^ zip(emptyArray, emptyArray) }}+++{{/}}",
       "expected": "+++"
     },
     {

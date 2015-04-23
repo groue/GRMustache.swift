@@ -7,4 +7,3 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [ ] Is this function useful? func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox
 - [ ] Tests for the Lambda functions.
-- [ ] Remove support for {{#}}{{^}}{{/}} "else" shorcut.
