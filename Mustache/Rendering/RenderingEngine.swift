@@ -69,27 +69,32 @@ final class RenderingEngine {
     }
     
     func visitInheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor) -> TemplateASTVisitResult {
-        let originalContext = context
-        context = context.extendedContext(inheritedPartial: inheritedPartial)
+        NSLog("visitInheritedPartial {{<\(inheritedPartial.partial.name!)}}")
+        inheritedPartialStack.append(inheritedPartial)
         let result = visitPartial(inheritedPartial.partial)
-        context = originalContext
+        inheritedPartialStack.removeLast()
         return result
     }
     
     func visitInheritableSection(inheritableSection: TemplateASTNode.InheritableSectionDescriptor) -> TemplateASTVisitResult {
+        NSLog("visitInheritableSection {{$\(inheritableSection.name)}}")
+        NSLog("inheritedPartialStack contains \(count(inheritedPartialStack)) elements")
         return visit(inheritableSection.templateAST)
     }
     
     func visitPartial(partial: TemplateASTNode.PartialDescriptor) -> TemplateASTVisitResult {
+        NSLog("visitPartial {{>\(partial.name!)}}")
         return visit(partial.templateAST)
     }
     
     func visitVariable(variable: TemplateASTNode.VariableDescriptor) -> TemplateASTVisitResult {
+        NSLog("visitVariable \(variable.token.templateSubstring)")
         let tag = VariableTag(contentType: variable.contentType, token: variable.token)
         return visitTag(tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression)
     }
     
     func visitSection(section: TemplateASTNode.SectionDescriptor) -> TemplateASTVisitResult {
+        NSLog("visitSection \(section.openingToken.templateSubstring)")
         let tag = SectionTag(templateAST: section.templateAST, openingToken: section.openingToken, innerTemplateString: section.innerTemplateString)
         return visitTag(tag, escapesHTML: true, inverted: section.inverted, expression: section.expression)
     }
@@ -104,6 +109,7 @@ final class RenderingEngine {
     
     private let templateAST: TemplateAST
     private var context: Context
+    private var inheritedPartialStack: [TemplateASTNode.InheritedPartialDescriptor] = []
     private var buffer: String?
     
     private func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
@@ -131,7 +137,7 @@ final class RenderingEngine {
     
     private func visit(nodes: [TemplateASTNode]) -> TemplateASTVisitResult {
         for node in nodes {
-            let node = context.resolveTemplateASTNode(node)
+            let node = resolveTemplateASTNode(node)
             let result = visit(node)
             switch result {
             case .Error:
@@ -211,6 +217,63 @@ final class RenderingEngine {
                 
                 return .Error(error!)
             }
+        }
+    }
+
+    func resolveTemplateASTNode(var node: TemplateASTNode) -> TemplateASTNode {
+        var usedTemplateASTs: [TemplateAST] = []
+        var context = self.context
+        
+        let step: (TemplateASTNode, [TemplateAST]) = (node, [])
+        let (resolvedNode, _) = reduce(reverse(inheritedPartialStack), step) { (step, inheritedPartial) in
+            let (node, usedTemplateASTs) = step
+            let templateAST = inheritedPartial.partial.templateAST
+            if !contains(usedTemplateASTs, { $0 === templateAST }) {
+                let (resolvedNode, modified) = resolveInheritedPartial(inheritedPartial, node: node)
+                if modified {
+                    return (resolvedNode, usedTemplateASTs + [templateAST])
+                }
+            }
+            return step
+        }
+        return resolvedNode
+    }
+    
+    private func resolve(# inheritedNode: TemplateASTNode, node: TemplateASTNode) -> (TemplateASTNode, Bool) {
+        switch inheritedNode {
+        case .InheritableSection(let inheritableSection):
+            return resolveInheritableSection(inheritableSection, node: node)
+        case .InheritedPartial(let inheritedPartial):
+            return resolveInheritedPartial(inheritedPartial, node: node)
+        case .Partial(let partial):
+            return resolvePartial(partial, node: node)
+        case .Section, .Text, .Variable:
+            return (node, false)
+        }
+    }
+    
+    private func resolveInheritableSection(inheritableSection: TemplateASTNode.InheritableSectionDescriptor, node: TemplateASTNode) -> (TemplateASTNode, Bool) {
+        switch node {
+        case .InheritableSection(let otherInheritableSection) where otherInheritableSection.name == inheritableSection.name:
+            return (.InheritableSection(inheritableSection), true)
+        default:
+            return (node, false)
+        }
+    }
+    
+    private func resolveInheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor, var node: TemplateASTNode) -> (TemplateASTNode, Bool) {
+        return reduce(inheritedPartial.templateAST.nodes, (node, false)) { (pair, inheritedNode) in
+            let (node, modified) = pair
+            let (resolvedNode, resolvedModified) = resolve(inheritedNode: inheritedNode, node: node)
+            return (resolvedNode, modified || resolvedModified)
+        }
+    }
+    
+    private func resolvePartial(partial: TemplateASTNode.PartialDescriptor, var node: TemplateASTNode) -> (TemplateASTNode, Bool) {
+        return reduce(partial.templateAST.nodes, (node, false)) { (pair, inheritedNode) in
+            let (node, modified) = pair
+            let (resolvedNode, resolvedModified) = resolve(inheritedNode: inheritedNode, node: node)
+            return (resolvedNode, modified || resolvedModified)
         }
     }
 }
