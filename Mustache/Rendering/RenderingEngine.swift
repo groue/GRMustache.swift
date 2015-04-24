@@ -69,32 +69,27 @@ final class RenderingEngine {
     }
     
     func visitInheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor) -> TemplateASTVisitResult {
-        NSLog("visitInheritedPartial {{<\(inheritedPartial.partial.name!)}}")
-        inheritedPartialStack.append(inheritedPartial)
+        let previousContext = context
+        context = context.extendedContext(inheritedPartial: inheritedPartial)
         let result = visitPartial(inheritedPartial.partial)
-        inheritedPartialStack.removeLast()
+        context = previousContext
         return result
     }
     
     func visitInheritableSection(inheritableSection: TemplateASTNode.InheritableSectionDescriptor) -> TemplateASTVisitResult {
-        NSLog("visitInheritableSection {{$\(inheritableSection.name)}}")
-        NSLog("inheritedPartialStack contains \(count(inheritedPartialStack)) elements")
         return visit(inheritableSection.templateAST)
     }
     
     func visitPartial(partial: TemplateASTNode.PartialDescriptor) -> TemplateASTVisitResult {
-        NSLog("visitPartial {{>\(partial.name!)}}")
         return visit(partial.templateAST)
     }
     
     func visitVariable(variable: TemplateASTNode.VariableDescriptor) -> TemplateASTVisitResult {
-        NSLog("visitVariable \(variable.token.templateSubstring)")
         let tag = VariableTag(contentType: variable.contentType, token: variable.token)
         return visitTag(tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression)
     }
     
     func visitSection(section: TemplateASTNode.SectionDescriptor) -> TemplateASTVisitResult {
-        NSLog("visitSection \(section.openingToken.templateSubstring)")
         let tag = SectionTag(templateAST: section.templateAST, openingToken: section.openingToken, innerTemplateString: section.innerTemplateString)
         return visitTag(tag, escapesHTML: true, inverted: section.inverted, expression: section.expression)
     }
@@ -109,7 +104,6 @@ final class RenderingEngine {
     
     private let templateAST: TemplateAST
     private var context: Context
-    private var inheritedPartialStack: [TemplateASTNode.InheritedPartialDescriptor] = []
     private var buffer: String?
     
     private func visit(templateAST: TemplateAST) -> TemplateASTVisitResult {
@@ -225,7 +219,7 @@ final class RenderingEngine {
         var context = self.context
         
         let step: (TemplateASTNode, [TemplateAST]) = (node, [])
-        let (resolvedNode, _) = reduce(reverse(inheritedPartialStack), step) { (step, inheritedPartial) in
+        let (resolvedNode, _) = reduce(context.inheritedPartialStack, step) { (step, inheritedPartial) in
             let (node, usedTemplateASTs) = step
             let templateAST = inheritedPartial.partial.templateAST
             if !contains(usedTemplateASTs, { $0 === templateAST }) {

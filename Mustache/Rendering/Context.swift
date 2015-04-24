@@ -61,7 +61,8 @@ finds a value:
 final public class Context {
     private enum Type {
         case Root
-        case BoxType(box: MustacheBox, parent: Context)
+        case Box(box: MustacheBox, parent: Context)
+        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor, parent: Context)
     }
     
     private var registeredKeysContext: Context?
@@ -91,7 +92,7 @@ final public class Context {
       template.render()!
     */
     public convenience init(_ box: MustacheBox) {
-        self.init(type: .BoxType(box: box, parent: Context()))
+        self.init(type: .Box(box: box, parent: Context()))
     }
     
     /**
@@ -126,7 +127,7 @@ final public class Context {
     stack.
     */
     public func extendedContext(box: MustacheBox) -> Context {
-        return Context(type: .BoxType(box: box, parent: self), registeredKeysContext: registeredKeysContext)
+        return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     /**
@@ -156,8 +157,10 @@ final public class Context {
         switch type {
         case .Root:
             return Box()
-        case .BoxType(box: let box, parent: _):
+        case .Box(box: let box, parent: _):
             return box
+        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+            return parent.topBox
         }
     }
     
@@ -197,13 +200,15 @@ final public class Context {
         switch type {
         case .Root:
             return Box()
-        case .BoxType(box: let box, parent: let parent):
+        case .Box(box: let box, parent: let parent):
             let innerBox = box[key]
             if innerBox.isEmpty {
                 return parent[key]
             } else {
                 return innerBox
             }
+        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+            return parent[key]
         }
     }
     
@@ -252,12 +257,14 @@ final public class Context {
         switch type {
         case .Root:
             return []
-        case .BoxType(box: let box, parent: let parent):
+        case .Box(box: let box, parent: let parent):
             if let willRender = box.willRender {
                 return [willRender] + parent.willRenderStack
             } else {
                 return parent.willRenderStack
             }
+        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+            return parent.willRenderStack
         }
     }
     
@@ -265,18 +272,35 @@ final public class Context {
         switch type {
         case .Root:
             return []
-        case .BoxType(box: let box, parent: let parent):
+        case .Box(box: let box, parent: let parent):
             if let didRender = box.didRender {
                 return parent.didRenderStack + [didRender]
             } else {
                 return parent.didRenderStack
             }
+        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+            return parent.didRenderStack
+        }
+    }
+    
+    var inheritedPartialStack: [TemplateASTNode.InheritedPartialDescriptor] {
+        switch type {
+        case .Root:
+            return []
+        case .Box(box: _, parent: let parent):
+            return parent.inheritedPartialStack
+        case .InheritedPartial(inheritedPartial: let inheritedPartial, parent: let parent):
+            return [inheritedPartial] + parent.inheritedPartialStack
         }
     }
     
     private init(type: Type, registeredKeysContext: Context? = nil) {
         self.type = type
         self.registeredKeysContext = registeredKeysContext
+    }
+
+    func extendedContext(# inheritedPartial: TemplateASTNode.InheritedPartialDescriptor) -> Context {
+        return Context(type: .InheritedPartial(inheritedPartial: inheritedPartial, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
 
@@ -285,8 +309,10 @@ extension Context: DebugPrintable {
         switch type {
         case .Root:
             return "Context.Root"
-        case .BoxType(box: let box, parent: let parent):
-            return "Context.BoxType(\(box)):\(parent.debugDescription)"
+        case .Box(box: let box, parent: let parent):
+            return "Context.Box(\(box)):\(parent.debugDescription)"
+        case .InheritedPartial(inheritedPartial: let inheritedPartial, parent: let parent):
+            return "Context.InheritedPartial(\(inheritedPartial.partial.name)):\(parent.debugDescription)"
         }
     }
 }
