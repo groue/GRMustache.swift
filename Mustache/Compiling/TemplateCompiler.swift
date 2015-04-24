@@ -111,14 +111,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 return true
                 
             case .Text(text: let text):
-                compilationState.currentScope.appendNode(TextNode(text: text))
+                compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
                 return true
                 
             case .EscapedVariable(content: let content):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
-                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
+                    compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
@@ -130,7 +130,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
-                    compilationState.currentScope.appendNode(VariableTag(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
+                    compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
                 } else {
@@ -218,7 +218,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: false, templateAST: templateAST, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
 
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
@@ -250,13 +250,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                    }
                     let templateString = token.templateString
                     let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
-                    let sectionTag = SectionTag(expression: closedExpression, inverted: true, templateAST: templateAST, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                    let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
                     
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(sectionTag)
                     return true
                     
-                case .InheritedPartial(openingToken: let openingToken, partialName: let closedPartialName):
+                case .InheritedPartial(openingToken: let openingToken, partialName: let inheritedPartialName):
                     var error: NSError?
                     var empty: Bool = false
                     let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error)
@@ -267,14 +267,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         state = .Error(error!)
                         return false
                     default:
-                        if (partialName != closedPartialName) {
+                        if (partialName != inheritedPartialName) {
                             state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
                             return false
                         }
                     }
                     
-                    if let partialTemplateAST = repository.templateAST(named: closedPartialName, relativeToTemplateID:templateID, error: &error) {
-                        switch partialTemplateAST.type {
+                    if let inheritedTemplateAST = repository.templateAST(named: inheritedPartialName, relativeToTemplateID:templateID, error: &error) {
+                        switch inheritedTemplateAST.type {
                         case .Undefined:
                             break
                         case .Defined(nodes: _, contentType: let partialContentType):
@@ -284,10 +284,9 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         
-                        let partialNode = PartialNode(templateAST: partialTemplateAST, partialName: closedPartialName)
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let inheritedPartialNode = InheritedPartialNode(partialNode: partialNode, templateAST: templateAST)
+                        let inheritedPartialNode = TemplateASTNode.inheritedPartial(templateAST: templateAST, inheritedTemplateAST: inheritedTemplateAST, inheritedPartialName: inheritedPartialName)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritedPartialNode)
                         return true
@@ -315,7 +314,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let inheritableSectionTag = InheritableSectionNode(name: closedInheritableSectionName, templateAST: templateAST)
+                    let inheritableSectionTag = TemplateASTNode.inheritableSection(templateAST: templateAST, name: closedInheritableSectionName)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(inheritableSectionTag)
                     return true
@@ -327,7 +326,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error),
                    let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error)
                 {
-                    let partialNode = PartialNode(templateAST: partialTemplateAST, partialName: partialName)
+                    let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
                     compilationState.currentScope.appendNode(partialNode)
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true

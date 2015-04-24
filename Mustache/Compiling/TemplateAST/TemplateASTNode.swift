@@ -23,55 +23,59 @@
 
 import Foundation
 
-/**
-The protocol for Template AST nodes.
-
-When parsing a Mustache template, the compiler builds an abstract tree of
-objects representing raw text and various mustache tags.
-
-This abstract tree is made of objects conforming to the TemplateASTNode
-protocol.
-
-For example, the template string "hello {{name}}!" would give three AST nodes:
-
-- a TextNode that renders "hello ".
-- a VariableTag that renders the value of the `name` expression.
-- a TextNode that renders "!".
-*/
-protocol TemplateASTNode: class {   // class so that we can use the !== operator (see Context.swift)
+enum TemplateASTNode {
+    struct InheritableSectionDescriptor {
+        let templateAST: TemplateAST
+        let name: String
+    }
+    struct InheritedPartialDescriptor {
+        let templateAST: TemplateAST
+        let partial: PartialDescriptor
+    }
+    struct PartialDescriptor {
+        let templateAST: TemplateAST
+        let name: String?
+    }
+    struct SectionDescriptor {
+        let templateAST: TemplateAST
+        let expression: Expression
+        let inverted: Bool
+        let openingToken: TemplateToken
+        let innerTemplateString: String
+    }
+    struct TextDescriptor {
+        let text: String
+    }
+    struct VariableDescriptor {
+        let expression: Expression
+        let contentType: ContentType
+        let escapesHTML: Bool
+        let token: TemplateToken
+    }
     
-    /**
-    Has the visitor visit the node.
-    */
-    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult
+    case InheritableSection(InheritableSectionDescriptor)
+    case InheritedPartial(InheritedPartialDescriptor)
+    case Partial(PartialDescriptor)
+    case Section(SectionDescriptor)
+    case Text(TextDescriptor)
+    case Variable(VariableDescriptor)
     
-    /**
-    Support for template inheritance.
-    
-    Returns the node that should be rendered in lieu of the node argument.
-    
-    All conforming classes return the node argument, but InheritableSectionNode,
-    InheritedPartialNode, and PartialNode.
-    */
-    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode
+    static func text(# text: String) -> TemplateASTNode {
+        return .Text(TextDescriptor(text: text))
+    }
+    static func variable(# expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
+        return .Variable(VariableDescriptor(expression: expression, contentType: contentType, escapesHTML: escapesHTML, token: token))
+    }
+    static func section(# templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
+        return .Section(SectionDescriptor(templateAST: templateAST, expression: expression, inverted: inverted, openingToken: openingToken, innerTemplateString: innerTemplateString))
+    }
+    static func partial(# templateAST: TemplateAST, name: String?) -> TemplateASTNode {
+        return .Partial(PartialDescriptor(templateAST: templateAST, name: name))
+    }
+    static func inheritedPartial(# templateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String?) -> TemplateASTNode {
+        return .InheritedPartial(InheritedPartialDescriptor(templateAST: templateAST, partial: PartialDescriptor(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
+    }
+    static func inheritableSection(# templateAST: TemplateAST, name: String) -> TemplateASTNode {
+        return .InheritableSection(InheritableSectionDescriptor(templateAST: templateAST, name: name))
+    }
 }
-
-/**
-A template AST visitor handles AST nodes.
-
-RenderingEngine conforms to this protocol so that it can render templates.
-*/
-protocol TemplateASTVisitor {
-    func visit(inheritedPartialNode: InheritedPartialNode) -> TemplateASTVisitResult
-    func visit(inheritableSectionNode: InheritableSectionNode) -> TemplateASTVisitResult
-    func visit(partialNode: PartialNode) -> TemplateASTVisitResult
-    func visit(variableTag: VariableTag) -> TemplateASTVisitResult
-    func visit(sectionTag: SectionTag) -> TemplateASTVisitResult
-    func visit(textNode: TextNode) -> TemplateASTVisitResult
-}
-
-enum TemplateASTVisitResult {
-    case Success
-    case Error(NSError)
-}
-

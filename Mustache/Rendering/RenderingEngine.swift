@@ -23,7 +23,7 @@
 
 import Foundation
 
-final class RenderingEngine: TemplateASTVisitor {
+final class RenderingEngine {
     
     init(templateAST: TemplateAST, context: Context) {
         self.templateAST = templateAST
@@ -46,32 +46,56 @@ final class RenderingEngine: TemplateASTVisitor {
     
     // MARK: - TemplateASTVisitor
     
-    func visit(inheritedPartialNode: InheritedPartialNode) -> TemplateASTVisitResult {
+    enum TemplateASTVisitResult {
+        case Success
+        case Error(NSError)
+    }
+    
+    func visit(node: TemplateASTNode) -> TemplateASTVisitResult {
+        switch node {
+        case .InheritableSection(let inheritableSection):
+            return visitInheritableSection(inheritableSection)
+        case .InheritedPartial(let inheritedPartial):
+            return visitInheritedPartial(inheritedPartial)
+        case .Partial(let partial):
+            return visitPartial(partial)
+        case .Section(let section):
+            return visitSection(section)
+        case .Text(let text):
+            return visitText(text)
+        case .Variable(let variable):
+            return visitVariable(variable)
+        }
+    }
+    
+    func visitInheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor) -> TemplateASTVisitResult {
         let originalContext = context
-        context = context.extendedContext(inheritedPartialNode: inheritedPartialNode)
-        let result = visit(inheritedPartialNode.partialNode)
+        context = context.extendedContext(inheritedPartial: inheritedPartial)
+        let result = visitPartial(inheritedPartial.partial)
         context = originalContext
         return result
     }
     
-    func visit(inheritableSectionNode: InheritableSectionNode) -> TemplateASTVisitResult {
-        return visit(inheritableSectionNode.templateAST)
+    func visitInheritableSection(inheritableSection: TemplateASTNode.InheritableSectionDescriptor) -> TemplateASTVisitResult {
+        return visit(inheritableSection.templateAST)
     }
     
-    func visit(partialNode: PartialNode) -> TemplateASTVisitResult {
-        return visit(partialNode.templateAST)
+    func visitPartial(partial: TemplateASTNode.PartialDescriptor) -> TemplateASTVisitResult {
+        return visit(partial.templateAST)
     }
     
-    func visit(variableTag: VariableTag) -> TemplateASTVisitResult {
-        return visit(variableTag, escapesHTML: variableTag.escapesHTML)
+    func visitVariable(variable: TemplateASTNode.VariableDescriptor) -> TemplateASTVisitResult {
+        let tag = VariableTag(contentType: variable.contentType, token: variable.token)
+        return visitTag(tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression)
     }
     
-    func visit(sectionTag: SectionTag) -> TemplateASTVisitResult {
-        return visit(sectionTag, escapesHTML: true)
+    func visitSection(section: TemplateASTNode.SectionDescriptor) -> TemplateASTVisitResult {
+        let tag = SectionTag(templateAST: section.templateAST, openingToken: section.openingToken, innerTemplateString: section.innerTemplateString)
+        return visitTag(tag, escapesHTML: true, inverted: section.inverted, expression: section.expression)
     }
     
-    func visit(textNode: TextNode) -> TemplateASTVisitResult {
-        buffer = buffer! + textNode.text
+    func visitText(text: TemplateASTNode.TextDescriptor) -> TemplateASTVisitResult {
+        buffer = buffer! + text.text
         return .Success
     }
     
@@ -108,7 +132,7 @@ final class RenderingEngine: TemplateASTVisitor {
     private func visit(nodes: [TemplateASTNode]) -> TemplateASTVisitResult {
         for node in nodes {
             let node = context.resolveTemplateASTNode(node)
-            let result = node.acceptTemplateASTVisitor(self)
+            let result = visit(node)
             switch result {
             case .Error:
                 return result
@@ -119,11 +143,11 @@ final class RenderingEngine: TemplateASTVisitor {
         return .Success
     }
     
-    private func visit(tag: Tag, escapesHTML: Bool) -> TemplateASTVisitResult {
+    private func visitTag(tag: Tag, escapesHTML: Bool, inverted: Bool, expression: Expression) -> TemplateASTVisitResult {
         
         // Evaluate expression
         
-        let expressionInvocation = ExpressionInvocation(expression: tag.expression)
+        let expressionInvocation = ExpressionInvocation(expression: expression)
         let invocationResult = expressionInvocation.invokeWithContext(context)
         
         switch invocationResult {
@@ -149,7 +173,7 @@ final class RenderingEngine: TemplateASTVisitor {
             case .Variable:
                 rendering = box.render(info: info, error: &error)
             case .Section:
-                if tag.inverted {
+                if inverted {
                     if box.boolValue {
                         rendering = Rendering("")
                     } else {

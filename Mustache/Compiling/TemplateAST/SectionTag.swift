@@ -27,14 +27,14 @@ import Foundation
 A SectionTag is an AST node that represents a regular or inverted section tag
 such as {{#section}}...{{/section}} and {{^section}}...{{/section}}.
 */
-class SectionTag: Tag, TemplateASTNode {
+class SectionTag: Tag {
     let openingToken: TemplateToken
     let templateAST: TemplateAST
     
-    init(expression: Expression, inverted: Bool, templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
+    init(templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
         self.templateAST = templateAST
         self.openingToken = openingToken
-        super.init(type: .Section, innerTemplateString: innerTemplateString, inverted: inverted, expression: expression)
+        super.init(type: .Section, innerTemplateString: innerTemplateString)
     }
     
     /**
@@ -55,13 +55,5 @@ class SectionTag: Tag, TemplateASTNode {
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return renderingEngine.render(error: error)
-    }
-    
-    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {
-        return visitor.visit(self)
-    }
-    
-    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
-        return node
     }
 }

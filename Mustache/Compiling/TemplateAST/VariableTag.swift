@@ -27,16 +27,14 @@ import Foundation
 A VariableTag is an AST node that represents a variable tag such as {{name}} and
 {{{name}}}.
 */
-class VariableTag: Tag, TemplateASTNode {
+class VariableTag: Tag {
     let token: TemplateToken
     let contentType: ContentType
-    let escapesHTML: Bool
     
-    init(expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) {
-        self.escapesHTML = escapesHTML
+    init(contentType: ContentType, token: TemplateToken) {
         self.contentType = contentType
         self.token = token
-        super.init(type: .Variable, innerTemplateString: "", inverted: false, expression: expression)
+        super.init(type: .Variable, innerTemplateString: "")
     }
     
     /**
@@ -56,13 +54,5 @@ class VariableTag: Tag, TemplateASTNode {
     */
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
         return Rendering("", contentType)
-    }
-    
-    func acceptTemplateASTVisitor(visitor: TemplateASTVisitor) -> TemplateASTVisitResult {
-        return visitor.visit(self)
-    }
-    
-    func resolveTemplateASTNode(node: TemplateASTNode) -> TemplateASTNode {
-        return node
     }
 }

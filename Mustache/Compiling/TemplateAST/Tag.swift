@@ -151,13 +151,8 @@ public class Tag: Printable {
         fatalError("Subclass must override")
     }
     
-    var inverted: Bool
-    var expression: Expression
-    
-    init(type: TagType, innerTemplateString: String, inverted: Bool, expression: Expression) {
+    init(type: TagType, innerTemplateString: String) {
         self.type = type
         self.innerTemplateString = innerTemplateString
-        self.inverted = inverted
-        self.expression = expression
     }
 }
