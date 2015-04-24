@@ -24,18 +24,31 @@
 import Foundation
 
 enum TemplateASTNode {
+    case InheritableSection(InheritableSectionDescriptor)   // {{$ name }}...{{/ name }}
+    case InheritedPartial(InheritedPartialDescriptor)       // {{< name }}...{{/ name }}
+    case Partial(PartialDescriptor)                         // {{> name }}
+    case Section(SectionDescriptor)                         // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
+    case Text(TextDescriptor)                               // text
+    case Variable(VariableDescriptor)                       // {{ name }}, {{{ name }}}, {{& name }}
+    
+    
+    // Define structs instead of long tuples
+    
     struct InheritableSectionDescriptor {
         let templateAST: TemplateAST
         let name: String
     }
+    
     struct InheritedPartialDescriptor {
         let templateAST: TemplateAST
         let partial: PartialDescriptor
     }
+    
     struct PartialDescriptor {
         let templateAST: TemplateAST
         let name: String?
     }
+    
     struct SectionDescriptor {
         let templateAST: TemplateAST
         let expression: Expression
@@ -43,9 +56,11 @@ enum TemplateASTNode {
         let openingToken: TemplateToken
         let innerTemplateString: String
     }
+    
     struct TextDescriptor {
         let text: String
     }
+    
     struct VariableDescriptor {
         let expression: Expression
         let contentType: ContentType
@@ -53,29 +68,30 @@ enum TemplateASTNode {
         let token: TemplateToken
     }
     
-    case InheritableSection(InheritableSectionDescriptor)
-    case InheritedPartial(InheritedPartialDescriptor)
-    case Partial(PartialDescriptor)
-    case Section(SectionDescriptor)
-    case Text(TextDescriptor)
-    case Variable(VariableDescriptor)
+    
+    // Factory methods
+    
+    static func inheritableSection(# templateAST: TemplateAST, name: String) -> TemplateASTNode {
+        return .InheritableSection(InheritableSectionDescriptor(templateAST: templateAST, name: name))
+    }
+    
+    static func inheritedPartial(# templateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String?) -> TemplateASTNode {
+        return .InheritedPartial(InheritedPartialDescriptor(templateAST: templateAST, partial: PartialDescriptor(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
+    }
+    
+    static func partial(# templateAST: TemplateAST, name: String?) -> TemplateASTNode {
+        return .Partial(PartialDescriptor(templateAST: templateAST, name: name))
+    }
+    
+    static func section(# templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
+        return .Section(SectionDescriptor(templateAST: templateAST, expression: expression, inverted: inverted, openingToken: openingToken, innerTemplateString: innerTemplateString))
+    }
     
     static func text(# text: String) -> TemplateASTNode {
         return .Text(TextDescriptor(text: text))
     }
+    
     static func variable(# expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
         return .Variable(VariableDescriptor(expression: expression, contentType: contentType, escapesHTML: escapesHTML, token: token))
-    }
-    static func section(# templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
-        return .Section(SectionDescriptor(templateAST: templateAST, expression: expression, inverted: inverted, openingToken: openingToken, innerTemplateString: innerTemplateString))
-    }
-    static func partial(# templateAST: TemplateAST, name: String?) -> TemplateASTNode {
-        return .Partial(PartialDescriptor(templateAST: templateAST, name: name))
-    }
-    static func inheritedPartial(# templateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String?) -> TemplateASTNode {
-        return .InheritedPartial(InheritedPartialDescriptor(templateAST: templateAST, partial: PartialDescriptor(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
-    }
-    static func inheritableSection(# templateAST: TemplateAST, name: String) -> TemplateASTNode {
-        return .InheritableSection(InheritableSectionDescriptor(templateAST: templateAST, name: name))
     }
 }
