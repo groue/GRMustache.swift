@@ -36,18 +36,9 @@ The parser emits [TemplateToken](Mustache/Parsing/TemplateToken.swift). In our c
 
 ## Compiling
 
-The tokens are consumed by a [TemplateCompiler](Mustache/Compiling/TemplateCompiler.swift) which, in turn, builds a [TemplateAST](Mustache/Compiling/TemplateAST/TemplateAST.swift). The [Abstract Syntax Tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree) is a recursive data structure which holds a collection of [TemplateASTNode](Mustache/Compiling/TemplateAST/TemplateASTNode.swift), some of them containing another sub-AST. There are as many Node types as there are components in a Mustache template:
+The tokens are consumed by a [TemplateCompiler](Mustache/Compiling/TemplateCompiler.swift) which, in turn, builds a [TemplateAST](Mustache/Compiling/TemplateAST/TemplateAST.swift). The [Abstract Syntax Tree](http://en.wikipedia.org/wiki/Abstract_syntax_tree) is a recursive data structure which holds a collection of [TemplateASTNode](Mustache/Compiling/TemplateAST/TemplateASTNode.swift), some of them containing another sub-AST.
 
-- [InheritableSectionNode](Mustache/Compiling/TemplateAST/InheritableSectionNode.swift) represents `{{$name}}...{{/name}}` sections, involved in template inheritance.
-- [InheritedPartialNode](Mustache/Compiling/TemplateAST/InheritedPartialNode.swift) represents `{{<partial}}...{{/partial}}` inherited partials.
-- [PartialNode](Mustache/Compiling/TemplateAST/PartialNode.swift) represents `{{>partial}}` tags.
-- [SectionTag](Mustache/Compiling/TemplateAST/SectionTag.swift) represents regular `{{#name}}...{{/name}}` and inverted `{{^name}}...{{/name}}` sections.
-- [TextNode](Mustache/Compiling/TemplateAST/TextNode.swift) represents text.
-- [VariableTag](Mustache/Compiling/TemplateAST/VariableTag.swift) represents escaped `{{name}}` and non-escaped `{{{name}}}` variable tags.
-
-Both SectionTag and VariableTag hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. Strings like `name` or `uppercase(person.name)` are turned into expressions by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
-
-TemplateASTNode is a passive data class, involved in a [Visitor Pattern](http://en.wikipedia.org/wiki/Visitor_pattern): it is consumed by the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol. Nodes will be visited during the rendering phase (see below).
+Nodes for section and variable tags (`{{#name}}...{{/name}}` and `{{name}}`) hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. Strings like `name` or `uppercase(person.name)` are turned into expressions by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
 
 
 ---
