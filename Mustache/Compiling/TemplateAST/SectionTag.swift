@@ -24,8 +24,8 @@
 import Foundation
 
 /**
-A SectionTag is an AST node that represents a regular or inverted section tag
-such as {{#section}}...{{/section}} and {{^section}}...{{/section}}.
+A SectionTag represents a regular or inverted section tag such as
+{{#section}}...{{/section}} or {{^section}}...{{/section}}.
 */
 class SectionTag: Tag {
     let openingToken: TemplateToken

@@ -24,8 +24,7 @@
 import Foundation
 
 /**
-A VariableTag is an AST node that represents a variable tag such as {{name}} and
-{{{name}}}.
+VariableTag represents a variable tag such as {{name}} or {{{name}}}.
 */
 class VariableTag: Tag {
     let token: TemplateToken
