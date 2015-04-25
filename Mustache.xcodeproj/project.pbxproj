@@ -25,7 +25,6 @@
 		561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
 		561646981A23C21B00F8ADE0 /* Person.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646951A23C12B00F8ADE0 /* Person.mustache */; };
 		561E72671A8BDC2C004ED48B /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 561E725C1A8BDC2B004ED48B /* Mustache.framework */; };
-		561E72751A8BDC4D004ED48B /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1CB19FC3A030028C6C1 /* Expression.swift */; };
 		561E727E1A8BDC4D004ED48B /* SectionTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1FA19FC5B860028C6C1 /* SectionTag.swift */; };
 		561E727F1A8BDC4D004ED48B /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
 		561E72801A8BDC4D004ED48B /* TemplateAST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */; };
@@ -128,7 +127,6 @@
 		563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */; };
 		563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */; };
 		563AE1C919FC38B80028C6C1 /* ExpressionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C819FC38B80028C6C1 /* ExpressionParser.swift */; };
-		563AE1CC19FC3A030028C6C1 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1CB19FC3A030028C6C1 /* Expression.swift */; };
 		563AE1D019FC446A0028C6C1 /* VariableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1CF19FC446A0028C6C1 /* VariableTag.swift */; };
 		563AE1D319FC45400028C6C1 /* TemplateRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D219FC45400028C6C1 /* TemplateRepository.swift */; };
 		563AE1D519FC48330028C6C1 /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D419FC48330028C6C1 /* Template.swift */; };
@@ -139,6 +137,8 @@
 		563AE20119FC62330028C6C1 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
 		563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */; };
 		564717311A18EAE600E383F9 /* FilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564717301A18EAE600E383F9 /* FilterTests.swift */; };
+		566244571AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
+		566244581AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
 		56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3721A1CC417000CE8CB /* NSFormatter.swift */; };
@@ -246,7 +246,6 @@
 		563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateAST.swift; sourceTree = "<group>"; };
 		563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateASTNode.swift; sourceTree = "<group>"; };
 		563AE1C819FC38B80028C6C1 /* ExpressionParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionParser.swift; sourceTree = "<group>"; };
-		563AE1CB19FC3A030028C6C1 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		563AE1CF19FC446A0028C6C1 /* VariableTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VariableTag.swift; sourceTree = "<group>"; };
 		563AE1D219FC45400028C6C1 /* TemplateRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateRepository.swift; sourceTree = "<group>"; };
 		563AE1D419FC48330028C6C1 /* Template.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Template.swift; sourceTree = "<group>"; };
@@ -257,6 +256,7 @@
 		563AE20019FC62330028C6C1 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionInvocation.swift; sourceTree = "<group>"; };
 		564717301A18EAE600E383F9 /* FilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTests.swift; sourceTree = "<group>"; };
+		566244561AEBC88C008BAD41 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		56660D6D1A9378B100E53CCF /* CoreFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreFunctions.swift; sourceTree = "<group>"; };
 		5674F3721A1CC417000CE8CB /* NSFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatter.swift; sourceTree = "<group>"; };
 		5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatterTests.swift; sourceTree = "<group>"; };
@@ -469,7 +469,7 @@
 		563AE1BB19FC26F00028C6C1 /* Compiling */ = {
 			isa = PBXGroup;
 			children = (
-				563AE1CA19FC39C10028C6C1 /* Expression */,
+				566244561AEBC88C008BAD41 /* Expression.swift */,
 				563AE1BE19FC29B30028C6C1 /* TemplateAST */,
 				563AE1BC19FC27040028C6C1 /* TemplateCompiler.swift */,
 			);
@@ -496,14 +496,6 @@
 				563AE1FD19FC5DEC0028C6C1 /* TranslateCharacters.swift */,
 			);
 			path = Shared;
-			sourceTree = "<group>";
-		};
-		563AE1CA19FC39C10028C6C1 /* Expression */ = {
-			isa = PBXGroup;
-			children = (
-				563AE1CB19FC3A030028C6C1 /* Expression.swift */,
-			);
-			path = Expression;
 			sourceTree = "<group>";
 		};
 		563AE1D119FC45350028C6C1 /* Template */ = {
@@ -925,7 +917,7 @@
 				561E72871A8BDC4D004ED48B /* EachFilter.swift in Sources */,
 				561E729A1A8BDC4D004ED48B /* TemplateRepository.swift in Sources */,
 				561E72991A8BDC4D004ED48B /* Template.swift in Sources */,
-				561E72751A8BDC4D004ED48B /* Expression.swift in Sources */,
+				566244581AEBC88C008BAD41 /* Expression.swift in Sources */,
 				561E72971A8BDC4D004ED48B /* Error.swift in Sources */,
 				561E72961A8BDC4D004ED48B /* ContentType.swift in Sources */,
 			);
@@ -1003,8 +995,8 @@
 				563AE1C219FC29E70028C6C1 /* TemplateASTNode.swift in Sources */,
 				569C42381A86824800748E98 /* ZipFilter.swift in Sources */,
 				563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */,
+				566244571AEBC88C008BAD41 /* Expression.swift in Sources */,
 				563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */,
-				563AE1CC19FC3A030028C6C1 /* Expression.swift in Sources */,
 				569C42411A89538D00748E98 /* ContentType.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
