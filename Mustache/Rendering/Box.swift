@@ -551,7 +551,7 @@ extension String : MustacheBoxable {
 // MARK: - Boxing of Swift collections and dictionaries
 
 
-// IMPLEMENTATION NOTE
+// IMPLEMENTATION NOTE 1
 //
 // This function is a private helper for collection types CollectionType and
 // NSSet. Collections render as the concatenation of the rendering of their
@@ -574,8 +574,12 @@ extension String : MustacheBoxable {
 //     {{/.}}
 //   {{/ arrays }}
 //
-// Implementation note: this function used to consume a generic collection
-// instead of an explicit array. (See commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
+//
+// IMPLEMENTATION NOTE 2
+//
+// This function used to consume a generic collection instead of an explicit
+// array. (See commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
+//
 // Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has revelead
 // that the generic function would not compile in Release configuration.
 private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
