@@ -28,7 +28,7 @@ enum TemplateASTNode {
     case InheritedPartial(InheritedPartialDescriptor)       // {{< name }}...{{/ name }}
     case Partial(PartialDescriptor)                         // {{> name }}
     case Section(SectionDescriptor)                         // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
-    case Text(TextDescriptor)                               // text
+    case Text(String)                                       // text
     case Variable(VariableDescriptor)                       // {{ name }}, {{{ name }}}, {{& name }}
     
     
@@ -50,22 +50,15 @@ enum TemplateASTNode {
     }
     
     struct SectionDescriptor {
-        let templateAST: TemplateAST
+        let tag: SectionTag
         let expression: Expression
         let inverted: Bool
-        let openingToken: TemplateToken
-        let innerTemplateString: String
-    }
-    
-    struct TextDescriptor {
-        let text: String
     }
     
     struct VariableDescriptor {
+        let tag: VariableTag
         let expression: Expression
-        let contentType: ContentType
         let escapesHTML: Bool
-        let token: TemplateToken
     }
     
     
@@ -84,14 +77,16 @@ enum TemplateASTNode {
     }
     
     static func section(# templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
-        return .Section(SectionDescriptor(templateAST: templateAST, expression: expression, inverted: inverted, openingToken: openingToken, innerTemplateString: innerTemplateString))
+        let tag = SectionTag(templateAST: templateAST, openingToken: openingToken, innerTemplateString: innerTemplateString)
+        return .Section(SectionDescriptor(tag: tag, expression: expression, inverted: inverted))
     }
     
     static func text(# text: String) -> TemplateASTNode {
-        return .Text(TextDescriptor(text: text))
+        return .Text(text)
     }
     
     static func variable(# expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
-        return .Variable(VariableDescriptor(expression: expression, contentType: contentType, escapesHTML: escapesHTML, token: token))
+        let tag = VariableTag(contentType: contentType, token: token)
+        return .Variable(VariableDescriptor(tag: tag, expression: expression, escapesHTML: escapesHTML))
     }
 }
