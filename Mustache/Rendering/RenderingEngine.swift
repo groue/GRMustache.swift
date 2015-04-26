@@ -249,41 +249,38 @@ final class RenderingEngine {
         // order to support recursive inherited partials.
         let (resolvedSection, _) = reduce(inheritedPartialStack, (section, [] as [TemplateAST])) { (reduced, inheritedPartial) in
             let (section, sourceTemplateASTs) = reduced
-            let (resolvedSection, sourceTemplateAST) = resolveInheritableSection(section, inTemplateAST: inheritedPartial.templateAST, avoidingTemplateASTs: sourceTemplateASTs, inContext: context)
-            if let sourceTemplateAST = sourceTemplateAST {
-                // section has been overriden
-                return (resolvedSection, sourceTemplateASTs + [sourceTemplateAST])
-            } else {
-                // section has not been overriden
-                return reduced
-            }
+            return resolveInheritableSection(section, inTemplateAST: inheritedPartial.templateAST, sourceTemplateASTs: sourceTemplateASTs, inContext: context)
         }
         return resolvedSection
     }
     
     // Looks for an override for the section argument in a TemplateAST.
     //
-    // Returns a tuple (section, sourceTemplateAST?) where section is the
-    // resolved section and sourceTemplateAST the eventual templateAST that
-    // provides the resolved section.
-    // 
-    // If the return sourceTemplateAST is nil, then the section has not been
-    // overriden.
+    // Returns a tuple (section, sourceTemplateASTs) where section is the
+    // resolved section and sourceTemplateASTs the array of templateASTs that
+    // have been used to provide the resolved section.
     private func resolveInheritableSection(
         section: TemplateASTNode.InheritableSection,
         inTemplateAST templateAST: TemplateAST,
-        avoidingTemplateASTs sourceTemplateASTs: [TemplateAST],
-        inContext context: Context) -> (TemplateASTNode.InheritableSection, TemplateAST?)
+        sourceTemplateASTs: [TemplateAST],
+        inContext context: Context) -> (TemplateASTNode.InheritableSection, [TemplateAST])
     {
         if contains(sourceTemplateASTs, { $0 === templateAST }) {
-            return (section, nil)
+            return (section, sourceTemplateASTs)
         } else {
-            return reduce(templateAST.nodes, (section, nil as TemplateAST?)) { (reduced, inheritedNode) in
-                let (reducedSection, reducedTemplateAST) = reduced
+            let sectionName = section.name
+            
+            // Iterate all template AST nodes, and reduce a tuple (section, templateASTs).
+            //
+            // As we iterate nodes, section becomes the last inherited section,
+            // and templateASTs get filled with templateASTs that have been used
+            // to provide the resolved section.
+            return reduce(templateAST.nodes, (section, [] as [TemplateAST])) { (reduced, inheritedNode) in
+                let (reducedSection, reducedSourceTemplateASTs) = reduced
                 switch inheritedNode {
-                case .InheritableSectionNode(let inheritableSection) where inheritableSection.name == reducedSection.name:
+                case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == sectionName:
                     // {{$ name }}...{{/ name }} is overriden by another inheritable section with the same name.
-                    return (inheritableSection, templateAST)
+                    return (resolvedSection, reducedSourceTemplateASTs + [templateAST])
                     
                 case .InheritedPartialNode(let inheritedPartial):
                     // Is there an override for {{$ name }}...{{/ name }} in {{< partial }}...{{/ partial }}?
@@ -311,9 +308,9 @@ final class RenderingEngine {
                     //
                     // First look in partial, then inside.
 
-                    let (resolvedSection, sourceTemplateAST) = resolveInheritableSection(section, inTemplateAST: inheritedPartial.partial.templateAST, avoidingTemplateASTs: sourceTemplateASTs, inContext: context)
-                    let (resolvedSection2, sourceTemplateAST2) = resolveInheritableSection(resolvedSection, inTemplateAST: inheritedPartial.templateAST, avoidingTemplateASTs: sourceTemplateASTs, inContext: context)
-                    return (resolvedSection2, sourceTemplateAST2 ?? sourceTemplateAST ?? reducedTemplateAST)
+                    let (resolvedSection1, sourceTemplateASTs1) = resolveInheritableSection(reducedSection, inTemplateAST: inheritedPartial.partial.templateAST, sourceTemplateASTs: reducedSourceTemplateASTs, inContext: context)
+                    let (resolvedSection2, sourceTemplateASTs2) = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.templateAST, sourceTemplateASTs: sourceTemplateASTs1, inContext: context)
+                    return (resolvedSection2, sourceTemplateASTs2)
                     
                 case .PartialNode(let partial):
                     // Is there an override for {{$ name }}...{{/ name }} in {{> partial }}?
@@ -329,8 +326,8 @@ final class RenderingEngine {
                     //       "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
                     //   "expected": "partial1"
                     // },
-                    let (resolvedSection, sourceTemplateAST) = resolveInheritableSection(section, inTemplateAST: partial.templateAST, avoidingTemplateASTs: sourceTemplateASTs, inContext: context)
-                    return (resolvedSection, sourceTemplateAST ?? reducedTemplateAST)
+                    let (resolvedSection, sourceTemplateASTs) = resolveInheritableSection(section, inTemplateAST: partial.templateAST, sourceTemplateASTs: reducedSourceTemplateASTs, inContext: context)
+                    return (resolvedSection, sourceTemplateASTs)
                     
                 default:
                     return reduced
