@@ -236,12 +236,7 @@ final class RenderingEngine {
     // MARK: - Template inheritance
     
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
-        // Iterate all inherited partials, and reduce a (section, templateASTs) tuple.
-        //
-        // As we iterate inherited partials, section becomes the deepest
-        // inherited section, and templateASTs gets filled with the templateASTs
-        // that did provide the inherited sections, and should not be reused in
-        // order to support recursive inherited partials.
+        // As we iterate inherited partials, section becomes the deepest inherited section.
         return reduce(context.inheritedPartialStack, section) { (section, inheritedPartial) in
             return resolveInheritableSection(section, inTemplateAST: inheritedPartial.templateAST, inContext: context)
         }
@@ -250,8 +245,7 @@ final class RenderingEngine {
     // Looks for an override for the section argument in a TemplateAST.
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inTemplateAST templateAST: TemplateAST, inContext context: Context) -> TemplateASTNode.InheritableSection {
         // As we iterate template AST nodes, section becomes the last inherited
-        // section, and sourceTemplateASTs get filled with templateASTs that
-        // have been used to provide the inherited section.
+        // section in the template AST.
         return reduce(templateAST.nodes, section) { (section, node) in
             switch node {
             case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == section.name:
@@ -287,9 +281,9 @@ final class RenderingEngine {
                 //   "expected": "inherited"
                 // }
                 
-                let section1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.partial.templateAST, inContext: context)
-                let section2 = resolveInheritableSection(section1, inTemplateAST: inheritedPartial.templateAST, inContext: context)
-                return section2
+                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.partial.templateAST, inContext: context)
+                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.templateAST, inContext: context)
+                return resolvedSection2
                 
             case .PartialNode(let partial):
                 // {{> partial }}
