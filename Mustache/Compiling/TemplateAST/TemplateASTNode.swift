@@ -24,38 +24,38 @@
 import Foundation
 
 enum TemplateASTNode {
-    case InheritableSection(InheritableSectionDescriptor)   // {{$ name }}...{{/ name }}
-    case InheritedPartial(InheritedPartialDescriptor)       // {{< name }}...{{/ name }}
-    case Partial(PartialDescriptor)                         // {{> name }}
-    case Section(SectionDescriptor)                         // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
-    case Text(String)                                       // text
-    case Variable(VariableDescriptor)                       // {{ name }}, {{{ name }}}, {{& name }}
+    case InheritableSectionNode(InheritableSection) // {{$ name }}...{{/ name }}
+    case InheritedPartialNode(InheritedPartial)     // {{< name }}...{{/ name }}
+    case PartialNode(Partial)                       // {{> name }}
+    case SectionNode(Section)                       // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
+    case TextNode(String)                           // text
+    case VariableNode(Variable)                     // {{ name }}, {{{ name }}}, {{& name }}
     
     
     // Define structs instead of long tuples
     
-    struct InheritableSectionDescriptor {
+    struct InheritableSection {
         let templateAST: TemplateAST
         let name: String
     }
     
-    struct InheritedPartialDescriptor {
+    struct InheritedPartial {
         let templateAST: TemplateAST
-        let partial: PartialDescriptor
+        let partial: Partial
     }
     
-    struct PartialDescriptor {
+    struct Partial {
         let templateAST: TemplateAST
         let name: String?
     }
     
-    struct SectionDescriptor {
+    struct Section {
         let tag: SectionTag
         let expression: Expression
         let inverted: Bool
     }
     
-    struct VariableDescriptor {
+    struct Variable {
         let tag: VariableTag
         let expression: Expression
         let escapesHTML: Bool
@@ -65,28 +65,28 @@ enum TemplateASTNode {
     // Factory methods
     
     static func inheritableSection(# templateAST: TemplateAST, name: String) -> TemplateASTNode {
-        return .InheritableSection(InheritableSectionDescriptor(templateAST: templateAST, name: name))
+        return .InheritableSectionNode(InheritableSection(templateAST: templateAST, name: name))
     }
     
     static func inheritedPartial(# templateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String?) -> TemplateASTNode {
-        return .InheritedPartial(InheritedPartialDescriptor(templateAST: templateAST, partial: PartialDescriptor(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
+        return .InheritedPartialNode(InheritedPartial(templateAST: templateAST, partial: Partial(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
     }
     
     static func partial(# templateAST: TemplateAST, name: String?) -> TemplateASTNode {
-        return .Partial(PartialDescriptor(templateAST: templateAST, name: name))
+        return .PartialNode(Partial(templateAST: templateAST, name: name))
     }
     
     static func section(# templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
         let tag = SectionTag(templateAST: templateAST, openingToken: openingToken, innerTemplateString: innerTemplateString)
-        return .Section(SectionDescriptor(tag: tag, expression: expression, inverted: inverted))
+        return .SectionNode(Section(tag: tag, expression: expression, inverted: inverted))
     }
     
     static func text(# text: String) -> TemplateASTNode {
-        return .Text(text)
+        return .TextNode(text)
     }
     
     static func variable(# expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
         let tag = VariableTag(contentType: contentType, token: token)
-        return .Variable(VariableDescriptor(tag: tag, expression: expression, escapesHTML: escapesHTML))
+        return .VariableNode(Variable(tag: tag, expression: expression, escapesHTML: escapesHTML))
     }
 }

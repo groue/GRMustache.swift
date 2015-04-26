@@ -56,29 +56,26 @@ final class RenderingEngine {
         case Error(NSError)
     }
     
-    private func renderNode(node: TemplateASTNode, inContext context: Context) -> RenderResult {
-        switch node {
-        case .InheritableSection(let inheritableSection):
-            return renderTemplateAST(inheritableSection.templateAST, inContext: context)
-        case .InheritedPartial(let inheritedPartial):
-            return renderTemplateAST(inheritedPartial.partial.templateAST, inContext: context.extendedContext(inheritedPartial: inheritedPartial))
-        case .Partial(let partial):
-            return renderTemplateAST(partial.templateAST, inContext: context)
-        case .Section(let section):
-            return renderTag(section.tag, escapesHTML: true, inverted: section.inverted, expression: section.expression, inContext: context)
-        case .Text(let text):
-            buffer += text
-            return .Success
-        case .Variable(let variable):
-            return renderTag(variable.tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression, inContext: context)
-        }
-    }
-    
     private func renderTemplateAST(templateAST: TemplateAST, inContext context: Context) -> RenderResult {
+        // TemplateAST carry a content-type.
+        //
+        // We must take care of content type mismatch between the currently
+        // rendered AST (defined by init), and the argument.
+        //
+        // For example, the partial loaded by the HTML template `{{>partial}}`
+        // may be a text one. In this case, we must render the partial as text,
+        // and then HTML-encode its rendering. See the "Partial containing
+        // CONTENT_TYPE:TEXT pragma is HTML-escaped when embedded." test in
+        // the text_rendering.json test suite.
+        //
+        // So let's check for a content-type mismatch:
+        
         let targetContentType = self.templateAST.contentType!
-        if templateAST.contentType == targetContentType {
+        if templateAST.contentType == targetContentType
+        {
+            // Content-type match
+            
             for node in templateAST.nodes {
-                let node = resolveNode(node, inContext: context)
                 let result = renderNode(node, inContext: context)
                 switch result {
                 case .Error:
@@ -88,7 +85,11 @@ final class RenderingEngine {
                 }
             }
             return .Success
-        } else {
+        }
+        else
+        {
+            // Content-type mismatch
+            //
             // Render separately, so that we can HTML-escape the rendering of
             // the templateAST before appending to our buffer.
             let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
@@ -96,9 +97,9 @@ final class RenderingEngine {
             if let rendering = renderingEngine.render(error: &error) {
                 switch (targetContentType, rendering.contentType) {
                 case (.HTML, .Text):
-                    buffer += escapeHTML(rendering.string)
+                    buffer.extend(escapeHTML(rendering.string))
                 default:
-                    buffer += rendering.string
+                    buffer.extend(rendering.string)
                 }
                 return .Success
             } else {
@@ -107,7 +108,55 @@ final class RenderingEngine {
         }
     }
     
+    private func renderNode(node: TemplateASTNode, inContext context: Context) -> RenderResult {
+        switch node {
+        case .InheritableSectionNode(let inheritableSection):
+            // {{$ name }}...{{/ name }}
+            //
+            // Render the inner content of the resolved inheritable section.
+            let resolvedSection = resolveInheritableSection(inheritableSection, inContext: context)
+            return renderTemplateAST(resolvedSection.templateAST, inContext: context)
+            
+        case .InheritedPartialNode(let inheritedPartial):
+            // {{< name }}...{{/ name }}
+            //
+            // Extend the inheritance stack, and render the content of the partial
+            let context = context.extendedContext(inheritedPartial: inheritedPartial)
+            return renderTemplateAST(inheritedPartial.partial.templateAST, inContext: context)
+            
+        case .PartialNode(let partial):
+            // {{> name }}
+            //
+            // Render the content of the partial
+            return renderTemplateAST(partial.templateAST, inContext: context)
+            
+        case .SectionNode(let section):
+            // {{# name }}...{{/ name }}
+            // {{^ name }}...{{/ name }}
+            //
+            // We have common rendering for sections and variable tags, yet with
+            // a few specific flags:
+            return renderTag(section.tag, escapesHTML: true, inverted: section.inverted, expression: section.expression, inContext: context)
+            
+        case .TextNode(let text):
+            // text is the trivial case:
+            buffer.extend(text)
+            return .Success
+            
+        case .VariableNode(let variable):
+            // {{ name }}
+            // {{{ name }}}
+            // {{& name }}
+            //
+            // We have common rendering for sections and variable tags, yet with
+            // a few specific flags:
+            return renderTag(variable.tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression, inContext: context)
+        }
+    }
+    
     private func renderTag(tag: Tag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) -> RenderResult {
+        
+        // 1. Evaluate expression
         
         switch ExpressionInvocation(expression: expression).invokeWithContext(context) {
             
@@ -122,33 +171,42 @@ final class RenderingEngine {
             
         case .Success(var box):
             
+            // 2. Let willRender functions alter the box
+            
             for willRender in context.willRenderStack {
                 box = willRender(tag: tag, box: box)
             }
             
-            let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
+            
+            // 3. Render the box
+            
             var error: NSError?
             let rendering: Rendering?
             switch tag.type {
             case .Variable:
+                let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
                 rendering = box.render(info: info, error: &error)
             case .Section:
-                if inverted {
-                    if box.boolValue {
-                        rendering = Rendering("")
-                    } else {
-                        rendering = info.tag.renderInnerContent(info.context, error: &error)
-                    }
-                } else {
-                    if box.boolValue {
-                        rendering = box.render(info: info, error: &error)
-                    } else {
-                        rendering = Rendering("")
-                    }
+                switch (inverted, box.boolValue) {
+                case (false, true):
+                    // {{# true }}...{{/ true }}
+                    // Only case where we trigger the RenderFunction of the Box
+                    let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
+                    rendering = box.render(info: info, error: &error)
+                case (true, false):
+                    // {{^ false }}...{{/ false }}
+                    rendering = tag.renderInnerContent(context, error: &error)
+                default:
+                    // {{^ true }}...{{/ true }}
+                    // {{# false }}...{{/ false }}
+                    rendering = Rendering("")
                 }
             }
             
             if let rendering = rendering {
+                
+                // 4. Extend buffer with the rendering, HTML-escaped if needed.
+                
                 let string: String
                 switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
                 case (.HTML, .Text, true):
@@ -156,8 +214,10 @@ final class RenderingEngine {
                 default:
                     string = rendering.string
                 }
+                buffer.extend(string)
                 
-                buffer += string
+                
+                // 5. Let didRender functions do their job
                 
                 for didRender in context.didRenderStack {
                     didRender(tag: tag, box: box, string: string)
@@ -177,49 +237,56 @@ final class RenderingEngine {
     
     // MARK: - Template inheritance
     
-    private func resolveNode(node: TemplateASTNode, inContext context: Context) -> TemplateASTNode {
-        let step: (TemplateASTNode, [TemplateAST]) = (node, [])
-        let (resolvedNode, _) = reduce(context.inheritedPartialStack, step) { (step, inheritedPartial) in
-            let (node, usedTemplateASTs) = step
+    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
+        let inheritedPartialStack = context.inheritedPartialStack
+        
+        // Iterate all inherited partials, and carry along a (section, templateASTs) tuple.
+        //
+        // The tuple contains the last resolved section, and an array of template ASTS which
+        // have actually overriden the section. They help putting an end to recursive inheritance.
+        let (resolvedSection, _) = reduce(inheritedPartialStack, (section, [] as [TemplateAST])) { (tuple, inheritedPartial) in
+            let (section, superTemplateASTs) = tuple
             let templateAST = inheritedPartial.partial.templateAST
-            if !contains(usedTemplateASTs, { $0 === templateAST }) {
-                let (resolvedNode, modified) = resolveNode(node, againstInheritedPartial: inheritedPartial, inContext: context)
+            
+            // Don't resolve twice against the same AST
+            if !contains(superTemplateASTs, { $0 === templateAST }) {
+                let (resolvedSection, modified) = resolveInheritableSection(section, againstInheritedPartial: inheritedPartial, inContext: context)
                 if modified {
-                    return (resolvedNode, usedTemplateASTs + [templateAST])
+                    return (resolvedSection, superTemplateASTs + [templateAST])
                 }
             }
-            return step
+            return tuple
         }
-        return resolvedNode
+        return resolvedSection
     }
     
-    private func resolveNode(node: TemplateASTNode, againstNode inheritedNode: TemplateASTNode, inContext context: Context) -> (TemplateASTNode, Bool) {
+    // Returns a tuple (section, modified) where modified is true if and only if
+    // the section has been overriden.
+    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, againstNode inheritedNode: TemplateASTNode, inContext context: Context) -> (TemplateASTNode.InheritableSection, Bool) {
         switch inheritedNode {
-        case .InheritableSection(let inheritableSection):
-            switch node {
-            case .InheritableSection(let otherInheritableSection) where otherInheritableSection.name == inheritableSection.name:
-                return (.InheritableSection(inheritableSection), true)
-            default:
-                return (node, false)
+        case .InheritableSectionNode(let inheritableSection) where inheritableSection.name == section.name:
+            // Found an override!
+            return (inheritableSection, true)
+        case .InheritedPartialNode(let inheritedPartial):
+            return resolveInheritableSection(section, againstInheritedPartial: inheritedPartial, inContext: context)
+        case .PartialNode(let partial):
+            return reduce(partial.templateAST.nodes, (section, false)) { (pair, inheritedNode) in
+                let (section, modified) = pair
+                let (resolvedSection, resolvedModified) = resolveInheritableSection(section, againstNode: inheritedNode, inContext: context)
+                return (resolvedSection, modified || resolvedModified)
             }
-        case .InheritedPartial(let inheritedPartial):
-            return resolveNode(node, againstInheritedPartial: inheritedPartial, inContext: context)
-        case .Partial(let partial):
-            return reduce(partial.templateAST.nodes, (node, false)) { (pair, inheritedNode) in
-                let (node, modified) = pair
-                let (resolvedNode, resolvedModified) = resolveNode(node, againstNode: inheritedNode, inContext: context)
-                return (resolvedNode, modified || resolvedModified)
-            }
-        case .Section, .Text, .Variable:
-            return (node, false)
+        default:
+            return (section, false)
         }
     }
     
-    private func resolveNode(node: TemplateASTNode, againstInheritedPartial inheritedPartial: TemplateASTNode.InheritedPartialDescriptor, inContext context: Context) -> (TemplateASTNode, Bool) {
-        return reduce(inheritedPartial.templateAST.nodes, (node, false)) { (pair, inheritedNode) in
-            let (node, modified) = pair
-            let (resolvedNode, resolvedModified) = resolveNode(node, againstNode: inheritedNode, inContext: context)
-            return (resolvedNode, modified || resolvedModified)
+    // Returns a tuple (section, modified) where modified is true if and only if
+    // the section has been overriden.
+    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, againstInheritedPartial inheritedPartial: TemplateASTNode.InheritedPartial, inContext context: Context) -> (TemplateASTNode.InheritableSection, Bool) {
+        return reduce(inheritedPartial.templateAST.nodes, (section, false)) { (pair, inheritedNode) in
+            let (section, modified) = pair
+            let (resolvedSection, resolvedModified) = resolveInheritableSection(section, againstNode: inheritedNode, inContext: context)
+            return (resolvedSection, modified || resolvedModified)
         }
     }
 }

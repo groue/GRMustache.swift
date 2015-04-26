@@ -62,7 +62,7 @@ final public class Context {
     private enum Type {
         case Root
         case Box(box: MustacheBox, parent: Context)
-        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartialDescriptor, parent: Context)
+        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartial, parent: Context)
     }
     
     private var registeredKeysContext: Context?
@@ -283,7 +283,7 @@ final public class Context {
         }
     }
     
-    var inheritedPartialStack: [TemplateASTNode.InheritedPartialDescriptor] {
+    var inheritedPartialStack: [TemplateASTNode.InheritedPartial] {
         switch type {
         case .Root:
             return []
@@ -299,7 +299,7 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(# inheritedPartial: TemplateASTNode.InheritedPartialDescriptor) -> Context {
+    func extendedContext(# inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
         return Context(type: .InheritedPartial(inheritedPartial: inheritedPartial, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
