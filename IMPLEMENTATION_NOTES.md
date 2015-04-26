@@ -40,6 +40,8 @@ The tokens are consumed by a [TemplateCompiler](Mustache/Compiling/TemplateCompi
 
 Nodes for section and variable tags (`{{#name}}...{{/name}}` and `{{name}}`) hold an [Expression](Mustache/Compiling/Expression/Expression.swift) that will be evaluated against the data provided by the user, during the template rendering. Strings like `name` or `uppercase(person.name)` are turned into expressions by [ExpressionParser](Mustache/Parsing/ExpressionParser.swift).
 
+The three types Expression, TemplateAST and TemplateASTNode are 100% passive data structures.
+
 
 ---
 
@@ -91,9 +93,7 @@ let rendering = template.render(box)!
 
 ## Rendering
 
-The render method creates a [RenderingEngine](Mustache/Rendering/RenderingEngine.swift). The rendering engine conforms to the [TemplateASTVisitor](Mustache/Compiling/TemplateAST/TemplateASTNode.swift) protocol, so that it can visit the template AST.
-
-Each AST node on its turn gets rendered by the rendering engine, with a special case for tags that wrap an [Expression](Mustache/Compiling/Expression/Expression.swift).
+The render method creates a [RenderingEngine](Mustache/Rendering/RenderingEngine.swift) that visits the template AST: each AST node on its turn gets rendered by the rendering engine, with a special case for tags that wrap an [Expression](Mustache/Compiling/Expression/Expression.swift).
 
 ## Evaluation and Rendering of Expressions
 
