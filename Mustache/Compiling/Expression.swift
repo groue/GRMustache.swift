@@ -39,34 +39,34 @@ enum Expression: Equatable {
     case Identifier(identifier: String)
     
     // {{ <expression>.identifier }}
-    case Scoped(baseExpression: ExpressionWrapper, identifier: String)
+    case Scoped(baseExpression: Wrapper, identifier: String)
     
     // {{ <expression>(<expression>) }}
-    case Filter(filterExpression: ExpressionWrapper, argumentExpression: ExpressionWrapper, partialApplication: Bool)
-    
-    
-    // For the sake of brevity
-    init(identifier: String) {
-        self = .Identifier(identifier: identifier)
-    }
-    
-    // For the sake of brevity
-    init(baseExpression: Expression, identifier: String) {
-        self = .Scoped(baseExpression: ExpressionWrapper(baseExpression), identifier: identifier)
-    }
-    
-    // For the sake of brevity
-    init(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) {
-        self = .Filter(filterExpression: ExpressionWrapper(filterExpression), argumentExpression: ExpressionWrapper(argumentExpression), partialApplication: partialApplication)
-    }
+    case Filter(filterExpression: Wrapper, argumentExpression: Wrapper, partialApplication: Bool)
     
     
     // Recursive enums need wrapper class
-    class ExpressionWrapper {
+    
+    class Wrapper {
         let expression: Expression
         init(_ expression: Expression) {
             self.expression = expression
         }
+    }
+    
+    
+    // Factory methods
+    
+    static func identifier(identifier: String) -> Expression {
+        return .Identifier(identifier: identifier)
+    }
+    
+    static func scoped(# baseExpression: Expression, identifier: String) -> Expression {
+        return .Scoped(baseExpression: Wrapper(baseExpression), identifier: identifier)
+    }
+    
+    static func filter(# filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) -> Expression {
+        return .Filter(filterExpression: Wrapper(filterExpression), argumentExpression: Wrapper(argumentExpression), partialApplication: partialApplication)
     }
 }
 
