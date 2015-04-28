@@ -286,7 +286,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let inheritedPartialNode = TemplateASTNode.inheritedPartial(templateAST: templateAST, inheritedTemplateAST: inheritedTemplateAST, inheritedPartialName: inheritedPartialName)
+                        let inheritedPartialNode = TemplateASTNode.inheritedPartial(overridingTemplateAST: templateAST, inheritedTemplateAST: inheritedTemplateAST, inheritedPartialName: inheritedPartialName)
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritedPartialNode)
                         return true
@@ -314,7 +314,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                     let templateASTNodes = compilationState.currentScope.templateASTNodes
                     let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                    let inheritableSectionTag = TemplateASTNode.inheritableSection(templateAST: templateAST, name: closedInheritableSectionName)
+                    let inheritableSectionTag = TemplateASTNode.inheritableSection(innerTemplateAST: templateAST, name: closedInheritableSectionName)
                     compilationState.popCurrentScope()
                     compilationState.currentScope.appendNode(inheritableSectionTag)
                     return true

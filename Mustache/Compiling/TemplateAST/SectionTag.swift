@@ -29,10 +29,10 @@ A SectionTag represents a regular or inverted section tag such as
 */
 class SectionTag: Tag {
     let openingToken: TemplateToken
-    let templateAST: TemplateAST
+    let innerTemplateAST: TemplateAST
     
-    init(templateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
-        self.templateAST = templateAST
+    init(innerTemplateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
+        self.innerTemplateAST = innerTemplateAST
         self.openingToken = openingToken
         super.init(type: .Section, innerTemplateString: innerTemplateString)
     }
@@ -53,7 +53,7 @@ class SectionTag: Tag {
     Inherited from the public super class Tag
     */
     override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
-        let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
+        let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return renderingEngine.render(error: error)
     }
 }

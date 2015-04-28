@@ -113,14 +113,14 @@ final class RenderingEngine {
             //
             // Render the inner content of the resolved inheritable section.
             let resolvedSection = resolveInheritableSection(inheritableSection, inContext: context)
-            return renderTemplateAST(resolvedSection.templateAST, inContext: context)
+            return renderTemplateAST(resolvedSection.innerTemplateAST, inContext: context)
             
         case .InheritedPartialNode(let inheritedPartial):
             // {{< name }}...{{/ name }}
             //
-            // Extend the inheritance stack, and render the content of the partial
-            let context = context.extendedContext(inheritedPartial: inheritedPartial)
-            return renderTemplateAST(inheritedPartial.partial.templateAST, inContext: context)
+            // Extend the inheritance stack, and render the content of the parent partial
+            let context = context.extendedContext(overridingTemplateAST: inheritedPartial.overridingTemplateAST)
+            return renderTemplateAST(inheritedPartial.parentPartial.templateAST, inContext: context)
             
         case .PartialNode(let partial):
             // {{> name }}
@@ -236,16 +236,10 @@ final class RenderingEngine {
     // MARK: - Template inheritance
     
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
-        // As we iterate inherited partials, section becomes the deepest inherited section.
-        return reduce(context.inheritedPartialStack, section) { (section, inheritedPartial) in
-            // inheritedPartial.partial.templateAST is not used here, because
-            // it it used in renderNode(node:, inContext:). Now is the time
-            // for looking for an overriding section, and those are defined
-            // in inheritedPartial.templateAST.
-            //
-            // TODO: find better names for TemplateASTNode.InheritedPartial
-            // properties, so that this code becomes clearer.
-            return resolveInheritableSection(section, inTemplateAST: inheritedPartial.templateAST, inContext: context)
+        // As we iterate inherited partials, section becomes the deepest overriden section.
+        // context.overridingTemplateASTStack has been built in renderNode(node:, inContext:).
+        return reduce(context.overridingTemplateASTStack, section) { (section, overridingTemplateAST) in
+            return resolveInheritableSection(section, inTemplateAST: overridingTemplateAST, inContext: context)
         }
     }
     
@@ -265,7 +259,7 @@ final class RenderingEngine {
                 // {{< partial }}...{{/ partial }}
                 //
                 // Inherited partials can provide an override in two ways: in
-                // the partial itself, and inside the overriden section.
+                // the parent partial, and inside the overriding section.
                 //
                 // Relevant tests:
                 //
@@ -288,8 +282,8 @@ final class RenderingEngine {
                 //   "expected": "inherited"
                 // }
                 
-                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.partial.templateAST, inContext: context)
-                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.templateAST, inContext: context)
+                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.parentPartial.templateAST, inContext: context)
+                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.overridingTemplateAST, inContext: context)
                 return resolvedSection2
                 
             case .PartialNode(let partial):
