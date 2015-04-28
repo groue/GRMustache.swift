@@ -239,12 +239,12 @@ final class RenderingEngine {
         // As we iterate inherited partials, section becomes the deepest overriden section.
         // context.overridingTemplateASTStack has been built in renderNode(node:, inContext:).
         return reduce(context.overridingTemplateASTStack, section) { (section, overridingTemplateAST) in
-            return resolveInheritableSection(section, inTemplateAST: overridingTemplateAST, inContext: context)
+            return resolveInheritableSection(section, inTemplateAST: overridingTemplateAST)
         }
     }
     
     // Looks for an override for the section argument in a TemplateAST.
-    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inTemplateAST templateAST: TemplateAST, inContext context: Context) -> TemplateASTNode.InheritableSection {
+    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inTemplateAST templateAST: TemplateAST) -> TemplateASTNode.InheritableSection {
         // As we iterate template AST nodes, section becomes the last inherited
         // section in the template AST.
         return reduce(templateAST.nodes, section) { (section, node) in
@@ -282,8 +282,8 @@ final class RenderingEngine {
                 //   "expected": "inherited"
                 // }
                 
-                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.parentPartial.templateAST, inContext: context)
-                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.overridingTemplateAST, inContext: context)
+                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.parentPartial.templateAST)
+                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.overridingTemplateAST)
                 return resolvedSection2
                 
             case .PartialNode(let partial):
@@ -300,7 +300,7 @@ final class RenderingEngine {
                 //       "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
                 //   "expected": "partial1"
                 // },
-                return resolveInheritableSection(section, inTemplateAST: partial.templateAST, inContext: context)
+                return resolveInheritableSection(section, inTemplateAST: partial.templateAST)
                 
             default:
                 // Other nodes can't override the section
