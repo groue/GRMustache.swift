@@ -24,27 +24,7 @@
 import XCTest
 import Mustache
 
-class GRMustacheSuiteTests: XCTestCase {
-    
-    func testSuite() {
-        runTestsFromResource("comments.json", directory: "GRMustacheSuite")
-        runTestsFromResource("compound_keys.json", directory: "GRMustacheSuite")
-        runTestsFromResource("delimiters.json", directory: "GRMustacheSuite")
-        runTestsFromResource("expression_parsing_errors.json", directory: "GRMustacheSuite")
-        runTestsFromResource("filters.json", directory: "GRMustacheSuite")
-        runTestsFromResource("general.json", directory: "GRMustacheSuite")
-        runTestsFromResource("implicit_iterator.json", directory: "GRMustacheSuite")
-        runTestsFromResource("inheritable_partials.json", directory: "GRMustacheSuite")
-        runTestsFromResource("inheritable_sections.json", directory: "GRMustacheSuite")
-        runTestsFromResource("inverted_sections.json", directory: "GRMustacheSuite")
-        runTestsFromResource("partials.json", directory: "GRMustacheSuite")
-        runTestsFromResource("pragmas.json", directory: "GRMustacheSuite")
-        runTestsFromResource("sections.json", directory: "GRMustacheSuite")
-        runTestsFromResource("standard_library.json", directory: "GRMustacheSuite")
-        runTestsFromResource("tag_parsing_errors.json", directory: "GRMustacheSuite")
-        runTestsFromResource("text_rendering.json", directory: "GRMustacheSuite")
-        runTestsFromResource("variables.json", directory: "GRMustacheSuite")
-    }
+class SuiteTestCase: XCTestCase {
     
     func runTestsFromResource(name: String, directory: String) {
         let testBundle = NSBundle(forClass: self.dynamicType)

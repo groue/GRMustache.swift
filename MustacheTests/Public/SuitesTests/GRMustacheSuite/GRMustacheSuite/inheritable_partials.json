@@ -211,6 +211,14 @@
           "partial": "{{$inheritable}}ignored{{/inheritable}}",
           "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
       "expected": "inherited"
+    },
+    {
+      "name": "Recursion in inherited templates",
+      "template": "{{<include}}{{$foo}}override{{/foo}}{{/include}}",
+      "partials": {
+          "include": "{{$foo}}default content{{/foo}} {{$bar}}{{<include2}}{{/include2}}{{/bar}}",
+          "include2": "{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}" },
+      "expected": "override override override don't recurse"
     }
   ]
 }

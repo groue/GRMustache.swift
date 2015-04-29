@@ -119,7 +119,7 @@ final class RenderingEngine {
             // {{< name }}...{{/ name }}
             //
             // Extend the inheritance stack, and render the content of the parent partial
-            let context = context.extendedContext(overridingTemplateAST: inheritedPartial.overridingTemplateAST)
+            let context = context.extendedContext(inheritedPartial: inheritedPartial)
             return renderTemplateAST(inheritedPartial.parentPartial.templateAST, inContext: context)
             
         case .PartialNode(let partial):
@@ -235,25 +235,50 @@ final class RenderingEngine {
     
     // MARK: - Template inheritance
     
+    typealias InheritanceStep = (section: TemplateASTNode.InheritableSection, usedParentTemplateASTs: [TemplateAST])
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
         // As we iterate inherited partials, section becomes the deepest overriden section.
         // context.overridingTemplateASTStack has been built in renderNode(node:, inContext:).
-        return reduce(context.overridingTemplateASTStack, section) { (section, overridingTemplateAST) in
-            return resolveInheritableSection(section, inTemplateAST: overridingTemplateAST)
+        //
+        // We also propagate an array of used parent template AST in order to support
+        // nested inherited partials. See -[GRMustacheJavaSuiteTests testExtensionNested]
+        let initialStep: InheritanceStep = (section: section, usedParentTemplateASTs: [])
+        let resolvedStep = reduce(context.inheritedPartialStack, initialStep) { (step, inheritedPartial) in
+            let avoidTemplateAST = inheritedPartial.parentPartial.templateAST
+            if (contains(step.usedParentTemplateASTs) { $0 === avoidTemplateAST }) {
+                // Without this test, we break -[GRMustacheJavaSuiteTests testExtensionNested]
+                // TODO: write a test in GRMustache suites.
+                return step
+            }
+            return resolveInheritableSection(
+                step,
+                inOverridingTemplateAST:inheritedPartial.overridingTemplateAST,
+                usingInheritedPartial: inheritedPartial)
         }
+        return resolvedStep.section
     }
     
     // Looks for an override for the section argument in a TemplateAST.
-    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inTemplateAST templateAST: TemplateAST) -> TemplateASTNode.InheritableSection {
+    private func resolveInheritableSection(
+        step: InheritanceStep,
+        inOverridingTemplateAST overridingTemplateAST: TemplateAST,
+        usingInheritedPartial usedInheritedPartial: TemplateASTNode.InheritedPartial)
+        -> InheritanceStep
+    {
         // As we iterate template AST nodes, section becomes the last inherited
         // section in the template AST.
-        return reduce(templateAST.nodes, section) { (section, node) in
+        return reduce(overridingTemplateAST.nodes, step) { (step, node) in
             switch node {
-            case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == section.name:
+            case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == step.section.name:
                 // {{$ name }}...{{/ name }}
                 //
-                // An inheritable section is overriden by another inheritable section with the same name:
-                return resolvedSection
+                // An inheritable section is overriden by another inheritable section with the same name.
+                // And we use usedInheritedPartial.parentPartial.templateAST.
+                //
+                // If we would not use usedInheritedPartial.parentPartial.templateAST,
+                // we break -[GRMustacheJavaSuiteTests testExtensionNested]
+                // TODO: write a test in GRMustache suites.
+                return (section: resolvedSection, step.usedParentTemplateASTs + [usedInheritedPartial.parentPartial.templateAST])
                 
             case .InheritedPartialNode(let inheritedPartial):
                 // {{< partial }}...{{/ partial }}
@@ -282,9 +307,15 @@ final class RenderingEngine {
                 //   "expected": "inherited"
                 // }
                 
-                let resolvedSection1 = resolveInheritableSection(section, inTemplateAST: inheritedPartial.parentPartial.templateAST)
-                let resolvedSection2 = resolveInheritableSection(resolvedSection1, inTemplateAST: inheritedPartial.overridingTemplateAST)
-                return resolvedSection2
+                let step1 = resolveInheritableSection(
+                    step,
+                    inOverridingTemplateAST: inheritedPartial.parentPartial.templateAST,
+                    usingInheritedPartial: usedInheritedPartial)
+                let step2 = resolveInheritableSection(
+                    step1,
+                    inOverridingTemplateAST: inheritedPartial.overridingTemplateAST,
+                    usingInheritedPartial: usedInheritedPartial)
+                return step2
                 
             case .PartialNode(let partial):
                 // {{> partial }}
@@ -300,11 +331,14 @@ final class RenderingEngine {
                 //       "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
                 //   "expected": "partial1"
                 // },
-                return resolveInheritableSection(section, inTemplateAST: partial.templateAST)
+                return resolveInheritableSection(step, inOverridingTemplateAST: partial.templateAST, usingInheritedPartial: usedInheritedPartial)
                 
             default:
-                // Other nodes can't override the section
-                return section
+                // Other nodes can't override the section.
+                //
+                // Make sure we do not return a step where usedInheritedPartial.parentPartial.templateAST
+                // would be used: it would make the "Recursion in inherited templates" test fail.
+                return step
             }
         }
     }
