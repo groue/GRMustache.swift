@@ -315,7 +315,7 @@ final public class Template {
     
     // MARK: - Not public
     
-    private let templateAST: TemplateAST
+    let templateAST: TemplateAST
     
     init(repository: TemplateRepository, templateAST: TemplateAST, baseContext: Context) {
         self.repository = repository

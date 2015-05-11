@@ -69,6 +69,8 @@ class SuiteTestCase: XCTestCase {
         }
         
         func run() {
+            let name = dictionary["name"] as! String
+            NSLog("Run test \(name)")
             for template in templates {
                 
                 // Standard Library

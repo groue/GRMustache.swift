@@ -213,12 +213,22 @@
       "expected": "inherited"
     },
     {
-      "name": "Recursion in inherited templates",
+      "name": "Recursion in inherited templates (from twitter/hogan.hs)",
       "template": "{{<include}}{{$foo}}override{{/foo}}{{/include}}",
       "partials": {
           "include": "{{$foo}}default content{{/foo}} {{$bar}}{{<include2}}{{/include2}}{{/bar}}",
           "include2": "{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}" },
       "expected": "override override override don't recurse"
+    },
+    {
+      "name": "com.github.mustachejava.ExtensionTest.testNested",
+      "template": "{{<box}}{{$box_content}}{{<main}}{{$main_content}}{{<box}}{{$box_content}}{{<tweetbox}}{{$tweetbox_classes}}tweetbox-largetweetbox-user-styled{{/tweetbox_classes}}{{$tweetbox_attrs}}data-rich-text{{/tweetbox_attrs}}{{/tweetbox}}{{/box_content}}{{/box}}{{/main_content}}{{/main}}{{/box_content}}{{/box}}",
+      "partials": {
+        "box": "<box>{{$box_content}}{{/box_content}}</box>",
+        "main": "<main>{{$main_content}}{{/main_content}}</main>",
+        "tweetbox": "<tweetbox classes=\"{{$tweetbox_classes}}{{/tweetbox_classes}}\" attrs=\"{{$tweetbox_attrs}}{{/tweetbox_attrs}}\"></tweetbox>"
+      },
+      "expected": "<box><main><box><tweetbox classes=\"tweetbox-largetweetbox-user-styled\" attrs=\"data-rich-text\"></tweetbox></box></main></box>"
     }
   ]
 }

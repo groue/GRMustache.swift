@@ -147,6 +147,8 @@
 		566244A51AF164D5008BAD41 /* SuiteTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244A31AF164D5008BAD41 /* SuiteTestCase.swift */; };
 		566244A71AF1653C008BAD41 /* HoganSuite in Resources */ = {isa = PBXBuildFile; fileRef = 566244A61AF1653C008BAD41 /* HoganSuite */; };
 		566244A81AF1653C008BAD41 /* HoganSuite in Resources */ = {isa = PBXBuildFile; fileRef = 566244A61AF1653C008BAD41 /* HoganSuite */; };
+		566244B11AF201E7008BAD41 /* TemplateGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244B01AF201E7008BAD41 /* TemplateGenerator.swift */; };
+		566244B21AF201E7008BAD41 /* TemplateGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244B01AF201E7008BAD41 /* TemplateGenerator.swift */; };
 		56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3721A1CC417000CE8CB /* NSFormatter.swift */; };
@@ -268,6 +270,7 @@
 		566244A01AF1645F008BAD41 /* HoganSuite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoganSuite.swift; sourceTree = "<group>"; };
 		566244A31AF164D5008BAD41 /* SuiteTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiteTestCase.swift; sourceTree = "<group>"; };
 		566244A61AF1653C008BAD41 /* HoganSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = HoganSuite; sourceTree = "<group>"; };
+		566244B01AF201E7008BAD41 /* TemplateGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateGenerator.swift; sourceTree = "<group>"; };
 		56660D6D1A9378B100E53CCF /* CoreFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreFunctions.swift; sourceTree = "<group>"; };
 		5674F3721A1CC417000CE8CB /* NSFormatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatter.swift; sourceTree = "<group>"; };
 		5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatterTests.swift; sourceTree = "<group>"; };
@@ -421,6 +424,7 @@
 				563AE19C19FBE47A0028C6C1 /* Mustache.h */,
 				563AE1BB19FC26F00028C6C1 /* Compiling */,
 				563AE1B819FBE6E80028C6C1 /* Configuration */,
+				566244AF1AF201E7008BAD41 /* Generation */,
 				5622F1F31A02E98F00B5D3F8 /* Goodies */,
 				563AE1B319FBE4D90028C6C1 /* Parsing */,
 				563AE1D619FC4A360028C6C1 /* Rendering */,
@@ -557,6 +561,14 @@
 				566244A01AF1645F008BAD41 /* HoganSuite.swift */,
 			);
 			path = twitter/hogan.js;
+			sourceTree = "<group>";
+		};
+		566244AF1AF201E7008BAD41 /* Generation */ = {
+			isa = PBXGroup;
+			children = (
+				566244B01AF201E7008BAD41 /* TemplateGenerator.swift */,
+			);
+			path = Generation;
 			sourceTree = "<group>";
 		};
 		5685DAAD1A1A201E003E583B /* ServicesTests */ = {
@@ -940,6 +952,7 @@
 				561E727F1A8BDC4D004ED48B /* Tag.swift in Sources */,
 				561E72861A8BDC4D004ED48B /* Configuration.swift in Sources */,
 				561E727E1A8BDC4D004ED48B /* SectionTag.swift in Sources */,
+				566244B21AF201E7008BAD41 /* TemplateGenerator.swift in Sources */,
 				561E728E1A8BDC4D004ED48B /* ZipFilter.swift in Sources */,
 				56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */,
 				561E728D1A8BDC4D004ED48B /* NSFormatter.swift in Sources */,
@@ -1020,6 +1033,7 @@
 				5622F1F81A03535700B5D3F8 /* Localizer.swift in Sources */,
 				563AE1EC19FC55920028C6C1 /* RenderingEngine.swift in Sources */,
 				5674F3731A1CC417000CE8CB /* NSFormatter.swift in Sources */,
+				566244B11AF201E7008BAD41 /* TemplateGenerator.swift in Sources */,
 				5622F2011A054D5800B5D3F8 /* HTMLEscape.swift in Sources */,
 				563AE1B719FBE6220028C6C1 /* TemplateToken.swift in Sources */,
 				56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */,

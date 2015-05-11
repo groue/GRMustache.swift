@@ -235,50 +235,58 @@ final class RenderingEngine {
     
     // MARK: - Template inheritance
     
-    typealias InheritanceStep = (section: TemplateASTNode.InheritableSection, usedParentTemplateASTs: [TemplateAST])
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
         // As we iterate inherited partials, section becomes the deepest overriden section.
         // context.overridingTemplateASTStack has been built in renderNode(node:, inContext:).
         //
-        // We also propagate an array of used parent template AST in order to support
-        // nested inherited partials. See -[GRMustacheJavaSuiteTests testExtensionNested]
-        let initialStep: InheritanceStep = (section: section, usedParentTemplateASTs: [])
-        let resolvedStep = reduce(context.inheritedPartialStack, initialStep) { (step, inheritedPartial) in
-            let avoidTemplateAST = inheritedPartial.parentPartial.templateAST
-            if (contains(step.usedParentTemplateASTs) { $0 === avoidTemplateAST }) {
-                // Without this test, we break -[GRMustacheJavaSuiteTests testExtensionNested]
-                // TODO: write a test in GRMustache suites.
-                return step
+        // We also update an array of used parent template AST in order to support
+        // nested inherited partials.
+        var usedParentTemplateASTs: [TemplateAST] = []
+        return reduce(context.inheritedPartialStack, section) { (section, inheritedPartial) in
+            // Don't apply already used partial
+            //
+            // Relevant test:
+            // {
+            //   "name": "com.github.mustachejava.ExtensionTest.testNested",
+            //   "template": "{{<box}}{{$box_content}}{{<main}}{{$main_content}}{{<box}}{{$box_content}}{{<tweetbox}}{{$tweetbox_classes}}tweetbox-largetweetbox-user-styled{{/tweetbox_classes}}{{$tweetbox_attrs}}data-rich-text{{/tweetbox_attrs}}{{/tweetbox}}{{/box_content}}{{/box}}{{/main_content}}{{/main}}{{/box_content}}{{/box}}",
+            //   "partials": {
+            //     "box": "<box>{{$box_content}}{{/box_content}}</box>",
+            //     "main": "<main>{{$main_content}}{{/main_content}}</main>",
+            //     "tweetbox": "<tweetbox classes=\"{{$tweetbox_classes}}{{/tweetbox_classes}}\" attrs=\"{{$tweetbox_attrs}}{{/tweetbox_attrs}}\"></tweetbox>"
+            //   },
+            //   "expected": "<box><main><box><tweetbox classes=\"tweetbox-largetweetbox-user-styled\" attrs=\"data-rich-text\"></tweetbox></box></main></box>"
+            // }
+            
+            let parentTemplateAST = inheritedPartial.parentPartial.templateAST
+            if (contains(usedParentTemplateASTs) { $0 === parentTemplateAST }) {
+                return section
+            } else {
+                let (resolvedSection, modified) = resolveInheritableSection(section, inOverridingTemplateAST: inheritedPartial.overridingTemplateAST)
+                if modified {
+                    usedParentTemplateASTs.append(parentTemplateAST)
+                }
+                return resolvedSection
             }
-            return resolveInheritableSection(
-                step,
-                inOverridingTemplateAST:inheritedPartial.overridingTemplateAST,
-                usingInheritedPartial: inheritedPartial)
         }
-        return resolvedStep.section
     }
     
     // Looks for an override for the section argument in a TemplateAST.
-    private func resolveInheritableSection(
-        step: InheritanceStep,
-        inOverridingTemplateAST overridingTemplateAST: TemplateAST,
-        usingInheritedPartial usedInheritedPartial: TemplateASTNode.InheritedPartial)
-        -> InheritanceStep
+    // Returns the resolvedSection, and a boolean that tells whether the section
+    // was actually overriden.
+    private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inOverridingTemplateAST overridingTemplateAST: TemplateAST) -> (TemplateASTNode.InheritableSection, Bool)
     {
         // As we iterate template AST nodes, section becomes the last inherited
         // section in the template AST.
-        return reduce(overridingTemplateAST.nodes, step) { (step, node) in
+        //
+        // The boolean turns to true once the section has been actually overriden.
+        return reduce(overridingTemplateAST.nodes, (section, false)) { (step, node) in
+            let (section, modified) = step
             switch node {
-            case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == step.section.name:
+            case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == section.name:
                 // {{$ name }}...{{/ name }}
                 //
                 // An inheritable section is overriden by another inheritable section with the same name.
-                // And we use usedInheritedPartial.parentPartial.templateAST.
-                //
-                // If we would not use usedInheritedPartial.parentPartial.templateAST,
-                // we break -[GRMustacheJavaSuiteTests testExtensionNested]
-                // TODO: write a test in GRMustache suites.
-                return (section: resolvedSection, step.usedParentTemplateASTs + [usedInheritedPartial.parentPartial.templateAST])
+                return (resolvedSection, true)
                 
             case .InheritedPartialNode(let inheritedPartial):
                 // {{< partial }}...{{/ partial }}
@@ -307,15 +315,9 @@ final class RenderingEngine {
                 //   "expected": "inherited"
                 // }
                 
-                let step1 = resolveInheritableSection(
-                    step,
-                    inOverridingTemplateAST: inheritedPartial.parentPartial.templateAST,
-                    usingInheritedPartial: usedInheritedPartial)
-                let step2 = resolveInheritableSection(
-                    step1,
-                    inOverridingTemplateAST: inheritedPartial.overridingTemplateAST,
-                    usingInheritedPartial: usedInheritedPartial)
-                return step2
+                let (resolvedSection1, modified1) = resolveInheritableSection(section, inOverridingTemplateAST: inheritedPartial.parentPartial.templateAST)
+                let (resolvedSection2, modified2) = resolveInheritableSection(resolvedSection1, inOverridingTemplateAST: inheritedPartial.overridingTemplateAST)
+                return (resolvedSection2, modified1 || modified2)
                 
             case .PartialNode(let partial):
                 // {{> partial }}
@@ -331,14 +333,11 @@ final class RenderingEngine {
                 //       "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
                 //   "expected": "partial1"
                 // },
-                return resolveInheritableSection(step, inOverridingTemplateAST: partial.templateAST, usingInheritedPartial: usedInheritedPartial)
+                return resolveInheritableSection(section, inOverridingTemplateAST: partial.templateAST)
                 
             default:
                 // Other nodes can't override the section.
-                //
-                // Make sure we do not return a step where usedInheritedPartial.parentPartial.templateAST
-                // would be used: it would make the "Recursion in inherited templates" test fail.
-                return step
+                return (section, modified)
             }
         }
     }
