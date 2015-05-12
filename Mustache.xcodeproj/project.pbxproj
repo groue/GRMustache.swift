@@ -241,6 +241,7 @@
 		5622F1F71A03535700B5D3F8 /* Localizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Localizer.swift; sourceTree = "<group>"; };
 		5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EachFilter.swift; sourceTree = "<group>"; };
 		5622F2001A054D5800B5D3F8 /* HTMLEscape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; lineEnding = 0; path = HTMLEscape.swift; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.swift; };
+		5623427D1B024EF100458D87 /* GRMustache.swift.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = GRMustache.swift.podspec; sourceTree = "<group>"; };
 		5629A7C61A1F676600D41F7C /* TagTests_wrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TagTests_wrapper.mustache; sourceTree = "<group>"; };
 		563AE19719FBE47A0028C6C1 /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -400,6 +401,7 @@
 		563AE18D19FBE4790028C6C1 = {
 			isa = PBXGroup;
 			children = (
+				5623427D1B024EF100458D87 /* GRMustache.swift.podspec */,
 				56056AA51A84CDBD0076BBAA /* TODO.md */,
 				563AE19919FBE47A0028C6C1 /* Mustache */,
 				563AE1A619FBE47A0028C6C1 /* MustacheTests */,
