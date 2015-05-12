@@ -5,6 +5,8 @@ GRMustache.swift is a [Mustache](http://mustache.github.io) template engine writ
 
 It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
 
+**May 12, 2015: GRMustache.swift 0.9 is out.**.
+
 Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
 
 
@@ -56,15 +58,49 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
+Installation
+------------
+
+### iOS7
+
+To use GRMustache.swift in a project targetting iOS7, you must include the source files directly in your project.
+
+
+### CocoaPods
+
+[CocoaPods](http://cocoapods.org/) is a dependency manager for Xcode projects.
+
+To use GRMustache.swift with Cocoapods, specify in your Podfile:
+
+```ruby
+source 'https://github.com/CocoaPods/Specs.git'
+use_frameworks!
+
+pod 'GRMustache.swift', '0.9'
+```
+
+
+### Carthage
+
+[Carthage](https://github.com/Carthage/Carthage) is another dependency manager for Xcode projects.
+
+GRMustache.swift does not support Carthage yet. Pull requests are welcome.
+
+
+### Manually
+
+Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
+
 
 Documentation
 -------------
 
-You'll find in the repository:
+### Playground & Sample Code
 
-- a `Mustache.xcodeproj` project to be embedded in your applications so that you can import the Mustache module.
-- a `Mustache.xcworkspace` workspace that contains a Playground and a demo application
+You'll find in the repository a `Mustache.xcworkspace` workspace that contains a Playground and demo applications.
 
+
+### Inline documentation
 
 All public types, functions and methods of the library are documented in the source code.
 
