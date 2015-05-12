@@ -27,11 +27,11 @@
 // This code comes from Objective-C GRMustache.
 //
 // It is still written in Objective-C because
-// +[GRMustacheKeyAccess isSafeMustacheKey:forObject:] needs to call
-// [[object class] safeMustacheKeys] if [object class] conforms to the
-// GRMustacheSafeKeyAccess protocol.
+// +[GRMustacheKeyAccess isSafeMustacheKey:forObject:] used to need the
+// [[object class] safeMustacheKeys] for classes that would conform to the
+// now removed GRMustacheSafeKeyAccess protocol.
 //
-// But Swift won't let do that (see example below):
+// Swift would not let us do that (see example below):
 //
 // ::
 //
@@ -51,5 +51,4 @@
 //
 @interface GRMustacheKeyAccess : NSObject
 + (BOOL)isSafeMustacheKey:(NSString *)key forObject:(id)object;
-
 @end

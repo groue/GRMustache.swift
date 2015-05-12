@@ -44,12 +44,6 @@ static Class NSManagedObjectClass;
 @end
 
 
-// Plain declarations so that the compiler let us use those selectors
-@interface NSObject(GRMustacheSafeKeyAccessMethods)
-+ (NSSet *)safeMustacheKeys;
-@end
-
-
 @implementation GRMustacheKeyAccess
 
 + (void)initialize
@@ -71,15 +65,11 @@ static Class NSManagedObjectClass;
         Class klass = [object class];
         safeKeys = (NSSet *)CFDictionaryGetValue(safeKeysForClass, (__bridge const void *)(klass));
         if (safeKeys == nil) {
-            if ([klass respondsToSelector:@selector(safeMustacheKeys)]) {
-                safeKeys = [klass safeMustacheKeys] ?: [NSSet set];
-            } else {
-                NSMutableSet *keys = [self propertyGettersForClass:klass];
-                if (NSManagedObjectClass && [object isKindOfClass:NSManagedObjectClass]) {
-                    [keys unionSet:[NSSet setWithArray:[[[object entity] propertiesByName] allKeys]]];
-                }
-                safeKeys = keys;
+            NSMutableSet *keys = [self propertyGettersForClass:klass];
+            if (NSManagedObjectClass && [object isKindOfClass:NSManagedObjectClass]) {
+                [keys unionSet:[NSSet setWithArray:[[[object entity] propertiesByName] allKeys]]];
             }
+            safeKeys = keys;
             CFDictionarySetValue(safeKeysForClass, (__bridge const void *)(klass), (__bridge const void *)(safeKeys));
         }
     }

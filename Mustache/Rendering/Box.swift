@@ -923,21 +923,6 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 // MARK: - ObjCMustacheBoxable and the Boxing of Objective-C objects
 
 /**
-Keys of Objective-C objects are extracted with the objectForKeyedSubscript:
-method if it is available, or with valueForKey:, as long as the key is "safe".
-Safe keys are, by default, property getters and NSManagedObject attributes. The
-GRMustacheSafeKeyAccess protocol lets a class specify a custom list of safe keys
-that are available through valueForKey:.
-*/
-@objc public protocol GRMustacheSafeKeyAccess {
-    
-    /**
-    Returns the keys that GRMustache can access using the `valueForKey:` method.
-    */
-    static func safeMustacheKeys() -> NSSet
-}
-
-/**
 The ObjCMustacheBoxable protocol lets Objective-C classes interact with the
 Mustache engine.
 
@@ -1269,11 +1254,8 @@ extension NSObject : ObjCMustacheBoxable {
     ## Other objects
     
     Other objects fall in the general case. Their keys are extracted with the
-    objectForKeyedSubscript: method if it is available, or with valueForKey:, as
-    long as the key is "safe". Safe keys are, by default, property getters and
-    NSManagedObject attributes. The GRMustacheSafeKeyAccess protocol lets a
-    class specify a custom list of safe keys that are available through
-    valueForKey:.
+    valueForKey: method, as long as the key is "safe". Safe keys are property
+    names, custom property getters, and NSManagedObject attributes.
     
     ::
     
@@ -1308,19 +1290,10 @@ extension NSObject : ObjCMustacheBoxable {
             return ObjCMustacheBox(MustacheBox(
                 value: self,
                 keyedSubscript: { (key: String) in
-                    if self.respondsToSelector("objectForKeyedSubscript:")
-                    {
-                        // Use objectForKeyedSubscript: first (see https://github.com/groue/GRMustache/issues/66:)
-                        let dictionary: AnyObject = self
-                        return BoxAnyObject(dictionary[key]) // Cast to AnyObject so that we can access subscript notation.
-                    }
-                    else if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self)
-                    {
+                    if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
                         // Use valueForKey: for safe keys
                         return BoxAnyObject(self.valueForKey(key))
-                    }
-                    else
-                    {
+                    } else {
                         // Missing key
                         return Box()
                     }

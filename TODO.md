@@ -7,5 +7,4 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [ ] Is this function useful? func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox
 - [ ] Tests for the Lambda functions.
-- [ ] Remove support for objectForKeyedSubscript from NSObject's default KeyedSubscriptFunction.
 - [ ] Let user easily override default key lookup (maybe expose and make mutable MustacheBox.keyedSubscript ?). The goal is to prevent https://github.com/groue/GRMustache/issues/66
