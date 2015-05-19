@@ -5,7 +5,7 @@ GRMustache.swift is a [Mustache](http://mustache.github.io) template engine writ
 
 It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
 
-**May 12, 2015: GRMustache.swift 0.9 is out.**.
+**May 19, 2015: GRMustache.swift 0.9.1 is out.**.
 
 Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
 
@@ -76,7 +76,7 @@ To use GRMustache.swift with Cocoapods, specify in your Podfile:
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
-pod 'GRMustache.swift', '0.9'
+pod 'GRMustache.swift', '0.9.1'
 ```
 
 
@@ -84,7 +84,11 @@ pod 'GRMustache.swift', '0.9'
 
 [Carthage](https://github.com/Carthage/Carthage) is another dependency manager for Xcode projects.
 
-GRMustache.swift does not support Carthage yet. Pull requests are welcome.
+To use GRMustache.swift with Carthage, specify in your Cartfile:
+
+```
+github "groue/GRMustache.swift" == 0.9.1
+```
 
 
 ### Manually
