@@ -217,6 +217,10 @@ public struct MustacheBox {
         // with EXC_BAD_INSTRUCTION when given a negative Int.
         //
         // So we implement below our own numeric conversion functions.
+        //
+        // TODO: look in the family of functions like addWithOverflow,
+        // subtractWithOverflow, etc. There may be some useful standard tools
+        // there.
         
         static func uint(x: Int) -> UInt? {
             if x >= 0 {
