@@ -317,7 +317,7 @@ final class RenderingEngine {
                 
                 let (resolvedSection1, modified1) = resolveInheritableSection(section, inOverridingTemplateAST: inheritedPartial.parentPartial.templateAST)
                 let (resolvedSection2, modified2) = resolveInheritableSection(resolvedSection1, inOverridingTemplateAST: inheritedPartial.overridingTemplateAST)
-                return (resolvedSection2, modified1 || modified2)
+                return (resolvedSection2, modified || modified1 || modified2)
                 
             case .PartialNode(let partial):
                 // {{> partial }}
@@ -333,7 +333,8 @@ final class RenderingEngine {
                 //       "partial2": "{{$inheritable}}ignored{{/inheritable}}" },
                 //   "expected": "partial1"
                 // },
-                return resolveInheritableSection(section, inOverridingTemplateAST: partial.templateAST)
+                let (resolvedSection1, modified1) = resolveInheritableSection(section, inOverridingTemplateAST: partial.templateAST)
+                return (resolvedSection1, modified || modified1)
                 
             default:
                 // Other nodes can't override the section.
