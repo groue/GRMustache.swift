@@ -34,7 +34,7 @@ class VariadicFilterTests: XCTestCase {
             "a": Box("a"),
             "b": Box("b"),
             "c": Box("c"),
-            "join": Box(filter)] as [String: MustacheBox]) // TODO: remove this unnecessary cast
+            "join": Box(filter)])
         let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a a,b a,b,c")
@@ -51,7 +51,7 @@ class VariadicFilterTests: XCTestCase {
             "a": Box("a"),
             "b": Box("b"),
             "c": Box("c"),
-            "f": Box(filter)] as [String: MustacheBox])    // TODO: remove this unnecessary cast
+            "f": Box(filter)])
         let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
@@ -85,7 +85,7 @@ class VariadicFilterTests: XCTestCase {
             "a": Box("a"),
             "b": Box("b"),
             "c": Box("c"),
-            "f": Box(filter)] as [String: MustacheBox])    // TODO: remove this unnecessary cast
+            "f": Box(filter)])
         let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
         let rendering = template.render(box)!
         XCTAssertEqual(rendering, "ab abc")
