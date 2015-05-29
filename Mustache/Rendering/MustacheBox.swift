@@ -157,9 +157,15 @@ public struct MustacheBox {
             // boxed value, and {{#section}}...{{/}} tags by adding the box to
             // the context stack.
             //
+            // IMPLEMENTATIN NOTE
+            //
             // We have to set self.render twice in order to avoid the compiler
             // error: "variable 'self.render' captured by a closure before being
             // initialized"
+            //
+            // Despite this message, the `self` "captured" in the second closure
+            // is the one whose `render` property contains that same second
+            // closure: everything works as if no value was actually captured.
             self.render = { (_, _) in return nil }
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
