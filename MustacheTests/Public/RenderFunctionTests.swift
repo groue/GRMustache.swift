@@ -679,5 +679,141 @@ class RenderFunctionTests: XCTestCase {
         let rendering = template.render(Box(["name": "Arthur", "altName": "Barbara"]))!
         XCTAssertEqual(rendering, "Barbara")
     }
-
+    
+    func testMustacheSpecInterpolation() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L15
+        let lambda = Lambda { "world" }
+        let template = Template(string: "Hello, {{lambda}}!")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "Hello, world!")
+    }
+    
+    func testMustacheSpecInterpolationExpansion() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L29
+        let lambda = Lambda { "{{planet}}" }
+        let template = Template(string: "Hello, {{lambda}}!")!
+        let data = [
+            "planet": Box("world"),
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "Hello, world!")
+    }
+    
+    func testMustacheSpecInterpolationAlternateDelimiters() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L44
+        // With a difference: remove the "\n" character because GRMustache does
+        // not honor mustache spec white space rules.
+        let lambda = Lambda { "|planet| => {{planet}}" }
+        let template = Template(string: "{{= | | =}}Hello, (|&lambda|)!")!
+        let data = [
+            "planet": Box("world"),
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "Hello, (|planet| => world)!")
+    }
+    
+    func testMustacheSpecMultipleCalls() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L59
+        var calls = 0
+        let lambda = Lambda { calls += 1; return "\(calls)" }
+        let template = Template(string: "{{lambda}} == {{{lambda}}} == {{lambda}}")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "1 == 2 == 3")
+    }
+    
+    func testMustacheSpecEscaping() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L73
+        var calls = 0
+        let lambda = Lambda { ">" }
+        let template = Template(string: "<{{lambda}}{{{lambda}}}")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "<&gt;>")
+    }
+    
+    func testMustacheSpecSection() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L87
+        var calls = 0
+        let lambda = Lambda { (string: String) in
+            if string == "{{x}}" {
+                return "yes"
+            } else {
+                return "no"
+            }
+        }
+        let template = Template(string: "<{{#lambda}}{{x}}{{/lambda}}>")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "<yes>")
+    }
+    
+    func testMustacheSpecSectionExpansion() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L102
+        var calls = 0
+        let lambda = Lambda { (string: String) in
+            return "\(string){{planet}}\(string)"
+        }
+        let template = Template(string: "<{{#lambda}}-{{/lambda}}>")!
+        let data = [
+            "planet": Box("Earth"),
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "<-Earth->")
+    }
+    
+    func testMustacheSpecSectionAlternateDelimiters() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L117
+        var calls = 0
+        let lambda = Lambda { (string: String) in
+            return "\(string){{planet}} => |planet|\(string)"
+        }
+        let template = Template(string: "{{= | | =}}<|#lambda|-|/lambda|>")!
+        let data = [
+            "planet": Box("Earth"),
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "<-{{planet}} => Earth->")
+    }
+    
+    func testMustacheSpecSectionMultipleCalls() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L132
+        var calls = 0
+        let lambda = Lambda { (string: String) in
+            return  "__\(string)__"
+        }
+        let template = Template(string: "{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "__FILE__ != __LINE__")
+    }
+    
+    func testMustacheSpecInvertedSection() {
+        // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L146
+        var calls = 0
+        let lambda = Lambda { (string: String) in
+            return  ""
+        }
+        let template = Template(string: "<{{^lambda}}{{static}}{{/lambda}}>")!
+        let data = [
+            "lambda": Box(lambda),
+        ]
+        let rendering = template.render(Box(data))!
+        XCTAssertEqual(rendering, "<>")
+    }
 }
