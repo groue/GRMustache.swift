@@ -114,7 +114,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
                 return true
                 
-            case .EscapedVariable(content: let content):
+            case .EscapedVariable(content: let content, tagStartDelimiter: _, tagEndDelimiter: _):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
@@ -126,7 +126,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-            case .UnescapedVariable(content: let content):
+            case .UnescapedVariable(content: let content, tagStartDelimiter: _, tagEndDelimiter: _):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
@@ -138,7 +138,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-            case .Section(content: let content):
+            case .Section(content: let content, tagStartDelimiter: _, tagEndDelimiter: _):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
@@ -150,7 +150,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     return false
                 }
                 
-            case .InvertedSection(content: let content):
+            case .InvertedSection(content: let content, tagStartDelimiter: _, tagEndDelimiter: _):
                 var error: NSError?
                 var empty = false
                 if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {

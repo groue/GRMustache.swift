@@ -24,11 +24,11 @@
 struct TemplateToken {
     enum Type {
         case Text(text: String)
-        case EscapedVariable(content: String)
-        case UnescapedVariable(content: String)
+        case EscapedVariable(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
+        case UnescapedVariable(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
         case Comment
-        case Section(content: String)
-        case InvertedSection(content: String)
+        case Section(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
+        case InvertedSection(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
         case Close(content: String)
         case Partial(content: String)
         case SetDelimiters

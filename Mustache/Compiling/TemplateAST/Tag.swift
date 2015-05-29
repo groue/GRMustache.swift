@@ -99,6 +99,16 @@ public class Tag: Printable {
     public let innerTemplateString: String
     
     /**
+    TODO
+    */
+    public let tagStartDelimiter: String
+    
+    /**
+    TODO
+    */
+    public let tagEndDelimiter: String
+    
+    /**
     Returns the rendering of the tag's inner content. All inner tags are
     evaluated with the provided context.
     
@@ -151,8 +161,10 @@ public class Tag: Printable {
         fatalError("Subclass must override")
     }
     
-    init(type: TagType, innerTemplateString: String) {
+    init(type: TagType, innerTemplateString: String, tagStartDelimiter: String, tagEndDelimiter: String) {
         self.type = type
         self.innerTemplateString = innerTemplateString
+        self.tagStartDelimiter = tagStartDelimiter
+        self.tagEndDelimiter = tagEndDelimiter
     }
 }

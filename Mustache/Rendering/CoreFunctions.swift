@@ -976,8 +976,13 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             }
             return nil
         case .Section:
+            // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L117
+            // > Lambdas used for sections should parse with the current delimiters
+            var templateRepository = TemplateRepository()
+            templateRepository.configuration.tagStartDelimiter = info.tag.tagStartDelimiter
+            templateRepository.configuration.tagEndDelimiter = info.tag.tagEndDelimiter
             let templateString = lambda(info.tag.innerTemplateString)
-            let template = Template(string: templateString)
+            let template = templateRepository.template(string: templateString)
             return template?.render(info.context, error: error)
         }
     }
@@ -996,7 +1001,8 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             // Let's render a text template:
             var templateRepository = TemplateRepository()
             templateRepository.configuration.contentType = .Text
-            let template = templateRepository.template(string: lambda())
+            let templateString = lambda()
+            let template = templateRepository.template(string: templateString)
             return template?.render(info.context, error: error)
         case .Section:
             if error != nil {

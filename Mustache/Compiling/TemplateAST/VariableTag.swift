@@ -33,7 +33,14 @@ class VariableTag: Tag {
     init(contentType: ContentType, token: TemplateToken) {
         self.contentType = contentType
         self.token = token
-        super.init(type: .Variable, innerTemplateString: "")
+        switch token.type {
+        case .EscapedVariable(content: _, tagStartDelimiter: let tagStartDelimiter, tagEndDelimiter: let tagEndDelimiter):
+            super.init(type: .Variable, innerTemplateString: "", tagStartDelimiter: tagStartDelimiter, tagEndDelimiter: tagEndDelimiter)
+        case .UnescapedVariable(content: _, tagStartDelimiter: let tagStartDelimiter, tagEndDelimiter: let tagEndDelimiter):
+            super.init(type: .Variable, innerTemplateString: "", tagStartDelimiter: tagStartDelimiter, tagEndDelimiter: tagEndDelimiter)
+        default:
+            fatalError("Unexpected token type")
+        }
     }
     
     /**
