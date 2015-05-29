@@ -990,8 +990,13 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
         switch info.tag.type {
         case .Variable:
-            let templateString = lambda()
-            let template = Template(string: templateString)
+            // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L73
+            // > Lambda results should be appropriately escaped
+            //
+            // Let's render a text template:
+            var templateRepository = TemplateRepository()
+            templateRepository.configuration.contentType = .Text
+            let template = templateRepository.template(string: lambda())
             return template?.render(info.context, error: error)
         case .Section:
             if error != nil {
