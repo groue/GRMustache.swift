@@ -635,51 +635,6 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "[1:---][2:---]------,[1:---][2:---]---")
     }
     
-    func testArity0SpecLambda() {
-        // The Mustache spec defines lambdas (https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml):
-        //
-        // > When used as the data value for an Interpolation tag, the lambda MUST be
-        // > treatable as an arity 0 function, and invoked as such.  The returned value
-        // > MUST be rendered against the default delimiters, then interpolated in place
-        // > of the lambda.
-        //
-        // Here we test that we render against default delimiters
-        let greeting: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let lambdaString = "Hello {{ name }}"
-            let lambdaTemplate = Template(string: lambdaString)!
-            return lambdaTemplate.render(info.context, error: error)
-        }
-        
-        let template = Template(string: "{{=<% %>=}}<% greeting %>")!
-        
-        // Renders "Hello Arthur"
-        let rendering = template.render(Box(["greeting": Box(greeting), "name": Box("Arthur")]))!
-        XCTAssertEqual(rendering, "Hello Arthur")
-    }
-    
-    func testArity1SpecLambda() {
-        // The Mustache spec defines lambdas (https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml):
-        //
-        // > When used as the data value for a Section tag, the lambda MUST be treatable
-        // > as an arity 1 function, and invoked as such (passing a String containing the
-        // > unprocessed section contents).  The returned value MUST be rendered against
-        // > the current delimiters, then interpolated in place of the section.
-        //
-        // Here we test that we render against default delimiters
-        let alt: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let lambdaString = "{{altName}}"
-            let template = Template(string: lambdaString)!
-            return template.render(info.context, error: error)
-        }
-        
-        let template = Template(string: "{{=<% %>=}}<%# alt %><% name %><%/ alt %>")!
-        template.registerInBaseContext("alt", Box(alt))
-        
-        // Renders "Hello Arthur"
-        let rendering = template.render(Box(["name": "Arthur", "altName": "Barbara"]))!
-        XCTAssertEqual(rendering, "Barbara")
-    }
-    
     func testMustacheSpecInterpolation() {
         // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L15
         let lambda = Lambda { "world" }
