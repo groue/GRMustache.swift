@@ -5,3 +5,4 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [ ] Is this function useful? func Box(value: Any? = nil, keyedSubscript: KeyedSubscriptFunction) -> MustacheBox
 - [ ] Let user easily override default key lookup (maybe expose and make mutable MustacheBox.keyedSubscript ?). The goal is to prevent https://github.com/groue/GRMustache/issues/66
+- [ ] Remove auto-loading of main bundle templates in Template(string:, error:)
