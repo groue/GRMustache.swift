@@ -23,13 +23,45 @@
 
 extension StandardLibrary {
     
+    /**
+    StandardLibrary.Localizer provides localization of Mustache sections or
+    data.
+    
+        let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
+        template.registerInBaseContext("localize", Box(localizer))
+    
+    ### Localizing data:
+    
+    `{{ localize(greeting) }}` renders `NSLocalizedString(@"Hello", nil)`,
+    assuming the `greeting` key resolves to the `Hello` string.
+    
+    ### Localizing sections:
+    
+    `{{#localize}}Hello{{/localize}}` renders `NSLocalizedString(@"Hello", nil)`.
+    
+    ### Localizing sections with arguments:
+    
+    `{{#localize}}Hello {{name}}{{/localize}}` builds the format string
+    `Hello %@`, localizes it with NSLocalizedString, and finally
+    injects the name with `[NSString stringWithFormat:]`.
+    
+    ### Localize sections with arguments and conditions:
+    
+    `{{#localize}}Good morning {{#title}}{{title}}{{/title}} {{name}}{{/localize}}`
+    build the format string `Good morning %@" or @"Good morning %@ %@`,
+    depending on the presence of the `title` key. It then injects the name, or
+    both title and name, with `String(format:, ...)`, to build the final
+    rendering.
+    */
     public class Localizer : MustacheBoxable {
+        /// The bundle
         public let bundle: NSBundle
+        
+        /// The table
         public let table: String?
-        var formatArguments: [String]?
         
         /**
-        Returns a localizing helper.
+        Returns a Localizer.
         
         :param: bundle The bundle where to look for localized strings. If nil,
                        the main bundle is used.
@@ -60,6 +92,12 @@ extension StandardLibrary {
                 willRender: willRender,
                 didRender: didRender)
         }
+        
+        
+        // =====================================================================
+        // MARK: - Not public
+        
+        private var formatArguments: [String]?
         
         // This function is used for evaluating `localize(x)` expressions.
         private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
