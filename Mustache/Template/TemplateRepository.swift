@@ -251,8 +251,7 @@ final public class TemplateRepository {
       // delimiters:
       let repository = TemplateRepository()
       repository.configuration = Configuration()
-      repository.configuration.tagStartDelimiter = "<%"
-      repository.configuration.tagEndDelimiter = "%>"
+      repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
     
       // Renders "Hello Luigi"
       let template = repository.template(string: "Hello <%name%>")!

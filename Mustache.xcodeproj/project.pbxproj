@@ -192,6 +192,8 @@
 		56C8D6E71A1F1AD800F106F8 /* ReadMeExample2.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */; };
 		56C8D6E81A1F1AD800F106F8 /* ReadMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */; };
 		56CDD4431A5A7A2200C4F47E /* HookFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */; };
+		56D32B1A1B199B08007FA037 /* TagDelimiterPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D32B191B199B08007FA037 /* TagDelimiterPair.swift */; };
+		56D32B1B1B199B08007FA037 /* TagDelimiterPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D32B191B199B08007FA037 /* TagDelimiterPair.swift */; };
 		56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */; };
 		56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */; };
 		56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
@@ -315,6 +317,8 @@
 		56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReadMeTests.swift; sourceTree = "<group>"; };
 		56CD9F651A275980001BABA4 /* FilterTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FilterTests.mustache; sourceTree = "<group>"; };
 		56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HookFunctionTests.swift; sourceTree = "<group>"; };
+		56D32B191B199B08007FA037 /* TagDelimiterPair.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagDelimiterPair.swift; sourceTree = "<group>"; };
+		56D32B1C1B19A212007FA037 /* RELEASE_NOTES.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = RELEASE_NOTES.md; sourceTree = "<group>"; };
 		56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationBaseContextTests.swift; sourceTree = "<group>"; };
 		56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationContentTypeTests.swift; sourceTree = "<group>"; };
 		56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationExtendBaseContextTests.swift; sourceTree = "<group>"; };
@@ -402,6 +406,7 @@
 			isa = PBXGroup;
 			children = (
 				5623427D1B024EF100458D87 /* GRMustache.swift.podspec */,
+				56D32B1C1B19A212007FA037 /* RELEASE_NOTES.md */,
 				56056AA51A84CDBD0076BBAA /* TODO.md */,
 				563AE19919FBE47A0028C6C1 /* Mustache */,
 				563AE1A619FBE47A0028C6C1 /* MustacheTests */,
@@ -508,6 +513,7 @@
 			children = (
 				569C42401A89538D00748E98 /* ContentType.swift */,
 				56AD06F619FE704700406BB8 /* Error.swift */,
+				56D32B191B199B08007FA037 /* TagDelimiterPair.swift */,
 				563AE1FD19FC5DEC0028C6C1 /* TranslateCharacters.swift */,
 			);
 			path = Shared;
@@ -941,6 +947,7 @@
 				560DE2641AC33D0D005C0312 /* Box.swift in Sources */,
 				561E72891A8BDC4D004ED48B /* JavascriptEscape.swift in Sources */,
 				561E72811A8BDC4D004ED48B /* TemplateASTNode.swift in Sources */,
+				56D32B1B1B199B08007FA037 /* TagDelimiterPair.swift in Sources */,
 				561E72901A8BDC4D004ED48B /* TemplateParser.swift in Sources */,
 				561E728B1A8BDC4D004ED48B /* StandardLibrary.swift in Sources */,
 				561E72931A8BDC4D004ED48B /* ExpressionInvocation.swift in Sources */,
@@ -1022,6 +1029,7 @@
 				56BF06581A063DC800926BEB /* URLEscape.swift in Sources */,
 				563AE1C919FC38B80028C6C1 /* ExpressionParser.swift in Sources */,
 				563AE1FE19FC5DEC0028C6C1 /* TranslateCharacters.swift in Sources */,
+				56D32B1A1B199B08007FA037 /* TagDelimiterPair.swift in Sources */,
 				563AE1D819FC4A450028C6C1 /* Context.swift in Sources */,
 				56BF065B1A063DE600926BEB /* JavascriptEscape.swift in Sources */,
 				56AD06F719FE704700406BB8 /* Error.swift in Sources */,

@@ -34,14 +34,7 @@ class SectionTag: Tag {
     init(innerTemplateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
         self.innerTemplateAST = innerTemplateAST
         self.openingToken = openingToken
-        switch openingToken.type {
-        case .Section(content: _, tagStartDelimiter: let tagStartDelimiter, tagEndDelimiter: let tagEndDelimiter):
-            super.init(type: .Section, innerTemplateString: innerTemplateString, tagStartDelimiter: tagStartDelimiter, tagEndDelimiter: tagEndDelimiter)
-        case .InvertedSection(content: _, tagStartDelimiter: let tagStartDelimiter, tagEndDelimiter: let tagEndDelimiter):
-            super.init(type: .Section, innerTemplateString: innerTemplateString, tagStartDelimiter: tagStartDelimiter, tagEndDelimiter: tagEndDelimiter)
-        default:
-            fatalError("Unexpected token type")
-        }
+        super.init(type: .Section, innerTemplateString: innerTemplateString, tagDelimiterPair: openingToken.tagDelimiterPair!)
     }
     
     /**

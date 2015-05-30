@@ -24,11 +24,11 @@
 struct TemplateToken {
     enum Type {
         case Text(text: String)
-        case EscapedVariable(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
-        case UnescapedVariable(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
+        case EscapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
+        case UnescapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
         case Comment
-        case Section(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
-        case InvertedSection(content: String, tagStartDelimiter: String, tagEndDelimiter: String)
+        case Section(content: String, tagDelimiterPair: TagDelimiterPair)
+        case InvertedSection(content: String, tagDelimiterPair: TagDelimiterPair)
         case Close(content: String)
         case Partial(content: String)
         case SetDelimiters
@@ -44,4 +44,18 @@ struct TemplateToken {
     let templateID: TemplateID?
     
     var templateSubstring: String { return templateString[range] }
+    var tagDelimiterPair: TagDelimiterPair? {
+        switch type {
+        case .EscapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
+            return tagDelimiterPair
+        case .UnescapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
+            return tagDelimiterPair
+        case .Section(content: _, tagDelimiterPair: let tagDelimiterPair):
+            return tagDelimiterPair
+        case .InvertedSection(content: _, tagDelimiterPair: let tagDelimiterPair):
+            return tagDelimiterPair
+        default:
+            return nil
+        }
+    }
 }

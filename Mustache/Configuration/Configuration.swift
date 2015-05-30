@@ -62,8 +62,7 @@ public struct Configuration {
     public init() {
         contentType = .HTML
         baseContext = Context()
-        tagStartDelimiter = "{{"
-        tagEndDelimiter = "}}"
+        tagDelimiterPair = TagDelimiterPair(start: "{{", end: "}}")
     }
     
     
@@ -178,20 +177,12 @@ public struct Configuration {
     }
     
     /**
-    The opening delimiter for Mustache tags. Its default value is `{{`.
+    The delimiters for Mustache tags. Its default value is `{{`, `}}`.
     
     You can also change the delimiters right in your templates using a "Set
     Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
     */
-    public var tagStartDelimiter: String
-    
-    /**
-    The closing delimiter for Mustache tags. Its default value is `}}`.
-    
-    You can also change the delimiters right in your templates using a "Set
-    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
-    */
-    public var tagEndDelimiter: String
+    public var tagDelimiterPair: TagDelimiterPair
     
 }
 

@@ -32,17 +32,15 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     }
         
     func testFactoryConfigurationHasTagDelimitersRegardlessOfDefaultConfiguration() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let configuration = Configuration()
-        XCTAssertEqual(configuration.tagStartDelimiter, "{{")
-        XCTAssertEqual(configuration.tagEndDelimiter, "}}")
+        XCTAssertEqual(configuration.tagDelimiterPair.start, "{{")
+        XCTAssertEqual(configuration.tagDelimiterPair.end, "}}")
     }
     
     func testDefaultConfigurationTagDelimiters() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let template = Template(string: "<%subject%>")!
         let rendering = template.render(Box(["subject": "---"]))!
@@ -50,8 +48,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     }
     
     func testSetDelimitersTagOverridesDefaultConfigurationDelimiters() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let template = Template(string: "<%=[[ ]]=%>[[subject]]")!
         let rendering = template.render(Box(["subject": "---"]))!
@@ -59,23 +56,20 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     }
     
     func testDefaultRepositoryConfigurationHasDefaultConfigurationTagDelimiters() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let repository = TemplateRepository()
-        XCTAssertEqual(repository.configuration.tagStartDelimiter, "<%")
-        XCTAssertEqual(repository.configuration.tagEndDelimiter, "%>")
+        XCTAssertEqual(repository.configuration.tagDelimiterPair.start, "<%")
+        XCTAssertEqual(repository.configuration.tagDelimiterPair.end, "%>")
 
-        DefaultConfiguration.tagStartDelimiter = "[["
-        DefaultConfiguration.tagEndDelimiter = "]]"
-        XCTAssertEqual(repository.configuration.tagStartDelimiter, "<%")
-        XCTAssertEqual(repository.configuration.tagEndDelimiter, "%>")
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "[[", end: "]]")
+        XCTAssertEqual(repository.configuration.tagDelimiterPair.start, "<%")
+        XCTAssertEqual(repository.configuration.tagDelimiterPair.end, "%>")
     }
     
     func testRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration() {
         var configuration = Configuration()
-        configuration.tagStartDelimiter = "<%"
-        configuration.tagEndDelimiter = "%>"
+        configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let repository = TemplateRepository()
         repository.configuration = configuration
@@ -87,8 +81,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     
     func testRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
-        repository.configuration.tagStartDelimiter = "<%"
-        repository.configuration.tagEndDelimiter = "%>"
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let template = repository.template(string: "<%subject%>")!
         let rendering = template.render(Box(["subject": "---"]))!
@@ -96,12 +89,10 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     }
     
     func testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenSettingTheWholeConfiguration() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         var configuration = Configuration()
-        configuration.tagStartDelimiter = "[["
-        configuration.tagEndDelimiter = "]]"
+        configuration.tagDelimiterPair = TagDelimiterPair(start: "[[", end: "]]")
         let repository = TemplateRepository()
         repository.configuration = configuration
         
@@ -111,12 +102,10 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     }
     
     func testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration() {
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let repository = TemplateRepository()
-        repository.configuration.tagStartDelimiter = "[["
-        repository.configuration.tagEndDelimiter = "]]"
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "[[", end: "]]")
         
         let template = repository.template(string: "[[subject]]")!
         let rendering = template.render(Box(["subject": "---"]))!
@@ -125,8 +114,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     
     func testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration() {
         var configuration = Configuration()
-        configuration.tagStartDelimiter = "<%"
-        configuration.tagEndDelimiter = "%>"
+        configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         let repository = TemplateRepository()
         repository.configuration = configuration
         
@@ -137,8 +125,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
     
     func testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
-        repository.configuration.tagStartDelimiter = "<%"
-        repository.configuration.tagEndDelimiter = "%>"
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         
         let template = repository.template(string: "<%=[[ ]]=%>[[subject]]")!
         let rendering = template.render(Box(["subject": "---"]))!
@@ -151,8 +138,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         var rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
         XCTAssertEqual(rendering, "foo<%foo%>")
         
-        DefaultConfiguration.tagStartDelimiter = "<%"
-        DefaultConfiguration.tagEndDelimiter = "%>"
+        DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
         XCTAssertEqual(rendering, "foo<%foo%>")
     }
@@ -163,14 +149,12 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         var rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
         XCTAssertEqual(rendering, "foo<%foo%>")
         
-        repository.configuration.tagStartDelimiter = "<%"
-        repository.configuration.tagEndDelimiter = "%>"
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
         XCTAssertEqual(rendering, "foo<%foo%>")
         
         var configuration = Configuration()
-        configuration.tagStartDelimiter = "<%"
-        configuration.tagEndDelimiter = "%>"
+        configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
         repository.configuration = configuration
         rendering = repository.template(string: "{{foo}}<%foo%>")!.render(Box(["foo": "foo"]))!
         XCTAssertEqual(rendering, "foo<%foo%>")

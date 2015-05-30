@@ -55,30 +55,30 @@ private class TemplateGenerator {
     func renderTemplateASTNode(node: TemplateASTNode) {
         switch node {
         case .InheritableSectionNode(let inheritableSection):
-            let tagStartDelimiter = configuration.tagStartDelimiter
-            let tagEndDelimiter = configuration.tagEndDelimiter
+            let tagStartDelimiter = configuration.tagDelimiterPair.start
+            let tagEndDelimiter = configuration.tagDelimiterPair.end
             let name = inheritableSection.name
             buffer.extend("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
             renderTemplateAST(inheritableSection.innerTemplateAST)
             buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .InheritedPartialNode(let inheritedPartial):
-            let tagStartDelimiter = configuration.tagStartDelimiter
-            let tagEndDelimiter = configuration.tagEndDelimiter
+            let tagStartDelimiter = configuration.tagDelimiterPair.start
+            let tagEndDelimiter = configuration.tagDelimiterPair.end
             let name = inheritedPartial.parentPartial.name ?? "<null>"
             buffer.extend("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
             renderTemplateAST(inheritedPartial.overridingTemplateAST)
             buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialNode(let partial):
-            let tagStartDelimiter = configuration.tagStartDelimiter
-            let tagEndDelimiter = configuration.tagEndDelimiter
+            let tagStartDelimiter = configuration.tagDelimiterPair.start
+            let tagEndDelimiter = configuration.tagDelimiterPair.end
             let name = partial.name ?? "<null>"
             buffer.extend("\(tagStartDelimiter)>\(name)\(tagEndDelimiter)")
             
         case .SectionNode(let section):
-            let tagStartDelimiter = configuration.tagStartDelimiter
-            let tagEndDelimiter = configuration.tagEndDelimiter
+            let tagStartDelimiter = configuration.tagDelimiterPair.start
+            let tagEndDelimiter = configuration.tagDelimiterPair.end
             let expression = "TODO"
             if section.inverted {
                 buffer.extend("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
@@ -92,8 +92,8 @@ private class TemplateGenerator {
             buffer.extend(text)
             
         case .VariableNode(let variable):
-            let tagStartDelimiter = configuration.tagStartDelimiter
-            let tagEndDelimiter = configuration.tagEndDelimiter
+            let tagStartDelimiter = configuration.tagDelimiterPair.start
+            let tagEndDelimiter = configuration.tagDelimiterPair.end
             let expression = "TODO"
             if variable.escapesHTML {
                 buffer.extend("\(tagStartDelimiter)&\(expression)\(tagEndDelimiter)")
