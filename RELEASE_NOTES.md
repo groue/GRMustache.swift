@@ -24,11 +24,14 @@ Released on 19 May, 2015
 
 **New**
 
-- support for [Carthage](https://github.com/Carthage/Carthage)
+- support for [Carthage](https://github.com/Carthage/Carthage) (contribution by [@acwright](https://github.com/acwright))
+
 
 
 ## v0.9.0
 
 Released on 12 May, 2015
 
-Initial release
+**New**
+
+- support for [CocoaPods](https://cocoapods.org) (contribution by [@marcelofabri](https://github.com/marcelofabri))
