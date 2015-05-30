@@ -248,7 +248,7 @@ to HTML:
 
 ::
 
-  // Wraps its input in a <strong> HTML tag.
+  // Wraps its input in a `<strong>` HTML tag.
   let strong = Filter { (rendering: Rendering, _) in
       // We return HTML, so we need to escape input if necessary.
       var string = rendering.string
