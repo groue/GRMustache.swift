@@ -324,27 +324,33 @@ final public class Template {
 extension Template : MustacheBoxable {
 
     /**
-    This method comes with the MustacheBoxable protocol. It lets templates feed
-    other templates.
+    `Template` conforms to the `MustacheBoxable` protocol so that it can feed
+    other Mustache templates. A template renders just like a partial tag:
     
-    This provides a way to render partial templates which are chosen at runtime,
-    when Mustache partial tags like {{> partial }} can only render hard-coded
-    partial templates.
+    - `{{template}}` renders just like an embedded partial tag: `{{>partial}}`.
     
-    ::
+    - `{{#template}}...{{/template}}` renders just like an inherited
+      partial tag: `{{<partial}}...{{/partial}}`.
     
-      let partial = Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")!
-      let data = [
-          "firstName": Box("Salvador"),
-          "lastName": Box("Dali"),
-          "url": Box("/people/123"),
-          "partial": Box(partial)
-      ]
+    - `{{^template}}...{{/template}}` does not render.
     
-      // <a href='/people/123'>Salvador Dali</a>
-      let template = Template(string: "{{partial}}")!
-      template.render(Box(data))!
+    The difference is that `partial` is a hard-coded template name, when
+    `template` is a template that is chosen at runtime.
     
+    For example:
+    
+        let partial = Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")!
+        let data = [
+            "firstName": Box("Salvador"),
+            "lastName": Box("Dali"),
+            "url": Box("/people/123"),
+            "partial": Box(partial)
+        ]
+
+        // <a href='/people/123'>Salvador Dali</a>
+        let template = Template(string: "{{partial}}")!
+        template.render(Box(data))!
+
     */
     public var mustacheBox: MustacheBox {
         return Box(value: self, render: { (var info, error) in

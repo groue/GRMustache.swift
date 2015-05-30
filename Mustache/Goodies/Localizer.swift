@@ -73,6 +73,10 @@ extension StandardLibrary {
             self.table = table
         }
         
+        /**
+        `Localizer` conforms to the `MustacheBoxable` protocol so that it can
+        feed Mustache templates.
+        */
         public var mustacheBox: MustacheBox {
             // Return a multi-facetted box, because Localizer interacts in
             // various ways with Mustache rendering.
@@ -81,16 +85,16 @@ extension StandardLibrary {
                 value: self,
                 
                 // Localizer can be used as a filter: {{ localize(x) }}:
-                filter: Filter(filter),
+                filter: Filter(self.filter),
                 
                 // Localizer performs custom rendering, so that it can localize
                 // the sections it is attached to: {{# localize }}Hello{{/ localize }}.
-                render: render,
+                render: self.render,
                 
                 // Localizer needs to observe the rendering of variables tags
                 // inside the section it is attached to: {{# localize }}Hello {{ name }}{{/ localize }}.
-                willRender: willRender,
-                didRender: didRender)
+                willRender: self.willRender,
+                didRender: self.didRender)
         }
         
         
