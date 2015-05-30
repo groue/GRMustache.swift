@@ -12,10 +12,12 @@ Release Notes
 
 - TagDelimiterPair
 - Tag.tagDelimiterPair
+- Template.contentType
 
 **Incompatible changes**
 
 - Configuration.tagStartDelimiter and Configuration.tagEndDelimiter have been replaced by Configuration.tagDelimiterPair
+- Template(string:, error:) no longer loads partial tags from main bundle resources.
 
 
 ## v0.9.1

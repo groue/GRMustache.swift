@@ -22,13 +22,23 @@
 
 
 /**
-GRMustache distinguishes Text from HTML: escaped tags such as {{name}} escape
-text values, and templates can be configured to render text or HTML.
+GRMustache distinguishes Text from HTML.
 
-The ContentType enum represents this content type.
+Content type applies to both *templates*, and *renderings*:
 
-:see: RenderFunction
+- In a HTML template, `{{name}}` tags escape Text renderings, but do not escape
+HTML renderings.
+
+- In a Text template, `{{name}}` tags do not escape anything.
+
+The content type of a template comes from `Configuration.contentType` or
+`{{% CONTENT_TYPE:... }}` pragma tags. See the documentation of
+`Configuration.contentType` for a full discussion.
+
+The content type of rendering is discussed with the `Rendering` type.
+
 :see: Configuration
+:see: Rendering
 */
 public enum ContentType {
     case Text

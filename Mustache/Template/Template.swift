@@ -24,7 +24,7 @@
 import Foundation
 
 /**
-The Template class provides Mustache rendering services.
+Template instances render Mustache templates.
 */
 final public class Template {
     
@@ -34,14 +34,6 @@ final public class Template {
     /**
     Parses a template string, and returns a template.
     
-    Eventual partial tags refer to resources with extension ``.mustache`` stored
-    in the main bundle:
-    
-    ::
-    
-      // Uses `partial.mustache` resource from the main bundle
-      let template = Template(string: "...{{>partial}}...")!
-    
     :param: string The template string
     :param: error  If there is an error loading or parsing template and
                    partials, upon return contains an NSError object that
@@ -50,7 +42,7 @@ final public class Template {
     :returns: The created template
     */
     public convenience init?(string: String, error: NSErrorPointer = nil) {
-        let repository = TemplateRepository(bundle: nil)
+        let repository = TemplateRepository()
         
         if let templateAST = repository.templateAST(string: string, error: error) {
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -66,10 +58,8 @@ final public class Template {
     Eventual partial tags in the template refer to sibling template files using
     the same extension.
     
-    ::
-    
-      // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
-      let template = Template(path: "/path/to/template.txt")!
+        // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
+        let template = Template(path: "/path/to/template.txt")!
     
     :param: path     The path of the template.
     :param: encoding The encoding of the template file.
@@ -99,10 +89,8 @@ final public class Template {
     Eventual partial tags in the template refer to sibling templates using
     the same extension.
     
-    ::
-    
-      // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
-      let template = Template(URL: "file://path/to/template.txt")!
+        // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
+        let template = Template(URL: "file://path/to/template.txt")!
     
     :param: URL      The URL of the template.
     :param: encoding The encoding of template file.
@@ -133,10 +121,8 @@ final public class Template {
     Eventual partial tags in the template refer to template resources using
     the same extension.
     
-    ::
-    
-      // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
-      let template = Template(named: "template")!
+        // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
+        let template = Template(named: "template")!
     
     :param: name               The name of a bundle resource.
     :param: bundle             The bundle where to look for the template
@@ -167,7 +153,7 @@ final public class Template {
     // MARK: - Rendering Templates
     
     /**
-    Renders a template with a context stack initialized with the provided value
+    Renders a template with a context stack initialized with the provided box
     on top of the templates's base context.
     
     :param: box   A boxed value used for evaluating Mustache tags
@@ -185,13 +171,14 @@ final public class Template {
     }
     
     /**
-    Returns the rendering of the receiver, given a context.
+    Returns the rendering of the receiver, evaluating mustache tags from values
+    stored in the given context stack.
     
     This method does not return a String, but a Rendering value that wraps both
     the rendered string and its content type (HTML or Text). It is intended to
-    be used when you want to perform custom rendering in a RenderFunction.
+    be used when you perform custom rendering in a `RenderFunction`.
     
-    :param: context A context
+    :param: context A context stack
     :param: error   If there is an error rendering the tag, upon return contains
                     an NSError object that describes the problem.
     
@@ -199,7 +186,7 @@ final public class Template {
     
     :see: RenderFunction
     */
-    public func render(context: Context, error: NSErrorPointer) -> Rendering? {
+    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return renderingEngine.render(error: error)
     }
@@ -215,14 +202,12 @@ final public class Template {
     repository this template comes from.
     
     You can set the base context to some custom context, or extend it with the
-    extendBaseContext and registerInBaseContext methods.
+    `extendBaseContext` and `registerInBaseContext` methods.
     
-    ::
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.baseContext = Context(Box(["foo": "bar"]))
-      template.render()!
+        // Renders "bar"
+        let template = Template(string: "{{foo}}")!
+        template.baseContext = Context(Box(["foo": "bar"]))
+        template.render()!
     
     :see: extendBaseContext
     :see: registerInBaseContext
@@ -233,12 +218,10 @@ final public class Template {
     Extends the base context with the provided boxed value. All renderings will
     start from this extended context.
     
-    ::
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.extendBaseContext(Box(["foo": "bar"]))
-      template.render()!
+        // Renders "bar"
+        let template = Template(string: "{{foo}}")!
+        template.extendBaseContext(Box(["foo": "bar"]))
+        template.render()!
     
     :see: baseContext
     :see: registerInBaseContext
@@ -252,19 +235,15 @@ final public class Template {
     Registers a key in the base context. All renderings will be able to access
     the provided box through this key.
     
-    The registered key can not be shadowed by rendered data: it will always
-    evaluate to the same value.
+    Registered keys are looked up first when evaluating Mustache tags.
     
-    ::
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.registerInBaseContext("foo", Box("bar"))
-      template.render()!
-    
-      // Renders "bar" again, because the registered key "foo" can not be
-      // shadowed.
-      template.render(Box(["foo": "qux"]))!
+        // Renders "bar"
+        let template = Template(string: "{{foo}}")!
+        template.registerInBaseContext("foo", Box("bar"))
+        template.render()!
+
+        // Renders "bar" again, because the registered key "foo" has priority.
+        template.render(Box(["foo": "qux"]))!
     
     :see: baseContext
     :see: extendBaseContext
@@ -283,22 +262,20 @@ final public class Template {
     
     All templates belong a template repository:
     
-    - Templates returned by ``init(string:, error:)`` have a template repository
-      that loads templates and partials stored as resources in the main bundle,
-      with extension ".mustache", encoded in UTF8.
+    - Templates returned by ``init?(string:, error:)`` have a template
+      repository that can not load any template or partial by name.
     
-    - Templates returned by ``init(path:, error:)`` have a template repository
-      that loads templates and partials stored in the directory of the receiver,
-      with the same file extension ".mustache", encoded in UTF8.
+    - Templates returned by ``init?(path:, encoding:, error:)`` have a template
+      repository that loads templates and partials stored in the directory of
+      the receiver, with the same file extension.
     
-    - Templates returned by ``init(URL:, error:)`` have a template repository
-      that loads templates and partials stored in the directory of the receiver,
-      with the same file extension ".mustache", encoded in UTF8.
+    - Templates returned by ``init?(URL:, encoding:, error:)`` have a template
+      repository that loads templates and partials stored in the directory of
+      the receiver, with the same file extension.
     
-    - Templates returned by ``init(named:, bundle:, templateExtension:, encoding:, error:)``
+    - Templates returned by ``init?(named:, bundle:, templateExtension:, encoding:, error:)``
       have a template repository that loads templates and partials stored as
-      resources in the specified bundle, with extension ".mustache", encoded in
-      UTF8.
+      resources in the specified bundle.
     
     - Templates returned by ``TemplateRepository.template(named:, error:)`` and
       `TemplateRepository.template(string:, error:)` belong to the invoked
@@ -313,6 +290,21 @@ final public class Template {
     public let repository: TemplateRepository
     
     
+    // =========================================================================
+    // MARK: - Accessing Sibling Templates
+    
+    /**
+    The content type of the template.
+    
+    See `Configuration.contentType` for a full discussion of the content type of
+    templates.
+    */
+    public var contentType: ContentType {
+        return templateAST.contentType
+    }
+    
+    
+    // =========================================================================
     // MARK: - Not public
     
     let templateAST: TemplateAST

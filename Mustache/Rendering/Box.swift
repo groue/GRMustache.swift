@@ -141,18 +141,19 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 }
 
 
-/**
-MustacheBox is obviously boxable: its mustacheBox property return self.
-*/
+// IMPLEMENTATION NOTE
+//
+// This protocol conformance is not only a matter of consistency. It is also
+// a convenience for the library implementation: it makes arrays
+// [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
+// and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
+
 extension MustacheBox : MustacheBoxable {
     
-    // IMPLEMENTATION NOTE
-    //
-    // This protocol conformance is not only a matter of consistency. It is also
-    // a convenience for the library implementation: it makes arrays
-    // [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
-    // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
-    
+    /**
+    `MustacheBox` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. Its mustacheBox property returns itself.
+    */
     public var mustacheBox: MustacheBox {
         return self
     }
@@ -161,42 +162,24 @@ extension MustacheBox : MustacheBoxable {
 extension Bool : MustacheBoxable {
     
     /**
-    Let Bool feed Mustache templates.
+    `Bool` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. It behaves exactly like Objective-C booleans.
     
-    GRMustache makes sure Bool and NSNumber wrapping bools have the same
-    behavior: whatever the actual type of boxed bools, your templates render
-    the same.
     
-    In particular, bools have all the behaviors of numbers:
+    ### Rendering
     
-    ::
+    - `{{bool}}` renders as `0` or `1`.
     
-      // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#bools}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["bools": [false, true]]
-      template.render(Box(data))!
+    - `{{#bool}}...{{//bool}}` renders if and only if `bool` is true.
     
-    Whenever you want to extract a Bool out of a box, beware that some casts
-    of the raw boxed value will fail. You may prefer the MustacheBox property
-    boolValue which never fails.
+    - `{{^bool}}...{{//bool}}` renders if and only if `bool` is false.
     
-    ::
     
-      let boxedNSNumber = Box(NSNumber(bool: false))
-      let boxedInt = Box(0)
-      let boxedBool = Box(false)
-      
-      boxedNSNumber.value as! NSNumber // 0
-      // boxedNSNumber.value as! Bool  // Could not cast value of type 'Swift.Int' to 'Swift.Bool'
-      boxedInt.value as! NSNumber      // 0
-      // boxedInt.value as! Bool       // Could not cast value of type 'Swift.Int' to 'Swift.Bool'
-      boxedBool.value as! NSNumber     // 0
-      boxedBool.value as! Bool         // false
-      
-      boxedNSNumber.boolValue         // false
-      boxedInt.boolValue              // false
-      boxedBool.boolValue             // false
+    ### Unwrapping from MustacheBox
     
+    Whenever you want to extract a Bool out of a MustacheBox, use the boolValue
+    property: it reliably returns a Bool whatever the actual type of the raw
+    boxed value.
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -233,42 +216,26 @@ extension Bool : MustacheBoxable {
 extension Int : MustacheBoxable {
     
     /**
-    Let Int feed Mustache templates.
+    `Int` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. It behaves exactly like Objective-C integers.
     
-    Int can be used as a boolean. 0 is the only falsey value:
     
-    ::
+    ### Rendering
     
-      // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["numbers": [0, 1]]
-      template.render(Box(data))!
+    - `{{int}}` is rendered with built-in Swift String Interpolation.
+      Custom formatting can be explicitly required with NSNumberFormatter, as in
+      `{{format(a)}}` (see `NSFormatter`).
     
-    GRMustache makes sure Int and NSNumber wrapping integers have the same
-    behavior: whatever the actual type of boxed numbers, your templates render
-    the same.
+    - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
     
-    Whenever you want to extract a Int out of a box, beware that some casts
-    of the raw boxed value will fail. You may prefer the MustacheBox property
-    intValue which never fails as long as the boxed value is numeric.
+    - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
     
-    ::
     
-      let boxedNSNumber = Box(NSNumber(integer: 1))
-      let boxedDouble = Box(1)
-      let boxedInt = Box(1)
-      
-      boxedNSNumber.value as! NSNumber // 1
-      boxedNSNumber.value as! Int      // 1
-      boxedDouble.value as! NSNumber   // 1
-      boxedDouble.value as! Int        // Could not cast value of type 'Swift.Double' to 'Swift.Int'
-      boxedInt.value as! NSNumber      // 1
-      boxedInt.value as! Int           // 1
-      
-      boxedNSNumber.intValue          // 1
-      boxedDouble.intValue            // 1
-      boxedInt.intValue               // 1
+    ### Unwrapping from MustacheBox
     
+    Whenever you want to extract an integer out of a MustacheBox, use the
+    intValue property: it reliably returns an Int whatever the actual type of
+    the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -305,42 +272,26 @@ extension Int : MustacheBoxable {
 extension UInt : MustacheBoxable {
     
     /**
-    Let UInt feed Mustache templates.
+    `UInt` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. It behaves exactly like Objective-C unsigned integers.
     
-    UInt can be used as a boolean. 0 is the only falsey value:
     
-    ::
+    ### Rendering
     
-      // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["numbers": [0 as UInt, 1 as UInt]]
-      template.render(Box(data))!
+    - `{{uint}}` is rendered with built-in Swift String Interpolation.
+      Custom formatting can be explicitly required with NSNumberFormatter, as in
+      `{{format(a)}}` (see `NSFormatter`).
     
-    GRMustache makes sure UInt and NSNumber wrapping uints have the same
-    behavior: whatever the actual type of boxed numbers, your templates render
-    the same.
+    - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
     
-    Whenever you want to extract a UInt out of a box, beware that some casts
-    of the raw boxed value will fail. You may prefer the MustacheBox property
-    uintValue which never fails as long as the boxed value is numeric.
+    - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
     
-    ::
     
-      let boxedNSNumber = Box(NSNumber(unsignedInteger: 1))
-      let boxedUInt = Box(1 as UInt)
-      let boxedInt = Box(1)
-      
-      boxedNSNumber.value as! NSNumber // 1
-      // boxedNSNumber.value as! UInt  // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
-      boxedUInt.value as! NSNumber     // 1
-      boxedUInt.value as! UInt         // 1
-      boxedInt.value as! NSNumber      // 1
-      // boxedInt.value as! UInt       // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
-      
-      boxedNSNumber.uintValue         // 1
-      boxedUInt.uintValue             // 1
-      boxedInt.uintValue              // 1
+    ### Unwrapping from MustacheBox
     
+    Whenever you want to extract an unsigned integer out of a MustacheBox, use
+    the uintValue property: it reliably returns a UInt whatever the actual type
+    of the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -377,42 +328,26 @@ extension UInt : MustacheBoxable {
 extension Double : MustacheBoxable {
     
     /**
-    Let Double feed Mustache templates.
+    `Double` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. It behaves exactly like Objective-C doubles.
     
-    Double can be used as a boolean. 0.0 is the only falsey value:
     
-    ::
+    ### Rendering
     
-      // Renders "0.0 is falsey. 1.0 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["numbers": [0.0, 1.0]]
-      template.render(Box(data))!
+    - `{{double}}` is rendered with built-in Swift String Interpolation.
+      Custom formatting can be explicitly required with NSNumberFormatter, as in
+      `{{format(a)}}` (see `NSFormatter`).
     
-    GRMustache makes sure Double and NSNumber wrapping doubles have the same
-    behavior: whatever the actual type of boxed numbers, your templates render
-    the same.
+    - `{{#double}}...{{/double}}` renders if and only if `double` is not 0 (zero).
     
-    Whenever you want to extract a Double out of a box, beware that some casts
-    of the raw boxed value will fail. You may prefer the MustacheBox property
-    doubleValue which never fails as long as the boxed value is numeric.
+    - `{{^double}}...{{/double}}` renders if and only if `double` is 0 (zero).
     
-    ::
     
-      let boxedNSNumber = Box(NSNumber(double: 1.0))
-      let boxedDouble = Box(1.0)
-      let boxedInt = Box(1)
-      
-      boxedNSNumber.value as! NSNumber // 1.0
-      boxedNSNumber.value as! Double   // 1.0
-      boxedDouble.value as! NSNumber   // 1.0
-      boxedDouble.value as! Double     // 1.0
-      boxedInt.value as! NSNumber      // 1
-      // boxedInt.value as! Double     // Could not cast value of type 'Swift.Int' (0x102610fa8) to 'Swift.Double'
-      
-      boxedNSNumber.doubleValue       // 1.0
-      boxedDouble.doubleValue         // 1.0
-      boxedInt.doubleValue            // 1.0
+    ### Unwrapping from MustacheBox
     
+    Whenever you want to extract a double out of a MustacheBox, use
+    the doubleValue property: it reliably returns a Double whatever the actual
+    type of the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -449,87 +384,48 @@ extension Double : MustacheBoxable {
 extension String : MustacheBoxable {
     
     /**
-    Let String feed Mustache templates.
-    
-    Strings are rendered HTML-escaped by {{ double-mustache }} tags, and raw
-    by {{{ triple-mustache }}} tags:
-    
-    ::
-    
-      // Renders "Escaped: Arthur &amp; Barbara, Non-escaped: Arthur & Barbara"
-      var template = Template(string: "Escaped: {{string}}, Non-escaped: {{{string}}}")!
-      template.render(Box(["string": "Arthur & Barbara"]))!
-    
-    Empty strings are falsey:
-    
-    ::
-    
-      // Renders "`` is falsey. `yeah` is truthy."
-      let template = Template(string: "{{#strings}}`{{.}}` is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["strings": ["", "yeah"]]
-      template.render(Box(data))!
-    
-    GRMustache makes sure String and NSString have the same behavior: whatever
-    the actual type of boxed strings, your templates render the same.
+    `String` conforms to the `MustacheBoxable` protocol so that it can feed
+    Mustache templates. It behaves exactly like Objective-C NSString.
     
     
-    Strings can be queried for the `length` key, which evaluates to the number
-    of characters in the string.
+    ### Rendering
     
-    ::
+    - `{{string}}` renders the string, HTML-escaped.
     
-      // Renders "北京 has 2 characters."
-      let template = Template(string: "{{string}} has {{string.length}} characters.")!
-      let rendering = template.render(Box(["string": "北京"]))!
-      println(rendering)
+    - `{{{string}}}` renders the string, *not* HTML-escaped.
     
+    - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
+    
+    - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
+    
+    HTML-escaping of `{{string}}` tags is disabled for Text templates: see
+    `Configuration.contentType` for a full discussion of the content type of
+    templates.
+    
+    
+    ### Keys exposed to templates
+
+    Strings can be queried for the following keys:
+    
+    - `length`: the number of characters in the string.
+    
+    
+    ### Unwrapping from MustacheBox
     
     Whenever you want to extract a string out of a box, cast the boxed value to
     String or NSString:
     
-    ::
-    
-      let box = Box("foo")
-      box.value as String     // "foo"
-      box.value as NSString   // "foo"
+        let box = Box("foo")
+        box.value as! String     // "foo"
+        box.value as! NSString   // "foo"
     
     If the box does not contain a String, this cast would fail. If you want to
     process the rendering of a value ("123" for 123), consider looking at the
     documentation of:
     
-    - func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction
-    - RenderFunction
+    - `func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction`
+    - `RenderFunction`
     
-    For example, the `twice` filter below is able to render any value twice (not
-    only strings):
-    
-    ::
-    
-      let twice = Filter { (rendering: Rendering, _) in
-          return Rendering(rendering.string + rendering.string)
-      }
-      
-      var template = Template(string: "{{twice(x)}}")!
-      template.registerInBaseContext("twice", Box(twice))
-      
-      // Renders "123123"
-      template.render(Box(["x": 123]))!
-    
-    The `uppercase` RenderFunction below is able to render the uppercase version
-    of a section (regardless of the types of the values rendered inside):
-    
-    ::
-    
-      let uppercase: RenderFunction = { (info: RenderingInfo, _) in
-          let rendering = info.tag.renderInnerContent(info.context)!
-          return Rendering(rendering.string.uppercaseString)
-      }
-      
-      var template = Template(string: "{{#uppercase}}{{name}} is {{age}}.{{/uppercase}}")!
-      template.registerInBaseContext("uppercase", Box(uppercase))
-      
-      // Renders "ARTHUR IS 36."
-      template.render(Box(["name": "Arthur", "age": 36]))!
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
@@ -1011,8 +907,6 @@ See the Swift-targetted MustacheBoxable protocol for more information.
 }
 
 /**
-An NSObject subclass whose sole purpose is to wrap a MustacheBox.
-
 See the documentation of the ObjCMustacheBoxable protocol.
 */
 public class ObjCMustacheBox: NSObject {
@@ -1193,101 +1087,94 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 extension NSObject : ObjCMustacheBoxable {
     
     /**
-    Let any NSObject feed Mustache templates.
+    `NSObject` conforms to the `ObjCMustacheBoxable` protocol so that all 
+    Objective-C objects can feed Mustache templates.
     
     NSObject's default implementation handles two general cases:
     
-    - Enumerable objects that conform to the NSFastEnumeration protocol, such as
-      NSArray and NSOrderedSet.
-    - Other objects
+    - Enumerable objects that conform to the `NSFastEnumeration` protocol, such
+      as `NSArray` and `NSOrderedSet`.
+    - All other objects
     
     GRMustache ships with a few specific classes that escape the general cases
-    and provide their own rendering behavior: NSFormatter, NSNull, NSNumber,
-    NSString, NSDictionary and NSSet.
+    and provide their own rendering behavior: `NSDictionary, `NSFormatter`,
+    `NSNull`, `NSNumber`, `NSString`, and `NSSet` (see the documentation for
+    those classes).
     
-    Your own subclasses of NSObject can also override the mustacheBox method so
-    that they provide their own rendering behavior.
+    Your own subclasses of NSObject can also override the `mustacheBox` method
+    and provide their own custom behavior.
     
     
     ## Arrays
     
-    An objet is treated as an array if it conforms to NSFastEnumeration. This is
-    the case of NSArray and NSOrderedSet, for example. Note that NSDictionary
-    and NSSet have their own custom Mustache rendering: see the documentation of
-    NSDictionary.mustacheBox and NSSet.mustacheBox.
+    An objet is treated as an array if it conforms to `NSFastEnumeration`. This
+    is the case of `NSArray` and `NSOrderedSet`, for example. `NSDictionary` and
+    `NSSet` have their own custom Mustache rendering: see their documentation
+    for more information.
     
-    ::
     
-      let template = Template(string: "{{#voyels}}{{.}}{{/voyels}}")!
+    ### Rendering
     
-      // Renders "AEIOU"
-      let data = ["voyels": ["A", "E", "I", "O", "U"] as NSArray]
-      template.render(Box(data))!
+    - `{{array}}` renders the concatenation of the renderings of the array items.
     
+    - `{{#array}}...{{/array}}` renders as many times as there are items in
+      `array`, pushing each item on its turn on the top of the context stack.
+    
+    - `{{^array}}...{{/array}}` renders if and only if `array` is empty.
+    
+    
+    ### Keys exposed to templates
     
     Arrays can be queried for the following keys:
     
-    - count: number of elements in the collection
-    - first: the first object in the array
-    - firstObject: the first object in the array
-    - last: the last object in the array
-    - lastObject: the last object in the array
+    - `count`: number of elements in the collection
+    - `first`: the first object in the array
+    - `firstObject`: the first object in the array
+    - `last`: the last object in the array
+    - `lastObject`: the last object in the array
     
-    ::
-    
-      // Renders "3 items, from 1 to 3."
-      let template = Template(string: "{{items.count}} items, from {{items.first}} to {{items.last}}.")!
-      template.render(Box(["items": [1,2,3] as NSArray]))!
-    
-    
-    In order to render a section if and only if a collection is not empty, you can
-    query its `count` property, which behaves as the false boolean when zero.
-    
-    ::
-    
-      // Renders "Not empty", and then "Empty".
-      let template = Template(string: "{{#items.count}}Not empty{{/items.count}}{{^items.count}}Empty{{/items.count}}")!
-      template.render(Box(["items": [1,2,3] as NSArray]))!
-      template.render(Box(["items": [] as NSArray]))!
+    Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders
+    once, if and only if `array` is not empty.
     
     
     ## Other objects
     
-    Other objects fall in the general case. Their keys are extracted with the
-    valueForKey: method, as long as the key is "safe". Safe keys are property
-    names, custom property getters, and NSManagedObject attributes.
+    Other objects fall in the general case.
     
-    ::
+    Their keys are extracted with the `valueForKey:` method, as long as the key
+    is a property names, a custom property getter, or the name of a
+    `NSManagedObject` attribute.
     
-      class Person: NSObject {
-          let name: String
-          let age: UInt
-          
-          init(name: String, age: UInt) {
-              self.name = name
-              self.age = age
-          }
-      }
-      
-      let template = Template(string: "{{name}} is {{age}}.")!
-      
-      // Renders "Arthur is 36."
-      let person = Person(name: "Arthur", age: 36)
-      template.render(Box(person))!
+    
+    ### Rendering
+    
+    - `{{object}}` renders the result of the `description` method, HTML-escaped.
+    
+    - `{{{object}}}` renders the result of the `description` method, *not* HTML-escaped.
+    
+    - `{{#object}}...{{/object}}` renders once, pushing `object` on the top of
+      the context stack.
+    
+    - `{{^object}}...{{/object}}` does not render.
+    
+    HTML-escaping of `{{object}}` tags is disabled for Text templates: see
+    `Configuration.contentType` for a full discussion of the content type of
+    templates.
     */
     public var mustacheBox: ObjCMustacheBox {
+        let box: MustacheBox
+        
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
             // Box an Array<MustacheBox>, but keep the original NSArray value
             let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
-            let box = Box(array).boxWithValue(self)
-            return ObjCMustacheBox(box)
+            box = Box(array).boxWithValue(self)
             
         } else {
             // Generic NSObject
             
-            return ObjCMustacheBox(MustacheBox(
+            box = MustacheBox(
                 value: self,
                 keyedSubscript: { (key: String) in
                     if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
@@ -1297,98 +1184,80 @@ extension NSObject : ObjCMustacheBoxable {
                         // Missing key
                         return Box()
                     }
-                }))
+                })
         }
+        
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        return ObjCMustacheBox(box)
     }
 }
 
 extension NSNull : ObjCMustacheBoxable {
     
     /**
-    Let NSNull feed Mustache templates.
+    `NSNull` conforms to the `ObjCMustacheBoxable` protocol so that it can feed
+    Mustache templates.
     
-    NSNull doesn't render anything:
     
-    ::
+    ### Rendering
     
-      // Renders "null:"
-      let template = Template(string: "null:{{null}}")!
-      let data = ["null": NSNull()]
-      template.render(Box(data))!
+    - `{{null}}` does not render.
     
-    NSNull is a falsey value:
+    - `{{#null}}...{{/null}}` does not render (NSNull is falsey).
     
-    ::
-    
-      // Renders "null is falsey."
-      let template = Template(string: "null is {{#null}}truthy{{/}}{{^null}}falsey{{/}}.")!
-      let data = ["null": NSNull()]
-      template.render(Box(data))!
-    
-    A Box wrapping NSNull is not empty:
-    
-    ::
-    
-      let box = Box(NSNull())
-      let value = box.value as NSNull   // NSNull
-      let isEmpty = box.isEmpty         // false
+    - `{{^null}}...{{/null}}` does render (NSNull is falsey).
     */
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(MustacheBox(
+        let box = MustacheBox(
             boolValue: false,
             value: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 return Rendering("")
-        }))
+        })
+        
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        return ObjCMustacheBox(box)
     }
 }
 
 extension NSNumber : ObjCMustacheBoxable {
     
     /**
-    Let NSNumber feed Mustache templates.
+    `NSNumber` conforms to the `ObjCMustacheBoxable` protocol so that it can
+    feed Mustache templates. It behaves exactly like Swift numbers: depending on
+    its internal objCType, an NSNumber is rendered as a Swift Bool, Int, UInt,
+    or Double.
     
-    NSNumber whose boolValue is false are falsey:
     
-    ::
+    ### Rendering
     
-      // Renders "0 is falsey. 1 is truthy."
-      let template = Template(string: "{{#numbers}}{{.}} is {{#.}}truthy{{/}}{{^.}}falsey{{/}}.{{/}}")!
-      let data = ["numbers": [NSNumber(int: 0), NSNumber(int: 1)]]
-      template.render(Box(data))!
+    - `{{number}}` is rendered with built-in Swift String Interpolation.
+      Custom formatting can be explicitly required with NSNumberFormatter, as in
+      `{{format(a)}}` (see `NSFormatter`).
     
-    GRMustache makes sure NSNumber and Swift types Int, UInt, and Double have the
-    same behavior: whatever the actual type of boxed numbers, your templates render
-    the same.
+    - `{{#number}}...{{/number}}` renders if and only if `number` is not 0 (zero).
     
-    Whenever you want to extract a numeric value out of a box, beware that some
-    casts of the raw boxed value will fail. You may prefer the MustacheBox
-    properties intValue, uintValue and doubleValue which never fail as long
-    as the boxed value is numeric.
+    - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
     
-    ::
     
-      let box1 = Box(NSNumber(int: 1))
-      let box2 = Box(1)
-      
-      box1.value as! NSNumber  // 1
-      box1.value as! Int       // 1
-      // box1.value as! UInt   // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
-      // box1.value as! Double // Could not cast value of type 'Swift.Int' to 'Swift.Double'
-      box2.value as! NSNumber  // 1
-      box2.value as! Int       // 1
-      // box2.value as! UInt   // Could not cast value of type 'Swift.Int' to 'Swift.UInt'
-      // box2.value as! Double // Could not cast value of type 'Swift.Int' to 'Swift.Double'
-      
-      box1.intValue           // 1
-      box1.uintValue          // 1
-      box1.doubleValue        // 1.0
-      box2.intValue           // 1
-      box2.uintValue          // 1
-      box2.doubleValue        // 1.0
+    ### Unwrapping from MustacheBox
     
+    Whenever you want to extract a number out of a MustacheBox, use the
+    intValue, uintValue, doubleValue or boolValue properties: they reliably
+    return the expected type whatever the actual type of the raw boxed value.
     */
     public override var mustacheBox: ObjCMustacheBox {
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        
         let objCType = String.fromCString(self.objCType)!
         switch objCType {
         case "c", "i", "s", "l", "q":
@@ -1409,46 +1278,96 @@ extension NSNumber : ObjCMustacheBoxable {
 extension NSString : ObjCMustacheBoxable {
     
     /**
-    Let NSString feed Mustache templates.
+    `NSString` conforms to the `ObjCMustacheBoxable` protocol so that it can
+    feed Mustache templates. It behaves exactly like Swift strings.
     
-    See the documentation of String.mustacheBox.
+    
+    ### Rendering
+    
+    - `{{string}}` renders the string, HTML-escaped.
+    
+    - `{{{string}}}` renders the string, *not* HTML-escaped.
+    
+    - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
+    
+    - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
+    
+    HTML-escaping of `{{string}}` tags is disabled for Text templates: see
+    `Configuration.contentType` for a full discussion of the content type of
+    templates.
+    
+    
+    ### Keys exposed to templates
+
+    Strings can be queried for the following keys:
+    
+    - `length`: the number of characters in the string (using Swift method).
+    
+    
+    ### Unwrapping from MustacheBox
+    
+    Whenever you want to extract a string out of a box, cast the boxed value to
+    String or NSString:
+    
+        let box = Box("foo")
+        box.value as! String     // "foo"
+        box.value as! NSString   // "foo"
+    
+    If the box does not contain a String, this cast would fail. If you want to
+    process the rendering of a value ("123" for 123), consider looking at the
+    documentation of:
+    
+    - `func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction`
+    - `RenderFunction`
+    
     */
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(Box(self as String))
+        let box = Box(self as String)
+        
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        return ObjCMustacheBox(box)
     }
 }
 
 extension NSDictionary : ObjCMustacheBoxable {
     
     /**
-    Let NSDictionary feed Mustache templates.
-    
-    ::
-    
-      let template = Template(string: "{{name}} is {{age}}.")!
-    
-      // Renders "Arthur is 36."
-      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
-      template.render(Box(dictionary))!
+    `NSDictionary` conforms to the `ObjCMustacheBoxable` protocol so that it can
+    feed Mustache templates.
     
     
-    The genuine Mustache won't let you iterate over the key/value pairs of a
-    dictionary. Yet GRMustache ships with an `each` filter that performs that
-    very job:
+    ### Rendering
     
-    ::
+    - `{{dictionary}}` renders the result of the `description` method, HTML-escaped.
     
-      // Attach StandardLibrary.each to the key "each":
-      let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
-      template.registerInBaseContext("each", Box(StandardLibrary.each))
+    - `{{{dictionary}}}` renders the result of the `description` method, *not* HTML-escaped.
     
-      // Renders "<name:Arthur, age:36, >"
-      let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
-      let rendering = template.render(Box(["dictionary": dictionary]))!
+    - `{{#dictionary}}...{{/dictionary}}` renders once, pushing `dictionary` on
+    the top of the context stack.
+    
+    - `{{^dictionary}}...{{/dictionary}}` does not render.
+
+    HTML-escaping of `{{dictionary}}` tags is disabled for Text templates: see
+    `Configuration.contentType` for a full discussion of the content type of
+    templates.
+    
+    In order to iterate over the key/value pairs of a dictionary, use the `each`
+    filter from the Standard Library:
+    
+        // Attach StandardLibrary.each to the key "each":
+        let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+        // Renders "<name:Arthur, age:36, >"
+        let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
+        let rendering = template.render(Box(["dictionary": dictionary]))!
 
     */
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(MustacheBox(
+        let box = MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
                 dictionaryValue: {
@@ -1463,56 +1382,46 @@ extension NSDictionary : ObjCMustacheBoxable {
             keyedSubscript: { (key: String) in
                 let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                 return BoxAnyObject(item)
-        }))
+        })
+        
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        return ObjCMustacheBox(box)
     }
 }
 
 extension NSSet : ObjCMustacheBoxable {
     
     /**
-    Let NSSet feed Mustache templates.
+    `NSSet` conforms to the `ObjCMustacheBoxable` protocol so that it can feed
+    Mustache templates.
     
-    Sets are Mustache collections: they iterate their content:
     
-    ::
+    ### Rendering
     
-      let template = Template(string: "{{#set}}{{.}},{{/set}}{{^set}}Empty{{/set}}")!
-      
-      // Renders "3,1,2," (in any order)
-      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
-      
-      // Renders "Empty"
-      template.render(Box(["set": NSSet()]))!
+    - `{{set}}` renders the concatenation of the renderings of the set items, in
+      any order.
+    
+    - `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+      pushing each item on its turn on the top of the context stack.
+    
+    - `{{^set}}...{{/set}}` renders if and only if `set` is empty.
+    
+    
+    ### Keys exposed to templates
     
     Sets can be queried for the following keys:
     
-    - count: number of elements in the set
-    - anyObject: any object of the set
+    - `count`: number of elements in the set
+    - `anyObject`: any object of the set
     
-    ::
-    
-      // Renders "3" and "0"
-      template = Template(string: "{{set.count}}")!
-      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
-      template.render(Box(["set": NSSet()]))!
-      
-      // Renders "1" or "2" or "3" and ""
-      template = Template(string: "{{set.anyObject}}")!
-      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
-      template.render(Box(["set": NSSet()]))!
-    
-    In order to render a section if and only if a set is not empty, you can
-    query its `count` property, which behaves as the false boolean when zero.
-    
-    ::
-    
-      // Renders "Set elements are 3,1,2," and "Set is empty"
-      var template = Template(string: "{{#set.count}}Set elements are: {{#set}}{{.}},{{/set}}{{/}}{{^set.count}}Set is empty{{/}}")!
-      template.render(Box(["set": NSSet(objects: 1,2,3)]))!
-      template.render(Box(["set": NSSet()]))!
+    Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
+    if and only if `set` is not empty.
     */
     public override var mustacheBox: ObjCMustacheBox {
-        return ObjCMustacheBox(MustacheBox(
+        let box = MustacheBox(
             boolValue: (self.count > 0),
             value: self,
             converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
@@ -1536,7 +1445,13 @@ extension NSSet : ObjCMustacheBoxable {
                     let boxes = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
                     return renderBoxArray(boxes, info, error)
                 }
-            }))
+        })
+        
+        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
+        // class. This inconvenience comes from a limitation of the Swift
+        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
+        // protocol).
+        return ObjCMustacheBox(box)
     }
 }
 

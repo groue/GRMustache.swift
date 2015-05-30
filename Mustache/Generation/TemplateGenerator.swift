@@ -28,6 +28,7 @@ extension TemplateAST : DebugPrintable {
 }
 
 extension Template : DebugPrintable {
+    /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         return TemplateGenerator().stringFromTemplateAST(templateAST)
     }

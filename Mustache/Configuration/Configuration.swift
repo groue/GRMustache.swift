@@ -150,11 +150,10 @@ public struct Configuration {
     }
     
     /**
-    Registers a key in the base context. All templates built with this
-    configuration can access the provided box through this key.
+    Registers a key in the base context. All renderings will be able to access
+    the provided box through this key.
     
-    The registered key can not be shadowed by rendered data: it will always
-    evaluate to the same value.
+    Registered keys are looked up first when evaluating Mustache tags.
     
     ::
     
@@ -164,8 +163,7 @@ public struct Configuration {
       let template = Template(string: "{{foo}}")!
       template.render()!
     
-      // Renders "bar" again, because the registered key "foo" can not be
-      // shadowed.
+      // Renders "bar" again, because the registered key "foo" has priority.
       template.render(Box(["foo": "qux"]))!
     
     :see: baseContext
@@ -187,8 +185,8 @@ public struct Configuration {
 }
 
 /**
-The default configuration that is used unless specified otherwise by a template
-repository.
+The default configuration that is used unless specified otherwise by a
+TemplateRepository.
 
 :see: Configuration
 :see: TemplateRepository

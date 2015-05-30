@@ -32,27 +32,23 @@ Mustache sections.
 The top of the context stack is called the "current context". It is the value
 rendered by the {{.}} tag:
 
-::
-
-  // Renders "Kitty, Pussy, Melba, "
-  let template = Template(string: "{{#cats}}{{.}}, {{/cats}}")!
-  template.render(Box(["cats": ["Kitty", "Pussy", "Melba"]]))!
+    // Renders "Kitty, Pussy, Melba, "
+    let template = Template(string: "{{#cats}}{{.}}, {{/cats}}")!
+    template.render(Box(["cats": ["Kitty", "Pussy", "Melba"]]))!
 
 Key lookup starts with the current context and digs down the stack until if
 finds a value:
 
-::
-
-  // Renders "child, parent, "
-  let template = Template(string: "{{#children}}{{name}}, {{/children}}")!
-  let data = [
+    // Renders "child, parent, "
+    let template = Template(string: "{{#children}}{{name}}, {{/children}}")!
+    let data = [
       "name": "parent",
       "children": [
           ["name": "child"],
           [:]    // a child without a name
       ]
-  ]
-  template.render(Box(data))!
+    ]
+    template.render(Box(data))!
 
 :see: Configuration
 :see: TemplateRepository
@@ -80,39 +76,15 @@ final public class Context {
     }
     
     /**
-    Returns a context containing the provided box.
-    
-    ::
-    
-      let context = Context(Box(["foo": "bar"]))
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.baseContext = context
-      template.render()!
+    Returns a new context containing the provided box.
     */
     public convenience init(_ box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
     }
     
     /**
-    Returns a context containing the provided box.
-    
-    The registered key can not be shadowed by: it will always evaluate to the
-    same value.
-    ::
-    
-      let context = Context(registeredKey: "foo", box: Box("bar"))
-    
-      let template = Template(string: "{{foo}}")!
-      template.baseContext = context
-    
-      // Renders "bar"
-      template.render()!
-    
-      // Renders "bar" again, because the registered key "foo" can not be
-      // shadowed.
-      template.render(Box(["foo": "qux"]))!
+    Returns a new context with a registered key. Registered keys are looked up
+    first when evaluating Mustache tags.
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
@@ -123,18 +95,15 @@ final public class Context {
     // MARK: - Deriving New Contexts
     
     /**
-    Inserts the box at the top of the context stack, and returns the new context
-    stack.
+    Returns a new context with the provided box at the top of the context stack.
     */
     public func extendedContext(box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     /**
-    Registers the box in the context stack, and returns the new context stack.
-    
-    The registered key can not be shadowed by: it will always evaluate to the
-    same value.
+    Returns a new context with the provided box at the top of the context stack.
+    Registered keys are looked up first when evaluating Mustache tags.
     */
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
@@ -146,12 +115,8 @@ final public class Context {
     // MARK: - Fetching Values from the Context Stack
     
     /**
-    Returns the boxed value at the top of the context stack.
-    
-    The returned box is the same as the one that would be rendered by the {{.}}
-    tag.
-    
-    The topBox of an empty context is the empty box.
+    Returns the top box of the context stack, the one that would be rendered by
+    the `{{.}}` tag.
     */
     public var topBox: MustacheBox {
         switch type {
@@ -169,20 +134,18 @@ final public class Context {
     
     The following search pattern is used:
     
-    1. If the key is registered, returns the registered box for that key.
+    1. If the key is "registered", returns the registered box for that key.
     
     2. Otherwise, searches the context stack for a box that has a non-empty
-       box for the key (see InspectFunction).
+       box for the key (see `InspectFunction`).
     
     3. If none of the above situations occurs, returns the empty box.
 
-    ::
-    
-      let data = ["name": "Groucho Marx"]
-      let context = Context(Box(data))
-      
-      // "Groucho Marx"
-      context["name"].value as String
+        let data = ["name": "Groucho Marx"]
+        let context = Context(Box(data))
+
+        // "Groucho Marx"
+        context["name"].value
     
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the boxForMustacheExpression method.
@@ -215,13 +178,11 @@ final public class Context {
     /**
     Evaluates a Mustache expression such as `name`, or `uppercase(user.name)`.
     
-    ::
-    
-      let data = ["person": ["name": "Albert Einstein"]]
-      let context = Context(Box(data))
-      
-      // "Albert Einstein"
-      context.boxForMustacheExpression("person.name")!.value as String
+        let data = ["person": ["name": "Albert Einstein"]]
+        let context = Context(Box(data))
+
+        // "Albert Einstein"
+        context.boxForMustacheExpression("person.name")!.value
     
     :param: string The expression string
     :param: error  If there is a problem parsing or evaluating the expression,
@@ -305,6 +266,7 @@ final public class Context {
 }
 
 extension Context: DebugPrintable {
+    /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         switch type {
         case .Root:

@@ -277,7 +277,7 @@ public struct MustacheBox {
 }
 
 extension MustacheBox : DebugPrintable {
-    
+    /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         if let value = value {
             return "MustacheBox(\(value))"  // remove "Optional" from the output

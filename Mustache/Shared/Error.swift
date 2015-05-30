@@ -21,8 +21,14 @@
 // THE SOFTWARE.
 
 
+/// The domain of a Mustache-generated NSError
 public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
 
+/// The error code for parse errors
 public let GRMustacheErrorCodeParseError = 0
+
+/// The error code for missing templates and partials
 public let GRMustacheErrorCodeTemplateNotFound = 1
+
+/// The error code for rendering errors
 public let GRMustacheErrorCodeRenderingError = 2

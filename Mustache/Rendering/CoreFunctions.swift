@@ -1019,6 +1019,18 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
 
 /**
 A Rendering is a tainted String, which knows its content type, Text or HTML.
+
+You will meet the Rendering type when you implement custom rendering
+functions. Example:
+
+    let render: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
+        return Rendering("foo")
+    }
+
+    // Renders "foo"
+    let template = Template(string: "{{object}}")!
+    let data = ["object": Box(render)]
+    template.render(Box(data))!
 */
 public struct Rendering {
     public let string: String
@@ -1034,20 +1046,6 @@ public struct Rendering {
       Rendering("foo")        // Defaults to Text
       Rendering("foo", .Text)
       Rendering("foo", .HTML)
-    
-    You will meet the Rendering type when you implement custom rendering
-    functions. Example:
-    
-    ::
-    
-      let render: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-          return Rendering("foo")
-      }
-    
-      // Renders "foo"
-      let template = Template(string: "{{object}}")!
-      let data = ["object": Box(render)]
-      template.render(Box(data))!
     
     :param: string A string
     :param: contentType A content type

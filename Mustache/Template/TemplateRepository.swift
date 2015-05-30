@@ -76,18 +76,19 @@ public protocol TemplateRepositoryDataSource {
 }
 
 /**
-A template repository represents a set of templates loaded from a "data source".
+A template repository represents a set of sibling templates and partials.
 
-You can provide your own data sources, but the library ships with built-in ones
-that load templates from file paths, URLs, bundle resources, and string
-dictionaries.
+You don't have to instanciate template repositories, because GRMustache provides
+implicit ones whenever you load templates with methods like
+`Template(named:, error:)`, for example.
 
-The services provided by template repositories are:
+However, you may like to use one for your profit. Template repositories provide:
 
-- custom configuration.
-- a cache of template parsings.
+- custom template data source
+- custom `Configuration`
+- a cache of template parsings
 - absolute paths to ease loading of partial templates in a hierarchy of
-  directories and template files.
+  directories and template files
 */
 final public class TemplateRepository {
     
@@ -98,14 +99,12 @@ final public class TemplateRepository {
     Returns a TemplateRepository which loads template through the provided
     dataSource.
     
-    The dataSource is optional: repositories without dataSource can not load
-    templates by name, and can only parse template strings:
+    The dataSource is optional, but repositories without dataSource can not load
+    templates by name, and can only parse template strings that do not contain
+    any `{{> partial }}` tag.
     
-    ::
-    
-      let repository = TemplateRepository()
-      let template = repository.template(string: "Hello {{name}}")!
-    
+        let repository = TemplateRepository()
+        let template = repository.template(string: "Hello {{name}}")!
     */
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
         configuration = DefaultConfiguration
@@ -116,14 +115,12 @@ final public class TemplateRepository {
     /**
     Returns a TemplateRepository that loads templates from a dictionary.
     
-    ::
-    
-      let templates = ["template": "Hulk Hogan has a Mustache."]
-      let repository = TemplateRepository(templates: templates)
-    
-      // Renders "Hulk Hogan has a Mustache." twice
-      repository.template(named: "template")!.render()!
-      repository.template(string: "{{>template}}")!.render()!
+        let templates = ["template": "Hulk Hogan has a Mustache."]
+        let repository = TemplateRepository(templates: templates)
+
+        // Renders "Hulk Hogan has a Mustache." twice
+        repository.template(named: "template")!.render()!
+        repository.template(string: "{{>template}}")!.render()!
     
     :param: templates A dictionary whose keys are template names and values
                       template strings.
@@ -135,12 +132,10 @@ final public class TemplateRepository {
     /**
     Returns a TemplateRepository that loads templates from a directory.
     
-    ::
-    
-      let repository = TemplateRepository(directoryPath: "/path/to/templates")
-    
-      // Loads /path/to/templates/template.mustache
-      let template = repository.template(named: "template")!
+        let repository = TemplateRepository(directoryPath: "/path/to/templates")
+
+        // Loads /path/to/templates/template.mustache
+        let template = repository.template(named: "template")!
 
     
     Eventual partial tags in template files refer to sibling template files.
@@ -150,15 +145,15 @@ final public class TemplateRepository {
     and absolute paths to partials. For example, given the following hierarchy:
     
     - /path/to/templates
-      - a.mustache
-      - partials
-        - b.mustache
+        - a.mustache
+        - partials
+            - b.mustache
     
-    The a.mustache template can embed b.mustache with both {{> partials/b }}
-    and {{> /partials/b }} partial tags.
+    The a.mustache template can embed b.mustache with both `{{> partials/b }}`
+    and `{{> /partials/b }}` partial tags.
     
-    The b.mustache template can embed a.mustache with both the {{> ../a }} and
-    {{> /a }} partial tags.
+    The b.mustache template can embed a.mustache with both `{{> ../a }}` and
+    `{{> /a }}` partial tags.
     
     
     :param: directoryPath     The path to the directory containing template
@@ -175,13 +170,11 @@ final public class TemplateRepository {
     /**
     Returns a TemplateRepository that loads templates from a URL.
     
-    ::
-    
-      let templatesURL = NSURL.fileURLWithPath("/path/to/templates")!
-      let repository = TemplateRepository(baseURL: templatesURL)
-    
-      // Loads /path/to/templates/template.mustache
-      let template = repository.template(named: "template")!
+        let templatesURL = NSURL.fileURLWithPath("/path/to/templates")!
+        let repository = TemplateRepository(baseURL: templatesURL)
+
+        // Loads /path/to/templates/template.mustache
+        let template = repository.template(named: "template")!
     
     
     Eventual partial tags in template files refer to sibling template files.
@@ -191,15 +184,15 @@ final public class TemplateRepository {
     and absolute paths to partials. For example, given the following hierarchy:
     
     - /path/to/templates
-      - a.mustache
-      - partials
-        - b.mustache
+        - a.mustache
+        - partials
+            - b.mustache
     
-    The a.mustache template can embed b.mustache with both {{> partials/b }}
-    and {{> /partials/b }} partial tags.
+    The a.mustache template can embed b.mustache with both `{{> partials/b }}`
+    and `{{> /partials/b }}` partial tags.
     
-    The b.mustache template can embed a.mustache with both the {{> ../a }} and
-    {{> /a }} partial tags.
+    The b.mustache template can embed a.mustache with both `{{> ../a }}` and
+    `{{> /a }}` partial tags.
     
     
     :param: baseURL           The base URL where to look for templates.
@@ -216,12 +209,10 @@ final public class TemplateRepository {
     Returns a TemplateRepository that loads templates stored as resources in a
     bundle.
     
-    ::
-    
-      let repository = TemplateRepository(bundle: nil)
-    
-      // Loads the template.mustache resource of the main bundle:
-      let template = repository.template(named: "template")!
+        let repository = TemplateRepository(bundle: nil)
+
+        // Loads the template.mustache resource of the main bundle:
+        let template = repository.template(named: "template")!
     
     :param: bundle            The bundle that stores templates as resources.
                               Nil stands for the main bundle.
@@ -241,24 +232,22 @@ final public class TemplateRepository {
     /**
     The configuration for all templates and partials built by the repository.
     
-    It is initialized with the value of Mustache.DefaultConfiguration.
+    It is initialized with Mustache.DefaultConfiguration.
     
-    You can alter the repository's configuration, or set it to another value:
+    You can alter the repository's configuration, or set it to another value,
+    before you load templates:
     
-    ::
+        // Reset the configuration to a factory configuration and change tag delimiters:
+        let repository = TemplateRepository()
+        repository.configuration = Configuration()
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
+
+        // Renders "Hello Luigi"
+        let template = repository.template(string: "Hello <%name%>")!
+        template.render(Box(["name": "Luigi"]))!
     
-      // Reset the configuration to the factory configuration and change tag
-      // delimiters:
-      let repository = TemplateRepository()
-      repository.configuration = Configuration()
-      repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
-    
-      // Renders "Hello Luigi"
-      let template = repository.template(string: "Hello <%name%>")!
-      template.render(Box(["name": "Luigi"]))!
-    
-    Important: changing the configuration has no effect after the repository has
-    loaded one template.
+    **Important**: changing the configuration has no effect after the repository
+    has loaded one template.
     */
     public var configuration: Configuration
     
@@ -269,12 +258,12 @@ final public class TemplateRepository {
     
     /**
     The template repository data source, responsible for loading template
-    strings when given template names.
+    strings.
     */
     public let dataSource: TemplateRepositoryDataSource?
     
     /**
-    Parses a template string, and returns a template.
+    Returns a template.
     
     Depending on the way the repository has been created, partial tags such as
     `{{>partial}}` load partial templates from URLs, file paths, keys in a
@@ -298,9 +287,12 @@ final public class TemplateRepository {
     /**
     Returns a template identified by its name.
     
-    Depending on the way the repository has been created, the name identifies a
-    URL, a file path, a key in a dictionary, or whatever is relevant to the
-    repository's data source.
+    Depending on the repository's data source, the name identifies a bundle
+    resource, a URL, a file path, a key in a dictionary, etc.
+    
+    Template repositories cache the parsing of their templates. However this
+    method always return new Template instances, which you can further configure
+    independently.
     
     :param: name  The template name
     :param: error If there is an error loading or parsing template and partials,
@@ -308,6 +300,8 @@ final public class TemplateRepository {
                   problem.
     
     :returns: A Mustache Template
+    
+    :see: reloadTemplates
     */
     public func template(named name: String, error: NSErrorPointer = nil) -> Template? {
         if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: error) {
@@ -318,25 +312,16 @@ final public class TemplateRepository {
     }
     
     /**
-    Have the template repository reload its templates.
+    Clears the cache of parsed template strings.
     
-    Template repositories cache the parsing of their templates. This speeds up
-    the loading of already parsed templates.
+        // May reuse a cached parsing:
+        let template = repository.template(named:"profile")!
+
+        // Forces the reloading of the template:
+        repository.reloadTemplates();
+        let template = repository.template(named:"profile")!
     
-    Changes to the underlying template strings won't be visible until you
-    explicitely ask for a reload:
-    
-    ::
-    
-      // May reuse a cached parsing:
-      let template = repository.template(named:"profile")!
-      
-      // Forces the template reloading:
-      repository.reloadTemplates();
-      let template = repository.template(named:"profile")!
-    
-    :warning: Previously created instances of GRMustacheTemplate are not
-              reloaded.
+    :warning: Previously created Template instances are not reloaded.
     */
     public func reloadTemplates() {
         templateASTCache.removeAll()
@@ -344,7 +329,7 @@ final public class TemplateRepository {
     
     
     // =========================================================================
-    // MARK: - Internal
+    // MARK: - Not public
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil, error: NSErrorPointer) -> TemplateAST? {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
@@ -393,9 +378,6 @@ final public class TemplateRepository {
         return compiler.templateAST(error: error)
     }
     
-    
-    // =========================================================================
-    // MARK: - Private
     
     private var _lockedConfiguration: Configuration?
     private var lockedConfiguration: Configuration {
