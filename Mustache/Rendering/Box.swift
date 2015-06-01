@@ -49,9 +49,9 @@ Playground included in `Mustache.xcworkspace` to run those examples.
   There is one Box() function for collections, and another one for dictionaries.
 
 
-- ObjCMustacheBoxable and the Boxing of Objective-C objects
+- Boxing of NSObject
 
-  There is a Box() function for Objective-C objects.
+  There is a Box() function for NSObject.
 
   Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
   NSSet are rendered.
@@ -877,98 +877,10 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 
 
 // =============================================================================
-// MARK: - ObjCMustacheBoxable and the Boxing of Objective-C objects
+// MARK: - Boxing of NSObject
 
 /**
-The ObjCMustacheBoxable protocol lets Objective-C classes interact with the
-Mustache engine.
-
-The NSObject class already conforms to this protocol: you will override the
-mustacheBox if you need to provide custom rendering behavior. For an example,
-look at the NSFormatter.swift source file.
-
-See the Swift-targetted MustacheBoxable protocol for more information.
-*/
-@objc public protocol ObjCMustacheBoxable {
-    
-    // IMPLEMENTATION NOTE
-    //
-    // Why do we need this ObjC-dedicated protocol, when we already have the
-    // MustacheBoxable protocol?
-    //
-    // Swift does not allow a class extension to override a method that is
-    // inherited from an extension to its superclass and incompatible with
-    // Objective-C. This prevents NSObject subclasses such as NSNull, NSNumber,
-    // etc. to override NSObject.mustacheBox, and provide custom rendering
-    // behavior.
-    //
-    // For an example of this limitation, see example below:
-    //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // A protocol that is not compatible with Objective-C
-    //   struct MustacheBox { }
-    //   protocol MustacheBoxable {
-    //       var mustacheBox: MustacheBox { get }
-    //   }
-    //   
-    //   // So far so good
-    //   extension NSObject : MustacheBoxable {
-    //       var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
-    //   
-    //   // Error: declarations in extensions cannot override yet
-    //   extension NSNull {
-    //       override var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
-    //
-    // This problem does not apply to Objc-C compatible protocols:
-    //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // A protocol that is compatible with Objective-C
-    //   protocol ObjCCompatibleProtocol {
-    //       var prop: String { get }
-    //   }
-    //
-    //   // So far so good
-    //   extension NSObject : ObjCCompatibleProtocol {
-    //       var prop: String { return "NSObject" }
-    //   }
-    //
-    //   // No error
-    //   extension NSNull {
-    //       override var prop: String { return "NSNull" }
-    //   }
-    //
-    //   NSObject().prop // "NSObject"
-    //   NSNull().prop   // "NSNull"
-    //
-    // So we chose to dedicate the Swift-only protocol MustacheBoxable to Swift
-    // values, and the Objective-C compatible protocol ObjCMustacheBoxable to
-    // Objective-C values. When Swift eventually improves, we may alleviate
-    // this inconsistency.
-    
-    /**
-    Returns a MustacheBox wrapped in a ObjCMustacheBox (this wrapping is
-    required by the constraints of the Swift type system).
-    
-    This method is invoked when a value of your conforming class is boxed with
-    the Box() function. You can not return Box(self) since this would trigger
-    an infinite loop. Instead you build a Box that explicitly describes how your
-    conforming type interacts with the Mustache engine.
-    
-    See the Swift-targetted MustacheBoxable protocol for more information.
-    */
-    var mustacheBox: ObjCMustacheBox { get }
-}
-
-/**
-See the documentation of the ObjCMustacheBoxable protocol.
+See the documentation of `NSObject.mustacheBox`.
 */
 public class ObjCMustacheBox: NSObject {
     let box: MustacheBox
@@ -978,11 +890,11 @@ public class ObjCMustacheBox: NSObject {
 }
 
 /**
-See the documentation of the ObjCMustacheBoxable protocol.
+See the documentation of `NSObject.mustacheBox`.
 */
-public func Box(boxable: ObjCMustacheBoxable?) -> MustacheBox {
-    if let boxable = boxable {
-        return boxable.mustacheBox.box
+public func Box(object: NSObject?) -> MustacheBox {
+    if let object = object {
+        return object.mustacheBox.box
     } else {
         return Box()
     }
@@ -1103,8 +1015,8 @@ Instead, you use the BoxAnyObject() function:
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
         return Box(boxable)
-    } else if let boxable = object as? ObjCMustacheBoxable {
-        return Box(boxable)
+    } else if let object = object as? NSObject {
+        return Box(object)
     } else if let object: AnyObject = object {
         
         // IMPLEMENTATION NOTE
@@ -1123,33 +1035,85 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
         //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
         //   Box(Thing())
         //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
         //   BoxAnyObject(Thing())
         //   
         //   // Foundation collections can also contain unsupported classes:
         //   let array = NSArray(object: Thing())
         //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
         //   Box(array)
         //   
         //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
         //   Box(array[0])
         //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.
+        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
         //   BoxAnyObject(array[0])
         
-        NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to MustacheBoxable or ObjCMustacheBoxable protocol, and is discarded.")
+        NSLog("Mustache.BoxAnyObject(): value `\(object)` is not NSObject and does not conform to MustacheBoxable: it is discarded.")
         return Box()
     } else {
         return Box()
     }
 }
 
-extension NSObject : ObjCMustacheBoxable {
+extension NSObject {
+    
+    // IMPLEMENTATION NOTE
+    //
+    // Why doesn't NSObject conform to MustacheBoxable, just like Int, Double,
+    // etc?
+    //
+    // Swift does not allow a class extension to override a method that is
+    // inherited from an extension to its superclass and incompatible with
+    // Objective-C. This prevents NSObject subclasses such as NSNull, NSNumber,
+    // etc. to override MustacheBoxable.mustacheBox, and provide custom
+    // rendering behavior.
+    //
+    // For an example of this limitation, see example below:
+    //
+    // ::
+    //
+    //   import Foundation
+    //
+    //   // A type that is not compatible with Objective-C
+    //   struct MustacheBox { }
+    //
+    //   // So far so good
+    //   extension NSObject {
+    //       var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
+    //
+    //   // Error: declarations in extensions cannot override yet
+    //   extension NSNull {
+    //       override var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
+    //
+    // This problem does not apply to Objc-C compatible protocols:
+    //
+    // ::
+    //
+    //   import Foundation
+    //
+    //   // So far so good
+    //   extension NSObject {
+    //       var prop: String { return "NSObject" }
+    //   }
+    //
+    //   // No error
+    //   extension NSNull {
+    //       override var prop: String { return "NSNull" }
+    //   }
+    //
+    //   NSObject().prop // "NSObject"
+    //   NSNull().prop   // "NSNull"
+    //
+    // So we chose to dedicate the Swift-only protocol MustacheBoxable to Swift
+    // values, and use an NSObject-dedicated API. When Swift eventually
+    // improves, we may alleviate this inconsistency.
     
     /**
-    `NSObject` conforms to the `ObjCMustacheBoxable` protocol so that all 
-    Objective-C objects can feed Mustache templates.
+    `NSObject` can feed Mustache templates.
     
     NSObject's default implementation handles two general cases:
     
@@ -1250,17 +1214,15 @@ extension NSObject : ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }
 
-extension NSNull : ObjCMustacheBoxable {
+extension NSNull {
     
     /**
-    `NSNull` conforms to the `ObjCMustacheBoxable` protocol so that it can feed
-    Mustache templates.
+    `NSNull` can feed Mustache templates.
     
     
     ### Rendering
@@ -1281,19 +1243,17 @@ extension NSNull : ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }
 
-extension NSNumber : ObjCMustacheBoxable {
+extension NSNumber {
     
     /**
-    `NSNumber` conforms to the `ObjCMustacheBoxable` protocol so that it can
-    feed Mustache templates. It behaves exactly like Swift numbers: depending on
-    its internal objCType, an NSNumber is rendered as a Swift Bool, Int, UInt,
-    or Double.
+    `NSNumber` can feed Mustache templates. It behaves exactly like Swift
+    numbers: depending on its internal objCType, an NSNumber is rendered as a
+    Swift Bool, Int, UInt, or Double.
     
     
     ### Rendering
@@ -1316,8 +1276,7 @@ extension NSNumber : ObjCMustacheBoxable {
     public override var mustacheBox: ObjCMustacheBox {
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         
         let objCType = String.fromCString(self.objCType)!
         switch objCType {
@@ -1336,11 +1295,11 @@ extension NSNumber : ObjCMustacheBoxable {
     }
 }
 
-extension NSString : ObjCMustacheBoxable {
+extension NSString {
     
     /**
-    `NSString` conforms to the `ObjCMustacheBoxable` protocol so that it can
-    feed Mustache templates. It behaves exactly like Swift strings.
+    `NSString` can feed Mustache templates. It behaves exactly like Swift
+    strings.
     
     
     ### Rendering
@@ -1387,17 +1346,15 @@ extension NSString : ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }
 
-extension NSDictionary : ObjCMustacheBoxable {
+extension NSDictionary {
     
     /**
-    `NSDictionary` conforms to the `ObjCMustacheBoxable` protocol so that it can
-    feed Mustache templates.
+    `NSDictionary` can feed Mustache templates.
     
     
     ### Rendering
@@ -1447,17 +1404,15 @@ extension NSDictionary : ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }
 
-extension NSSet : ObjCMustacheBoxable {
+extension NSSet {
     
     /**
-    `NSSet` conforms to the `ObjCMustacheBoxable` protocol so that it can feed
-    Mustache templates.
+    `NSSet` can feed Mustache templates.
     
     
     ### Rendering
@@ -1510,8 +1465,7 @@ extension NSSet : ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }

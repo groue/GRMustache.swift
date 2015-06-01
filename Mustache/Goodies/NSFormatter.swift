@@ -23,13 +23,10 @@
 
 import Foundation
 
-extension NSFormatter: ObjCMustacheBoxable {
+extension NSFormatter {
     
     /**
-    `NSFormatter` conforms to the `ObjCMustacheBoxable` protocol so that it can
-    feed Mustache templates.
-    
-    NSFormatter can be used as a filter:
+    `NSFormatter` can be used as a filter:
     
         let percentFormatter = NSNumberFormatter()
         percentFormatter.numberStyle = .PercentStyle
@@ -41,7 +38,7 @@ extension NSFormatter: ObjCMustacheBoxable {
         template.render(Box(["x": 0.5]))!
     
     
-    NSFormatter can also format all variable tags in a Mustache section:
+    `NSFormatter` can also format all variable tags in a Mustache section:
     
         template = Template(string:
             "{{# percent }}" +
@@ -135,8 +132,7 @@ extension NSFormatter: ObjCMustacheBoxable {
         
         // Objective-C classes must return a box wrapped in the ObjCMustacheBox
         // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the ObjCMustacheBoxable
-        // protocol).
+        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
         return ObjCMustacheBox(box)
     }
 }
