@@ -130,7 +130,30 @@ public protocol MustacheBoxable {
 }
 
 /**
-See the documentation of the MustacheBoxable protocol.
+Boxes a value that conforms to the `MustacheBoxable` protocol.
+
+GRMustache ships with built-in `MustacheBoxable` conformance for the following
+types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
+`UInt`, `Double`, and `String`. The protocol can also be implemented by your own
+types.
+
+
+### Rendering
+
+- `{{boxable}}` invokes `boxable.render`, and renders the result with eventual
+  HTML-escaping.
+
+- `{{{boxable}}}` invokes `boxable.render`, and renders the result without
+  HTML-escaping.
+
+- `{{#boxable}}...{{/boxable}}` invokes `boxable.render`, and renders the result
+  with eventual HTML-escaping, if and only if `boxable.boolValue` is true.
+
+- `{{^boxable}}...{{/boxable}}` renders if and only if `boxable.boolValue` is
+  false.
+
+:params: boxable A value
+:returns: A MustacheBox that wraps `boxable`
 */
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
@@ -576,46 +599,47 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
 // non-destructive iteration.
 
 /**
-A function that wraps a collection of MustacheBoxable.
+Boxes a collection of values that conform to the `MustacheBoxable` protocol.
 
-Collections iterate their content:
+GRMustache ships with built-in `MustacheBoxable` conformance for the following
+types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
+`UInt`, `Double`, and `String`. The protocol can also be implemented by own
+types.
 
-::
+    let collection: [Int] = [1,2,3]
 
-  let template = Template(string: "{{#items}}{{.}},{{/items}}{{^items}}Empty{{/items}}")!
+    // Renders "123"
+    let template = Template(string: "{{#collection}}{{.}}{{/collection}}")!
+    template.render(Box(["collection": Box(collection)]))!
 
-  // Renders "1,2,3,"
-  template.render(Box(["items": [1,2,3]]))!
 
-  // Renders "Empty"
-  template.render(Box(["items": []]))!
+### Rendering
 
+- `{{collection}}` renders the concatenation of the collection items.
+  items.
+
+- `{{#collection}}...{{/collection}}` renders as many times as there are items
+  in `collection`, pushing each item on its turn on the top of the context
+  stack.
+
+- `{{^collection}}...{{/collection}}` renders if and only if `collection` is
+  empty.
+
+*Advanced topic*: Precisely speaking, both `{{collection}}` and `{{#collection}}...{{/collection}}`
+render the concatenation of the renderings of each items
+
+### Keys exposed to templates
 
 Collections can be queried for the following keys:
 
-- count: number of elements in the collection
-- first: the first object in the collection
-- firstObject: the first object in the collection
-- last: the last object in the collection
-- lastObject: the last object in the collection
+- `count`: number of elements in the collection
+- `first`: the first object in the collection
+- `firstObject`: the first object in the collection
+- `last`: the last object in the collection
+- `lastObject`: the last object in the collection
 
-::
-
-  // Renders "3 items, from 1 to 3."
-  let template = Template(string: "{{items.count}} items, from {{items.first}} to {{items.last}}.")!
-  template.render(Box(["items": [1,2,3]]))!
-
-
-In order to render a section if and only if a collection is not empty, you can
-query its `count` property, which behaves as the false boolean when zero.
-
-::
-
-  // Renders "Not empty", and then "Empty".
-  let template = Template(string: "{{#items.count}}Not empty{{/items.count}}{{^items.count}}Empty{{/items.count}}")!
-  template.render(Box(["items": [1,2,3]]))!
-  template.render(Box(["items": []]))!
-
+Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
+renders once, if and only if `collection` is not empty.
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -666,9 +690,46 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 }
 
 /**
-A function that wraps a collection of optional MustacheBoxable.
+Boxes a collection of optional values that conform to the `MustacheBoxable`
+protocol.
 
-See
+GRMustache ships with built-in `MustacheBoxable` conformance for the following
+types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
+`UInt`, `Double`, and `String`. The protocol can also be implemented by your own
+types.
+
+    let collection: [Int?] = [1,2,3]
+
+    // Renders "123"
+    let template = Template(string: "{{#collection}}{{.}}{{/collection}}")!
+    template.render(Box(["collection": Box(collection)]))!
+
+
+### Rendering
+
+- `{{collection}}` renders the concatenation of the renderings of the collection
+items.
+
+- `{{#collection}}...{{/collection}}` renders as many times as there are items
+in `collection`, pushing each item on its turn on the top of the context
+stack.
+
+- `{{^collection}}...{{/collection}}` renders if and only if `collection` is
+empty.
+
+
+### Keys exposed to templates
+
+Collections can be queried for the following keys:
+
+- `count`: number of elements in the collection
+- `first`: the first object in the collection
+- `firstObject`: the first object in the collection
+- `last`: the last object in the collection
+- `lastObject`: the last object in the collection
+
+Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
+renders once, if and only if `collection` is not empty.
 */
 public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -1127,7 +1188,7 @@ extension NSObject : ObjCMustacheBoxable {
     
     Arrays can be queried for the following keys:
     
-    - `count`: number of elements in the collection
+    - `count`: number of elements in the array
     - `first`: the first object in the array
     - `firstObject`: the first object in the array
     - `last`: the last object in the array

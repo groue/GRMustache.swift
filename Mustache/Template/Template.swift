@@ -327,15 +327,14 @@ extension Template : MustacheBoxable {
     `Template` conforms to the `MustacheBoxable` protocol so that it can feed
     other Mustache templates. A template renders just like a partial tag:
     
-    - `{{template}}` renders just like an embedded partial tag: `{{>partial}}`.
+    - `{{partial}}` renders like an embedded partial tag `{{>name}}` that would
+      refer to the same template.
     
-    - `{{#template}}...{{/template}}` renders just like an inherited
-      partial tag: `{{<partial}}...{{/partial}}`.
+    - `{{#partial}}...{{/partial}}` renders like an inherited partial tag
+      `{{<name}}...{{/name}}` that would refer to the same template.
     
-    - `{{^template}}...{{/template}}` does not render.
-    
-    The difference is that `partial` is a hard-coded template name, when
-    `template` is a template that is chosen at runtime.
+    The difference is that `name` is a hard-coded template name, when
+    `partial` is a template that is chosen at runtime.
     
     For example:
     
@@ -346,11 +345,13 @@ extension Template : MustacheBoxable {
             "url": Box("/people/123"),
             "partial": Box(partial)
         ]
-
+    
         // <a href='/people/123'>Salvador Dali</a>
         let template = Template(string: "{{partial}}")!
         template.render(Box(data))!
-
+    
+    Note that templates whose contentType is Text are HTML-escaped when they are
+    included in an HTML template.
     */
     public var mustacheBox: MustacheBox {
         return Box(value: self, render: { (var info, error) in
