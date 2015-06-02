@@ -151,7 +151,21 @@ class BoxTests: XCTestCase {
         let rendering = template.render(box)!
         XCTAssertTrue(find(["012", "021", "102", "120", "201", "210"], rendering) != nil)
     }
-
+    
+    // TODO
+//    func testSetOfMustacheBoxable() {
+//        struct S : MustacheBoxable, Hashable {
+//            let int: Int
+//            var hash: Int { return int }
+//            var mustacheBox: MustacheBox { return Box(int) }
+//        }
+//        let value: Set<S> = [S(int:0),S(int:1),S(int:2)]
+//        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+//        let box = Box(value)
+//        let rendering = template.render(box)!
+//        XCTAssertTrue(find(["012", "021", "102", "120", "201", "210"], rendering) != nil)
+//    }
+    
     func testDictionaryOfInt() {
         let value: Dictionary<String, Int> = ["name": 1]
         let template = Template(string: "{{name}}")!

@@ -10,14 +10,14 @@ Release Notes
 
 **New**
 
-- TagDelimiterPair
-- Tag.tagDelimiterPair
-- Template.contentType
+- The `TagDelimiterPair` represents a pair of tag delimiters such as (`{{`,`}}`). It is the type of the properties `Configuration.tagDelimiterPair` and `Tag.tagDelimiterPair`.
+- You can query the content type (Text or HTML) of a template with the `Template.contentType` property.
+- Explicit support for the Swift `Set` type is provided by `func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox`.
 
 **Incompatible changes**
 
-- Configuration.tagStartDelimiter and Configuration.tagEndDelimiter have been replaced by Configuration.tagDelimiterPair
-- Template(string:, error:) no longer loads partial tags from main bundle resources.
+- `Configuration.tagStartDelimiter` and `Configuration.tagEndDelimiter` have been replaced by `Configuration.tagDelimiterPair`
+- `Template(string:, error:)` no longer accepts template strings that contain partial tags. In such case, it returns a `GRMustacheErrorDomain` error of code `GRMustacheErrorCodeTemplateNotFound`. To parse a template strings that contain partial tags that should be loaded from the main bundle resources, use an explicit `TemplateRepository(bundle: nil)`.
 
 
 ## v0.9.1

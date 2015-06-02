@@ -130,29 +130,12 @@ public protocol MustacheBoxable {
 }
 
 /**
-Boxes a value that conforms to the `MustacheBoxable` protocol.
+Values that conform to the `MustacheBoxable` protocol can feed Mustache
+templates.
 
-GRMustache ships with built-in `MustacheBoxable` conformance for the following
-types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
-`UInt`, `Double`, and `String`. The protocol can also be implemented by your own
-types.
+:param: boxable An optional value that conform to the `MustacheBoxable`
+                protocol.
 
-
-### Rendering
-
-- `{{boxable}}` invokes `boxable.render`, and renders the result with eventual
-  HTML-escaping.
-
-- `{{{boxable}}}` invokes `boxable.render`, and renders the result without
-  HTML-escaping.
-
-- `{{#boxable}}...{{/boxable}}` invokes `boxable.render`, and renders the result
-  with eventual HTML-escaping, if and only if `boxable.boolValue` is true.
-
-- `{{^boxable}}...{{/boxable}}` renders if and only if `boxable.boolValue` is
-  false.
-
-:params: boxable A value
 :returns: A MustacheBox that wraps `boxable`
 */
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
@@ -428,7 +411,7 @@ extension String : MustacheBoxable {
     
     ### Keys exposed to templates
 
-    Strings can be queried for the following keys:
+    A string can be queried for the following keys:
     
     - `length`: the number of characters in the string.
     
@@ -599,12 +582,8 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
 // non-destructive iteration.
 
 /**
-Boxes a collection of values that conform to the `MustacheBoxable` protocol.
-
-GRMustache ships with built-in `MustacheBoxable` conformance for the following
-types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
-`UInt`, `Double`, and `String`. The protocol can also be implemented by own
-types.
+A collection of values that conform to the `MustacheBoxable` protocol can feed
+Mustache templates. It behaves exactly like Objective-C `NSArray`.
 
     let collection: [Int] = [1,2,3]
 
@@ -616,7 +595,6 @@ types.
 ### Rendering
 
 - `{{collection}}` renders the concatenation of the collection items.
-  items.
 
 - `{{#collection}}...{{/collection}}` renders as many times as there are items
   in `collection`, pushing each item on its turn on the top of the context
@@ -625,12 +603,10 @@ types.
 - `{{^collection}}...{{/collection}}` renders if and only if `collection` is
   empty.
 
-*Advanced topic*: Precisely speaking, both `{{collection}}` and `{{#collection}}...{{/collection}}`
-render the concatenation of the renderings of each items
 
 ### Keys exposed to templates
 
-Collections can be queried for the following keys:
+A collection can be queried for the following keys:
 
 - `count`: number of elements in the collection
 - `first`: the first object in the collection
@@ -640,10 +616,15 @@ Collections can be queried for the following keys:
 
 Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
 renders once, if and only if `collection` is not empty.
+
+:param: collection A collection of values that conform to the `MustacheBoxable`
+                   protocol.
+
+:returns: A MustacheBox that wraps `collection`
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
-        let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
+        let count = Swift.count(collection) // C.Index.Distance == Int
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
@@ -690,15 +671,10 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 }
 
 /**
-Boxes a collection of optional values that conform to the `MustacheBoxable`
-protocol.
+A collection of optional values that conform to the `MustacheBoxable` protocol
+can feed Mustache templates. It behaves exactly like Objective-C `NSArray`.
 
-GRMustache ships with built-in `MustacheBoxable` conformance for the following
-types, so that they can feed Mustache templates: `MustacheBox`, `Bool`, `Int`,
-`UInt`, `Double`, and `String`. The protocol can also be implemented by your own
-types.
-
-    let collection: [Int?] = [1,2,3]
+    let collection: [Int] = [1,2,3]
 
     // Renders "123"
     let template = Template(string: "{{#collection}}{{.}}{{/collection}}")!
@@ -707,20 +683,19 @@ types.
 
 ### Rendering
 
-- `{{collection}}` renders the concatenation of the renderings of the collection
-items.
+- `{{collection}}` renders the concatenation of the collection items.
 
 - `{{#collection}}...{{/collection}}` renders as many times as there are items
-in `collection`, pushing each item on its turn on the top of the context
-stack.
+  in `collection`, pushing each item on its turn on the top of the context
+  stack.
 
 - `{{^collection}}...{{/collection}}` renders if and only if `collection` is
-empty.
+  empty.
 
 
 ### Keys exposed to templates
 
-Collections can be queried for the following keys:
+A collection can be queried for the following keys:
 
 - `count`: number of elements in the collection
 - `first`: the first object in the collection
@@ -730,10 +705,15 @@ Collections can be queried for the following keys:
 
 Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
 renders once, if and only if `collection` is not empty.
+
+:param: collection A collection of optional values that conform to the
+                   `MustacheBoxable` protocol.
+
+:returns: A MustacheBox that wraps `collection`
 */
 public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
-        let count = distance(collection.startIndex, collection.endIndex)    // C.Index.Distance == Int
+        let count = Swift.count(collection) // C.Index.Distance == Int
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
@@ -782,29 +762,115 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
 
 
 /**
-A function that wraps a dictionary of MustacheBoxable.
+A set of values that conform to the `MustacheBoxable` protocol can feed Mustache
+templates. It behaves exactly like Objective-C `NSSet`.
 
-::
+    let set: Set<Int> = [1,2,3]
 
-  // Renders "Freddy Mercury"
-  let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let template = Template(string: "{{firstName}} {{lastName}}")!
-  let rendering = template.render(Box(dictionary))!
+    // Renders "213"
+    let template = Template(string: "{{#set}}{{.}}{{/set}}")!
+    template.render(Box(["set": Box(set)]))!
 
-The genuine Mustache won't let you iterate over the key/value pairs of a
-dictionary. Yet GRMustache ships with an `each` filter that performs that very
-job:
 
-::
+### Rendering
 
-  // Attach StandardLibrary.each to the key "each":
-  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
-  template.registerInBaseContext("each", Box(StandardLibrary.each))
+- `{{set}}` renders the concatenation of the renderings of the set items, in
+any order.
 
-  // Renders "<firstName:Freddy, lastName:Mercury,>"
-  let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let rendering = template.render(Box(["dictionary": dictionary]))!
+- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+pushing each item on its turn on the top of the context stack.
 
+- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
+
+
+### Keys exposed to templates
+
+A set can be queried for the following keys:
+
+- `anyObject`: the first object in the set
+- `count`: number of elements in the set
+- `first`: the first object in the set
+
+Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
+if and only if `set` is not empty.
+
+
+:param: set A set of values that conform to the `MustacheBoxable` protocol.
+
+:returns: A MustacheBox that wraps `set`
+*/
+public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
+    if let set = set {
+        let count = Swift.count(set)
+        return MustacheBox(
+            boolValue: (count > 0),
+            value: set,
+            converter: MustacheBox.Converter(arrayValue: { map(set) { Box($0) } }),
+            keyedSubscript: { (key: String) in
+                switch key {
+                case "count":
+                    return Box(count)
+                case "first", "anyObject":
+                    return Box(set.first)
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo, error: NSErrorPointer) in
+                if info.enumerationItem {
+                    // {{# sets }}...{{/ sets }}
+                    return info.tag.renderInnerContent(info.context.extendedContext(Box(set)), error: error)
+                } else {
+                    // {{ set }}
+                    // {{# set }}...{{/ set }}
+                    // {{^ set }}...{{/ set }}
+                    return renderBoxArray(map(set) { Box($0) }, info, error)
+                }
+        })
+    } else {
+        return Box()
+    }
+}
+
+
+/**
+A dictionary of values that conform to the `MustacheBoxable` protocol can feed
+Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
+
+    // Renders "Freddy Mercury"
+    let dictionary: [String: String] = [
+        "firstName": "Freddy",
+        "lastName": "Mercury"]
+    let template = Template(string: "{{firstName}} {{lastName}}")!
+    let rendering = template.render(Box(dictionary))!
+
+
+### Rendering
+
+- `{{dictionary}}` renders the built-in Swift String Interpolation of the
+  dictionary.
+
+- `{{#dictionary}}...{{/dictionary}}` pushes the dictionary on the top of the
+  context stack, and renders the section once.
+
+- `{{^dictionary}}...{{/dictionary}}` does not render.
+
+
+In order to iterate over the key/value pairs of a dictionary, use the `each`
+filter from the Standard Library:
+
+    // Register StandardLibrary.each for the key "each":
+    let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+    template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+    // Renders "<firstName:Freddy, lastName:Mercury,>"
+    let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
+    let rendering = template.render(Box(["dictionary": dictionary]))!
+
+:param: dictionary A dictionary of values that conform to the `MustacheBoxable`
+                   protocol.
+
+:returns: A MustacheBox that wraps `dictionary`
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -827,29 +893,43 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 }
 
 /**
-A function that wraps a dictionary of optional MustacheBoxable.
+A dictionary of optional values that conform to the `MustacheBoxable` protocol
+can feed Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
 
-::
+    // Renders "Freddy Mercury"
+    let dictionary: [String: String?] = [
+        "firstName": "Freddy",
+        "lastName": "Mercury"]
+    let template = Template(string: "{{firstName}} {{lastName}}")!
+    let rendering = template.render(Box(dictionary))!
 
-  // Renders "Freddy Mercury"
-  let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let template = Template(string: "{{firstName}} {{lastName}}")!
-  let rendering = template.render(Box(dictionary))!
 
-The genuine Mustache won't let you iterate over the key/value pairs of a
-dictionary. Yet GRMustache ships with an `each` filter that performs that very
-job:
+### Rendering
 
-::
+- `{{dictionary}}` renders the built-in Swift String Interpolation of the
+  dictionary.
 
-  // Attach StandardLibrary.each to the key "each":
-  let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
-  template.registerInBaseContext("each", Box(StandardLibrary.each))
+- `{{#dictionary}}...{{/dictionary}}` pushes the dictionary on the top of the
+  context stack, and renders the section once.
 
-  // Renders "<firstName:Freddy, lastName:Mercury,>"
-  let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-  let rendering = template.render(Box(["dictionary": dictionary]))!
+- `{{^dictionary}}...{{/dictionary}}` does not render.
 
+
+In order to iterate over the key/value pairs of a dictionary, use the `each`
+filter from the Standard Library:
+
+    // Register StandardLibrary.each for the key "each":
+    let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+    template.registerInBaseContext("each", Box(StandardLibrary.each))
+
+    // Renders "<firstName:Freddy, lastName:Mercury,>"
+    let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
+    let rendering = template.render(Box(["dictionary": dictionary]))!
+
+:param: dictionary A dictionary of optional values that conform to the
+                   `MustacheBoxable` protocol.
+
+:returns: A MustacheBox that wraps `dictionary`
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -1001,16 +1081,24 @@ public func Box(object: NSObject?) -> MustacheBox {
 // let's expose the BoxAnyObject(object: AnyObject?) instead.
 
 /**
-Due to constraints in the Swift language, there is no Box(AnyObject) function.
+`AnyObject` can feed Mustache templates.
 
-Instead, you use the BoxAnyObject() function:
+Yet, due to constraints in the Swift language, there is no `Box(AnyObject)`
+function. Instead, you use `BoxAnyObject`:
 
-::
+      let set = NSSet(object: "Mario")
+      let box = BoxAnyObject(set.anyObject())
+      box.value as String  // "Mario"
 
-  let set = NSSet(object: "Mario")
-  let box = BoxAnyObject(set.anyObject())
-  box.value as String  // "Mario"
+The object is tested at runtime whether it conforms to the `MustacheBoxable`
+protocol, or if it is an instance of NSObject. In those cases, this function
+behaves just like the `Box(MustacheBoxable)` and `Box(NSObject)` functions.
 
+In other cases, GRMustache logs a warning, and returns the empty box.
+
+:param: object An object
+
+:returns: A MustacheBox that wraps `object`
 */
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
@@ -1150,7 +1238,7 @@ extension NSObject {
     
     ### Keys exposed to templates
     
-    Arrays can be queried for the following keys:
+    An array can be queried for the following keys:
     
     - `count`: number of elements in the array
     - `first`: the first object in the array
@@ -1175,16 +1263,14 @@ extension NSObject {
     
     - `{{object}}` renders the result of the `description` method, HTML-escaped.
     
-    - `{{{object}}}` renders the result of the `description` method, *not* HTML-escaped.
+    - `{{{object}}}` renders the result of the `description` method, *not*
+      HTML-escaped.
     
     - `{{#object}}...{{/object}}` renders once, pushing `object` on the top of
       the context stack.
     
     - `{{^object}}...{{/object}}` does not render.
     
-    HTML-escaping of `{{object}}` tags is disabled for Text templates: see
-    `Configuration.contentType` for a full discussion of the content type of
-    templates.
     */
     public var mustacheBox: ObjCMustacheBox {
         let box: MustacheBox
@@ -1319,7 +1405,7 @@ extension NSString {
     
     ### Keys exposed to templates
 
-    Strings can be queried for the following keys:
+    A string can be queried for the following keys:
     
     - `length`: the number of characters in the string (using Swift method).
     
@@ -1367,10 +1453,7 @@ extension NSDictionary {
     the top of the context stack.
     
     - `{{^dictionary}}...{{/dictionary}}` does not render.
-
-    HTML-escaping of `{{dictionary}}` tags is disabled for Text templates: see
-    `Configuration.contentType` for a full discussion of the content type of
-    templates.
+    
     
     In order to iterate over the key/value pairs of a dictionary, use the `each`
     filter from the Standard Library:
@@ -1382,7 +1465,6 @@ extension NSDictionary {
         // Renders "<name:Arthur, age:36, >"
         let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
         let rendering = template.render(Box(["dictionary": dictionary]))!
-
     */
     public override var mustacheBox: ObjCMustacheBox {
         let box = MustacheBox(
@@ -1428,10 +1510,11 @@ extension NSSet {
     
     ### Keys exposed to templates
     
-    Sets can be queried for the following keys:
+    A set can be queried for the following keys:
     
-    - `count`: number of elements in the set
     - `anyObject`: any object of the set
+    - `count`: number of elements in the set
+    - `first`: any object of the set
     
     Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
     if and only if `set` is not empty.
