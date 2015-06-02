@@ -270,7 +270,7 @@ let fullName = Lambda { "{{firstName}} {{lastName}}" }
 
 // `{{#wrapped}}...{{/wrapped}}` renders the content of the section, wrapped in
 // a <b> HTML tag.
-let wrapped = Lambda { "<b>\($0)</b>" }
+let wrapped = Lambda { (string) in "<b>\(string)</b>" }
 
 // <b>Frank Zappa is awesome.</b>
 let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
@@ -364,7 +364,7 @@ let rendering = template.render(Box(data))!
 
 let sum = VariadicFilter { (boxes: [MustacheBox], _) in
     // Extract integers out of input boxes, assuming zero for non numeric values
-    let integers = map(boxes) { $0.intValue ?? 0 }
+    let integers = map(boxes) { (box) in box.intValue ?? 0 }
     let sum = reduce(integers, 0, +)
     return Box(sum)
 }

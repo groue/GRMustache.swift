@@ -30,11 +30,69 @@ MustacheBox wraps values that feed your templates.
 This type has no public initializer. To produce boxes, you use one variant of
 the Box() function, or BoxAnyObject().
 
+The fact that it is a subclass of NSObject is an implementation detail that is
+enforced by the Swift language itself, and may change in the future.
+
 :see: Box()
 :see: BoxAnyObject()
 */
-public struct MustacheBox {
+public class MustacheBox : NSObject {
     
+    // IMPLEMENTATION NOTE
+    //
+    // Why is MustacheBox a subclass of NSObject, and not, say, a Swift struct?
+    //
+    // Swift does not allow a class extension to override a method that is
+    // inherited from an extension to its superclass and incompatible with
+    // Objective-C.
+    //
+    // If MustacheBox were a pure Swift type, this Swift limit would prevent
+    // NSObject subclasses such as NSNull, NSNumber, etc. to override
+    // MustacheBoxable.mustacheBox, and provide custom rendering behavior.
+    //
+    // For an example of this limitation, see example below:
+    //
+    // ::
+    //
+    //   import Foundation
+    //
+    //   // A type that is not compatible with Objective-C
+    //   struct MustacheBox { }
+    //
+    //   // So far so good
+    //   extension NSObject {
+    //       var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
+    //
+    //   // Error: declarations in extensions cannot override yet
+    //   extension NSNull {
+    //       override var mustacheBox: MustacheBox { return MustacheBox() }
+    //   }
+    //
+    // This problem does not apply to Objc-C compatible protocols:
+    //
+    // ::
+    //
+    //   import Foundation
+    //
+    //   // So far so good
+    //   extension NSObject {
+    //       var prop: String { return "NSObject" }
+    //   }
+    //
+    //   // No error
+    //   extension NSNull {
+    //       override var prop: String { return "NSNull" }
+    //   }
+    //
+    //   NSObject().prop // "NSObject"
+    //   NSNull().prop   // "NSNull"
+    //
+    // In order to let the user easily override NSObject.mustacheBox, we had to
+    // keep its return type compatible with Objective-C, that is to say make
+    // MustacheBox a subclass of NSObject.
+    
+
     // -------------------------------------------------------------------------
     // MARK: - The boxed value
     
@@ -107,15 +165,13 @@ public struct MustacheBox {
     
     
     // -------------------------------------------------------------------------
-    // MARK - Key extraction
+    // MARK: - Key extraction
     
     /**
     Extract a key out of a box.
     
-    ::
-    
-      let box = Box("Arthur")
-      box["length"].intValue!    // 6
+        let box = Box(["firstName": "Arthur"])
+        box["firstName"].value  // "Arthur"
     */
     public subscript (key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()
@@ -152,6 +208,7 @@ public struct MustacheBox {
         self.didRender = didRender
         if let render = render {
             self.render = render
+            super.init()
         } else {
             // The default render function: it renders {{variable}} tags as the
             // boxed value, and {{#section}}...{{/}} tags by adding the box to
@@ -167,6 +224,7 @@ public struct MustacheBox {
             // is the one whose `render` property contains that same second
             // closure: everything works as if no value was actually captured.
             self.render = { (_, _) in return nil }
+            super.init()
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -261,24 +319,11 @@ public struct MustacheBox {
         }
 
     }
-
-    // Hackish helper function which helps us boxing NSArray.
-    func boxWithValue(value: Any?) -> MustacheBox {
-        return MustacheBox(
-            boolValue: self.boolValue,
-            value: value,
-            converter: self.converter,
-            keyedSubscript: self.keyedSubscript,
-            filter: self.filter,
-            render: self.render,
-            willRender: self.willRender,
-            didRender: self.didRender)
-    }
 }
 
 extension MustacheBox : DebugPrintable {
     /// A textual representation of `self`, suitable for debugging.
-    public var debugDescription: String {
+    public override var debugDescription: String {
         if let value = value {
             return "MustacheBox(\(value))"  // remove "Optional" from the output
         } else {

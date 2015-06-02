@@ -70,11 +70,11 @@ extension NSFormatter {
     dates: you can safely mix various data types in a section controlled by
     those well-behaved formatters.
     */
-    public override var mustacheBox: ObjCMustacheBox {
+    public override var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering.
         
-        let box = Box(
+        return Box(
             // Let user extract the formatter out of the box:
             value: self,
             
@@ -129,10 +129,5 @@ extension NSFormatter {
                     return box
                 }
         })
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
     }
 }

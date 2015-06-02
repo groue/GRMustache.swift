@@ -93,5 +93,5 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     // Return a box of those boxed render functions
     
-    return Box(map(renderFunctions) { Box($0) })
+    return Box(map(renderFunctions, Box))
 }

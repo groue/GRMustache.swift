@@ -160,7 +160,7 @@ extension MustacheBox : MustacheBoxable {
     `MustacheBox` conforms to the `MustacheBoxable` protocol so that it can feed
     Mustache templates. Its mustacheBox property returns itself.
     */
-    public var mustacheBox: MustacheBox {
+    public override var mustacheBox: MustacheBox {
         return self
     }
 }
@@ -628,7 +628,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
+            converter: MustacheBox.Converter(arrayValue: { map(collection, { Box($0) }) }),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -662,7 +662,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    return renderBoxArray(map(collection) { Box($0) }, info, error)
+                    return renderBoxArray(map(collection, { Box($0) }), info, error)
                 }
         })
     } else {
@@ -717,7 +717,7 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: { map(collection) { Box($0) } }),
+            converter: MustacheBox.Converter(arrayValue: { map(collection, { Box($0) }) }),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -752,7 +752,7 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
                     // {{^ collection }}...{{/ collection }}
-                    return renderBoxArray(map(collection) { Box($0) }, info, error)
+                    return renderBoxArray(map(collection, { Box($0) }), info, error)
                 }
         })
     } else {
@@ -805,7 +805,7 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
         return MustacheBox(
             boolValue: (count > 0),
             value: set,
-            converter: MustacheBox.Converter(arrayValue: { map(set) { Box($0) } }),
+            converter: MustacheBox.Converter(arrayValue: { map(set, { Box($0) }) }),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -824,7 +824,7 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
                     // {{^ set }}...{{/ set }}
-                    return renderBoxArray(map(set) { Box($0) }, info, error)
+                    return renderBoxArray(map(set, { Box($0) }), info, error)
                 }
         })
     } else {
@@ -959,22 +959,34 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 // =============================================================================
 // MARK: - Boxing of NSObject
 
-/**
-See the documentation of `NSObject.mustacheBox`.
-*/
-public class ObjCMustacheBox: NSObject {
-    let box: MustacheBox
-    init(_ box: MustacheBox) {
-        self.box = box
-    }
-}
+// IMPLEMENTATION NOTE
+//
+// Why is there a Box(NSObject?) function, when Box(MustacheBoxable?) should be
+// enough, given NSObject conforms to MustacheBoxable?
+//
+// Well, this is another Swift oddity.
+//
+// Without this explicit NSObject support, many compound values like the ones
+// below could not be boxed:
+//
+// - ["cats": ["Kitty", "Pussy", "Melba"]]
+// - [[0,1],[2,3]]
+//
+// It looks like Box(object: NSObject?) triggers the silent conversion of those
+// values to NSArray and NSDictionary.
+//
+// It's an extra commodity we want to keep, in order to prevent the user to
+// rewrite them as:
+//
+// - ["cats": Box([Box("Kitty"), Box("Pussy"), Box("Melba")])]
+// - [Box([0,1]), Box([2,3])]
 
 /**
 See the documentation of `NSObject.mustacheBox`.
 */
 public func Box(object: NSObject?) -> MustacheBox {
     if let object = object {
-        return object.mustacheBox.box
+        return object.mustacheBox
     } else {
         return Box()
     }
@@ -1091,10 +1103,9 @@ function. Instead, you use `BoxAnyObject`:
       box.value as String  // "Mario"
 
 The object is tested at runtime whether it conforms to the `MustacheBoxable`
-protocol, or if it is an instance of NSObject. In those cases, this function
-behaves just like the `Box(MustacheBoxable)` and `Box(NSObject)` functions.
+protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.
 
-In other cases, GRMustache logs a warning, and returns the empty box.
+Otherwise, GRMustache logs a warning, and returns the empty box.
 
 :param: object An object
 
@@ -1103,8 +1114,6 @@ In other cases, GRMustache logs a warning, and returns the empty box.
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
         return Box(boxable)
-    } else if let object = object as? NSObject {
-        return Box(object)
     } else if let object: AnyObject = object {
         
         // IMPLEMENTATION NOTE
@@ -1138,67 +1147,14 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
         //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
         //   BoxAnyObject(array[0])
         
-        NSLog("Mustache.BoxAnyObject(): value `\(object)` is not NSObject and does not conform to MustacheBoxable: it is discarded.")
+        NSLog("Mustache.BoxAnyObject(): value `\(object)` is does not conform to MustacheBoxable: it is discarded.")
         return Box()
     } else {
         return Box()
     }
 }
 
-extension NSObject {
-    
-    // IMPLEMENTATION NOTE
-    //
-    // Why doesn't NSObject conform to MustacheBoxable, just like Int, Double,
-    // etc?
-    //
-    // Swift does not allow a class extension to override a method that is
-    // inherited from an extension to its superclass and incompatible with
-    // Objective-C. This prevents NSObject subclasses such as NSNull, NSNumber,
-    // etc. to override MustacheBoxable.mustacheBox, and provide custom
-    // rendering behavior.
-    //
-    // For an example of this limitation, see example below:
-    //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // A type that is not compatible with Objective-C
-    //   struct MustacheBox { }
-    //
-    //   // So far so good
-    //   extension NSObject {
-    //       var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
-    //
-    //   // Error: declarations in extensions cannot override yet
-    //   extension NSNull {
-    //       override var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
-    //
-    // This problem does not apply to Objc-C compatible protocols:
-    //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // So far so good
-    //   extension NSObject {
-    //       var prop: String { return "NSObject" }
-    //   }
-    //
-    //   // No error
-    //   extension NSNull {
-    //       override var prop: String { return "NSNull" }
-    //   }
-    //
-    //   NSObject().prop // "NSObject"
-    //   NSNull().prop   // "NSNull"
-    //
-    // So we chose to dedicate the Swift-only protocol MustacheBoxable to Swift
-    // values, and use an NSObject-dedicated API. When Swift eventually
-    // improves, we may alleviate this inconsistency.
+extension NSObject : MustacheBoxable {
     
     /**
     `NSObject` can feed Mustache templates.
@@ -1220,7 +1176,7 @@ extension NSObject {
     
     ## Arrays
     
-    An objet is treated as an array if it conforms to `NSFastEnumeration`. This
+    An object is treated as an array if it conforms to `NSFastEnumeration`. This
     is the case of `NSArray` and `NSOrderedSet`, for example. `NSDictionary` and
     `NSSet` have their own custom Mustache rendering: see their documentation
     for more information.
@@ -1272,20 +1228,58 @@ extension NSObject {
     - `{{^object}}...{{/object}}` does not render.
     
     */
-    public var mustacheBox: ObjCMustacheBox {
-        let box: MustacheBox
-        
+    public var mustacheBox: MustacheBox {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
-            // Box an Array<MustacheBox>, but keep the original NSArray value
-            let array = map(GeneratorSequence(NSFastGenerator(enumerable))) { BoxAnyObject($0) }
-            box = Box(array).boxWithValue(self)
+            // Turn enumerable into a Swift array of MustacheBoxes
+            let boxArray = map(GeneratorSequence(NSFastGenerator(enumerable)), BoxAnyObject)
+            let count = Swift.count(boxArray)
             
+            return MustacheBox(
+                boolValue: (count > 0),
+                value: self,
+                converter: MustacheBox.Converter(arrayValue: { boxArray }),
+                keyedSubscript: { (key: String) in
+                    switch key {
+                    case "count":
+                        // Support for both Objective-C and Swift arrays.
+                        return Box(count)
+                        
+                    case "firstObject", "first":
+                        // Support for both Objective-C and Swift arrays.
+                        if count > 0 {
+                            return boxArray[0]
+                        } else {
+                            return Box()
+                        }
+                        
+                    case "lastObject", "last":
+                        // Support for both Objective-C and Swift arrays.
+                        if count > 0 {
+                            return boxArray[count - 1]
+                        } else {
+                            return Box()
+                        }
+                        
+                    default:
+                        return Box()
+                    }
+                },
+                render: { (info: RenderingInfo, error: NSErrorPointer) in
+                    if info.enumerationItem {
+                        // {{# collections }}...{{/ collections }}
+                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                    } else {
+                        // {{ collection }}
+                        // {{# collection }}...{{/ collection }}
+                        return renderBoxArray(boxArray, info, error)
+                    }
+            })
         } else {
             // Generic NSObject
             
-            box = MustacheBox(
+            return MustacheBox(
                 value: self,
                 keyedSubscript: { (key: String) in
                     if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
@@ -1297,11 +1291,6 @@ extension NSObject {
                     }
                 })
         }
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
     }
 }
 
@@ -1319,18 +1308,13 @@ extension NSNull {
     
     - `{{^null}}...{{/null}}` does render (NSNull is falsey).
     */
-    public override var mustacheBox: ObjCMustacheBox {
-        let box = MustacheBox(
+    public override var mustacheBox: MustacheBox {
+        return MustacheBox(
             boolValue: false,
             value: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 return Rendering("")
         })
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
     }
 }
 
@@ -1359,24 +1343,20 @@ extension NSNumber {
     intValue, uintValue, doubleValue or boolValue properties: they reliably
     return the expected type whatever the actual type of the raw boxed value.
     */
-    public override var mustacheBox: ObjCMustacheBox {
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        
+    public override var mustacheBox: MustacheBox {
         let objCType = String.fromCString(self.objCType)!
         switch objCType {
         case "c", "i", "s", "l", "q":
-            return ObjCMustacheBox(Box(Int(longLongValue)))
+            return Box(Int(longLongValue))
         case "C", "I", "S", "L", "Q":
-            return ObjCMustacheBox(Box(UInt(unsignedLongLongValue)))
+            return Box(UInt(unsignedLongLongValue))
         case "f", "d":
-            return ObjCMustacheBox(Box(doubleValue))
+            return Box(doubleValue)
         case "B":
-            return ObjCMustacheBox(Box(boolValue))
+            return Box(boolValue)
         default:
             NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented yet: value is discarded.")
-            return ObjCMustacheBox(Box())
+            return Box()
         }
     }
 }
@@ -1427,13 +1407,8 @@ extension NSString {
     - `RenderFunction`
     
     */
-    public override var mustacheBox: ObjCMustacheBox {
-        let box = Box(self as String)
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
+    public override var mustacheBox: MustacheBox {
+        return Box(self as String)
     }
 }
 
@@ -1466,8 +1441,8 @@ extension NSDictionary {
         let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
         let rendering = template.render(Box(["dictionary": dictionary]))!
     */
-    public override var mustacheBox: ObjCMustacheBox {
-        let box = MustacheBox(
+    public override var mustacheBox: MustacheBox {
+        return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
                 dictionaryValue: {
@@ -1483,11 +1458,6 @@ extension NSDictionary {
                 let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                 return BoxAnyObject(item)
         })
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
     }
 }
 
@@ -1519,11 +1489,11 @@ extension NSSet {
     Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
     if and only if `set` is not empty.
     */
-    public override var mustacheBox: ObjCMustacheBox {
-        let box = MustacheBox(
+    public override var mustacheBox: MustacheBox {
+        return MustacheBox(
             boolValue: (self.count > 0),
             value: self,
-            converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) } }),
+            converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self)), BoxAnyObject) }),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -1541,15 +1511,10 @@ extension NSSet {
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
-                    let boxes = map(GeneratorSequence(NSFastGenerator(self))) { BoxAnyObject($0) }
+                    let boxes = map(GeneratorSequence(NSFastGenerator(self)), BoxAnyObject)
                     return renderBoxArray(boxes, info, error)
                 }
         })
-        
-        // Objective-C classes must return a box wrapped in the ObjCMustacheBox
-        // class. This inconvenience comes from a limitation of the Swift
-        // language (see IMPLEMENTATION NOTE for the NSObject.mustacheBox method).
-        return ObjCMustacheBox(box)
     }
 }
 
