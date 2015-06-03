@@ -971,11 +971,11 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
         switch info.tag.type {
         case .Variable:
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Section lambda used in a variable tag."])
-            }
-            return nil
+            // {{ lambda }}
+            return Rendering("(Lambda)")
         case .Section:
+            // {{# lambda }}...{{/ lambda }}
+            //
             // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L117
             // > Lambdas used for sections should parse with the current delimiters
             
@@ -996,6 +996,8 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
         switch info.tag.type {
         case .Variable:
+            // {{ lambda }}
+            //
             // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L73
             // > Lambda results should be appropriately escaped
             //
@@ -1008,10 +1010,11 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             let template = templateRepository.template(string: templateString)
             return template?.render(info.context, error: error)
         case .Section:
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Section lambda used in a variable tag."])
-            }
-            return nil
+            // {{# lambda }}...{{/ lambda }}
+            //
+            // Behave as a true object, and render the section.
+            let context = info.context.extendedContext(Box(Lambda(lambda)))
+            return info.tag.renderInnerContent(context, error: error)
         }
     }
 }

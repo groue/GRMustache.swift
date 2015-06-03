@@ -771,4 +771,18 @@ class RenderFunctionTests: XCTestCase {
         let rendering = template.render(Box(data))!
         XCTAssertEqual(rendering, "<>")
     }
+    
+    func testArity0LambdaInSectionTag() {
+        let lambda = Lambda { "success" }
+        let template = Template(string: "{{#lambda}}<{{.}}>{{/lambda}}")!
+        let rendering = template.render(Box(["lambda": Box(lambda)]))!
+        XCTAssertEqual(rendering, "<success>")
+    }
+    
+    func testArity1LambdaInVariableTag() {
+        let lambda = Lambda { (string) in string }
+        let template = Template(string: "<{{lambda}}>")!
+        let rendering = template.render(Box(["lambda": Box(lambda)]))!
+        XCTAssertEqual(rendering, "<(Lambda)>")
+    }
 }
