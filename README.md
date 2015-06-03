@@ -9,6 +9,11 @@ It ships with built-in goodies and extensibility hooks that let you avoid the st
 
 Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
 
+Jump to:
+
+- [Usage](#usage)
+- [Installation](#installation)
+- [Documentation](#documentation)
 
 Features
 --------
@@ -17,7 +22,7 @@ Features
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
-- Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime, and does not force you to feed your templates with ad-hoc values. You can use your existing models.
+- Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime. It lets you feed your templates with ad-hoc values or your existing models, without forcing you to refactor your Swift code into Objective-C objects.
 
 
 Requirements
@@ -99,7 +104,7 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 Documentation
 -------------
 
-Mustache is a cross-platform templating system supported by [many languages](https://github.com/mustache/mustache/wiki/Other-Mustache-implementations). This documentation does not describe the Mustache language itself. So if you are not familiar with it, **start here**: http://mustache.github.io/mustache.5.html**.
+Mustache is a cross-platform templating system supported by [many languages](https://github.com/mustache/mustache/wiki/Other-Mustache-implementations). This documentation does not describe the Mustache language itself. So if you are not familiar with it, **start here**: http://mustache.github.io/mustache.5.html.
 
 
 ### Playground & Sample Code
