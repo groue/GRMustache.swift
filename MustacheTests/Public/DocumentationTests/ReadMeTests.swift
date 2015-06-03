@@ -76,20 +76,22 @@ class ReadMeTests: XCTestCase {
     }
     
     func testReadmeExample3() {
+        // TODO: update example from README.md
+        //
         // Allow Mustache engine to consume User values.
         struct User : MustacheBoxable {
             let name: String
             var mustacheBox: MustacheBox {
                 // Return a Box that wraps our user, and knows how to extract
                 // the `name` key of our user:
-                return Box(value: self) { (key: String) in
+                return Box(value: self, keyedSubscript: { (key: String) in
                     switch key {
                     case "name":
                         return Box(self.name)
                     default:
                         return Box()
                     }
-                }
+                })
             }
         }
         

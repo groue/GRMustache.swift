@@ -29,7 +29,7 @@ class KeyedSubscriptFunctionTests: XCTestCase {
     func makeKeyedSubscriptFunction() -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in
             if key == "self" {
-                return Box(self.makeKeyedSubscriptFunction())
+                return Box(keyedSubscript: self.makeKeyedSubscriptFunction())
             } else {
                 return Box(key)
             }
@@ -38,7 +38,7 @@ class KeyedSubscriptFunctionTests: XCTestCase {
     
     func testBoxedKeyedSubscriptFunction() {
         let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Box(makeKeyedSubscriptFunction()))!
+        let rendering = template.render(Box(keyedSubscript: makeKeyedSubscriptFunction()))!
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

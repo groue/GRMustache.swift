@@ -404,9 +404,9 @@ class BoxTests: XCTestCase {
     func testBoxAnyObjectWithMustacheBoxable() {
         class Class: MustacheBoxable {
             var mustacheBox: MustacheBox {
-                return Box { (key: String) in
+                return Box(keyedSubscript: { (key: String) in
                     return Box(key)
-                }
+                })
             }
         }
         
