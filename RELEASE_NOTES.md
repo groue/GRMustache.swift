@@ -6,7 +6,7 @@ Release Notes
 
 **Fixed**
 
-- GRMustache.swift passes all [mustache/spec tests for "Mustache lambdas"](https://github.com/mustache/spec/blob/v1.1.2/specs/%7Elambdas.yml).
+- The `Lambda` functions pass all [mustache/spec tests for "Mustache lambdas"](https://github.com/mustache/spec/blob/v1.1.2/specs/%7Elambdas.yml).
 
 **New**
 
