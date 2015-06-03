@@ -66,4 +66,32 @@ class EachFilterTests: XCTestCase {
         XCTAssertEqual(rendering, "<a>")
     }
     
+    func testEachFilterDoesNotMessWithItemValues() {
+        let increment = Filter { (int: Int, _) -> MustacheBox? in
+            return Box(int + 1)
+        }
+        let items = [1,2,3]
+        let template = Template(string: "{{#each(items)}}({{@index}},{{increment(.)}}){{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        template.registerInBaseContext("increment", Box(increment))
+        let rendering = template.render(Box(["items": items]))!
+        XCTAssertEqual(rendering, "(0,2)(1,3)(2,4)")
+    }
+    
+    func testEachFilterDoesNotMessWithItemKeyedSubscriptFunction() {
+        let items = ["a","bb","ccc"]
+        let template = Template(string: "{{#each(items)}}({{@index}},{{length}}){{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        let rendering = template.render(Box(["items": items]))!
+        XCTAssertEqual(rendering, "(0,1)(1,2)(2,3)")
+    }
+    
+    func testEachFilterDoesNotMessWithItemRenderFunction() {
+        let item = Lambda { "foo" }
+        let items = [Box(item)]
+        let template = Template(string: "{{#each(items)}}({{@index}},{{.}}){{/}}")!
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        let rendering = template.render(Box(["items": items]))!
+        XCTAssertEqual(rendering, "(0,foo)")
+    }
 }
