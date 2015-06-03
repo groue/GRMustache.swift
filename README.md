@@ -99,6 +99,9 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 Documentation
 -------------
 
+Mustache is a cross-platform templating system supported by [many languages](https://github.com/mustache/mustache/wiki/Other-Mustache-implementations). This documentation does not describe the Mustache language itself. So if you are not familiar with it, **start here**: http://mustache.github.io/mustache.5.html**.
+
+
 ### Playground & Sample Code
 
 You'll find in the repository a `Mustache.xcworkspace` workspace that contains a Playground and demo applications.
