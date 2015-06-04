@@ -123,7 +123,8 @@ public struct Configuration {
         let repository = TemplateRepository(bundle: NSBundle.mainBundle())
         repository.configuration.extendBaseContext(Box(["baz": "qux"]))
         
-        // Renders "bar, qux"
+        // Renders "bar, qux" (repository has inherited the `foo` defined in
+        // the global configuration).
         let template2 = repository.template(string: "{{foo}}, {{baz}}")!
         template2.render()!
     
