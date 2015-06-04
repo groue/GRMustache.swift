@@ -1007,6 +1007,9 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 
 /**
 See the documentation of `NSObject.mustacheBox`.
+
+:param: object An NSObject
+:returns: A MustacheBox that wraps `object`
 */
 public func Box(object: NSObject?) -> MustacheBox {
     if let object = object {
@@ -1027,14 +1030,10 @@ public func Box(object: NSObject?) -> MustacheBox {
 //
 // For example:
 //
-// ::
-//
-//   public func Box(boxable: MustacheBoxable?) -> MustacheBox
-//   public func Box(filter: FilterFunction) -> MustacheBox
+//      public func Box(boxable: MustacheBoxable?) -> MustacheBox
+//      public func Box(filter: FilterFunction) -> MustacheBox
 //
 // Sometimes values come out of Foundation objects:
-//
-// ::
 //
 //     class NSDictionary {
 //         subscript (key: NSCopying) -> AnyObject? { get }
@@ -1044,62 +1043,56 @@ public func Box(object: NSObject?) -> MustacheBox {
 //
 // Unfortunately, this will not work:
 //
-// ::
+//     protocol MustacheBoxable {}
+//     class Thing: MustacheBoxable {}
 //
-//   protocol MustacheBoxable {}
-//   class Thing: MustacheBoxable {}
+//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//     func Box(x: AnyObject?) -> String { return "AnyObject" }
 //
-//   func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//   func Box(x: AnyObject?) -> String { return "AnyObject" }
-//
-//   // error: ambiguous use of 'Box'
-//   Box(Thing())
+//     // error: ambiguous use of 'Box'
+//     Box(Thing())
 //
 // Maybe if we turn the func Box(x: MustacheBoxable?) into a generic one? Well,
 // it does not make the job either:
 //
-// ::
+//     protocol MustacheBoxable {}
+//     class Thing: MustacheBoxable {}
 //
-//   protocol MustacheBoxable {}
-//   class Thing: MustacheBoxable {}
-//   
-//   func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
-//   func Box(x: AnyObject?) -> String { return "AnyObject" }
-//   
-//   // Wrong: uses the AnyObject variant
-//   Box(Thing())
-//   
-//   // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
-//   Box(Thing() as MustacheBoxable)
-//   
-//   // Error: Crash the compiler
-//   Box(Thing() as MustacheBoxable?)
+//     func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
+//     func Box(x: AnyObject?) -> String { return "AnyObject" }
+//
+//     // Wrong: uses the AnyObject variant
+//     Box(Thing())
+//
+//     // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
+//     Box(Thing() as MustacheBoxable)
+//
+//     // Error: Crash the compiler
+//     Box(Thing() as MustacheBoxable?)
 //
 // And if we turn the func Box(x: AnyObject) into a generic one? Well, it gets
 // better:
 //
-// ::
+//     protocol MustacheBoxable {}
+//     class Thing: MustacheBoxable {}
 //
-//   protocol MustacheBoxable {}
-//   class Thing: MustacheBoxable {}
-//   
-//   func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//   func Box<T:AnyObject>(object: T?) -> String { return "AnyObject" }
-//   
-//   // OK: uses the MustacheBox variant
-//   Box(Thing())
-//   
-//   // OK: uses the MustacheBox variant
-//   Box(Thing() as MustacheBoxable)
-//   
-//   // OK: uses the MustacheBox variant
-//   Box(Thing() as MustacheBoxable?)
-//   
-//   // OK: uses the AnyObject variant
-//   Box(Thing() as AnyObject)
-//   
-//   // OK: uses the AnyObject variant
-//   Box(Thing() as AnyObject?)
+//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//     func Box<T:AnyObject>(object: T?) -> String { return "AnyObject" }
+//
+//     // OK: uses the MustacheBox variant
+//     Box(Thing())
+//
+//     // OK: uses the MustacheBox variant
+//     Box(Thing() as MustacheBoxable)
+//
+//     // OK: uses the MustacheBox variant
+//     Box(Thing() as MustacheBoxable?)
+//
+//     // OK: uses the AnyObject variant
+//     Box(Thing() as AnyObject)
+//
+//     // OK: uses the AnyObject variant
+//     Box(Thing() as AnyObject?)
 //
 // This looks OK, doesn't it? Well, it's not satisfying yet.
 //
@@ -1122,9 +1115,10 @@ public func Box(object: NSObject?) -> MustacheBox {
 Yet, due to constraints in the Swift language, there is no `Box(AnyObject)`
 function. Instead, you use `BoxAnyObject`:
 
-      let set = NSSet(object: "Mario")
-      let box = BoxAnyObject(set.anyObject())
-      box.value as String  // "Mario"
+    let set = NSSet(object: "Mario")
+    let object: AnyObject = set.anyObject()
+    let box = BoxAnyObject(object)
+    box.value as String  // "Mario"
 
 The object is tested at runtime whether it conforms to the `MustacheBoxable`
 protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.

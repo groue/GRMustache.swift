@@ -29,25 +29,6 @@ You have three levels of configuration:
 - global, through Mustache.DefaultConfiguration
 - per template repository, through TemplateRepository.configuration
 - per template, through Template properties
-
-For example:
-
-::
-
-  // Have all templates render text, and avoid HTML-escaping:
-  Mustache.DefaultConfiguration.contentType = .Text
-  
-  // Renders "make clean && make"
-  let textTemplate = Template(string: "{{command}}")!
-  textTemplate.render(Box(["command": "make clean && make"]))!
-
-  // Have all templates of repository render HTML, and escape rendered values:
-  let repository = TemplateRepository()
-  repository.configuration.contentType = .HTML
-  
-  // Renders "&lt;br&gt;"
-  let HTMLTemplate = repository.template(string: "{{string}}")!
-  HTMLTemplate.render(Box(["string": "<br>"]))!
 */
 public struct Configuration {
     
@@ -70,40 +51,53 @@ public struct Configuration {
     // MARK: - Set Up Configuration
     
     /**
-    The content type of strings rendered by templates.
+    The content type of strings rendered by templates built with this
+    configuration.
     
-    This property affects the HTML-escaping of your data, and the inclusion
-    of templates in other templates.
+    It affects the HTML-escaping of your data:
     
-    The `.HTML` content type has templates render HTML. This is the default
-    behavior. HTML template escape the input of variable tags such as
-    `{{name}}`. Use triple mustache tags `{{{content}}}` in order to avoid the
-    HTML-escaping.
+    - The `.HTML` content type has templates render HTML. This is the default
+      behavior. HTML template escape the input of variable tags such as
+      `{{name}}`. Use triple mustache tags `{{{content}}}` in order to avoid the
+      HTML-escaping.
     
-    The `.Text` content type has templates render text. They do not HTML-escape
-    their input: `{{name}}` and `{{{name}}}` have identical, non-escaped,
-    renderings.
+    - The `.Text` content type has templates render text. They do not
+      HTML-escape their input: `{{name}}` and `{{{name}}}` have identical,
+      non-escaped, renderings.
     
     GRMustache safely keeps track of the content type of templates: should a
     HTML template embed a text template, the content of the text template would
     be HTML-escaped.
     
-    There is no API to specify the content type of individual templates.
-    However, you can use pragma tags right in the content of your templates:
+    Setting the contentType of a configuration affects the contentType of all
+    templates loaded afterwards:
+    
+        // Globally, with Mustache.DefaultConfiguration:
+    
+        Mustache.DefaultConfiguration.contentType = .Text
+        let textTemplate = Template(named: "Script")!
+    
+        // Locally, using a TemplateRepository:
+    
+        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        repository.configuration.contentType = .HTML
+        let HTMLTemplate = repository.template(named: "HTMLDocument")!
+    
+    In order to set the content type of an individual templates, use pragma tags
+    right in the content of your templates:
     
     - `{{% CONTENT_TYPE:TEXT }}` turns a template into a text template.
     - `{{% CONTENT_TYPE:HTML }}` turns a template into a HTML template.
     
-    Insert those pragma tags early in your templates. For example:
+    For example:
     
-    ::
+        {{! This template renders a bash script. }}
+        {{% CONTENT_TYPE:TEXT }}
+        export LANG={{ENV.LANG}}
+        ...
     
-      {{! This template renders a bash script. }}
-      {{% CONTENT_TYPE:TEXT }}
-      export LANG={{ENV.LANG}}
-      ...
-    
-    Should two such pragmas be found in a template content, the last one wins.
+    These pragmas must be found early in the template (before any value tag).
+    Should several pragmas be found in a template content, the last one wins.
     */
     public var contentType: ContentType
     
@@ -111,18 +105,27 @@ public struct Configuration {
     The base context for templates rendering. All templates built with this
     configuration can access values stored in the base context.
     
-    The default one is empty.
+    The default base context is empty.
     
-    You can set the base context to some custom context, or extend it with the
-    extendBaseContext and registerInBaseContext methods.
+    You can set it to some custom context, or extend it with the
+    `extendBaseContext` and `registerInBaseContext` methods.
     
-    ::
+        // Globally, with Mustache.DefaultConfiguration:
     
-      Mustache.DefaultConfiguration.baseContext = Context(Box(["foo": "bar"]))
+        Mustache.DefaultConfiguration.baseContext = Context(Box(["foo": "bar"]))
+
+        // Renders "bar"
+        let template1 = Template(string: "{{foo}}")!
+        template1.render()!
     
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.render()!
+        // Locally, using a TemplateRepository:
+        
+        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        repository.configuration.extendBaseContext(Box(["baz": "qux"]))
+        
+        // Renders "bar, qux"
+        let template2 = repository.template(string: "{{foo}}, {{baz}}")!
+        template2.render()!
     
     :see: extendBaseContext
     :see: registerInBaseContext
@@ -133,13 +136,13 @@ public struct Configuration {
     Extends the base context with the provided boxed value. All templates built
     with this configuration can access its keys.
     
-    ::
+        Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
+
+        // Renders "bar"
+        let template = Template(string: "{{foo}}")!
+        template.render()!
     
-      Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.render()!
+    :param: box The box pushed on the top of the context stack
     
     :see: baseContext
     :see: registerInBaseContext
@@ -155,16 +158,17 @@ public struct Configuration {
     
     Registered keys are looked up first when evaluating Mustache tags.
     
-    ::
+        Mustache.DefaultConfiguration.registerInBaseContext("foo", Box("bar"))
+
+        // Renders "bar"
+        let template = Template(string: "{{foo}}")!
+        template.render()!
+
+        // Renders "bar" again, because the registered key "foo" has priority.
+        template.render(Box(["foo": "qux"]))!
     
-      Mustache.DefaultConfiguration.registerInBaseContext("foo", Box("bar"))
-    
-      // Renders "bar"
-      let template = Template(string: "{{foo}}")!
-      template.render()!
-    
-      // Renders "bar" again, because the registered key "foo" has priority.
-      template.render(Box(["foo": "qux"]))!
+    :param: key An identifier
+    :param: box The box registered for `key`
     
     :see: baseContext
     :see: extendBaseContext
@@ -175,10 +179,27 @@ public struct Configuration {
     }
     
     /**
-    The delimiters for Mustache tags. Its default value is `{{`, `}}`.
+    The delimiters for Mustache tags. All templates built with this
+    configuration are parsed using those delimiters.
+    
+    The default value is `{{`, `}}`.
+    
+    Setting the tagDelimiterPair of a configuration affects all templates loaded
+    afterwards:
+    
+        // Globally, with Mustache.DefaultConfiguration:
+    
+        Mustache.DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
+        let template1 = Template(string: "<% name %>)!
+    
+        // Locally, using a TemplateRepository:
+    
+        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "[[", end: "]]")
+        let HTMLTemplate = repository.template(string: "[[ name ]]")!
     
     You can also change the delimiters right in your templates using a "Set
-    Delimiter tag": {{=[[ ]]=}} changes start and end delimiters to [[ and ]].
+    Delimiter tag": `{{=[[ ]]=}}` changes delimiters to `[[` and `]]`.
     */
     public var tagDelimiterPair: TagDelimiterPair
     
