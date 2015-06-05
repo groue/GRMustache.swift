@@ -82,29 +82,15 @@ public typealias KeyedSubscriptFunction = (key: String) -> MustacheBox
 // MARK: - FilterFunction
 
 /**
-FilterFunction is the core type that lets GRMustache evaluate filtered
-expressions such as {{ uppercase(name) }}.
+`FilterFunction` is the core type that lets GRMustache evaluate filtered
+expressions such as `{{ square(length) }}`.
 
-It turns a MustacheBox to another MustacheBox, and optionally returns an error.
+Avoid "messing" with the `FilterFunction` type directly: it involves a parameter
+named `partialApplication`, involved in filter expressions with several
+arguments such as `sum(a, b, c)`, which is intentionally left undocumented.
 
-You will generally not write your own FilterFunction, but rather use one
-procuded by Filter(). For example, here is a filter that processes integers:
-
-::
-
-  let square: FilterFunction = Filter { (x: Int, _) in
-      return Box(x * x)
-  }
-
-  let template = Template(string: "{{square(x)}}")!
-  template.registerInBaseContext("square", Box(square))
-
-  // Renders "100"
-  template.render(Box(["x": 10]))!
-
-
-The Filter() function comes in various flavors. Each one targets a use case for
-filters:
+To build filters, you will generally use one of the `Filter()` functions. Check
+their documentation.
 
 
 - func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction
@@ -364,9 +350,51 @@ public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, e
 
 
 /**
-This function is documented with the FilterFunction type.
+Builds a filter that takes a single Box argument and returns another one.
 
-:see: FilterFunction
+For example, here is the trivial `identity` filter:
+
+    let identity = Filter { (box: MustacheBox, _) in
+        return box
+    }
+
+    let template = Template(string: "{{identity(a)}}, {{identity(b)}}")!
+    template.registerInBaseContext("identity", Box(identity))
+
+    // "foo,bar"
+    template.render(Box(["a": "foo", "b": "bar"]))!
+
+If the filter is given several arguments, an error of domain
+`GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError` is returned
+when the template is rendered.
+
+### Value extraction
+
+It is likely you want to extract the boxed value and process it.
+
+`MustacheBox` comes with the many properties that let you do that, in a safe
+way. If you expect an integer, use `box.intValue`. An array? `box.arrayValue`.
+They avoid dangerous type casts, and make sure they work with all compatible
+inputs. For example, `box.intValue` returns an Int for boxed ints (obviously),
+but also bools, uints, doubles, and NSNumbers. `MustacheBox.arrayValue` works
+for all Swift and Objective-C collections. Check `MustacheBox` documentation.
+
+Yet, the `Filter()` function comes with more straightforward variants that help
+you process specific classes:
+
+- func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+- func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction
+
+Check their documentation.
+
+:param: a function that turns a box in another box
+:returns: a FilterFunction
 */
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
