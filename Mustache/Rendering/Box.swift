@@ -74,6 +74,17 @@ import Foundation
 /**
 The MustacheBoxable protocol gives any type the ability to feed Mustache
 templates.
+
+GRMustache ships with built-in `MustacheBoxable` conformance for the following
+types: `Bool`, `Int`, `UInt`, `Double`, `String`, `NSObject`.
+
+Your own types can conform to it as well, so that they can feed templates:
+
+    extension Profile: MustacheBoxable { ... }
+
+    let profile = ...
+    let template = Template(named: "Profile")!
+    let rendering = template.render(Box(profile))!
 */
 public protocol MustacheBoxable {
     
@@ -81,12 +92,14 @@ public protocol MustacheBoxable {
     Returns a MustacheBox.
     
     This method is invoked when a value of your conforming class is boxed with
-    the Box() function. You can not return Box(self) since this would trigger
-    an infinite loop. Instead you build a Box that explicitly describes how your
-    conforming type interacts with the Mustache engine.
+    the `Box()` function.
     
-    The easier way is to return a box that wraps another value that is already
-    boxable, such as Dictionaries:
+    Don't return `Box(self)`: this would trigger an infinite loop! Instead, you
+    build a Box that explicitly describes how your type interacts with the
+    Mustache engine.
+    
+    You can for example return a box that wraps another value that is already
+    boxable, such as Dictionaries. This is all good:
 
         struct Person {
             let firstName: String
@@ -108,8 +121,8 @@ public protocol MustacheBoxable {
         let person = Person(firstName: "Tom", lastName: "Selleck")
         template.render(Box(["person": Box(person)]))!
 
-    However, there are multiple ways to build a MustacheBox. See the
-    documentation of the `Box` functions.
+    However, there are multiple ways to build a box, several `Box()` functions.
+    See their documentations.
     */
     var mustacheBox: MustacheBox { get }
 }

@@ -28,7 +28,8 @@ import Foundation
 // MARK: - KeyedSubscriptFunction
 
 /**
-`KeyedSubscriptFunction` is an advanced Mustache type.
+`KeyedSubscriptFunction` is an advanced Mustache type: you won't meet unless you
+have some very specific needs.
 
 It is used by the Mustache rendering engine whenever it has to resolve
 identifiers in expressions such as `{{ name }}` or `{{ user.name }}`. Subscript
