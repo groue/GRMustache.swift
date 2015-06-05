@@ -26,17 +26,6 @@ Configuration exposes properties that affect both the parsing and the rendering
 of Mustache templates.
 
 
-### Usage
-
-You setup a configuration *before* loading templates:
-
-    // Template loaded later will not HTML-escape the rendered strings:
-    Mustache.DefaultConfiguration.contentType = .Text
-    
-    // A text template
-    let template = Template(string: "...")
-
-
 ### What can be configured
 
 Configuration covers:
@@ -46,10 +35,21 @@ Configuration covers:
   templates.
 
 - **Context stack**: values stored in a Configuration's context are readily
-  available on templates.
+  available to templates.
 
 - **Tag delimiters**: default Mustache delimiters are `{{` and `}}`. These are
   configurable.
+
+
+### Usage
+
+You setup a configuration *before* loading templates:
+
+    // Template loaded later will not HTML-escape the rendered strings:
+    Mustache.DefaultConfiguration.contentType = .Text
+    
+    // A text template
+    let template = Template(string: "...")
 
 
 ### Configuration levels
@@ -232,7 +232,6 @@ public struct Configuration {
     
     :see: baseContext
     :see: registerInBaseContext
-    :see: Context.extendedContext
     */
     public mutating func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
@@ -318,7 +317,6 @@ public struct Configuration {
 The default configuration that is used unless specified otherwise by a
 `TemplateRepository`.
 
-:see: Configuration
 :see: TemplateRepository
 */
 public var DefaultConfiguration = Configuration()

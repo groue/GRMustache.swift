@@ -40,7 +40,7 @@ The content type of a template comes from `Configuration.contentType` or
 
 The content type of rendering is discussed with the `Rendering` type.
 
-:see: Configuration
+:see: Configuration.contentType
 :see: Rendering
 */
 public enum ContentType {
@@ -71,8 +71,8 @@ public let GRMustacheErrorCodeRenderingError = 2
 /**
 A pair of tag delimiters, such as `("{{", "}}")`.
 
-:see Configuration
-:see Tag
+:see Configuration.tagDelimiterPair
+:see Tag.tagDelimiterPair
 */
 public typealias TagDelimiterPair = (String, String)
 

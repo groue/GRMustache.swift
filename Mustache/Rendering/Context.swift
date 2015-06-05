@@ -39,8 +39,8 @@ rendered by the {{.}} tag:
 Key lookup starts with the current context and digs down the stack until if
 finds a value:
 
-    // Renders "child, parent, "
-    let template = Template(string: "{{#children}}{{name}}, {{/children}}")!
+    // Renders "<child>, <parent>, "
+    let template = Template(string: "{{#children}}<{{name}}>, {{/children}}")!
     let data = [
       "name": "parent",
       "children": [
@@ -55,36 +55,33 @@ finds a value:
 :see: RenderFunction
 */
 final public class Context {
-    private enum Type {
-        case Root
-        case Box(box: MustacheBox, parent: Context)
-        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartial, parent: Context)
-    }
-    
-    private var registeredKeysContext: Context?
-    private let type: Type
-    
     
     // =========================================================================
     // MARK: - Creating Contexts
     
     /**
-    Returns an empty Context.
+    Builds an empty Context.
     */
     public convenience init() {
         self.init(type: .Root)
     }
     
     /**
-    Returns a new context containing the provided box.
+    Builds a context that contains the provided box.
+    
+    :param: box A box
+    :returns: a new context that contains the provided box.
     */
     public convenience init(_ box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
     }
     
     /**
-    Returns a new context with a registered key. Registered keys are looked up
-    first when evaluating Mustache tags.
+    Builds a context with a registered key. Registered keys are looked up first
+    when evaluating Mustache tags.
+    
+    :param: key An identifier
+    :param: box The box registered for `key`
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
@@ -95,7 +92,11 @@ final public class Context {
     // MARK: - Deriving New Contexts
     
     /**
-    Returns a new context with the provided box at the top of the context stack.
+    Returns a new context with the provided box pushed at the top of the context
+    stack.
+    
+    :param: box The box pushed on the top of the context stack
+    :returns: a new context
     */
     public func extendedContext(box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
@@ -104,6 +105,10 @@ final public class Context {
     /**
     Returns a new context with the provided box at the top of the context stack.
     Registered keys are looked up first when evaluating Mustache tags.
+    
+    :param: key An identifier
+    :param: box The box registered for `key`
+    :returns: a new context
     */
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
@@ -140,15 +145,15 @@ final public class Context {
        box for the key (see `InspectFunction`).
     
     3. If none of the above situations occurs, returns the empty box.
-
+    
         let data = ["name": "Groucho Marx"]
         let context = Context(Box(data))
-
+    
         // "Groucho Marx"
         context["name"].value
-    
+
     If you want the value for a full Mustache expression such as `user.name` or
-    `uppercase(user.name)`, use the boxForMustacheExpression method.
+    `uppercase(user.name)`, use the `boxForMustacheExpression` method.
     
     :see: boxForMustacheExpression
     */
@@ -213,6 +218,15 @@ final public class Context {
     
     // =========================================================================
     // MARK: - Not public
+    
+    private enum Type {
+        case Root
+        case Box(box: MustacheBox, parent: Context)
+        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartial, parent: Context)
+    }
+    
+    private var registeredKeysContext: Context?
+    private let type: Type
     
     var willRenderStack: [WillRenderFunction] {
         switch type {
