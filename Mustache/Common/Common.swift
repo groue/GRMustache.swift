@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 
+// =============================================================================
+// MARK: - ContentType
+
 /**
 GRMustache distinguishes Text from HTML.
 
@@ -43,4 +46,61 @@ The content type of rendering is discussed with the `Rendering` type.
 public enum ContentType {
     case Text
     case HTML
+}
+
+
+// =============================================================================
+// MARK: - Errors
+
+/// The domain of a Mustache-generated NSError
+public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
+
+/// The error code for parse errors
+public let GRMustacheErrorCodeParseError = 0
+
+/// The error code for missing templates and partials
+public let GRMustacheErrorCodeTemplateNotFound = 1
+
+/// The error code for rendering errors
+public let GRMustacheErrorCodeRenderingError = 2
+
+
+// =============================================================================
+// MARK: - Tag delimiters
+
+/**
+A pair of tag delimiters, such as `("{{", "}}")`.
+
+:see Configuration
+:see Tag
+*/
+public typealias TagDelimiterPair = (String, String)
+
+
+// =============================================================================
+// MARK: - HTML escaping
+
+/**
+HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entities.
+
+:param: string A string
+:returns: HTML-escaped string
+*/
+public func escapeHTML(string: String) -> String {
+    let escapeTable: [Character: String] = [
+        "<": "&lt;",
+        ">": "&gt;",
+        "&": "&amp;",
+        "'": "&apos;",
+        "\"": "&quot;",
+    ]
+    var escaped = ""
+    for c in string {
+        if let escapedString = escapeTable[c] {
+            escaped += escapedString
+        } else {
+            escaped.append(c)
+        }
+    }
+    return escaped
 }

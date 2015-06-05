@@ -22,33 +22,88 @@
 
 
 /**
-Configuration of GRMustache
+Configuration exposes properties that affect both the parsing and the rendering
+of Mustache templates.
 
-You have three levels of configuration:
 
-- global, through Mustache.DefaultConfiguration
-- per template repository, through TemplateRepository.configuration
-- per template, through Template properties
+### Usage
+
+You setup a configuration *before* loading templates:
+
+    // Template loaded later will not HTML-escape the rendered strings:
+    Mustache.DefaultConfiguration.contentType = .Text
+    
+    // A text template
+    let template = Template(string: "...")
+
+
+### What can be configured
+
+Configuration covers:
+
+- **Content type**: HTML templates escape rendered strings, while Text templates
+  do not. Text templates are HTML-escaped as a whole when included in HTML
+  templates.
+
+- **Context stack**: values stored in a Configuration's context are readily
+  available on templates.
+
+- **Tag delimiters**: default Mustache delimiters are `{{` and `}}`. These are
+  configurable.
+
+
+### Configuration levels
+
+There are three levels of configuration:
+
+`Mustache.DefaultConfiguration` is a global variable that applies by default:
+
+    Mustache.DefaultConfiguration.contentType = .Text
+
+    // A text template
+    let template = Template(named: "Document")
+
+`TemplateRepository.configuration` only applies to templates loaded from the
+template repository:
+
+    let repository = TemplateRepository(directoryPath: "/path/to/templates")
+    repository.configuration.contentType = .Text
+
+    // A text template
+    let template = repository.template(named: "Document")
+
+Templates can also be configured individually. See the documentation of each
+Configuration method for more details.
 */
 public struct Configuration {
     
     // =========================================================================
-    // MARK: - Creating Factory Configuration
+    // MARK: - Factory Configuration
     
     /**
     Returns a factory configuration.
     
-    Its contentType is HTML, baseContext empty, tag delimiters "{{" and "}}".
+    Its contentType is HTML, baseContext empty, tag delimiters `{{` and `}}`.
+    
+    For example:
+    
+        // Make sure the template repository uses factory configuration,
+        // regardless of changes made to `Mustache.DefaultConfiguration`:
+    
+        let repository = TemplateRepository(directoryPath: "/path/to/templates")
+        repository.configuration = Configuration()
+
+
     */
     public init() {
         contentType = .HTML
         baseContext = Context()
-        tagDelimiterPair = TagDelimiterPair(start: "{{", end: "}}")
+        tagDelimiterPair = ("{{", "}}")
     }
     
     
     // =========================================================================
-    // MARK: - Set Up Configuration
+    // MARK: - Content Type
     
     /**
     The content type of strings rendered by templates built with this
@@ -67,7 +122,7 @@ public struct Configuration {
     
     GRMustache safely keeps track of the content type of templates: should a
     HTML template embed a text template, the content of the text template would
-    be HTML-escaped.
+    be HTML-escaped, as a whole.
     
     Setting the contentType of a configuration affects the contentType of all
     templates loaded afterwards:
@@ -101,6 +156,10 @@ public struct Configuration {
     */
     public var contentType: ContentType
     
+    
+    // =========================================================================
+    // MARK: - Context Stack
+    
     /**
     The base context for templates rendering. All templates built with this
     configuration can access values stored in the base context.
@@ -114,20 +173,27 @@ public struct Configuration {
     
         Mustache.DefaultConfiguration.baseContext = Context(Box(["foo": "bar"]))
 
-        // Renders "bar"
+        // "bar"
         let template1 = Template(string: "{{foo}}")!
         template1.render()!
     
         // Locally, using a TemplateRepository:
         
         let repository = TemplateRepository(bundle: NSBundle.mainBundle())
-        repository.configuration.extendBaseContext(Box(["baz": "qux"]))
+        repository.configuration.baseContext = Context(Box(["foo": "bar"]))
         
-        // Renders "bar, qux" (repository has inherited the `foo` defined in
-        // the global configuration).
-        let template2 = repository.template(string: "{{foo}}, {{baz}}")!
+        // "bar"
+        let template2 = repository.template(string: "{{foo}}")!
         template2.render()!
     
+    The base context can also be set for individual templates:
+
+        let template3 = Template(string: "{{foo}}")!
+        template3.baseContext = Context(Box(["foo": "bar"]))
+        
+        // "bar"
+        template3.render()!
+
     :see: extendBaseContext
     :see: registerInBaseContext
     */
@@ -137,12 +203,31 @@ public struct Configuration {
     Extends the base context with the provided boxed value. All templates built
     with this configuration can access its keys.
     
+        // Globally, with Mustache.DefaultConfiguration:
+    
         Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
 
-        // Renders "bar"
-        let template = Template(string: "{{foo}}")!
-        template.render()!
+        // "bar"
+        let template1 = Template(string: "{{foo}}")!
+        template1.render()!
     
+        // Locally, using a TemplateRepository:
+        
+        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        repository.configuration.extendBaseContext(Box(["foo": "bar"]))
+        
+        // "bar"
+        let template2 = repository.template(string: "{{foo}}")!
+        template2.render()!
+    
+    The base context can also be extended for individual templates:
+
+        let template3 = Template(string: "{{foo}}")!
+        template3.extendBaseContext(Box(["foo": "bar"]))
+        
+        // "bar"
+        template3.render()!
+
     :param: box The box pushed on the top of the context stack
     
     :see: baseContext
@@ -159,44 +244,67 @@ public struct Configuration {
     
     Registered keys are looked up first when evaluating Mustache tags.
     
+        // Globally, with Mustache.DefaultConfiguration:
+    
         Mustache.DefaultConfiguration.registerInBaseContext("foo", Box("bar"))
 
         // Renders "bar"
-        let template = Template(string: "{{foo}}")!
-        template.render()!
+        let template1 = Template(string: "{{foo}}")!
+        template1.render()!
 
         // Renders "bar" again, because the registered key "foo" has priority.
-        template.render(Box(["foo": "qux"]))!
+        template1.render(Box(["foo": "qux"]))!
+    
+        // Locally, using a TemplateRepository:
+        
+        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        repository.configuration.registerInBaseContext("foo", Box("bar"))
+        
+        // "bar"
+        let template2 = repository.template(string: "{{foo}}")!
+        template2.render()!
+    
+    Keys can also be registered in the base context of individual templates:
+
+        let template3 = Template(string: "{{foo}}")!
+        template3.registerInBaseContext("foo", Box("bar"))
+        
+        // "bar"
+        template3.render()!
+
     
     :param: key An identifier
     :param: box The box registered for `key`
     
     :see: baseContext
     :see: extendBaseContext
-    :see: Context.contextWithRegisteredKey
     */
     public mutating func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
     
+    
+    // =========================================================================
+    // MARK: - Tag delimiters
+    
     /**
     The delimiters for Mustache tags. All templates built with this
     configuration are parsed using those delimiters.
     
-    The default value is `{{`, `}}`.
+    The default value is `("{{", "}}")`.
     
     Setting the tagDelimiterPair of a configuration affects all templates loaded
     afterwards:
     
         // Globally, with Mustache.DefaultConfiguration:
     
-        Mustache.DefaultConfiguration.tagDelimiterPair = TagDelimiterPair(start: "<%", end: "%>")
+        Mustache.DefaultConfiguration.tagDelimiterPair = ("<%", "%>")
         let template1 = Template(string: "<% name %>)!
     
         // Locally, using a TemplateRepository:
     
         let repository = TemplateRepository(bundle: NSBundle.mainBundle())
-        repository.configuration.tagDelimiterPair = TagDelimiterPair(start: "[[", end: "]]")
+        repository.configuration.tagDelimiterPair = ("[[", "]]")
         let HTMLTemplate = repository.template(string: "[[ name ]]")!
     
     You can also change the delimiters right in your templates using a "Set
@@ -208,7 +316,7 @@ public struct Configuration {
 
 /**
 The default configuration that is used unless specified otherwise by a
-TemplateRepository.
+`TemplateRepository`.
 
 :see: Configuration
 :see: TemplateRepository
