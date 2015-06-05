@@ -28,55 +28,51 @@ import Foundation
 // MARK: - KeyedSubscriptFunction
 
 /**
-KeyedSubscriptFunction turns a string key into a boxed value. When GRMustache
-evaluates expressions such as {{ name }} or {{ user.name }}, is extract both
-`name` and `user` using a KeyedSubscriptFunction.
+`KeyedSubscriptFunction` is an advanced Mustache type.
 
-You can write and render your own KeyedSubscriptFunction:
+It is used by the Mustache rendering engine whenever it has to resolve
+identifiers in expressions such as `{{ name }}` or `{{ user.name }}`. Subscript
+functions turn those identifiers into `MustacheBox`, the type that wraps
+rendered values.
 
-::
+All types that expose keys to Mustache templates provide such a subscript
+function by conforming to the `MustacheBoxable` protocol. This is the case of
+built-in types such as NSObject, that uses `valueForKey:` in order to expose
+its keys; String, which exposes its "length"; collections, which expose keys
+like "count", "first", etc. etc.
+    
+    var box = Box("string")
+    box = box["length"] // Evalutes the KeyedSubscriptFunction
+    box.value           // 6
+    
+    box = Box(["a", "b", "c"])
+    box = box["first"]  // Evalutes the KeyedSubscriptFunction
+    box.value           // "a"
 
-  let keyedSubscript: KeyedSubscriptFunction = { (key: String) -> MustacheBox in
-      return Box(key.uppercaseString)
-  }
-  
-  // Render "FOO & BAR"
-  let template = Template(string: "{{foo}} & {{bar}}")!
-  template.render(Box(keyedSubscript))!
+Your custom types can also conform to `MustacheBoxable` and build boxes that
+hold a custom subscript function. This is a rather advanced usage, only
+supported with the low-level function
+`func Box(boolValue:value:keyedSubscript:filter:render:willRender:didRender:) -> MustacheBox`.
+    
+    // A KeyedSubscriptFunction that turns "key" into "KEY":
+    let keyedSubscript: KeyedSubscriptFunction = { (key: String) -> MustacheBox in
+        return Box(key.uppercaseString)
+    }
 
-A KeyedSubscriptFunction is also the way to let your Swift types feed templates:
+    // Render "FOO & BAR"
+    let template = Template(string: "{{foo}} & {{bar}}")!
+    let box = Box(keyedSubscript: keyedSubscript)
+    template.render(box)!
 
-::
 
-  struct User {
-      let name: String
-  }
+### Missing keys vs. missing values.
 
-  let user = User(name: "Arthur")
-  let template = Template(string: "Hello {{name}}")!
+In order to express "missing key", you return the empty box `Box()`. Empty
+boxes have the Mustache rendering engine dig deeper in the context stack in
+order to resolve a key.
 
-  // Attempt to feed the template with the user produces a compiler error, since
-  // User can not be boxed.
-  template.render(Box(user))!
-
-  // Make User conform to MustacheBoxable
-  extension User : MustacheBoxable {
-      var mustacheBox: MustacheBox {
-          // Return a Box that wraps our user, and knows how to extract
-          // the `name` key of our user with a KeyedSubscriptFunction:
-          return Box(value: self) { (key: String) in
-              switch key {
-              case "name":
-                  return Box(self.name)
-              default:
-                  return Box()
-              }
-          }
-      }
-  }
-  
-  // Render "Hello Arthur"
-  template.render(Box(user))!
+In order to return a box that means "missing value for a known key", that would
+stop the rendering engine from digging deeper, return `Box(NSNull())`.
 */
 public typealias KeyedSubscriptFunction = (key: String) -> MustacheBox
 
