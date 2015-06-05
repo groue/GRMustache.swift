@@ -10,7 +10,7 @@ Release Notes
 
 **New**
 
-- The `TagDelimiterPair` represents a pair of tag delimiters such as (`{{`,`}}`). It is the type of the properties `Configuration.tagDelimiterPair` and `Tag.tagDelimiterPair`.
+- The `TagDelimiterPair` represents a pair of tag delimiters such as `("{{","}}")`. It is the type of the properties `Configuration.tagDelimiterPair` and `Tag.tagDelimiterPair`.
 - You can query the content type (Text or HTML) of a template with the `Template.contentType` property.
 - Explicit support for the Swift `Set` type is provided by `func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox`.
 
