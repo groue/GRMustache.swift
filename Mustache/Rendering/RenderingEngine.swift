@@ -237,7 +237,7 @@ final class RenderingEngine {
     
     private func resolveInheritableSection(section: TemplateASTNode.InheritableSection, inContext context: Context) -> TemplateASTNode.InheritableSection {
         // As we iterate inherited partials, section becomes the deepest overriden section.
-        // context.overridingTemplateASTStack has been built in renderNode(node:, inContext:).
+        // context.overridingTemplateASTStack has been built in renderNode(node:inContext:).
         //
         // We also update an array of used parent template AST in order to support
         // nested inherited partials.

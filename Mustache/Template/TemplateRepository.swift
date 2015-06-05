@@ -45,7 +45,7 @@ public protocol TemplateRepositoryDataSource {
     Whenever relevant, template and partial hierarchies are supported via the
     baseTemplateID parameter: it contains the template ID of the enclosing
     template, or nil when the data source is asked for a template ID from a raw
-    template string (see TemplateRepository.template(string:, error:)).
+    template string (see TemplateRepository.template(string:error:)).
     
     Not all data sources have to implement hierarchies: they can simply ignore
     this parameter.
@@ -80,7 +80,7 @@ A template repository represents a set of sibling templates and partials.
 
 You don't have to instanciate template repositories, because GRMustache provides
 implicit ones whenever you load templates with methods like
-`Template(named:, error:)`, for example.
+`Template(named:error:)`, for example.
 
 However, you may like to use one for your profit. Template repositories provide:
 

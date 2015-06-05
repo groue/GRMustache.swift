@@ -34,7 +34,7 @@ final class TemplateAST {
     // AST. At the end of the compilation the undefined template AST would
     // become defined.
     //
-    // See TemplateRepository.templateAST(named:, relativeToTemplateID:, error:).
+    // See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
     enum Type {
         case Undefined
         case Defined(nodes: [TemplateASTNode], contentType: ContentType)

@@ -262,30 +262,30 @@ final public class Template {
     
     All templates belong a template repository:
     
-    - Templates returned by ``init?(string:, error:)`` have a template
+    - Templates returned by ``init?(string:error:)`` have a template
       repository that can not load any template or partial by name.
     
-    - Templates returned by ``init?(path:, encoding:, error:)`` have a template
+    - Templates returned by ``init?(path:encoding:error:)`` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
     
-    - Templates returned by ``init?(URL:, encoding:, error:)`` have a template
+    - Templates returned by ``init?(URL:encoding:error:)`` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
     
-    - Templates returned by ``init?(named:, bundle:, templateExtension:, encoding:, error:)``
+    - Templates returned by ``init?(named:bundle:templateExtension:encoding:error:)``
       have a template repository that loads templates and partials stored as
       resources in the specified bundle.
     
-    - Templates returned by ``TemplateRepository.template(named:, error:)`` and
-      `TemplateRepository.template(string:, error:)` belong to the invoked
+    - Templates returned by ``TemplateRepository.template(named:error:)`` and
+      `TemplateRepository.template(string:error:)` belong to the invoked
       repository.
     
     :see: TemplateRepository
-    :see: init(string:, error:)
-    :see: init(path:, error:)
-    :see: init(URL:, error:)
-    :see: init(named:, bundle:, templateExtension:, encoding:, error:)
+    :see: init(string:error:)
+    :see: init(path:error:)
+    :see: init(URL:error:)
+    :see: init(named:bundle:templateExtension:encoding:error:)
     */
     public let repository: TemplateRepository
     

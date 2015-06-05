@@ -43,14 +43,14 @@ extension StandardLibrary {
     
     `{{#localize}}Hello {{name}}{{/localize}}` builds the format string
     `Hello %@`, localizes it with NSLocalizedString, and finally
-    injects the name with `[NSString stringWithFormat:]`.
+    injects the name with `String(format:...)`.
     
     ### Localize sections with arguments and conditions:
     
     `{{#localize}}Good morning {{#title}}{{title}}{{/title}} {{name}}{{/localize}}`
     build the format string `Good morning %@" or @"Good morning %@ %@`,
     depending on the presence of the `title` key. It then injects the name, or
-    both title and name, with `String(format:, ...)`, to build the final
+    both title and name, with `String(format:...)`, to build the final
     rendering.
     */
     public class Localizer : MustacheBoxable {

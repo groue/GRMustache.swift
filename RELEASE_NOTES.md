@@ -10,14 +10,14 @@ Release Notes
 
 **New**
 
-- The `TagDelimiterPair` represents a pair of tag delimiters such as `("{{","}}")`. It is the type of the properties `Configuration.tagDelimiterPair` and `Tag.tagDelimiterPair`.
-- You can query the content type (Text or HTML) of a template with the `Template.contentType` property.
-- Explicit support for the Swift `Set` type is provided by `func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox`.
+- `TagDelimiterPair` is a pair of tag delimiters such as `("{{","}}")`. It is the type of the properties `Configuration.tagDelimiterPair` and `Tag.tagDelimiterPair`.
+- The `Template.contentType` property exposes the content type (Text or HTML) of a template.
+- The Swift `Set` type now has explicit support through `func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox`.
 
 **Breaking changes**
 
 - `Configuration.tagStartDelimiter` and `Configuration.tagEndDelimiter` have been replaced by `Configuration.tagDelimiterPair`
-- `Template(string:, error:)` used to load `{{>partial}}` tags from resources in the main bundle. It is no longer the case, and it returns a `GRMustacheErrorDomain` error of code `GRMustacheErrorCodeTemplateNotFound` if such partial tag is found. To parse a template string that contain partial tags that should be loaded from the main bundle resources, store this string as a resource and load `Template(named:...)`, or use an explicit `TemplateRepository(bundle: nil)`.
+- `Template(string:error:)` used to load `{{>partial}}` tags from resources in the main bundle. It is no longer the case, and it returns a `GRMustacheErrorDomain` error of code `GRMustacheErrorCodeTemplateNotFound` if such partial tag is found. To parse a template string that contain partial tags that should be loaded from the main bundle resources, store this string as a resource and load `Template(named:...)`, or use an explicit `TemplateRepository(bundle: nil)`.
 
 
 ## v0.9.1

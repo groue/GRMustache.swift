@@ -504,11 +504,11 @@ class RenderFunctionTests: XCTestCase {
     // Those tests are commented out.
     //
     // They tests a feature present in Objective-C GRMustache, that is that
-    // Template(string:, error:) would load partials from the "current template
+    // Template(string:error:) would load partials from the "current template
     // repository", a hidden global, and process templates with the "current
     // content type", another hidden global.
     //
-    // The goal is to help RenderFunctions use the Template(string:, error:)
+    // The goal is to help RenderFunctions use the Template(string:error:)
     // initializers without thinking much about the context.
     //
     // 1. They could process tag.innerTemplateString that would contain
