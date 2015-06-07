@@ -24,18 +24,23 @@
 import Foundation
 
 /**
-The type of a tag, variable or section. See `RenderFunction`.
+The type of a tag, variable or section. See the documentation of `Tag` for more
+information.
 */
 public enum TagType {
+    
+    /// The type of tags such as `{{name}}` and `{{{body}}}`.
     case Variable
+    
+    /// The type of section tags such as `{{#user}}...{{/user}}`.
     case Section
 }
 
 /**
 Tag instances represent Mustache tags that render values:
 
-- variable tags `{{ name }}`
-- section tags `{{# name }}...{{/ name }}`
+- variable tags: `{{name}}` and `{{{body}}}`
+- section tags: `{{#user}}...{{/user}}`
 
 You may meet the Tag class when you implement your own `RenderFunction`,
 `WillRenderFunction` or `DidRenderFunction`, or filters that perform custom
@@ -48,7 +53,7 @@ rendering (see `FilterFunction`).
 public class Tag: Printable {
     
     /**
-    The type of the tag: variable or section
+    The type of the tag: variable or section:
     
         let render: RenderFunction = { (info: RenderingInfo, _) in
             switch info.tag.type {
@@ -97,11 +102,7 @@ public class Tag: Printable {
     */
     public let innerTemplateString: String
     
-    /**
-    The delimiters of the tag. They usually are `{{` and `}}`.
-    
-    You may use this property when you implement a custom RenderFunction.
-    */
+    /// The delimiters of the tag.
     public let tagDelimiterPair: TagDelimiterPair
     
     /**
@@ -137,9 +138,7 @@ public class Tag: Printable {
         fatalError("Subclass must override")
     }
     
-    /**
-    A human-readable description of the tag.
-    */
+    /// A human-readable description of the tag.
     public var description: String {
         fatalError("Subclass must override")
     }
