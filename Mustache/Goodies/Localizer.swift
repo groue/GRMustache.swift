@@ -134,7 +134,7 @@ extension StandardLibrary {
             
             // Render the localizable format string
             
-            if let localizableFormatRendering = info.tag.renderInnerContent(context, error: error) {
+            if let localizableFormatRendering = info.tag.render(context, error: error) {
                 
                 // Now perform a second rendering that will fill our
                 // formatArguments array with HTML-escaped tag renderings.
@@ -152,7 +152,7 @@ extension StandardLibrary {
                 
                 // Render again
                 
-                info.tag.renderInnerContent(context)
+                info.tag.render(context)
                 
                 
                 let rendering: Rendering

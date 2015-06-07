@@ -189,9 +189,9 @@ extension Bool : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { self ? 1 : 0 },         // Behave like [NSNumber numberWithBool:]
-                uintValue: { self ? 1 : 0 },        // Behave like [NSNumber numberWithBool:]
-                doubleValue: { self ? 1.0 : 0.0 }), // Behave like [NSNumber numberWithBool:]
+                intValue: (self ? 1 : 0),         // Behave like [NSNumber numberWithBool:]
+                uintValue: (self ? 1 : 0),        // Behave like [NSNumber numberWithBool:]
+                doubleValue: (self ? 1.0 : 0.0)), // Behave like [NSNumber numberWithBool:]
             boolValue: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -201,7 +201,7 @@ extension Bool : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# bools }}...{{/ bools }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# bool }}...{{/ bool }}
                         //
@@ -210,7 +210,7 @@ extension Bool : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.renderInnerContent(info.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
         })
@@ -245,9 +245,9 @@ extension Int : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { self },
-                uintValue: { MustacheBox.Converter.uint(self) },
-                doubleValue: { Double(self) }),
+                intValue: self,
+                uintValue: MustacheBox.Converter.uint(self),
+                doubleValue: Double(self)),
             boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -257,7 +257,7 @@ extension Int : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# ints }}...{{/ ints }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# int }}...{{/ int }}
                         //
@@ -266,7 +266,7 @@ extension Int : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.renderInnerContent(info.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
         })
@@ -301,9 +301,9 @@ extension UInt : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { MustacheBox.Converter.int(self) },
-                uintValue: { self },
-                doubleValue: { Double(self) }),
+                intValue: MustacheBox.Converter.int(self),
+                uintValue: self,
+                doubleValue: Double(self)),
             boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -313,7 +313,7 @@ extension UInt : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# uints }}...{{/ uints }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# uint }}...{{/ uint }}
                         //
@@ -322,7 +322,7 @@ extension UInt : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.renderInnerContent(info.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
         })
@@ -357,9 +357,9 @@ extension Double : MustacheBoxable {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                intValue: { MustacheBox.Converter.int(self) },
-                uintValue: { MustacheBox.Converter.uint(self) },
-                doubleValue: { self }),
+                intValue: MustacheBox.Converter.int(self),
+                uintValue: MustacheBox.Converter.uint(self),
+                doubleValue: self),
             boolValue: (self != 0.0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -369,7 +369,7 @@ extension Double : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# doubles }}...{{/ doubles }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{# double }}...{{/ double }}
                         //
@@ -378,7 +378,7 @@ extension Double : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.renderInnerContent(info.context, error: error)
+                        return info.tag.render(info.context, error: error)
                     }
                 }
         })
@@ -558,8 +558,8 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
         //
         // Renderings have a content type. In order to render an empty
         // rendering that has the contentType of the tag, let's use the
-        // renderInnerContent method of the tag.
-        return info.tag.renderInnerContent(info.context, error: error)
+        // `render` method of the tag.
+        return info.tag.render(info.context, error: error)
     }
 }
 
@@ -634,7 +634,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: { map(collection, { Box($0) }) }),
+            converter: MustacheBox.Converter(arrayValue: map(collection, { Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -664,7 +664,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return info.tag.renderInnerContent(info.context.extendedContext(Box(collection)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -731,7 +731,7 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: { map(collection, { Box($0) }) }),
+            converter: MustacheBox.Converter(arrayValue: map(collection, { Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -761,7 +761,7 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return info.tag.renderInnerContent(info.context.extendedContext(Box(collection)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -826,7 +826,7 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
         return MustacheBox(
             boolValue: (count > 0),
             value: set,
-            converter: MustacheBox.Converter(arrayValue: { map(set, { Box($0) }) }),
+            converter: MustacheBox.Converter(arrayValue: map(set, { Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -840,7 +840,7 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     // {{# sets }}...{{/ sets }}
-                    return info.tag.renderInnerContent(info.context.extendedContext(Box(set)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(set)), error: error)
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
@@ -906,13 +906,11 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: {
-                    var boxDictionary: [String: MustacheBox] = [:]
-                    for (key, item) in dictionary {
-                        boxDictionary[key] = Box(item)
-                    }
-                    return boxDictionary
-                }),
+                dictionaryValue: reduce(dictionary, [String: MustacheBox](), { (var boxDictionary, pair) -> [String: MustacheBox] in
+                        let (key, value) = pair
+                        boxDictionary[key] = Box(value)
+                        return boxDictionary
+                    })),
             keyedSubscript: { (key: String) in
                 return Box(dictionary[key])
             })
@@ -973,13 +971,11 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: {
-                    var boxDictionary: [String: MustacheBox] = [:]
-                    for (key, item) in dictionary {
-                        boxDictionary[key] = Box(item)
-                    }
+                dictionaryValue: reduce(dictionary, [String: MustacheBox](), { (var boxDictionary, pair) -> [String: MustacheBox] in
+                    let (key, value) = pair
+                    boxDictionary[key] = Box(value)
                     return boxDictionary
-            }),
+                })),
             keyedSubscript: { (key: String) in
                 if let value = dictionary[key] {
                     return Box(value)
@@ -1270,7 +1266,7 @@ extension NSObject : MustacheBoxable {
             return MustacheBox(
                 boolValue: (count > 0),
                 value: self,
-                converter: MustacheBox.Converter(arrayValue: { boxArray }),
+                converter: MustacheBox.Converter(arrayValue: boxArray),
                 keyedSubscript: { (key: String) in
                     switch key {
                     case "count":
@@ -1300,7 +1296,7 @@ extension NSObject : MustacheBoxable {
                 render: { (info: RenderingInfo, error: NSErrorPointer) in
                     if info.enumerationItem {
                         // {{# collections }}...{{/ collections }}
-                        return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                     } else {
                         // {{ collection }}
                         // {{# collection }}...{{/ collection }}
@@ -1491,15 +1487,13 @@ extension NSDictionary {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                dictionaryValue: {
-                    return reduce(GeneratorSequence(NSFastGenerator(self)), [:] as [String: MustacheBox]) { (var boxDictionary, key) in
-                        if let key = key as? String {
-                            let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                            boxDictionary[key] = BoxAnyObject(item)
-                        }
-                        return boxDictionary
+                dictionaryValue: reduce(GeneratorSequence(NSFastGenerator(self)), [String: MustacheBox](), { (var boxDictionary, key) in
+                    if let key = key as? String {
+                        let item = (self as AnyObject)[key] // Cast to AnyObject so that we can use subscript notation.
+                        boxDictionary[key] = BoxAnyObject(item)
                     }
-            }),
+                    return boxDictionary
+                })),
             keyedSubscript: { (key: String) in
                 let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
                 return BoxAnyObject(item)
@@ -1552,7 +1546,7 @@ extension NSSet {
         return MustacheBox(
             boolValue: (self.count > 0),
             value: self,
-            converter: MustacheBox.Converter(arrayValue: { map(GeneratorSequence(NSFastGenerator(self)), BoxAnyObject) }),
+            converter: MustacheBox.Converter(arrayValue: map(GeneratorSequence(NSFastGenerator(self)), BoxAnyObject)),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -1566,7 +1560,7 @@ extension NSSet {
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
                     // {{# sets }}...{{/ sets }}
-                    return info.tag.renderInnerContent(info.context.extendedContext(Box(self)), error: error)
+                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
@@ -1911,7 +1905,7 @@ to implement 2:
                         // Perform the default rendering: push self on the top
                         // of the context stack, and render the section:
                         let context = info.context.extendedContext(Box(self))
-                        return info.tag.renderInnerContent(context, error: error)
+                        return info.tag.render(context, error: error)
                     }
                 }
             )

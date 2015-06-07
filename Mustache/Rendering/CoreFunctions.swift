@@ -562,8 +562,8 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
 /**
 Builds a filter that performs post rendering.
 
-`Rendering` is a type that wraps a rendered String, and its ContentType (HTML or
-Text). This filter turns a rendering in another one:
+`Rendering` is a type that wraps a rendered String, and its content type (HTML
+or Text). This filter turns a rendering in another one:
 
     // twice filter renders its argument twice:
     let twice = Filter { (rendering: Rendering, _) in
@@ -930,184 +930,149 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
 // MARK: - RenderFunction
 
 /**
-A RenderFunction is invoked as soon as a variable tag {{name}} or a section
-tag {{#name}}...{{/name}} is rendered, and lets you implement custom rendering.
-
-This is how, for example, you implement "Mustache lambdas".
-
-::
-
-  // A custom render function
-  let render: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-      return Rendering("foo")
-  }
-  
-  // A template that contains both a section and a variable tag:
-  let template = Template(string: "{{#section}}variable: {{variable}}{{/section}}")!
-  
-  // Attach the render function to `variable`: render "variable: foo"
-  let data1 = ["section": Box(["variable": Box(render)])]
-  let rendering1 = template.render(Box(data1))!
-
-  // Attach the render function to `section`: render "foo"
-  let data2 = ["section": Box(render)]
-  let rendering2 = template.render(Box(data2))!
+`RenderFunction` is used by the Mustache rendering engine when it renders a
+variable tag (`{{name}}` or `{{{body}}}`) or a section tag
+(`{{#name}}...{{/name}}`).
 
 
-The Mustache specification defines lambdas at
-https://github.com/mustache/spec/blob/master/specs/%7Elambdas.yml:
+### Output: `Rendering`
 
-> Lambdas are a special-cased data type for use in interpolations and
-> sections.
->
-> When used as the data value for an Interpolation tag, the lambda MUST be
-> treatable as an arity 0 function, and invoked as such.  The returned value
-> MUST be rendered against the default delimiters, then interpolated in place
-> of the lambda.
+The return type of `RenderFunction` is `Rendering`, a type that wraps a rendered
+String, and its ContentType (HTML or Text).
 
-Here is the way to write a spec-like lambda for a variable tag:
+Text renderings are HTML-escaped, except for `{{{triple}}}` mustache tags, and
+Text templates (see `Configuration.contentType` for a full discussion of the
+content type of templates).
 
-::
+For example:
 
-  // This RenderFunction is equivalent to the pure spec lambda:
-  //
-  // lambda() -> String {
-  //     return "Hello {{ name }}"
-  // }
+    let HTML: RenderFunction = { (_, _) in
+        return Rendering("<HTML>", .HTML)
+    }
+    let text: RenderFunction = { (_, _) in
+        return Rendering("<text>")   // default content type is text
+    }
 
-  let greeting: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-      let template = Template(string: "Hello {{ name }}")!
-      return template.render(info.context, error: error)
-  }
-
-  let template = Template(string: "{{ greeting }}")!
-
-  // Renders "Hello Arthur"
-  let data = [
-      "name": Box("Arthur"),
-      "greeting": Box(greeting)]
-  template.render(Box(data))!
-
-The spec continues:
-
-> When used as the data value for a Section tag, the lambda MUST be treatable
-> as an arity 1 function, and invoked as such (passing a String containing the
-> unprocessed section contents).  The returned value MUST be rendered against
-> the current delimiters, then interpolated in place of the section.
-
-::
-
-  // The strong RenderFunction below is equivalent to the pure spec lambda:
-  //
-  // lambda(string: String) -> String {
-  //     return "<strong>\(string)</strong>"
-  // }
-  //
-  // To this mustache.js lambda:
-  //
-  // var data = {
-  //     strong : function() {
-  //         return function(text, render) {
-  //             return "<strong>" + render(text) + "</strong>"
-  //         }
-  //     }
-  // };
-  //
-  // To this Ruby mustache lambda:
-  //
-  // class MyView < Mustache
-  //   def strong
-  //     lambda do |text|
-  //       "<strong#{render(text)}</strong>"
-  //     end
-  //   end
-  // end
-
-  let strong: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-      let template = Template(string: "<strong>\(info.tag.innerTemplateString)</strong>")!
-      return template.render(info.context, error: error)
-  }
-
-Note how the spec, mustache.js and Ruby mustache require a double parsing of
-the inner, unprocessed, content of the section.
-
-There is a better way to write this lambda, by wrapping the rendering of the
-already-parsed Mustache tag:
-
-::
-
-  // The strong RenderFunction below is equivalent to this Handlebars.js helper:
-  //
-  // Handlebars.registerHelper('strong', function(options) {
-  //   return new Handlebars.SafeString(
-  //     '<strong>'
-  //     + options.fn(this)
-  //     + '</strong>');
-  // });
-
-  let strong: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-      let innerContent = info.tag.renderInnerContent(info.context)!.string
-      return Rendering("<strong>\(innerContent)</strong>", .HTML)
-  }
-
-  let template = Template(string: "{{#strong}}Hello {{name}}{{/strong}}")!
-  template.registerInBaseContext("strong", Box(strong))
-
-  // Renders "<strong>Hello Arthur</strong>"
-  template.render(Box(["name": Box("Arthur")]))!
+    // Renders "<HTML>, &lt;text&gt;"
+    let template = Template(string: "{{HTML}}, {{text}}")!
+    let data = ["HTML": Box(HTML), "text": Box(text)]
+    let rendering = template.render(Box(data))!
 
 
-As seen in the example above, the returned rendering has a content type, text or
-HTML. If you return text, the rendering is HTML-escaped in the final template
-rendering (except for {{{triple}}} mustache tags and text templates - see the
-Configuration type for more information about text templates).
+### Input: `RenderingInfo`
 
-::
+The `info` argument contains a `RenderingInfo` which provides information
+about the requested rendering:
 
-  let HTML: RenderFunction = { (info: RenderingInfo, _) in
-      return Rendering("<HTML>", .HTML)
-  }
-  let text: RenderFunction = { (info: RenderingInfo, _) in
-      return Rendering("<text>")   // default content type is text
-  }
+- `info.context: Context` is the context stack which contains the rendered data.
 
-  // Renders "<HTML>, &lt;text&gt;"
-  let template = Template(string: "{{HTML}}, {{text}}")!
-  let data = ["HTML": Box(HTML), "text": Box(text)]
-  let rendering = template.render(Box(data))!
+- `info.tag: Tag` is the tag to render.
 
+- `info.tag.type: TagType` is the type of the tag (variable or section). You can
+  use this type to have a different rendering for variable and section tags.
 
-RenderFunction is invoked for both {{ variable }} and {{# section }}...{{/}}
-tags. You can query info.tag.type in order to have a different rendering
-depending on the tag type:
+- `info.tag.innerTemplateString: String` is the inner content of the tag,
+  unrendered. For the section tag `{{# person }}Hello {{ name }}!{{/ person }}`,
+  it is `Hello {{ name }}!`.
 
-::
-
-  let render: RenderFunction = { (info: RenderingInfo, _) in
-      switch info.tag.type {
-      case .Variable:
-          // {{ object }}
-          return Rendering("variable")
-      case .Section:
-          // {{# object }}...{{/ object }}
-          return Rendering("section")
-      }
-  }
-
-  let template = Template(string: "{{object}}, {{#object}}...{{/object}}")!
-
-  // Renders "variable, section"
-  template.render(Box(["object": Box(render)]))!
+- `info.tag.render: (Context, NSErrorPointer) -> Rendering?` is a
+  function that renders the inner content of the tag, given a context stack.
+  For example, the section tag `{{# person }}Hello {{ name }}!{{/ person }}`
+  would render `Hello Arthur!`, assuming the provided context stack provides
+  "Arthur" for the key "name".
 
 
-:see: RenderingInfo
-:see: Rendering
-:see: Configuration
+### Example
+
+As an example, let's write a `RenderFunction` which performs the default
+rendering of a value:
+
+- `{{ value }}` and `{{{ value }}}` renders the built-in Swift String
+  Interpolation of the value: our render function will return a `Rendering` with
+  content type Text when the rendered tag is a variable tag. The Text content
+  type makes sure that the returned string will be HTML-escaped if needed.
+
+- `{{# value }}...{{/ value }}` pushes the value on the top of the context
+  stack, and renders the inner content of section tags.
+
+The default rendering thus reads:
+
+    let value = ... // Some value
+    let renderValue: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+        
+        // Rendering depends on the tag type:
+        switch info.tag.type {
+
+        case .Variable:
+            // {{ value }} and {{{ value }}}
+
+            // Return the built-in Swift String Interpolation of the value:
+            return Rendering("\(value)", .Text)
+
+        case .Section:
+            // {{# value }}...{{/ value }}
+
+            // Push the value on the top of the context stack:
+            let context = info.context.extendedContext(Box(value))
+
+            // Renders the inner content of the section tag:
+            return info.tag.render(context, error: error)
+        }
+    }
+
+    let template = Template(string: "{{value}}")!
+    let rendering = template.render(Box(["value": Box(renderValue)]))!
+
+:param: info   A RenderingInfo
+:param: error  If there is a problem in the rendering, upon return contains an
+               NSError object that describes the problem.
+
+:returns: a Rendering, or nil in case of error.
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
+
 /**
-TODO: doc & tests
+Builds a `RenderFunction` which conforms to the "lambda" defined by the
+Mustache specification (see https://github.com/mustache/spec/blob/v1.1.2/specs/%7Elambdas.yml).
+
+The `lambda` parameter is a function which takes the unrendered context of a
+section, and returns a String. The returned `RenderFunction` renders this string
+against the current delimiters.
+
+For example:
+
+    let template = Template(string: "{{#bold}}{{name}} has a Mustache!{{/bold}}")!
+
+    let bold = Lambda { (string) in "<b>\(string)</b>" }
+    let data = [
+        "name": Box("Clark Gable"),
+        "bold": Box(bold)]
+
+    // Renders "<b>Lionel Richie has a Mustache.</b>"
+    let rendering = template.render(Box(data))!
+
+Warning: the returned String is *parsed* each time the lambda is executed. In
+the example above, this is inefficient because the inner content of the bolded
+section has already been parsed with its template. You may prefer the raw
+`RenderFunction` type, capable of an equivalent and faster implementation:
+
+    let bold: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+        if let rendering = info.tag.render(info.context, error: error) {
+            return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
+        } else {
+            return nil
+        }
+    }
+    let data = [
+        "name": Box("Clark Gable"),
+        "bold": Box(bold)]
+
+    // Renders "<b>Lionel Richie has a Mustache.</b>"
+    let rendering = template.render(Box(data))!
+
+:param: lambda  A `String -> String` function
+:returns: A RenderFunction
 */
 public func Lambda(lambda: String -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
@@ -1131,8 +1096,45 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
     }
 }
 
+
 /**
-TODO: doc & tests
+Builds a `RenderFunction` which conforms to the "lambda" defined by the
+Mustache specification (see https://github.com/mustache/spec/blob/v1.1.2/specs/%7Elambdas.yml).
+
+The `lambda` parameter is a function without any argument that returns a String.
+The returned `RenderFunction` renders this string against the default `{{` and
+`}}` delimiters.
+
+For example:
+
+    let template = Template(string: "{{fullName}} has a Mustache.")!
+    
+    let fullName = Lambda { "{{firstName}} {{lastName}}" }
+    let data = [
+        "firstName": Box("Lionel"),
+        "lastName": Box("Richie"),
+        "fullName": Box(fullName)]
+
+    // Renders "Lionel Richie has a Mustache."
+    let rendering = template.render(Box(data))!
+
+Warning: the returned String is *parsed* each time the lambda is executed. In
+the example above, this is inefficient because the same
+`"{{firstName}} {{lastName}}"` would be parsed several times. You may prefer
+using a Template instead of a lambda (see the documentation of
+`Template.mustacheBox` for more information):
+
+    let fullName = Template(string:"{{firstName}} {{lastName}}")!
+    let data = [
+        "firstName": Box("Lionel"),
+        "lastName": Box("Richie"),
+        "fullName": Box(fullName)]
+
+    // Renders "Lionel Richie has a Mustache."
+    let rendering = template.render(Box(data))!
+
+:param: lambda  A `() -> String` function
+:returns: A RenderFunction
 */
 public func Lambda(lambda: () -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
@@ -1156,46 +1158,35 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             //
             // Behave as a true object, and render the section.
             let context = info.context.extendedContext(Box(Lambda(lambda)))
-            return info.tag.renderInnerContent(context, error: error)
+            return info.tag.render(context, error: error)
         }
     }
 }
 
 
 /**
-A Rendering is a tainted String, which knows its content type, Text or HTML.
+`Rendering` is a type that wraps a rendered String, and its content type (HTML
+or Text).
 
-You will meet the Rendering type when you implement custom rendering
-functions. Example:
-
-    let render: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-        return Rendering("foo")
-    }
-
-    // Renders "foo"
-    let template = Template(string: "{{object}}")!
-    let data = ["object": Box(render)]
-    template.render(Box(data))!
+See `RenderFunction` and `FilterFunction` for more information.
 */
 public struct Rendering {
+    
+    /// The rendered string
     public let string: String
+    
+    /// The content type of the rendering
     public let contentType: ContentType
     
     /**
     Builds a Rendering with a String and a ContentType.
     
-    Usage:
+        Rendering("foo")        // Defaults to Text
+        Rendering("foo", .Text)
+        Rendering("foo", .HTML)
     
-    ::
-    
-      Rendering("foo")        // Defaults to Text
-      Rendering("foo", .Text)
-      Rendering("foo", .HTML)
-    
-    :param: string A string
-    :param: contentType A content type
-    
-    :see: RenderFunction
+    :param: string       A string
+    :param: contentType  A content type
     */
     public init(_ string: String, _ contentType: ContentType = .Text) {
         self.string = string
@@ -1204,43 +1195,25 @@ public struct Rendering {
 }
 
 /**
-You will meet RenderingInfo when you implement custom rendering functions of
-type RenderFunction.
+`RenderingInfo` provides information about a rendering.
 
-A RenderFunction is invoked as soon as a variable tag {{name}} or a section
-tag {{#name}}...{{/name}} is rendered. Its RenderingInfo parameter provides
-information about the rendered tag, and the context stack.
-
-:see: RenderFunction
-:see: Tag
-:see: Context
+See `RenderFunction` for more information.
 */
 public struct RenderingInfo {
     
-    /**
-    The currently rendered tag.
-    
-    :see: Tag
-    */
+    /// The currently rendered tag.
     public let tag: Tag
     
-    /**
-    The current context stack.
-    
-    :see: Context
-    */
+    /// The current context stack.
     public var context: Context
     
-    
-    // Not public
-    //
     // If true, the rendering is part of an enumeration. Some values don't
     // render the same whenever they render as an enumeration item, or alone:
     // {{# values }}...{{/ values }} vs. {{# value }}...{{/ value }}.
     //
     // This is the case of Int, UInt, Double, Bool: they enter the context
     // stack when used in an iteration, and do not enter the context stack when
-    // used as a boolean.
+    // used as a boolean (see https://github.com/groue/GRMustache/issues/83).
     //
     // This is also the case of collections: they enter the context stack when
     // used as an item of a collection, and enumerate their items when used as
@@ -1253,92 +1226,41 @@ public struct RenderingInfo {
 // MARK: - WillRenderFunction
 
 /**
-Once a WillRenderFunction has entered the context stack, it is called just
+Once a `WillRenderFunction` has entered the context stack, it is called just
 before tags are about to render, and has the opportunity to replace the value
 they are about to render.
 
-::
+    let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
+        println("\(tag) will render \(box.value!)")
+        return box
+    }
 
-  let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
-      println("\(tag) will render \(box.value!)")
-      return box
-  }
-  
-  // By entering the base context of the template, the logTags function
-  // will be notified of all tags.
-  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
-  template.extendBaseContext(Box(willRender))
-  
-  // Prints:
-  // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
-  // {{ firstName }} at line 1 will render Errol
-  // {{ lastName }} at line 1 will render Flynn
-  let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-  template.render(Box(data))!
+    // By entering the base context of the template, the logTags function
+    // will be notified of all tags.
+    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+    template.extendBaseContext(Box(willRender))
 
-WillRender functions don't have to enter the base context of a template to
+    // Prints:
+    // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
+    // {{ firstName }} at line 1 will render Errol
+    // {{ lastName }} at line 1 will render Flynn
+    let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+    template.render(Box(data))!
+
+`WillRenderFunction` don't have to enter the base context of a template to
 perform: they can enter the context stack just like any other value, by being
 attached to a section. In this case, they are only notified of tags inside that
 section.
 
-::
+    let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
 
-  let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
-  
-  // Prints:
-  // {{ lastName }} at line 1 will render Flynn
-  let data = [
-      "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
-      "spy": Box(willRender)
-  ]
-  template.render(Box(data))!
-
-WillRenderFunction and DidRenderFunction work nicely together:
-
-::
-
-  var indentLevel = 0
-  
-  // willRender outputs the rendered tags, and increments indentation level when
-  // it enters a section tag.
-  let willRender: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
-      print(String(count: indentLevel * 4, repeatedValue: " " as Character))
-      println(tag)
-      if tag.type == TagType.Section {
-          indentLevel++
-      }
-      return box
-  }
-  
-  // didRender decrements indentation level when it leaves a section tag.
-  let didRender: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
-      if tag.type == TagType.Section {
-          indentLevel--
-      }
-  }
-  
-  // Have both willRender and didRender enter the context stack:
-  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}\nAwards: {{# awards }}\n- {{.}}{{/ awards }}")!
-  template.extendBaseContext(Box(willRender: willRender, didRender: didRender))
-  
-  // Prints:
-  // {{# user }} at line 1
-  //     {{ firstName }} at line 1
-  //     {{ lastName }} at line 1
-  // {{# awards }} at line 2
-  //     {{.}} at line 3
-  //     {{.}} at line 3
-  //     {{.}} at line 3
-  let data = [
-      "user": [
-          "firstName": "Sean",
-          "lastName": "Connery"],
-      "awards": ["Academy Award", "BAFTA Awards", "Golden Globes"]]
-  template.render(Box(data))!
-
-:see: DidRenderFunction
-:see: Tag
-:see: MustacheBox
+    // Prints:
+    // {{ lastName }} at line 1 will render Flynn
+    let data = [
+        "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
+        "spy": Box(willRender)
+    ]
+    template.render(Box(data))!
 */
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 
@@ -1350,44 +1272,40 @@ public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBo
 Once a DidRenderFunction has entered the context stack, it is called just
 after tags have been rendered.
 
-::
+    let logRenderings: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
+        println("\(tag) did render \(box.value!) as `\(string!)`")
+    }
 
-  let logRenderings: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
-      println("\(tag) did render \(box.value!) as `\(string!)`")
-  }
-  
-  // By entering the base context of the template, the logRenderings function
-  // will be notified of all tags.
-  let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
-  template.extendBaseContext(Box(logRenderings))
-  
-  // Renders "Errol Flynn"
-  //
-  // Prints:
-  // {{ firstName }} at line 1 did render Errol as `Errol`
-  // {{ lastName }} at line 1 did render Flynn as `Flynn`
-  // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
-  let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-  template.render(Box(data))!
+    // By entering the base context of the template, the logRenderings function
+    // will be notified of all tags.
+    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+    template.extendBaseContext(Box(logRenderings))
+
+    // Renders "Errol Flynn"
+    //
+    // Prints:
+    // {{ firstName }} at line 1 did render Errol as `Errol`
+    // {{ lastName }} at line 1 did render Flynn as `Flynn`
+    // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
+    let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
+    template.render(Box(data))!
 
 DidRender functions don't have to enter the base context of a template to
 perform: they can enter the context stack just like any other value, by being
 attached to a section. In this case, they are only notified of tags inside that
 section.
 
-::
+    let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
 
-  let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
-  
-  // Renders "Errol Flynn"
-  //
-  // Prints:
-  // {{ lastName }} at line 1 did render Flynn as `Flynn`
-  let data = [
-      "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
-      "spy": Box(didRender)
-  ]
-  template.render(Box(data))!
+    // Renders "Errol Flynn"
+    //
+    // Prints:
+    // {{ lastName }} at line 1 did render Flynn as `Flynn`
+    let data = [
+        "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
+        "spy": Box(didRender)
+    ]
+    template.render(Box(data))!
 
 The string argument of DidRenderFunction is optional: it is nil if and only if
 the tag could not render because of a rendering error.

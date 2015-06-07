@@ -25,16 +25,34 @@ import Foundation
 
 
 /**
-MustacheBox wraps values that feed your templates.
+Mustache templates don't eat raw values: they eat values boxed in `MustacheBox`.
 
-This type has no public initializer. To produce boxes, you use one variant of
-the Box() function, or BoxAnyObject().
+To box something in a `MustacheBox`, you use one variant of the `Box()`
+function. It comes in several variants so that nearly anything can be boxed and
+feed templates:
 
-The fact that it is a subclass of NSObject is an implementation detail that is
-enforced by the Swift language itself, and may change in the future.
+- Basic Swift values:
 
-:see: Box()
-:see: BoxAnyObject()
+        `template.render(Box("foo"))`
+
+- Dictionaries & collections:
+
+        template.render(Box(["numbers": [1,2,3]]))
+
+- Custom types via the `MustacheBoxable` protocol:
+    
+        extension User: MustacheBoxable { ... }
+        template.render(Box(user))
+
+- Functions such as `FilterFunction`, `RenderFunction`, `WillRenderFunction` and
+  `DidRenderFunction`:
+
+        let square = Filter { (int: Int, _) in Box(int * int) }
+        template.registerInBaseContext("square", Box(square))
+
+Warning: the fact that `MustacheBox` is a subclass of NSObject is an
+implementation detail that is enforced by the Swift 1.2 language itself. This
+may change in the future: do not rely on it.
 */
 public class MustacheBox : NSObject {
     
@@ -52,41 +70,37 @@ public class MustacheBox : NSObject {
     //
     // For an example of this limitation, see example below:
     //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // A type that is not compatible with Objective-C
-    //   struct MustacheBox { }
-    //
-    //   // So far so good
-    //   extension NSObject {
-    //       var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
-    //
-    //   // Error: declarations in extensions cannot override yet
-    //   extension NSNull {
-    //       override var mustacheBox: MustacheBox { return MustacheBox() }
-    //   }
+    //     import Foundation
+    //     
+    //     // A type that is not compatible with Objective-C
+    //     struct MustacheBox { }
+    //     
+    //     // So far so good
+    //     extension NSObject {
+    //         var mustacheBox: MustacheBox { return MustacheBox() }
+    //     }
+    //     
+    //     // Error: declarations in extensions cannot override yet
+    //     extension NSNull {
+    //         override var mustacheBox: MustacheBox { return MustacheBox() }
+    //     }
     //
     // This problem does not apply to Objc-C compatible protocols:
     //
-    // ::
-    //
-    //   import Foundation
-    //
-    //   // So far so good
-    //   extension NSObject {
-    //       var prop: String { return "NSObject" }
-    //   }
-    //
-    //   // No error
-    //   extension NSNull {
-    //       override var prop: String { return "NSNull" }
-    //   }
-    //
-    //   NSObject().prop // "NSObject"
-    //   NSNull().prop   // "NSNull"
+    //     import Foundation
+    //     
+    //     // So far so good
+    //     extension NSObject {
+    //         var prop: String { return "NSObject" }
+    //     }
+    //     
+    //     // No error
+    //     extension NSNull {
+    //         override var prop: String { return "NSNull" }
+    //     }
+    //     
+    //     NSObject().prop // "NSObject"
+    //     NSNull().prop   // "NSNull"
     //
     // In order to let the user easily override NSObject.mustacheBox, we had to
     // keep its return type compatible with Objective-C, that is to say make
@@ -96,21 +110,17 @@ public class MustacheBox : NSObject {
     // -------------------------------------------------------------------------
     // MARK: - The boxed value
     
-    /**
-    The boxed value.
-    */
+    /// The boxed value.
     public let value: Any?
     
-    /**
-    The only empty box is Box(). In particular, Box(NSNull()) is not empty.
-    */
+    /// The only empty box is `Box()`.
     public let isEmpty: Bool
     
     /**
     The boolean value of the box.
     
     It tells whether the Box should trigger or prevent the rendering of regular
-    {{#section}}...{{/}} and inverted {{^section}}...{{/}}.
+    `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}`.
     */
     public let boolValue: Bool
     
@@ -119,7 +129,7 @@ public class MustacheBox : NSObject {
     returns this value as an Int.
     */
     public var intValue: Int? {
-        return converter?.intValue?()
+        return converter?.intValue()
     }
     
     /**
@@ -127,7 +137,7 @@ public class MustacheBox : NSObject {
     returns this value as a UInt.
     */
     public var uintValue: UInt? {
-        return converter?.uintValue?()
+        return converter?.uintValue()
     }
     
     /**
@@ -135,43 +145,33 @@ public class MustacheBox : NSObject {
     returns this value as a Double.
     */
     public var doubleValue: Double? {
-        return converter?.doubleValue?()
+        return converter?.doubleValue()
     }
     
     /**
-    If boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
-    returns a [MustacheBox].
+    If the boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
+    returns an array of `MustacheBox`.
     */
     public var arrayValue: [MustacheBox]? {
-        return converter?.arrayValue?()
+        return converter?.arrayValue()
     }
     
     /**
-    If boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
-    returns a [String: MustacheBox] dictionary.
+    If the boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
+    returns a dictionary `[String: MustacheBox]`.
     */
     public var dictionaryValue: [String: MustacheBox]? {
-        return converter?.dictionaryValue?()
+        return converter?.dictionaryValue()
     }
     
-    
-    // -------------------------------------------------------------------------
-    // MARK: - Rendering a Box
-    
     /**
-    TODO
-    */
-    public private(set) var render: RenderFunction
-    
-    
-    // -------------------------------------------------------------------------
-    // MARK: - Key extraction
-    
-    /**
-    Extract a key out of a box.
+    Extracts a key out of a box.
     
         let box = Box(["firstName": "Arthur"])
         box["firstName"].value  // "Arthur"
+    
+    :param: key  A key
+    :returns: the MustacheBox for this key.
     */
     public subscript (key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()
@@ -179,12 +179,25 @@ public class MustacheBox : NSObject {
     
     
     // -------------------------------------------------------------------------
+    // MARK: - Other facets
+    
+    /// See the documentation of `RenderFunction`.
+    public private(set) var render: RenderFunction
+    
+    /// See the documentation of `FilterFunction`.
+    public let filter: FilterFunction?
+    
+    /// See the documentation of `WillRenderFunction`.
+    public let willRender: WillRenderFunction?
+    
+    /// See the documentation of `DidRenderFunction`.
+    public let didRender: DidRenderFunction?
+    
+    
+    // -------------------------------------------------------------------------
     // MARK: - Internal
     
     let keyedSubscript: KeyedSubscriptFunction?
-    let filter: FilterFunction?
-    let willRender: WillRenderFunction?
-    let didRender: DidRenderFunction?
     let converter: Converter?
     
     init(
@@ -237,7 +250,7 @@ public class MustacheBox : NSObject {
                 case .Section:
                     // {{# box }}...{{/ box }}
                     let context = info.context.extendedContext(self)
-                    return info.tag.renderInnerContent(context, error: error)
+                    return info.tag.render(context, error: error)
                 }
             }
         }
@@ -251,18 +264,18 @@ public class MustacheBox : NSObject {
     // would have to try casting the boxed value to Int, UInt, Double, NSNumber
     // etc. until she finds its actual type.
     struct Converter {
-        let intValue: (() -> Int?)?
-        let uintValue: (() -> UInt?)?
-        let doubleValue: (() -> Double?)?
-        let arrayValue: (() -> [MustacheBox]?)?
-        let dictionaryValue: (() -> [String: MustacheBox]?)?
+        let intValue: (() -> Int?)
+        let uintValue: (() -> UInt?)
+        let doubleValue: (() -> Double?)
+        let arrayValue: (() -> [MustacheBox]?)
+        let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            intValue: (() -> Int?)? = nil,
-            uintValue: (() -> UInt?)? = nil,
-            doubleValue: (() -> Double?)? = nil,
-            arrayValue: (() -> [MustacheBox]?)? = nil,
-            dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
+            @autoclosure(escaping) intValue: () -> Int? = nil,
+            @autoclosure(escaping) uintValue: () -> UInt? = nil,
+            @autoclosure(escaping) doubleValue: () -> Double? = nil,
+            @autoclosure(escaping) arrayValue: () -> [MustacheBox]? = nil,
+            @autoclosure(escaping) dictionaryValue: () -> [String: MustacheBox]? = nil)
         {
             self.intValue = intValue
             self.uintValue = uintValue

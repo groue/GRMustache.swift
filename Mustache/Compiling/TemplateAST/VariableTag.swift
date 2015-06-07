@@ -51,7 +51,7 @@ class VariableTag: Tag {
     /**
     Inherited from the public super class Tag. Variable have no inner content.
     */
-    override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
+    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
         return Rendering("", contentType)
     }
 }

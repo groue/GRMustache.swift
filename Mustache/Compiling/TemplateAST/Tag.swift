@@ -116,7 +116,7 @@ public class Tag: Printable {
     
         // The strong RenderFunction below wraps a section in a <strong> HTML tag.
         let strong: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-            let rendering = info.tag.renderInnerContent(info.context)
+            let rendering = info.tag.render(info.context)
             return Rendering("<strong>\(rendering!.string)</strong>", .HTML)
         }
 
@@ -133,7 +133,7 @@ public class Tag: Printable {
     :returns: The rendering of the tag
     
     */
-    public func renderInnerContent(context: Context, error: NSErrorPointer = nil) -> Rendering? {
+    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
         fatalError("Subclass must override")
     }
     

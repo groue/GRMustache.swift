@@ -54,7 +54,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     
     func textExample3() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.renderInnerContent(info.context)!
+            let rendering = info.tag.render(info.context)!
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
@@ -67,7 +67,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     
     func textExample4() {
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.renderInnerContent(info.context)!
+            let rendering = info.tag.render(info.context)!
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
         let box = Box(["twice": Box(render)])
@@ -174,7 +174,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             var buffer = "<ul>"
             for item in items {
                 let itemContext = info.context.extendedContext(item)
-                let itemRendering = info.tag.renderInnerContent(itemContext)!
+                let itemRendering = info.tag.render(itemContext)!
                 buffer += "<li>\(itemRendering.string)</li>"
             }
             buffer += "</ul>"

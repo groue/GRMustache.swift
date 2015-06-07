@@ -52,7 +52,7 @@ class SectionTag: Tag {
     /**
     Inherited from the public super class Tag
     */
-    override func renderInnerContent(context: Context, error: NSErrorPointer) -> Rendering? {
+    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return renderingEngine.render(error: error)
     }

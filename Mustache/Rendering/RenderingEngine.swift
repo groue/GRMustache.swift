@@ -193,7 +193,7 @@ final class RenderingEngine {
                     rendering = box.render(info: info, error: &error)
                 case (true, false):
                     // {{^ false }}...{{/ false }}
-                    rendering = tag.renderInnerContent(context, error: &error)
+                    rendering = tag.render(context, error: &error)
                 default:
                     // {{^ true }}...{{/ true }}
                     // {{# false }}...{{/ false }}
