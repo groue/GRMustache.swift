@@ -25,159 +25,114 @@
 The StandardLibrary exposes built-in goodies.
 */
 public struct StandardLibrary {
+    
     /**
-    Usage:
-    
-    ::
-    
-      // To make HTMLEscape available for all templates, execute once and
-      // early in your application:
-      Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-    
-      // To make HTMLEscape available for a single template, only do:
-      let template = ...
-      template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-    
     As a filter, `HTMLEscape` returns its argument, HTML-escaped.
     
-    ::
-    
-      <pre>
-      {{ HTMLEscape(content) }}
-      </pre>
+        <pre>
+        {{ HTMLEscape(content) }}
+        </pre>
     
     When used in a section, `HTMLEscape` escapes all inner variable tags in a section:
     
-    ::
-    
-      {{# HTMLEscape }}
-        {{ firstName }}
-        {{ lastName }}
-      {{/ HTMLEscape }}
+        {{# HTMLEscape }}
+          {{ firstName }}
+          {{ lastName }}
+        {{/ HTMLEscape }}
     
     Variable tags buried inside inner sections are escaped as well, so that you
     can render loop and conditional sections:
     
-    ::
+        {{# HTMLEscape }}
+          {{# items }}
+            {{ name }}
+          {{/ items }}
+        {{/ HTMLEscape }}
     
-      {{# HTMLEscape }}
-        {{# items }}
-          {{ name }}
-        {{/ items }}
-      {{/ HTMLEscape }}
+    ### Usage
     
-    :see: javascriptEscape
-    :see: URLEscape
+        // To make HTMLEscape available for all templates, execute once and
+        // early in your application:
+        Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+
+        // To make HTMLEscape available for a single template, only do:
+        let template = ...
+        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
     */
     public static let HTMLEscape: MustacheBoxable = Mustache.HTMLEscape()
     
     /**
-    Usage:
-    
-    ::
-    
-      // To make URLEscape available for all templates, execute once and
-      // early in your application:
-      Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-    
-      // To make URLEscape available for a single template, only do:
-      let template = ...
-      template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-    
     As a filter, `URLEscape` returns its argument, percent-escaped.
     
-    ::
-    
-      <a href="http://google.com?q={{ URLEscape(query) }}">...</a>
+        <a href="http://google.com?q={{ URLEscape(query) }}">...</a>
     
     When used in a section, `URLEscape` escapes all inner variable tags in a
     section:
     
-    ::
-    
-      {{# URLEscape }}
-        <a href="http://google.com?q={{query}}&amp;hl={{language}}">...</a>
-      {{/ URLEscape }}
+        {{# URLEscape }}
+          <a href="http://google.com?q={{query}}&amp;hl={{language}}">...</a>
+        {{/ URLEscape }}
     
     Variable tags buried inside inner sections are escaped as well, so that you
     can render loop and conditional sections:
     
-    ::
+        {{# URLEscape }}
+          <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
+        {{/ URLEscape }}
     
-      {{# URLEscape }}
-        <a href="http://google.com?q={{query}}{{#language}}&amp;hl={{language}}{{/language}}">...</a>
-      {{/ URLEscape }}
+    ### Usage
     
-    :see: HTMLEscape
-    :see: javascriptEscape
+        // To make URLEscape available for all templates, execute once and
+        // early in your application:
+        Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+
+        // To make URLEscape available for a single template, only do:
+        let template = ...
+        template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
     */
     public static let URLEscape: MustacheBoxable = Mustache.URLEscape()
     
     /**
-    Usage:
-    
-    ::
-    
-      // To make javascriptEscape available for all templates, execute once and
-      // early in your application:
-      Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
-    
-      // To make javascriptEscape available for a single template, only do:
-      let template = ...
-      template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
-    
     As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
     
-    ::
-    
-      <script type="text/javascript">
-        var name = "{{ javascriptEscape(name) }}";
-      </script>
+        <script type="text/javascript">
+          var name = "{{ javascriptEscape(name) }}";
+        </script>
     
     When used in a section, `javascriptEscape` escapes all inner variable tags
     in a section:
     
-    ::
-    
-      <script type="text/javascript">
-        {{# javascriptEscape }}
-          var firstName = "{{ firstName }}";
-          var lastName = "{{ lastName }}";
-        {{/ javascriptEscape }}
-      </script>
+        <script type="text/javascript">
+          {{# javascriptEscape }}
+            var firstName = "{{ firstName }}";
+            var lastName = "{{ lastName }}";
+          {{/ javascriptEscape }}
+        </script>
     
     Variable tags buried inside inner sections are escaped as well, so that you
     can render loop and conditional sections:
     
-    ::
+        <script type="text/javascript">
+          {{# javascriptEscape }}
+            var firstName = {{# firstName }}"{{ firstName }}"{{/}}{{^ firstName }}null{{/}};
+            var lastName = {{# lastName }}"{{ lastName }}"{{/}}{{^ lastName }}null{{/}};
+          {{/ javascriptEscape }}
+        </script>
     
-      <script type="text/javascript">
-        {{# javascriptEscape }}
-          var firstName = {{# firstName }}"{{ firstName }}"{{/}}{{^ firstName }}null{{/}};
-          var lastName = {{# lastName }}"{{ lastName }}"{{/}}{{^ lastName }}null{{/}};
-        {{/ javascriptEscape }}
-      </script>
+    ### Usage
     
-    :see: HTMLEscape
-    :see: URLEscape
+        // To make javascriptEscape available for all templates, execute once and
+        // early in your application:
+        Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+
+        // To make javascriptEscape available for a single template, only do:
+        let template = ...
+        template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
     */
     public static let javascriptEscape: MustacheBoxable = Mustache.JavascriptEscape()
     
     /**
-    Usage:
-    
-    ::
-    
-      // To make `each` available for all templates, execute once and
-      // early in your application:
-      Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
-    
-      // To make `each` available for a single template, only do:
-      let template = ...
-      template.registerInBaseContext("each", Box(StandardLibrary.each))
-    
     Iteration is natural to Mustache templates:
-    
     `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the
     `users` key is given a list of users.
     
@@ -189,100 +144,86 @@ public struct StandardLibrary {
     - `@first` is true for the first item only.
     - `@last` is true for the last item only.
     
-    ::
+    Given the following template:
     
-      One line per user:
-      {{# each(users) }}
-      - {{ @index }}: {{ name }}
-      {{/}}
+        One line per user:
+        {{# each(users) }}
+        - {{ @index }}: {{ name }}
+        {{/}}
+
+        Comma-separated user names:
+        {{# each(users) }}{{ name }}{{^ @last }}, {{/}}{{/}}.
     
-      Comma-separated user names:
-      {{# each(users) }}{{ name }}{{^ @last }}, {{/}}{{/}}.
+    The rendering reads:
     
-    The template above renders:
-    
-    ::
-    
-      One line per user:
-      - 0: Alice
-      - 1: Bob
-      - 2: Craig
-    
-      Comma-separated user names: Alice, Bob, Craig.
+        One line per user:
+        - 0: Alice
+        - 1: Bob
+        - 2: Craig
+
+        Comma-separated user names: Alice, Bob, Craig.
     
     When provided with a dictionary, `each` iterates each key/value pair of the
     dictionary, stores the key in `@key`, and sets the value as the current
     context:
     
-    ::
-    
-      {{# each(dictionary) }}
-      - {{ @key }}: {{.}}
-      {{/}}
+        {{# each(dictionary) }}
+        - {{ @key }}: {{.}}
+        {{/}}
     
     Renders:
     
-    ::
-    
-      - name: Alice
-      - score: 200
-      - level: 5
+        - name: Alice
+        - score: 200
+        - level: 5
     
     The other positional keys `@index`, `@first`, etc. are still available when
     iterating dictionaries.
+    
+    ### Usage
+    
+        // To make `each` available for all templates, execute once and
+        // early in your application:
+        Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
+
+        // To make `each` available for a single template, only do:
+        let template = ...
+        template.registerInBaseContext("each", Box(StandardLibrary.each))
     */
     public static let each = EachFilter
     
     /**
-    Usage:
-    
-    ::
-    
-      // To make `zip` available for all templates, execute once and
-      // early in your application:
-      Mustache.DefaultConfiguration.registerInBaseContext("zip", Box(StandardLibrary.zip))
-    
-      // To make `zip` available for a single template, only do:
-      let template = ...
-      template.registerInBaseContext("zip", Box(StandardLibrary.zip))
-    
     The zip filter iterates several lists all at once. On each step, one object
     from each input list enters the rendering context, and makes its own keys
     available for rendering.
     
-    Given the Mustache input:
+    Given the Mustache template:
     
-    ::
-    
-      {{# zip(users, teams, scores) }}
-      - {{ name }} ({{ team }}): {{ score }} points
-      {{/}}
+        {{# zip(users, teams, scores) }}
+        - {{ name }} ({{ team }}): {{ score }} points
+        {{/}}
     
     The following JSON input:
     
-    ::
-    
-      {
-        "users": [
-          { "name": "Alice" },
-          { "name": "Bob" },
-        ],
-        "teams": [
-          { "team": "iOS" },
-          { "team": "Android" },
-        ],
-        "scores": [
-          { "score": 100 },
-          { "score": 200 },
-        ]
-      }
+        {
+          "users": [
+            { "name": "Alice" },
+            { "name": "Bob" },
+          ],
+          "teams": [
+            { "team": "iOS" },
+            { "team": "Android" },
+          ],
+          "scores": [
+            { "score": 100 },
+            { "score": 200 },
+          ]
+        }
     
     The rendering is:
     
-    ::
-    
-      - Alice (iOS): 100 points
-      - Bob (Android): 200 points
+        - Alice (iOS): 100 points
+        - Bob (Android): 200 points
     
     In the example above, the first step has consumed (Alice, iOS and 100), and
     the second one (Bob, Android and 200).
@@ -290,6 +231,16 @@ public struct StandardLibrary {
     The zip filter renders a section as many times as there are elements in the
     longest of its argument: exhausted lists simply do not add anything to the
     rendering context.
+    
+    ### Usage
+    
+        // To make `zip` available for all templates, execute once and
+        // early in your application:
+        Mustache.DefaultConfiguration.registerInBaseContext("zip", Box(StandardLibrary.zip))
+
+        // To make `zip` available for a single template, only do:
+        let template = ...
+        template.registerInBaseContext("zip", Box(StandardLibrary.zip))
     */
     public static let zip = ZipFilter
 }
