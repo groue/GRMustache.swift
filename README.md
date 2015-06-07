@@ -112,26 +112,26 @@ Mustache is a cross-platform templating system supported by [many languages](htt
 You'll find in the repository a `Mustache.xcworkspace` workspace that contains a Playground and demo applications.
 
 
-### Inline documentation
+### Reference
 
-All public types, functions and methods of the library are documented in the source code.
+All public types, functions and methods of the library are documented in the source code, and available online on [cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.2/index.html).
 
 The main entry points are:
 
-- the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates:
+- the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.2/Classes/Template.html)):
     
     ```swift
     let template = Template(named: "template")!
     ```
 
-- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates:
+- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.2/Functions.html)):
     
     ```swift
     let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
     let rendering = template.render(Box(data))!
     ```
 
-- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering:
+- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.2/Structs/Configuration.html):
     
     ```swift
     // Have all templates render text, and avoid HTML-escaping:
