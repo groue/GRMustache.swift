@@ -4,6 +4,8 @@ Release Notes
 
 ## v0.9.2
 
+Released on June 7, 2015
+
 **Fixed**
 
 - The `Lambda` functions pass all [mustache/spec tests for "Mustache lambdas"](https://github.com/mustache/spec/blob/v1.1.2/specs/%7Elambdas.yml).
