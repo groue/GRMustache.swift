@@ -2,6 +2,13 @@ Release Notes
 =============
 
 
+## Next version
+
+**Breaking changes**
+
+- There is no longer any specific support for `Int`, `UInt` and `Double`, nor any automatic conversion between Swift and Objective-C numeric types beyond conversions provided by the Swift language itself.
+
+
 ## v0.9.2
 
 Released on June 7, 2015

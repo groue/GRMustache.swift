@@ -302,8 +302,8 @@ Those "lambdas" are a special case of custom rendering functions. The raw `Rende
 // Define the `square` filter.
 //
 // square(n) evaluates to the square of the provided integer.
-let square = Filter { (n: Int, _) in
-    return Box(n * n)
+let square = Filter { (n: Int?, _) in
+    return Box(n! * n!)
 }
 
 
@@ -338,7 +338,7 @@ I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = Filter { (count: Int, info: RenderingInfo, _) in
+let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
     
     // Pluralize the inner content of the section tag:
     var string = info.tag.innerTemplateString
@@ -371,8 +371,8 @@ let rendering = template.render(Box(data))!
 // sum(x, ...) evaluates to the sum of provided integers
 
 let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-    // Extract integers out of input boxes, assuming zero for non numeric values
-    let integers = map(boxes) { (box) in box.intValue ?? 0 }
+    // Extract integers out of input boxes, assuming zero for non integer values
+    let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
     let sum = reduce(integers, 0, +)
     return Box(sum)
 }
@@ -389,46 +389,6 @@ template.registerInBaseContext("sum", Box(sum))
 template.render(Box(["a": 1, "b": 2, "c": 3]))!
 ```
 
-
-**Filters can validate their arguments and return errors:**
-
-```swift
-// Define the `squareRoot` filter.
-//
-// squareRoot(x) evaluates to the square root of the provided double, and
-// returns an error for negative values.
-let squareRoot = Filter { (x: Double, error: NSErrorPointer) in
-    if x < 0 {
-        if error != nil {
-            error.memory = NSError(
-                domain: GRMustacheErrorDomain,
-                code: GRMustacheErrorCodeRenderingError,
-                userInfo: [NSLocalizedDescriptionKey: "Invalid negative value"])
-        }
-        return nil
-    } else {
-        return Box(sqrt(x))
-    }
-}
-
-
-// Register the squareRoot filter in our template:
-
-let template = Template(string: "√{{x}} = {{squareRoot(x)}}")!
-template.registerInBaseContext("squareRoot", Box(squareRoot))
-
-
-// √100 = 10.0
-
-let rendering = template.render(Box(["x": 100]))!
-
-
-// Error evaluating {{squareRoot(x)}} at line 1: Invalid negative value
-
-var error: NSError?
-template.render(Box(["x": -1]), error: &error)
-error!.localizedDescription
-```
 
 Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 

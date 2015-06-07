@@ -183,20 +183,10 @@ extension Bool : MustacheBoxable {
     
     - `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
     
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract a Bool out of a MustacheBox, use the
-    `boolValue` property: it reliably returns a Bool whatever the actual type of
-    the raw boxed value.
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            converter: MustacheBox.Converter(
-                intValue: (self ? 1 : 0),         // Behave like [NSNumber numberWithBool:]
-                uintValue: (self ? 1 : 0),        // Behave like [NSNumber numberWithBool:]
-                doubleValue: (self ? 1.0 : 0.0)), // Behave like [NSNumber numberWithBool:]
             boolValue: self,
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -244,20 +234,10 @@ extension Int : MustacheBoxable {
     
     - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
     
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract an integer out of a MustacheBox, use the
-    `intValue` property: it reliably returns an Int whatever the actual type of
-    the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            converter: MustacheBox.Converter(
-                intValue: self,
-                uintValue: MustacheBox.Converter.uint(self),
-                doubleValue: Double(self)),
             boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -305,20 +285,10 @@ extension UInt : MustacheBoxable {
     
     - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
     
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract an unsigned integer out of a MustacheBox, use
-    the `uintValue` property: it reliably returns a UInt whatever the actual
-    type of the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            converter: MustacheBox.Converter(
-                intValue: MustacheBox.Converter.int(self),
-                uintValue: self,
-                doubleValue: Double(self)),
             boolValue: (self != 0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -366,20 +336,10 @@ extension Double : MustacheBoxable {
     
     - `{{^double}}...{{/double}}` renders if and only if `double` is 0 (zero).
     
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract a double out of a MustacheBox, use
-    the `doubleValue` property: it reliably returns a Double whatever the actual
-    type of the raw boxed value (Int, UInt, Float, Bool, NSNumber).
     */
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            converter: MustacheBox.Converter(
-                intValue: MustacheBox.Converter.int(self),
-                uintValue: MustacheBox.Converter.uint(self),
-                doubleValue: self),
             boolValue: (self != 0.0),
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
@@ -437,23 +397,6 @@ extension String : MustacheBoxable {
     A string can be queried for the following keys:
     
     - `length`: the number of characters in the string.
-    
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract a string out of a box, cast the boxed value to
-    String or NSString:
-    
-        let box = Box("foo")
-        box.value as! String     // "foo"
-        box.value as! NSString   // "foo"
-    
-    If the box does not contain a String, this cast would fail. If you want to
-    process the rendering of a value ("123" for 123), consider looking at the
-    documentation of:
-    
-    - `func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction`
-    - `RenderFunction`
     
     */
     public var mustacheBox: MustacheBox {
@@ -1403,13 +1346,6 @@ extension NSNumber {
     
     - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
     
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract a number out of a MustacheBox, use the
-    `intValue`, `uintValue`, `doubleValue` or `boolValue` properties: they
-    reliably return the expected type whatever the actual type of the raw boxed
-    value.
     */
     public override var mustacheBox: MustacheBox {
         let objCType = String.fromCString(self.objCType)!
@@ -1461,23 +1397,6 @@ extension NSString {
     A string can be queried for the following keys:
     
     - `length`: the number of characters in the string (using Swift method).
-    
-    
-    ### Unwrapping from MustacheBox
-    
-    Whenever you want to extract a string out of a box, cast the boxed value to
-    String or NSString:
-    
-        let box = Box("foo")
-        box.value as! String     // "foo"
-        box.value as! NSString   // "foo"
-    
-    If the box does not contain a String, this cast would fail. If you want to
-    process the rendering of a value ("123" for 123), consider looking at the
-    documentation of:
-    
-    - `func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction`
-    - `RenderFunction`
     
     */
     public override var mustacheBox: MustacheBox {
@@ -1635,8 +1554,8 @@ extension NSSet {
 A function that wraps a `FilterFunction` into a `MustacheBox` so that it can
 feed template.
 
-    let square: FilterFunction = Filter { (x: Int, _) in
-        return Box(x * x)
+    let square: FilterFunction = Filter { (x: Int?, _) in
+        return Box(x! * x!)
     }
 
     let template = Template(string: "{{ square(x) }}")!
@@ -1833,8 +1752,8 @@ nil, which means that the box can not be used as a filter.
 
 See `FilterFunction` for a full discussion of this type.
 
-    let box = Box(filter: Filter { (int: Int, _) in
-        return Box(int * int)
+    let box = Box(filter: Filter { (x: Int?, _) in
+        return Box(x! * x!)
     })
 
     // Renders "100"

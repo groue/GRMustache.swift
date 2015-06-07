@@ -67,8 +67,8 @@ class EachFilterTests: XCTestCase {
     }
     
     func testEachFilterDoesNotMessWithItemValues() {
-        let increment = Filter { (int: Int, _) -> MustacheBox? in
-            return Box(int + 1)
+        let increment = Filter { (int: Int?, _) -> MustacheBox? in
+            return Box(int! + 1)
         }
         let items = [1,2,3]
         let template = Template(string: "{{#each(items)}}({{@index}},{{increment(.)}}){{/}}")!

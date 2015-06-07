@@ -222,9 +222,6 @@ class FilterTests: XCTestCase {
         var rendering = template.render(Box(["x": 10]))
         XCTAssertEqual(rendering!, "100")
         
-        rendering = template.render(Box(["x": 10.0]))
-        XCTAssertEqual(rendering!, "100")
-        
         rendering = template.render(Box())
         XCTAssertEqual(rendering!, "Nil")
         
@@ -233,36 +230,6 @@ class FilterTests: XCTestCase {
         
         rendering = template.render(Box(["x": "foo"]))
         XCTAssertEqual(rendering!, "Nil")
-    }
-    
-    func testFilterOfInt() {
-        let square = Filter { (x: Int, error: NSErrorPointer) in
-            return Box(x * x)
-        }
-        let template = Template(string: "{{square(x)}}")!
-        template.registerInBaseContext("square", Box(square))
-        
-        var rendering = template.render(Box(["x": 10]))
-        XCTAssertEqual(rendering!, "100")
-        
-        rendering = template.render(Box(["x": 10.0]))
-        XCTAssertEqual(rendering!, "100")
-        
-        var error: NSError? = nil
-        rendering = template.render(Box(), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-        
-        rendering = template.render(Box(["x": NSNull()]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-        
-        rendering = template.render(Box(["x": "foo"]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     func testFilterOfOptionalString() {
@@ -290,36 +257,6 @@ class FilterTests: XCTestCase {
         
         rendering = template.render(Box(["x": 1]))
         XCTAssertEqual(rendering!, "Nil")
-    }
-    
-    func testFilterOfString() {
-        let twice = Filter { (x: String, error: NSErrorPointer) in
-            return Box(x + x)
-        }
-        let template = Template(string: "{{twice(x)}}")!
-        template.registerInBaseContext("twice", Box(twice))
-        
-        var rendering = template.render(Box(["x": "A"]))
-        XCTAssertEqual(rendering!, "AA")
-        
-        rendering = template.render(Box(["x": "A" as NSString]))
-        XCTAssertEqual(rendering!, "AA")
-        
-        var error: NSError? = nil
-        rendering = template.render(Box(), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-        
-        rendering = template.render(Box(["x": NSNull()]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
-        
-        rendering = template.render(Box(["x": 1]), error: &error)
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
     }
     
     // TODO: import ValueTests.testCustomValueFilter(): testFilterOfOptionalXXX, testFilterOfXXX, etc. for all supported types

@@ -85,8 +85,8 @@ expressions such as `{{ uppercase(string) }}`.
 To build a filter, you use the `Filter()` function. It takes a function as an
 argument. For example:
     
-    let increment = Filter { (x: Int, _) in
-        return Box(x + 1)
+    let increment = Filter { (x: Int?, _) in
+        return Box(x! + 1)
     }
 
 To let a template use a filter, register it:
@@ -104,13 +104,6 @@ you want to build. The example above processes `Int`. Other filters are:
 
     - `(MustacheBox, NSErrorPointer) -> MustacheBox?`
     - `(T?, NSErrorPointer) -> MustacheBox?` (Generic)
-    - `(T, NSErrorPointer) -> MustacheBox?` (Generic)
-    - `(Int?, NSErrorPointer) -> MustacheBox?`
-    - `(Int, NSErrorPointer) -> MustacheBox?`
-    - `(UInt?, NSErrorPointer) -> MustacheBox?`
-    - `(UInt, NSErrorPointer) -> MustacheBox?`
-    - `(Double?, NSErrorPointer) -> MustacheBox?`
-    - `(Double, NSErrorPointer) -> MustacheBox?`
 
 - Filters that perform post-rendering:
 
@@ -120,13 +113,6 @@ you want to build. The example above processes `Int`. Other filters are:
 
     - `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
     - `(T?, RenderingInfo, NSErrorPointer) -> Rendering?` (Generic)
-    - `(T, RenderingInfo, NSErrorPointer) -> Rendering?` (Generic)
-    - `(Int?, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(Int, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(UInt?, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(UInt, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(Double?, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(Double, RenderingInfo, NSErrorPointer) -> Rendering?`
 
 - Filters that accept several arguments, built with `VariadicFilter()`:
 
@@ -178,26 +164,18 @@ Builds a filter that takes a single argument of type `T?`.
 
 For example:
 
-    let uppercase = Filter { (string: String?, _) in
-        if let string = string {
-            return Box(string.uppercaseString)
-        } else {
-            return Box()
-        }
+    let increment = Filter { (x: Int?, _) in
+        return Box(x! + 1)
     }
 
-    let template = Template(string: "{{uppercase(string)}}")!
-    template.registerInBaseContext("uppercase", Box(uppercase))
+    let template = Template(string: "{{increment(x)}}")!
+    template.registerInBaseContext("increment", Box(increment))
 
-    // "HELLO"
-    template.render(Box(["string": "Hello"]))!
+    // "2"
+    template.render(Box(["x": 1]))!
 
-If the template argument evaluates to a missing value, or a value which is not
-of type T, the filter is given nil:
-
-    // Both render the empty string
-    template.render(Box())!
-    template.render(Box(["string": 1]))!
+The argument is converted to `T` using the built-in `as?` operator before being
+given to the filter.
 
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
@@ -213,351 +191,8 @@ public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFun
                 error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
             }
             return nil
-        } else if let t = box.value as? T {
-            return filter(t, error)
         } else {
-            return filter(nil, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single argument of type `T`.
-
-For example:
-
-    let uppercase = Filter { (string: String, _) in
-        return Box(string.uppercaseString)
-    }
-
-    let template = Template(string: "{{uppercase(string)}}")!
-    template.registerInBaseContext("uppercase", Box(uppercase))
-
-    // "HELLO"
-    template.render(Box(["string": "Hello"]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-of type T, the filter returns an error of domain `GRMustacheErrorDomain` and
-code `GRMustacheErrorCodeRenderingError`:
-
-    // Error evaluating {{uppercase(a)}} at line 1: Unexpected argument
-    var error: NSError?
-    template.render(Box(), error: &error)
-    template.render(Box(["string": 1]), error: &error)
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(T, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter<T>(filter: (T, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.value as? T {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
-            }
-            return nil
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Int?` argument.
-
-For example:
-
-    let increment = Filter { (x: Int?, _) in
-        if let x = x {
-            return Box(x + 1)
-        } else {
-            return Box()
-        }
-    }
-
-    let template = Template(string: "{{increment(x)}}")!
-    template.registerInBaseContext("increment", Box(increment))
-
-    // "2"
-    template.render(Box(["x": 1]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Int (see `MustacheBox.intValue`), the filter is given nil:
-
-    // Both render the empty string
-    template.render(Box())!
-    template.render(Box(["x": "foo"]))!
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(Int?, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Int?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.intValue {
-            return filter(t, error)
-        } else {
-            return filter(nil, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Int` argument.
-
-For example:
-
-    let increment = Filter { (x: Int, _) in
-        return Box(x + 1)
-    }
-
-    let template = Template(string: "{{increment(x)}}")!
-    template.registerInBaseContext("increment", Box(increment))
-
-    // "2"
-    template.render(Box(["x": 1]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Int (see `MustacheBox.intValue`), the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
-
-    // Error evaluating {{increment(x)}} at line 1: Unexpected argument
-    var error: NSError?
-    template.render(Box(), error: &error)
-    template.render(Box(["x": "foo"]), error: &error)
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(Int, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Int, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.intValue {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
-            }
-            return nil
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `UInt?` argument.
-
-For example:
-
-    let increment = Filter { (x: UInt?, _) in
-        if let x = x {
-            return Box(x + 1)
-        } else {
-            return Box()
-        }
-    }
-
-    let template = Template(string: "{{increment(x)}}")!
-    template.registerInBaseContext("increment", Box(increment))
-
-    // "2"
-    template.render(Box(["x": 1]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to UInt (see `MustacheBox.uintValue`), the filter is given nil:
-
-    // Both render the empty string
-    template.render(Box())!
-    template.render(Box(["x": "foo"]))!
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(UInt?, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (UInt?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.uintValue {
-            return filter(t, error)
-        } else {
-            return filter(nil, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `UInt` argument.
-
-For example:
-
-    let increment = Filter { (x: UInt, _) in
-        return Box(x + 1)
-    }
-
-    let template = Template(string: "{{increment(x)}}")!
-    template.registerInBaseContext("increment", Box(increment))
-
-    // "2"
-    template.render(Box(["x": 1]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to UInt (see `MustacheBox.uintValue`), the filter returns an error
-of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`:
-
-    // Error evaluating {{increment(x)}} at line 1: Unexpected argument
-    var error: NSError?
-    template.render(Box(), error: &error)
-    template.render(Box(["x": "foo"]), error: &error)
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(UInt, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (UInt, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.uintValue {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
-            }
-            return nil
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Double?` argument.
-
-For example:
-
-    let square = Filter { (x: Double?, _) in
-        if let x = x {
-            return Box(x * x)
-        } else {
-            return Box()
-        }
-    }
-
-    let template = Template(string: "{{square(x)}}")!
-    template.registerInBaseContext("square", Box(square))
-
-    // "100"
-    template.render(Box(["x": 10.0]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Double (see `MustacheBox.doubleValue`), the filter is given nil:
-
-    // Both render the empty string
-    template.render(Box())!
-    template.render(Box(["x": "foo"]))!
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(Double?, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Double?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.doubleValue {
-            return filter(t, error)
-        } else {
-            return filter(nil, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Double` argument.
-
-For example:
-
-    let square = Filter { (x: Double, _) in
-        return Box(x * x)
-    }
-
-    let template = Template(string: "{{square(x)}}")!
-    template.registerInBaseContext("square", Box(square))
-
-    // "100"
-    template.render(Box(["x": 10.0]))!
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Double (see `MustacheBox.doubleValue`), the filter returns an
-error of domain `GRMustacheErrorDomain` and code
-`GRMustacheErrorCodeRenderingError`:
-
-    // Error evaluating {{increment(x)}} at line 1: Unexpected argument
-    var error: NSError?
-    template.render(Box(), error: &error)
-    template.render(Box(["x": "foo"]), error: &error)
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-:param: filter a function `(Double, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
-            // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else if let t = box.doubleValue {
-            return filter(t, error)
-        } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Unexpected argument"])
-            }
-            return nil
+            return filter(box.value as? T, error)
         }
     }
 }
@@ -618,8 +253,8 @@ See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
 For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `MustacheBox`, but the idea is the same.
+`func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
+This example processes `T?` instead of `MustacheBox`, but the idea is the same.
 
 :param: filter a function `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
 :returns: a FilterFunction
@@ -637,100 +272,11 @@ public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rende
 Builds a filter that takes a single argument of type `T?` and performs custom
 rendering.
 
-If the template argument evaluates to a missing value, or a value which is not
-of type T, the filter is given nil.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `T`, but the idea is the same.
-
-:param: filter a function `(T?, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (t: T?, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(t, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single argument of type `T` and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-of type T, the filter returns an error of domain `GRMustacheErrorDomain` and
-code `GRMustacheErrorCodeRenderingError`.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `T`, but the idea is the same.
-
-:param: filter a function `(T, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter<T>(filter: (T, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (t: T, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(t, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Int?` argument and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Int (see `MustacheBox.intValue`), the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `Int?`, but the idea is the same.
-
-:param: filter a function `(Int?, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Int?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (int: Int?, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(int, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Int` argument and performs custom
-rendering.
-
 For example:
 
     // {{# pluralize(count) }}...{{/ }} renders the plural form of the section
     // content if the `count` argument is greater than 1.
-    let pluralize = Filter { (count: Int, info: RenderingInfo, _) in
+    let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
 
         // Pluralize the inner content of the section tag:
         var string = info.tag.innerTemplateString
@@ -748,9 +294,8 @@ For example:
     let data = ["cats": ["Kitty", "Pussy", "Melba"]]
     template.render(Box(data))!
 
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Int (see `MustacheBox.intValue`), the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
+The argument is converted to `T` using the built-in `as?` operator before being
+given to the filter.
 
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
@@ -758,137 +303,14 @@ domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `T`, but the idea is the same.
-
-:param: filter a function `(Int, RenderingInfo, NSErrorPointer) -> Rendering?`
+:param: filter a function `(T?, RenderingInfo, NSErrorPointer) -> Rendering?`
 :returns: a FilterFunction
 */
-public func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (int: Int, error: NSErrorPointer) in
+public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
+    return Filter { (t: T?, error: NSErrorPointer) in
         // Box a RenderFunction
         return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(int, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `UInt?` argument and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to UInt (see `MustacheBox.uintValue`), the filter is given nil.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `UInt?`, but the idea is the same.
-
-:param: filter a function `(UInt?, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (UInt?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (uint: UInt?, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(uint, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `UInt` argument and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to UInt (see `MustacheBox.uintValue`), the filter returns an error
-of domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `UInt`, but the idea is the same.
-
-:param: filter a function `(UInt, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (UInt, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (uint: UInt, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(uint, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Double?` argument and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Double (see `MustacheBox.doubleValue`), the filter is given nil.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `Double?`, but the idea is the same.
-
-:param: filter a function `(Double?, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Double?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (double: Double?, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(double, info, error)
-        }
-    }
-}
-
-/**
-Builds a filter that takes a single `Double` argument and performs custom
-rendering.
-
-If the template argument evaluates to a missing value, or a value which is not
-convertible to Double (see `MustacheBox.doubleValue`), the filter returns an
-error of domain `GRMustacheErrorDomain` and code
-`GRMustacheErrorCodeRenderingError`.
-
-If the template provides more than one argument, the filter returns an error of
-domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
-
-See the documentation of the `RenderFunction` type for a detailed discussion of
-the `RenderingInfo` and `Rendering` types.
-
-For an example of such a filter, see the documentation of
-`func Filter(filter: (Int, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
-This example processes `Int` instead of `Double`, but the idea is the same.
-
-:param: filter a function `(Double, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
-*/
-public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (double: Double, error: NSErrorPointer) in
-        // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(double, info, error)
+            return filter(t, info, error)
         }
     }
 }
@@ -905,7 +327,7 @@ For example:
     // `sum(x, ...)` evaluates to the sum of provided integers
     let sum = VariadicFilter { (boxes: [MustacheBox], _) in
         // Extract integers out of input boxes, assuming zero for non numeric values
-        let integers = map(boxes) { (box) in box.intValue ?? 0 }
+        let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
         let sum = reduce(integers, 0, +)
         return Box(sum)
     }

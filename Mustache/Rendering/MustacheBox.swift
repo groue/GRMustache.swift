@@ -47,7 +47,7 @@ feed templates:
 - Functions such as `FilterFunction`, `RenderFunction`, `WillRenderFunction` and
   `DidRenderFunction`:
 
-        let square = Filter { (int: Int, _) in Box(int * int) }
+        let square = Filter { (x?: Int, _) in Box(x! * x!) }
         template.registerInBaseContext("square", Box(square))
 
 Warning: the fact that `MustacheBox` is a subclass of NSObject is an
@@ -123,30 +123,6 @@ public class MustacheBox : NSObject {
     `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}`.
     */
     public let boolValue: Bool
-    
-    /**
-    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
-    returns this value as an Int.
-    */
-    public var intValue: Int? {
-        return converter?.intValue()
-    }
-    
-    /**
-    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
-    returns this value as a UInt.
-    */
-    public var uintValue: UInt? {
-        return converter?.uintValue()
-    }
-    
-    /**
-    If the boxed value is a Swift numerical value, a Bool, or an NSNumber,
-    returns this value as a Double.
-    */
-    public var doubleValue: Double? {
-        return converter?.doubleValue()
-    }
     
     /**
     If the boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
@@ -264,22 +240,13 @@ public class MustacheBox : NSObject {
     // would have to try casting the boxed value to Int, UInt, Double, NSNumber
     // etc. until she finds its actual type.
     struct Converter {
-        let intValue: (() -> Int?)
-        let uintValue: (() -> UInt?)
-        let doubleValue: (() -> Double?)
         let arrayValue: (() -> [MustacheBox]?)
         let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            @autoclosure(escaping) intValue: () -> Int? = nil,
-            @autoclosure(escaping) uintValue: () -> UInt? = nil,
-            @autoclosure(escaping) doubleValue: () -> Double? = nil,
             @autoclosure(escaping) arrayValue: () -> [MustacheBox]? = nil,
             @autoclosure(escaping) dictionaryValue: () -> [String: MustacheBox]? = nil)
         {
-            self.intValue = intValue
-            self.uintValue = uintValue
-            self.doubleValue = doubleValue
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
         }
