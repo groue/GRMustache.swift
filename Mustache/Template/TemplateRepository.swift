@@ -23,6 +23,7 @@
 
 import Foundation
 
+/// See the documentation of the `TemplateRepositoryDataSource` protocol.
 public typealias TemplateID = String
 
 /**
@@ -32,15 +33,21 @@ The dataSource's responsability is to provide Mustache template strings for
 template and partial names.
 */
 public protocol TemplateRepositoryDataSource {
+    
     /**
     Returns a template ID, that is to say a string that uniquely identifies a
-    template or a template partial. There should be a single template ID for
-    each template.
+    template or a template partial.
     
     The meaning of this String is opaque: your implementation of a
-    TemplateRepositoryDataSource would define, for itself, how strings would
+    `TemplateRepositoryDataSource` would define, for itself, how strings would
     identity a template or a partial. For example, a file-based data source may
-    use paths to the templates as template IDs.
+    use paths to the templates.
+    
+    The return value of this method can be nil: the library user would then
+    eventually get an NSError of domain GRMustacheErrorDomain and code
+    GRMustacheErrorCodeTemplateNotFound.
+    
+    ### Template hierarchies
     
     Whenever relevant, template and partial hierarchies are supported via the
     baseTemplateID parameter: it contains the template ID of the enclosing
@@ -50,9 +57,16 @@ public protocol TemplateRepositoryDataSource {
     Not all data sources have to implement hierarchies: they can simply ignore
     this parameter.
     
-    The return value of this method can be nil: the library user would then
-    eventually get an NSError of domain GRMustacheErrorDomain and code
-    GRMustacheErrorCodeTemplateNotFound.
+    *Well-behaved* data sources that support hierarchies should support
+    "absolute paths to partials". For example, the built-in directory-based data
+    source lets users write both `{{> relative/path/to/partial}}` and
+    `{{> /absolute/path/tp/partial}}`tags.
+    
+    ### Unique IDs
+    
+    Each template must be identified by a single template ID. For example, a
+    file-based data source which uses path IDs must normalize paths. Not
+    following this rule yields undefined behavior.
     
     :param: name           The name of the template or template partial.
     :param: baseTemplateID The template ID of the enclosing template, or nil.
@@ -232,7 +246,7 @@ final public class TemplateRepository {
     /**
     The configuration for all templates and partials built by the repository.
     
-    It is initialized with Mustache.DefaultConfiguration.
+    It is initialized with `Mustache.DefaultConfiguration`.
     
     You can alter the repository's configuration, or set it to another value,
     before you load templates:
@@ -321,7 +335,7 @@ final public class TemplateRepository {
         repository.reloadTemplates();
         let template = repository.template(named:"profile")!
     
-    :warning: Previously created Template instances are not reloaded.
+    Warning: previously created Template instances are not reloaded.
     */
     public func reloadTemplates() {
         templateASTCache.removeAll()
