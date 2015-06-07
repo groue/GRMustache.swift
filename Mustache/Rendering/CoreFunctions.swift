@@ -112,7 +112,7 @@ you want to build. The example above processes `Int`. Other filters are:
     - `(Double?, NSErrorPointer) -> MustacheBox?`
     - `(Double, NSErrorPointer) -> MustacheBox?`
 
-- Filter that perform post-rendering:
+- Filters that perform post-rendering:
 
     - `(Rendering, NSErrorPointer) -> Rendering?`
 
@@ -134,6 +134,9 @@ you want to build. The example above processes `Int`. Other filters are:
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
 
+
+// -----------------------------------------------------------------------------
+// MARK: - Filters that process values
 
 /**
 Builds a filter that takes a single argument.
@@ -559,6 +562,10 @@ public func Filter(filter: (Double, NSErrorPointer) -> MustacheBox?) -> FilterFu
     }
 }
 
+
+// -----------------------------------------------------------------------------
+// MARK: - Filters that perform post-rendering
+
 /**
 Builds a filter that performs post rendering.
 
@@ -599,6 +606,10 @@ public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterF
         }
     }
 }
+
+
+// -----------------------------------------------------------------------------
+// MARK: - Filters that perform custom rendering
 
 /**
 Builds a filter that takes a single argument and performs custom rendering.
@@ -882,6 +893,10 @@ public func Filter(filter: (Double, RenderingInfo, NSErrorPointer) -> Rendering?
     }
 }
 
+
+// -----------------------------------------------------------------------------
+// MARK: - Filters that accept several arguments
+
 /**
 Returns a filter than accepts any number of arguments.
 
@@ -1031,6 +1046,9 @@ The default rendering thus reads:
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
+
+// -----------------------------------------------------------------------------
+// MARK: - Mustache lambdas
 
 /**
 Builds a `RenderFunction` which conforms to the "lambda" defined by the

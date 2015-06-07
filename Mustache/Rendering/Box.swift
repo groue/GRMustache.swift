@@ -163,6 +163,11 @@ extension MustacheBox : MustacheBoxable {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `Bool`.
+*/
+
 extension Bool : MustacheBoxable {
     
     /**
@@ -216,6 +221,11 @@ extension Bool : MustacheBoxable {
         })
     }
 }
+
+
+/**
+GRMustache provides built-in support for rendering `Int`.
+*/
 
 extension Int : MustacheBoxable {
     
@@ -273,6 +283,11 @@ extension Int : MustacheBoxable {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `UInt`.
+*/
+
 extension UInt : MustacheBoxable {
     
     /**
@@ -329,6 +344,11 @@ extension UInt : MustacheBoxable {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `Double`.
+*/
+
 extension Double : MustacheBoxable {
     
     /**
@@ -384,6 +404,11 @@ extension Double : MustacheBoxable {
         })
     }
 }
+
+
+/**
+GRMustache provides built-in support for rendering `String`.
+*/
 
 extension String : MustacheBoxable {
     
@@ -1181,6 +1206,11 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `NSObject`.
+*/
+
 extension NSObject : MustacheBoxable {
     
     /**
@@ -1193,7 +1223,7 @@ extension NSObject : MustacheBoxable {
     - All other objects
     
     GRMustache ships with a few specific classes that escape the general cases
-    and provide their own rendering behavior: `NSDictionary, `NSFormatter`,
+    and provide their own rendering behavior: `NSDictionary`, `NSFormatter`,
     `NSNull`, `NSNumber`, `NSString`, and `NSSet` (see the documentation for
     those classes).
     
@@ -1321,6 +1351,11 @@ extension NSObject : MustacheBoxable {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `NSNull`.
+*/
+
 extension NSNull {
     
     /**
@@ -1345,6 +1380,11 @@ extension NSNull {
     }
 }
 
+
+/**
+GRMustache provides built-in support for rendering `NSNumber`.
+*/
+
 extension NSNumber {
     
     /**
@@ -1367,8 +1407,9 @@ extension NSNumber {
     ### Unwrapping from MustacheBox
     
     Whenever you want to extract a number out of a MustacheBox, use the
-    intValue, uintValue, doubleValue or boolValue properties: they reliably
-    return the expected type whatever the actual type of the raw boxed value.
+    `intValue`, `uintValue`, `doubleValue` or `boolValue` properties: they
+    reliably return the expected type whatever the actual type of the raw boxed
+    value.
     */
     public override var mustacheBox: MustacheBox {
         let objCType = String.fromCString(self.objCType)!
@@ -1387,6 +1428,11 @@ extension NSNumber {
         }
     }
 }
+
+
+/**
+GRMustache provides built-in support for rendering `NSString`.
+*/
 
 extension NSString {
     
@@ -1438,6 +1484,11 @@ extension NSString {
         return Box(self as String)
     }
 }
+
+
+/**
+GRMustache provides built-in support for rendering `NSDictionary`.
+*/
 
 extension NSDictionary {
     
@@ -1500,6 +1551,11 @@ extension NSDictionary {
         })
     }
 }
+
+
+/**
+GRMustache provides built-in support for rendering `NSSet`.
+*/
 
 extension NSSet {
     

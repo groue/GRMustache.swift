@@ -23,6 +23,9 @@
 
 import Foundation
 
+// =============================================================================
+// MARK: - TagType
+
 /**
 The type of a tag, variable or section. See the documentation of `Tag` for more
 information.
@@ -35,6 +38,10 @@ public enum TagType {
     /// The type of section tags such as `{{#user}}...{{/user}}`.
     case Section
 }
+
+
+// =============================================================================
+// MARK: - Tag
 
 /**
 Tag instances represent Mustache tags that render values:

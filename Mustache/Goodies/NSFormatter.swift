@@ -23,6 +23,11 @@
 
 import Foundation
 
+
+/**
+GRMustache lets you use `NSFormatter` to format your values.
+*/
+
 extension NSFormatter {
     
     /**

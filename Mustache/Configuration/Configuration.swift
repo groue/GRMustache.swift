@@ -313,6 +313,10 @@ public struct Configuration {
     
 }
 
+
+// =============================================================================
+// MARK: - Default Configuration
+
 /**
 The default configuration that is used unless specified otherwise by a
 `TemplateRepository`.

@@ -30,7 +30,7 @@ The context stack grows and shrinks as the Mustache engine enters and leaves
 Mustache sections.
 
 The top of the context stack is called the "current context". It is the value
-rendered by the {{.}} tag:
+rendered by the `{{.}}` tag:
 
     // Renders "Kitty, Pussy, Melba, "
     let template = Template(string: "{{#cats}}{{.}}, {{/cats}}")!
@@ -146,11 +146,11 @@ final public class Context {
     
     3. If none of the above situations occurs, returns the empty box.
     
-        let data = ["name": "Groucho Marx"]
-        let context = Context(Box(data))
+            let data = ["name": "Groucho Marx"]
+            let context = Context(Box(data))
     
-        // "Groucho Marx"
-        context["name"].value
+            // "Groucho Marx"
+            context["name"].value
 
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the `boxForMustacheExpression` method.
