@@ -2,7 +2,7 @@ Release Notes
 =============
 
 
-## Next release
+## v0.9.2
 
 **Fixed**
 
@@ -20,9 +20,9 @@ Release Notes
 
 **Breaking changes**
 
-- `Configuration.tagStartDelimiter` and `Configuration.tagEndDelimiter` have been replaced by `Configuration.tagDelimiterPair`.
-
 - `Template(string:error:)` used to load `{{>partial}}` tags from resources in the main bundle. It is no longer the case, and it returns a `GRMustacheErrorDomain` error of code `GRMustacheErrorCodeTemplateNotFound` if such partial tag is found. To parse a template string that contain partial tags that should be loaded from the main bundle resources, store this string as a resource and load `Template(named:...)`, or use an explicit `TemplateRepository(bundle: NSBundle.mainBundle())`.
+
+- `Configuration.tagStartDelimiter` and `Configuration.tagEndDelimiter` have been replaced by `Configuration.tagDelimiterPair`.
 
 - `Tag.renderInnerContent` has been renamed `Tag.render`.
 
