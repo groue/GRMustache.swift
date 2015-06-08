@@ -185,10 +185,21 @@ final public class Template {
     :returns: The template rendering
     
     :see: RenderFunction
+    :see: Template.contentType
     */
     public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return renderingEngine.render(error: error)
+    }
+    
+    /**
+    The content type of the template and of its renderings.
+    
+    See `Configuration.contentType` for a full discussion of the content type of
+    templates.
+    */
+    public var contentType: ContentType {
+        return templateAST.contentType
     }
     
     
@@ -288,20 +299,6 @@ final public class Template {
     :see: init(named:bundle:templateExtension:encoding:error:)
     */
     public let repository: TemplateRepository
-    
-    
-    // =========================================================================
-    // MARK: - Accessing Sibling Templates
-    
-    /**
-    The content type of the template.
-    
-    See `Configuration.contentType` for a full discussion of the content type of
-    templates.
-    */
-    public var contentType: ContentType {
-        return templateAST.contentType
-    }
     
     
     // =========================================================================
