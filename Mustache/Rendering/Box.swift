@@ -1211,7 +1211,7 @@ extension NSObject : MustacheBoxable {
     Other objects fall in the general case.
     
     Their keys are extracted with the `valueForKey:` method, as long as the key
-    is a property names, a custom property getter, or the name of a
+    is a property name, a custom property getter, or the name of a
     `NSManagedObject` attribute.
     
     
