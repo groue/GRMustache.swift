@@ -2,7 +2,9 @@ Release Notes
 =============
 
 
-## Next version
+## v0.9.3
+
+Released on June 9, 2015
 
 **Breaking changes**
 
