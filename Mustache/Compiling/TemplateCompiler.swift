@@ -32,38 +32,23 @@ final class TemplateCompiler: TemplateTokenConsumer {
         self.templateID = templateID
     }
     
-    func templateAST(#error: NSErrorPointer) -> TemplateAST? {
+    func templateAST() throws -> TemplateAST {
         switch(state) {
         case .Compiling(let compilationState):
             switch compilationState.currentScope.type {
             case .Root:
                 return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
-                if error != nil {
-                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
-                }
-                return nil
+                throw parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
             case .InvertedSection(openingToken: let openingToken, expression: _):
-                if error != nil {
-                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
-                }
-                return nil
+                throw parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
             case .InheritedPartial(openingToken: let openingToken, partialName: _):
-                if error != nil {
-                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
-                }
-                return nil
+                throw parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
             case .InheritableSection(openingToken: let openingToken, inheritableSectionName: _):
-                if error != nil {
-                    error.memory = parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
-                }
-                return nil
+                throw parseErrorAtToken(openingToken, description: "Unclosed Mustache tag")
             }
         case .Error(let compilationError):
-            if error != nil {
-                error.memory = compilationError
-            }
-            return nil
+            throw compilationError
         }
     }
     
@@ -91,7 +76,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 
             case .Pragma(content: let content):
                 let pragma = content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                if NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(0), error: nil)!.firstMatchInString(pragma, options: NSMatchingOptions(0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                     switch compilationState.compilerContentType {
                     case .Unlocked:
                         compilationState.compilerContentType = .Unlocked(.Text)
@@ -99,7 +84,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         state = .Error(parseErrorAtToken(token, description: "CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag."))
                         return false
                     }
-                } else if NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(0), error: nil)!.firstMatchInString(pragma, options: NSMatchingOptions(0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                     switch compilationState.compilerContentType {
                     case .Unlocked:
                         compilationState.compilerContentType = .Unlocked(.HTML)
@@ -117,11 +102,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .EscapedVariable(content: let content, tagDelimiterPair: _):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                do {
+                    let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
@@ -129,11 +116,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .UnescapedVariable(content: let content, tagDelimiterPair: _):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                do {
+                    let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
@@ -141,11 +130,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .Section(content: let content, tagDelimiterPair: _):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                do {
+                    let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
@@ -153,11 +144,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .InvertedSection(content: let content, tagDelimiterPair: _):
                 var error: NSError?
                 var empty = false
-                if let expression = ExpressionParser().parse(content, empty: &empty, error: &error) {
+                do {
+                    let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
                     return false
                 }
@@ -165,11 +158,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .InheritableSection(content: let content):
                 var error: NSError?
                 var empty: Bool = false
-                if let inheritableSectionName = inheritableSectionNameFromString(content, inToken: token, empty: &empty, error: &error) {
+                do {
+                    let inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .InheritableSection(openingToken: token, inheritableSectionName: inheritableSectionName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(error!)
                     return false
                 }
@@ -177,11 +172,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .InheritedPartial(content: let content):
                 var error: NSError?
                 var empty: Bool = false
-                if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error) {
+                do {
+                    let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .InheritedPartial(openingToken: token, partialName: partialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
+                } catch var error1 as NSError {
+                    error = error1
                     state = .Error(error!)
                     return false
                 }
@@ -195,7 +192,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                    let expression: Expression?
+                    do {
+                        expression = try ExpressionParser().parse(content, empty: &empty)
+                    } catch var error1 as NSError {
+                        error = error1
+                        expression = nil
+                    }
                     switch (expression, empty) {
                     case (nil, true):
                         break
@@ -227,7 +230,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
                     var error: NSError?
                     var empty: Bool = false
-                    let expression = ExpressionParser().parse(content, empty: &empty, error: &error)
+                    let expression: Expression?
+                    do {
+                        expression = try ExpressionParser().parse(content, empty: &empty)
+                    } catch var error1 as NSError {
+                        error = error1
+                        expression = nil
+                    }
                     switch (expression, empty) {
                     case (nil, true):
                         break
@@ -259,7 +268,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .InheritedPartial(openingToken: let openingToken, partialName: let inheritedPartialName):
                     var error: NSError?
                     var empty: Bool = false
-                    let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error)
+                    let partialName: String?
+                    do {
+                        partialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    } catch var error1 as NSError {
+                        error = error1
+                        partialName = nil
+                    }
                     switch (partialName, empty) {
                     case (nil, true):
                         break
@@ -273,7 +288,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         }
                     }
                     
-                    if let inheritedTemplateAST = repository.templateAST(named: inheritedPartialName, relativeToTemplateID:templateID, error: &error) {
+                    do {
+                        let inheritedTemplateAST = try repository.templateAST(named: inheritedPartialName, relativeToTemplateID:templateID)
                         switch inheritedTemplateAST.type {
                         case .Undefined:
                             break
@@ -290,7 +306,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritedPartialNode)
                         return true
-                    } else {
+                    } catch var error1 as NSError {
+                        error = error1
                         state = .Error(error!)
                         return false
                     }
@@ -298,7 +315,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .InheritableSection(openingToken: let openingToken, inheritableSectionName: let closedInheritableSectionName):
                     var error: NSError?
                     var empty: Bool = false
-                    let inheritableSectionName = inheritableSectionNameFromString(content, inToken: token, empty: &empty, error: &error)
+                    let inheritableSectionName: String?
+                    do {
+                        inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
+                    } catch var error1 as NSError {
+                        error = error1
+                        inheritableSectionName = nil
+                    }
                     switch (inheritableSectionName, empty) {
                     case (nil, true):
                         break
@@ -323,8 +346,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .Partial(content: let content):
                 var error: NSError?
                 var empty: Bool = false
-                if let partialName = partialNameFromString(content, inToken: token, empty: &empty, error: &error),
-                   let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID, error: &error)
+                if let partialName = partialNameFromString(content, inToken: token, empty: &empty),
+                   let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID)
                 {
                     let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
                     compilationState.currentScope.appendNode(partialNode)
@@ -403,40 +426,34 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
+    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
-        if count(inheritableSectionName) == 0 {
-            if error != nil {
-                error.memory = parseErrorAtToken(token, description: "Missing inheritable section name")
-            }
+        if inheritableSectionName.characters.count == 0 {
+            error = parseErrorAtToken(token, description: "Missing inheritable section name")
             empty = true
-            return nil
+            throw error
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
-            if error != nil {
-                error.memory = parseErrorAtToken(token, description: "Invalid inheritable section name")
-            }
+            error = parseErrorAtToken(token, description: "Invalid inheritable section name")
             empty = false
-            return nil
+            throw error
         }
         return inheritableSectionName
     }
     
-    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool, error: NSErrorPointer) -> String? {
+    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
-        if count(partialName) == 0 {
-            if error != nil {
-                error.memory = parseErrorAtToken(token, description: "Missing template name")
-            }
+        if partialName.characters.count == 0 {
+            error = parseErrorAtToken(token, description: "Missing template name")
             empty = true
-            return nil
+            throw error
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
-            if error != nil {
-                error.memory = parseErrorAtToken(token, description: "Invalid template name")
-            }
+            error = parseErrorAtToken(token, description: "Invalid template name")
             empty = false
-            return nil
+            throw error
         }
         return partialName
     }

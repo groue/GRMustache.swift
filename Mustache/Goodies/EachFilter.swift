@@ -45,7 +45,7 @@ let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheB
     // (NSDictionary, [String: Int], [String: CustomObject], etc.
     if let dictionary = box.dictionaryValue {
         let count = Swift.count(dictionary)
-        let transformedBoxes = map(enumerate(dictionary)) { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
+        let transformedBoxes = map(dictionary.enumerate()) { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
             let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
@@ -79,7 +79,7 @@ let EachFilter = Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheB
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
     if let boxes = box.arrayValue {
         let count = Swift.count(boxes)
-        let transformedBoxes = map(enumerate(boxes)) { (index: Int, box: MustacheBox) -> MustacheBox in
+        let transformedBoxes = map(boxes.enumerate()) { (index: Int, box: MustacheBox) -> MustacheBox in
             let customRenderFunction: RenderFunction = { (var info: RenderingInfo, error: NSErrorPointer) in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.

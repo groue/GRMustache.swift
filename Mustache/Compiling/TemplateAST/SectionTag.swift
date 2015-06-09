@@ -52,8 +52,8 @@ class SectionTag: Tag {
     /**
     Inherited from the public super class Tag
     */
-    override func render(context: Context, error: NSErrorPointer) -> Rendering? {
+    override func render(context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
-        return renderingEngine.render(error: error)
+        return try renderingEngine.render()
     }
 }

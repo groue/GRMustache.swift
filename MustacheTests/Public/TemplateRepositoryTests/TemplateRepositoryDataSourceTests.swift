@@ -31,15 +31,13 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
             func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
-            func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
+            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+                var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
                 switch templateID {
                 case "not_found":
-                    return nil
+                    throw error
                 case "error":
-                    if error != nil {
-                        error.memory = NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
-                    }
-                    return nil
+                    throw NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
                 default:
                     return templateID
                 }
@@ -49,20 +47,48 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         let repo = TemplateRepository(dataSource: TestedDataSource())
         
         var error: NSError?
-        var template = repo.template(named: "foo")
-        var rendering = template?.render()
+        var template: Template?
+        do {
+            template = try repo.template(named: "foo")
+        } catch _ {
+            template = nil
+        }
+        var rendering: String?
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "foo")
         
-        template = repo.template(string: "{{>foo}}")
-        rendering = template?.render()
+        do {
+            template = try repo.template(string: "{{>foo}}")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "foo")
         
-        template = repo.template(string: "{{>not_found}}", error: &error)
+        do {
+            template = try repo.template(string: "{{>not_found}}")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
-        template = repo.template(string: "{{>error}}", error: &error)
+        do {
+            template = try repo.template(string: "{{>error}}")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, "TestedDataSource")
     }

@@ -30,20 +30,51 @@ class TemplateRepositoryBundleTests: XCTestCase {
         let repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType))
         
         var error: NSError?
-        var template = repo.template(named: "notFound", error: &error)
+        var template: Template?
+        do {
+            template = try repo.template(named: "notFound")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertNotNil(error)
         
-        template = repo.template(named: "TemplateRepositoryBundleTests")
-        var rendering = template?.render()
+        do {
+            template = try repo.template(named: "TemplateRepositoryBundleTests")
+        } catch _ {
+            template = nil
+        }
+        var rendering: String?
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
         
-        template = repo.template(string: "{{>TemplateRepositoryBundleTests}}")
-        rendering = template?.render()
+        do {
+            template = try repo.template(string: "{{>TemplateRepositoryBundleTests}}")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
         
-        template = repo.template(string: "{{>TemplateRepositoryBundleTestsResources/partial}}")
-        rendering = template?.render()
+        do {
+            template = try repo.template(string: "{{>TemplateRepositoryBundleTestsResources/partial}}")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "partial sibling TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
     }
     
@@ -52,30 +83,74 @@ class TemplateRepositoryBundleTests: XCTestCase {
         
         var repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "text", encoding: NSUTF8StringEncoding)
         
-        var template = repo.template(named: "notFound", error: &error)
+        var template: Template?
+        do {
+            template = try repo.template(named: "notFound")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertNotNil(error)
         
-        template = repo.template(named: "TemplateRepositoryBundleTests")
-        var rendering = template?.render()
+        do {
+            template = try repo.template(named: "TemplateRepositoryBundleTests")
+        } catch _ {
+            template = nil
+        }
+        var rendering: String?
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
-        template = repo.template(string: "{{>TemplateRepositoryBundleTests}}")
-        rendering = template?.render()
+        do {
+            template = try repo.template(string: "{{>TemplateRepositoryBundleTests}}")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
         repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "", encoding: NSUTF8StringEncoding)
         
-        template = repo.template(named: "notFound", error: &error)
+        do {
+            template = try repo.template(named: "notFound")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertNotNil(error)
         
-        template = repo.template(named: "TemplateRepositoryBundleTests")
-        rendering = template?.render()
+        do {
+            template = try repo.template(named: "TemplateRepositoryBundleTests")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests TemplateRepositoryBundleTests_partial")
         
-        template = repo.template(string: "{{>TemplateRepositoryBundleTests}}")
-        rendering = template?.render()
+        do {
+            template = try repo.template(string: "{{>TemplateRepositoryBundleTests}}")
+        } catch _ {
+            template = nil
+        }
+        do {
+            rendering = try template?.render()
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "TemplateRepositoryBundleTests TemplateRepositoryBundleTests_partial")
     }
 }

@@ -21,13 +21,13 @@
 // THE SOFTWARE.
 
 
-extension TemplateAST : DebugPrintable {
+extension TemplateAST : CustomDebugStringConvertible {
     var debugDescription: String {
         return TemplateGenerator().stringFromTemplateAST(self)
     }
 }
 
-extension Template : DebugPrintable {
+extension Template : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         return TemplateGenerator().stringFromTemplateAST(templateAST)

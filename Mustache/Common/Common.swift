@@ -83,8 +83,8 @@ public typealias TagDelimiterPair = (String, String)
 /**
 HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entities.
 
-:param: string A string
-:returns: HTML-escaped string
+- parameter string: A string
+- returns: HTML-escaped string
 */
 public func escapeHTML(string: String) -> String {
     let escapeTable: [Character: String] = [
@@ -95,7 +95,7 @@ public func escapeHTML(string: String) -> String {
         "\"": "&quot;",
     ]
     var escaped = ""
-    for c in string {
+    for c in string.characters {
         if let escapedString = escapeTable[c] {
             escaped += escapedString
         } else {

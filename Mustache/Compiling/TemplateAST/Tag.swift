@@ -57,7 +57,7 @@ rendering (see `FilterFunction`).
 :see: WillRenderFunction
 :see: DidRenderFunction
 */
-public class Tag: Printable {
+public class Tag: CustomStringConvertible {
     
     /**
     The type of the tag: variable or section:
@@ -134,14 +134,14 @@ public class Tag: Printable {
         // Renders "<strong>Hello Arthur</strong>"
         template.render(Box(["name": Box("Arthur")]))!
     
-    :param: context The context stack for evaluating mustache tags
-    :param: error   If there is a problem rendering the tag, upon return
+    - parameter context: The context stack for evaluating mustache tags
+    - parameter error:   If there is a problem rendering the tag, upon return
                     contains an NSError object that describes the problem.
     
-    :returns: The rendering of the tag
+    - returns: The rendering of the tag
     
     */
-    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
+    public func render(context: Context) throws -> Rendering {
         fatalError("Subclass must override")
     }
     

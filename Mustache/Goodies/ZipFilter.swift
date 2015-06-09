@@ -30,14 +30,14 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     //
     // Other kinds of arguments generate an error.
     
-    var zippedGenerators: [GeneratorOf<MustacheBox>] = []
+    var zippedGenerators: [AnyGenerator<MustacheBox>] = []
     
     for box in boxes {
         if box.isEmpty {
             // Missing collection does not provide anything
         } else if let array = box.arrayValue {
             // Array
-            zippedGenerators.append(GeneratorOf(array.generate()))
+            zippedGenerators.append(anyGenerator(array.generate()))
         } else {
             // Error
             if error != nil {
@@ -84,7 +84,11 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
             for box in zippedBoxes {
                 context = context.extendedContext(box)
             }
-            return info.tag.render(context, error: error)
+            do {
+                return try info.tag.render(context)
+            } catch _ {
+                return nil
+            }
         }
         
         renderFunctions.append(renderFunction)
@@ -93,5 +97,5 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
     
     // Return a box of those boxed render functions
     
-    return Box(map(renderFunctions, Box))
+    return Box(renderFunctions.map(Box))
 }

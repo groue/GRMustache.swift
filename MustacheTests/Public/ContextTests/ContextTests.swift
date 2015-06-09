@@ -27,14 +27,14 @@ import Mustache
 class ContextTests: XCTestCase {
     
     func testContextWithValueConstructor() {
-        let template = Template(string: "{{foo}}")!
+        let template = try! Template(string: "{{foo}}")
         
-        var rendering = template.render()!
+        var rendering = try! template.render()
         XCTAssertEqual(rendering, "")
         
         let box = Box(["foo": "bar"])
         template.baseContext = Context(box)
-        rendering = template.render()!
+        rendering = try! template.render()
         XCTAssertEqual(rendering, "bar")
     }
     
@@ -48,9 +48,12 @@ class ContextTests: XCTestCase {
             success = true
             return box
         }
-        let template = Template(string: "{{success}}")!
+        let template = try! Template(string: "{{success}}")
         template.baseContext = Context(Box(willRender))
-        template.render()
+        do {
+            try template.render()
+        } catch _ {
+        }
         XCTAssertTrue(success)
     }
     

@@ -41,8 +41,8 @@ class HoganSuite: SuiteTestCase {
             "template": "{{< partial}}{{$section1}}{{#lambda}}child1{{/lambda}}{{/section1}}{{/ partial}}",
         ]
         let repo = TemplateRepository(templates: templates)
-        let template = repo.template(named: "template")!
-        let rendering = template.render(Box(["lambda": Box(lambda)]))!
+        let template = try! repo.template(named: "template")
+        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "altered child1 - altered parent2")
     }
     
@@ -56,8 +56,8 @@ class HoganSuite: SuiteTestCase {
             "template": "{{< parent}}{{$section}}{{<partial}}{{$label}}{{#lambda}}test2{{/lambda}}{{/label}}{{/partial}}{{/section}}{{/parent}}",
         ]
         let repo = TemplateRepository(templates: templates)
-        let template = repo.template(named: "template")!
-        let rendering = template.render(Box(["lambda": Box(lambda)]))!
+        let template = try! repo.template(named: "template")
+        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "changed test2")
     }
 }

@@ -68,25 +68,25 @@ public protocol TemplateRepositoryDataSource {
     file-based data source which uses path IDs must normalize paths. Not
     following this rule yields undefined behavior.
     
-    :param: name           The name of the template or template partial.
-    :param: baseTemplateID The template ID of the enclosing template, or nil.
+    - parameter name:           The name of the template or template partial.
+    - parameter baseTemplateID: The template ID of the enclosing template, or nil.
     
-    :returns: a template ID
+    - returns: a template ID
     */
     func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
     
     /**
     Returns the Mustache template string that matches the template ID.
     
-    :param: templateID The template ID of the template
-    :param: error      If there is an error returning a template string, upon
+    - parameter templateID: The template ID of the template
+    - parameter error:      If there is an error returning a template string, upon
                        return contains nil, or an NSError object that describes
                        the problem.
     
-    :returns: a Mustache template string
+    - returns: a Mustache template string
     */
     
-    func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String?
+    func templateStringForTemplateID(templateID: TemplateID) throws -> String
 }
 
 /**
@@ -136,7 +136,7 @@ final public class TemplateRepository {
         repository.template(named: "template")!.render()!
         repository.template(string: "{{>template}}")!.render()!
     
-    :param: templates A dictionary whose keys are template names and values
+    - parameter templates: A dictionary whose keys are template names and values
                       template strings.
     */
     convenience public init(templates: [String: String]) {
@@ -170,11 +170,11 @@ final public class TemplateRepository {
     `{{> /a }}` partial tags.
     
     
-    :param: directoryPath     The path to the directory containing template
+    - parameter directoryPath:     The path to the directory containing template
                               files.
-    :param: templateExtension The extension of template files. Default extension
+    - parameter templateExtension: The extension of template files. Default extension
                               is "mustache".
-    :param: encoding          The encoding of template files. Default encoding
+    - parameter encoding:          The encoding of template files. Default encoding
                               is NSUTF8StringEncoding.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
@@ -209,10 +209,10 @@ final public class TemplateRepository {
     `{{> /a }}` partial tags.
     
     
-    :param: baseURL           The base URL where to look for templates.
-    :param: templateExtension The extension of template files. Default extension
+    - parameter baseURL:           The base URL where to look for templates.
+    - parameter templateExtension: The extension of template files. Default extension
                               is "mustache".
-    :param: encoding          The encoding of template files. Default encoding
+    - parameter encoding:          The encoding of template files. Default encoding
                               is NSUTF8StringEncoding.
     */
     convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
@@ -228,11 +228,11 @@ final public class TemplateRepository {
         // Loads the template.mustache resource of the main bundle:
         let template = repository.template(named: "template")!
     
-    :param: bundle            The bundle that stores templates as resources.
+    - parameter bundle:            The bundle that stores templates as resources.
                               Nil stands for the main bundle.
-    :param: templateExtension The extension of template files. Default extension
+    - parameter templateExtension: The extension of template files. Default extension
                               is "mustache".
-    :param: encoding          The encoding of template files. Default encoding
+    - parameter encoding:          The encoding of template files. Default encoding
                               is NSUTF8StringEncoding.
     */
     convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
@@ -283,18 +283,20 @@ final public class TemplateRepository {
     `{{>partial}}` load partial templates from URLs, file paths, keys in a
     dictionary, or whatever is relevant to the repository's data source.
     
-    :param: templateString A Mustache template string
-    :param: error          If there is an error loading or parsing template and
+    - parameter templateString: A Mustache template string
+    - parameter error:          If there is an error loading or parsing template and
                            partials, upon return contains an NSError object that
                            describes the problem.
     
-    :returns: A Mustache Template
+    - returns: A Mustache Template
     */
-    public func template(#string: String, error: NSErrorPointer = nil) -> Template? {
-        if let templateAST = self.templateAST(string: string, error: error) {
+    public func template(string string: String) throws -> Template {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+        do {
+            let templateAST = try self.templateAST(string: string, error: error)
             return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
-        } else {
-            return nil
+        } catch _ {
+            throw error
         }
     }
     
@@ -308,21 +310,18 @@ final public class TemplateRepository {
     method always return new Template instances, which you can further configure
     independently.
     
-    :param: name  The template name
-    :param: error If there is an error loading or parsing template and partials,
+    - parameter name:  The template name
+    - parameter error: If there is an error loading or parsing template and partials,
                   upon return contains an NSError object that describes the
                   problem.
     
-    :returns: A Mustache Template
+    - returns: A Mustache Template
     
     :see: reloadTemplates
     */
-    public func template(named name: String, error: NSErrorPointer = nil) -> Template? {
-        if let templateAST = templateAST(named: name, relativeToTemplateID: nil, error: error) {
-            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
-        } else {
-            return nil
-        }
+    public func template(named name: String) throws -> Template {
+        let templateAST = try templateAST(named: name, relativeToTemplateID: nil)
+        return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
     
     /**
@@ -345,7 +344,7 @@ final public class TemplateRepository {
     // =========================================================================
     // MARK: - Not public
     
-    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil, error: NSErrorPointer) -> TemplateAST? {
+    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
         if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
             if let templateAST = templateASTCache[templateID] {
                 // Return cached AST
@@ -358,38 +357,33 @@ final public class TemplateRepository {
                     let templateAST = TemplateAST()
                     templateASTCache[templateID] = templateAST
                     
-                    if let compiledAST = self.templateAST(string: templateString, templateID: templateID, error: error) {
+                    do {
+                        let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
                         // Success: update the empty AST
                         templateAST.updateFromTemplateAST(compiledAST)
                         return templateAST
-                    } else {
+                    } catch var error1 as NSError {
                         // Failure: remove the empty AST
                         templateASTCache.removeValueForKey(templateID)
-                        return nil
+                        throw error1
                     }
                 } else {
                     if dataSourceError == nil {
                         dataSourceError = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
                     }
-                    if error != nil {
-                        error.memory = dataSourceError
-                    }
-                    return nil
+                    throw dataSourceError
                 }
             }
         } else {
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
-            }
-            return nil
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
         }
     }
     
-    func templateAST(#string: String, templateID: TemplateID? = nil, error: NSErrorPointer) -> TemplateAST? {
+    func templateAST(string string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
         let compiler = TemplateCompiler(contentType: lockedConfiguration.contentType, repository: self, templateID: templateID)
         let parser = TemplateParser(tokenConsumer: compiler, configuration: lockedConfiguration)
         parser.parse(string, templateID: templateID)
-        return compiler.templateAST(error: error)
+        return try compiler.templateAST()
     }
     
     
@@ -420,8 +414,12 @@ final public class TemplateRepository {
             return name
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-            return templates[templateID]
+        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+            if let value = templates[templateID] {
+                return value
+            }
+            throw error
         }
     }
     
@@ -437,7 +435,7 @@ final public class TemplateRepository {
         
         init(baseURL: NSURL, templateExtension: String?, encoding: NSStringEncoding) {
             self.baseURL = baseURL
-            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath!.absoluteString!
+            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath!.absoluteString
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
@@ -482,8 +480,12 @@ final public class TemplateRepository {
             return nil
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-            return NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding, error: error) as? String
+        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+            if let value = NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding) as? String {
+                return value
+            }
+            throw error
         }
     }
     
@@ -526,8 +528,12 @@ final public class TemplateRepository {
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID, error: NSErrorPointer) -> String? {
-            return NSString(contentsOfFile: templateID, encoding: encoding, error: error) as? String
+        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
+            if let value = NSString(contentsOfFile: templateID, encoding: encoding) as? String {
+                return value
+            }
+            throw error
         }
     }
 }

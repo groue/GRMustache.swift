@@ -31,14 +31,14 @@ class StandardLibraryTests: XCTestCase {
             return Rendering("<")
         })
         
-        var template = Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")!
+        var template = try! Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        var rendering = template.render(Box(["object": render]))!
+        var rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "&amp;lt;")
         
-        template = Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")!
+        template = try! Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        rendering = template.render(Box(["object": render]))!
+        rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "&lt;")
     }
     
@@ -47,14 +47,14 @@ class StandardLibraryTests: XCTestCase {
             return Rendering("<br>", .HTML)
         })
         
-        var template = Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")!
+        var template = try! Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        var rendering = template.render(Box(["object": render]))!
+        var rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "&lt;br&gt;")
         
-        template = Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")!
+        template = try! Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        rendering = template.render(Box(["object": render]))!
+        rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "&lt;br&gt;")
     }
     
@@ -63,10 +63,10 @@ class StandardLibraryTests: XCTestCase {
             return Rendering("\"double quotes\" and 'single quotes'")
         })
         
-        let template = Template(string: "{{# javascriptEscape }}{{ object }}{{/ }}")!
+        let template = try! Template(string: "{{# javascriptEscape }}{{ object }}{{/ }}")
         template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
         
-        let rendering = template.render(Box(["object": render]))!
+        let rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "\\u0022double quotes\\u0022 and \\u0027single quotes\\u0027")
     }
     
@@ -75,10 +75,10 @@ class StandardLibraryTests: XCTestCase {
             return Rendering("&")
         })
         
-        let template = Template(string: "{{# URLEscape }}{{ object }}{{/ }}")!
+        let template = try! Template(string: "{{# URLEscape }}{{ object }}{{/ }}")
         template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
         
-        let rendering = template.render(Box(["object": render]))!
+        let rendering = try! template.render(Box(["object": render]))
         XCTAssertEqual(rendering, "%26")
     }
 }

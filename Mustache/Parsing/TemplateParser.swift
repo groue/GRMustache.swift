@@ -297,7 +297,7 @@ final class TemplateParser {
                 } else if atString(currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = advance(stateStart, currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
-                    let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { count($0) > 0 }
+                    let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
                         failWithParseError(lineNumber: lineNumber, templateID: templateID, description: "Invalid set delimiters tag")
                         return;
@@ -390,14 +390,14 @@ final class TemplateParser {
         }
     }
     
-    private func failWithParseError(#lineNumber: Int, templateID: TemplateID?, description: String) {
+    private func failWithParseError(lineNumber lineNumber: Int, templateID: TemplateID?, description: String) {
         let localizedDescription: String
         if let templateID = templateID {
             localizedDescription = "Parse error at line \(lineNumber) of template \(templateID): \(description)"
         } else {
             localizedDescription = "Parse error at line \(lineNumber): \(description)"
         }
-        var error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
+        let error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
         tokenConsumer.parser(self, didFailWithError: error)
     }
 }

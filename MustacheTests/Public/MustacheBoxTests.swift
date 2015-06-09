@@ -29,15 +29,15 @@ class MustacheBoxTests: XCTestCase {
     // This test should go elsewhere, or should have many brothers: tests for
     // each way to feed the Box(boolValue:value:etc.) function.
     func testBoolValue() {
-        let template = Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")!
-        XCTAssertEqual(template.render(Box(boolValue: true))!, "true")
-        XCTAssertEqual(template.render(Box(boolValue: false))!, "false")
+        let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
+        XCTAssertEqual(try! template.render(Box(boolValue: true)), "true")
+        XCTAssertEqual(try! template.render(Box(boolValue: false)), "false")
     }
     
     // This test should go elsewhere
     func testBoolBoxing() {
-        let template = Template(string:"{{.}}:{{#.}}true{{/.}}{{^.}}false{{/.}}")!
-        XCTAssertEqual(template.render(Box(true))!, "1:true")
-        XCTAssertEqual(template.render(Box(false))!, "0:false")
+        let template = try! Template(string:"{{.}}:{{#.}}true{{/.}}{{^.}}false{{/.}}")
+        XCTAssertEqual(try! template.render(Box(true)), "1:true")
+        XCTAssertEqual(try! template.render(Box(false)), "0:false")
     }
 }

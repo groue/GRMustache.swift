@@ -146,10 +146,10 @@ class BoxTests: XCTestCase {
     
     func testSetOfInt() {
         let value: Set<Int> = [0,1,2]
-        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
-        XCTAssertTrue(find(["012", "021", "102", "120", "201", "210"], rendering) != nil)
+        let rendering = try! template.render(box)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering.characters) != nil)
     }
     
     // TODO
@@ -168,74 +168,74 @@ class BoxTests: XCTestCase {
     
     func testDictionaryOfInt() {
         let value: Dictionary<String, Int> = ["name": 1]
-        let template = Template(string: "{{name}}")!
+        let template = try! Template(string: "{{name}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "1")
     }
     
     func testDictionaryOfOptionalInt() {
         let value: Dictionary<String, Int?> = ["name": 1]
-        let template = Template(string: "{{name}}")!
+        let template = try! Template(string: "{{name}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "1")
     }
     
     func testArrayOfInt() {
         let value: Array<Int> = [0,1,2,3]
-        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "0123")
     }
     
     func testArrayOfOptionalInt() {
         let value: Array<Int?> = [0,1,2,3, nil]
-        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "0123")
     }
     
     func testArrayOfArrayOfInt() {
         let value: Array<Array<Int>> = [[0,1],[2,3]]
-        let template = Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")!
+        let template = try! Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[0,1,],[2,3,],")
     }
     
     func testArrayOfArrayOfArrayOfInt() {
         let value: Array<Array<Array<Int>>> = [[[0,1],[2,3]], [[4,5],[6,7]]]
-        let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")!
+        let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
     
     func testArrayOfArrayOfArrayOfDictionaryOfInt() {
         let value: Array<Array<Array<Dictionary<String, Int>>>> = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
-        let template = Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")!
+        let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
 
     func testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
         let value: Dictionary<String, Array<Array<Array<Dictionary<String, Int>>>>> = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
-        let template = Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")!
+        let template = try! Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")
     }
     
     func testRange() {
         let value = 0..<10
-        let template = Template(string: "{{#.}}{{.}}{{/}}")!
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "0123456789")
     }
     
@@ -245,7 +245,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! [Int]
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as! Int }, [1,2,3])
+        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
     }
     
     func testArrayValueForNSArray() {
@@ -254,7 +254,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! NSArray
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as! String }, ["foo"])
+        XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
     }
     
     func testArrayValueForNSOrderedSet() {
@@ -263,7 +263,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! NSOrderedSet
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as! String }, ["foo"])
+        XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
     }
     
     func testArrayValueForCollectionOfOne() {
@@ -272,7 +272,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! CollectionOfOne<Int>
         XCTAssertEqual(extractedValue[extractedValue.startIndex], originalValue[originalValue.startIndex])
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as! Int }, [123])
+        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [123])
     }
     
     func testArrayValueForRange() {
@@ -281,7 +281,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! Range<Int>
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(map(extractedArray) { $0.value as! Int }, [1,2,3])
+        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
     }
     
     func testDictionaryValueForNSDictionary() {

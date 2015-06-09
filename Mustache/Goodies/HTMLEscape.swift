@@ -40,7 +40,7 @@ class HTMLEscape : MustacheBoxable {
     }
     
     // This function is used for evaluating `HTMLEscape(x)` expressions.
-    private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+    private func filter(rendering: Rendering) throws -> Rendering {
         return Rendering(escapeHTML(rendering.string), rendering.contentType)
     }
     
@@ -57,7 +57,11 @@ class HTMLEscape : MustacheBoxable {
             // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
-                    return self.filter(rendering, error: error)
+                    do {
+                        return try self.filter(rendering)
+                    } catch _ {
+                        return nil
+                    }
                 } else {
                     return nil
                 }

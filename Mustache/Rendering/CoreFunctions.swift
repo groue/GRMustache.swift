@@ -142,8 +142,8 @@ For example, here is the trivial `identity` filter:
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-:param: filter a function `(MustacheBox, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
+- parameter filter: a function `(MustacheBox, NSErrorPointer) -> MustacheBox?`
+- returns: a FilterFunction
 */
 public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
@@ -180,8 +180,8 @@ given to the filter.
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-:param: filter a function `(T?, NSErrorPointer) -> MustacheBox?`
-:returns: a FilterFunction
+- parameter filter: a function `(T?, NSErrorPointer) -> MustacheBox?`
+- returns: a FilterFunction
 */
 public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
@@ -256,8 +256,8 @@ For an example of such a filter, see the documentation of
 `func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
 This example processes `T?` instead of `MustacheBox`, but the idea is the same.
 
-:param: filter a function `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
+- parameter filter: a function `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
+- returns: a FilterFunction
 */
 public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (box: MustacheBox, error: NSErrorPointer) in
@@ -303,8 +303,8 @@ domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
-:param: filter a function `(T?, RenderingInfo, NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
+- parameter filter: a function `(T?, RenderingInfo, NSErrorPointer) -> Rendering?`
+- returns: a FilterFunction
 */
 public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
     return Filter { (t: T?, error: NSErrorPointer) in
@@ -342,11 +342,11 @@ If your filter is given too many or too few arguments, you should return nil and
 set error to an NSError of domain `GRMustacheErrorDomain` and code
 `GRMustacheErrorCodeRenderingError`.
 
-:param: filter a function `(boxes: [MustacheBox], error: NSErrorPointer) -> Rendering?`
-:returns: a FilterFunction
+- parameter filter: a function `(boxes: [MustacheBox], error: NSErrorPointer) -> Rendering?`
+- returns: a FilterFunction
 */
 public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return _VariadicFilter([], filter)
+    return _VariadicFilter([], filter: filter)
 }
 
 private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
@@ -354,7 +354,7 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
         let boxes = boxes + [box]
         if partialApplication {
             // Wait for another argument
-            return Box(_VariadicFilter(boxes, filter))
+            return Box(_VariadicFilter(boxes, filter: filter))
         } else {
             // No more argument: compute final value
             return filter(boxes: boxes, error: error)
@@ -460,11 +460,11 @@ The default rendering thus reads:
     let template = Template(string: "{{value}}")!
     let rendering = template.render(Box(["value": Box(renderValue)]))!
 
-:param: info   A RenderingInfo
-:param: error  If there is a problem in the rendering, upon return contains an
+- parameter info:   A RenderingInfo
+- parameter error:  If there is a problem in the rendering, upon return contains an
                NSError object that describes the problem.
 
-:returns: a Rendering, or nil in case of error.
+- returns: a Rendering, or nil in case of error.
 */
 public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
 
@@ -511,8 +511,8 @@ section has already been parsed with its template. You may prefer the raw
     // Renders "<b>Lionel Richie has a Mustache.</b>"
     let rendering = template.render(Box(data))!
 
-:param: lambda  A `String -> String` function
-:returns: A RenderFunction
+- parameter lambda:  A `String -> String` function
+- returns: A RenderFunction
 */
 public func Lambda(lambda: String -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
@@ -526,12 +526,21 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L117
             // > Lambdas used for sections should parse with the current delimiters
             
-            var templateRepository = TemplateRepository()
+            let templateRepository = TemplateRepository()
             templateRepository.configuration.tagDelimiterPair = info.tag.tagDelimiterPair
             
             let templateString = lambda(info.tag.innerTemplateString)
-            let template = templateRepository.template(string: templateString)
-            return template?.render(info.context, error: error)
+            let template: Template?
+            do {
+                template = try templateRepository.template(string: templateString)
+            } catch _ {
+                template = nil
+            }
+            do {
+                return try template?.render(info.context)
+            } catch _ {
+                return nil
+            }
         }
     }
 }
@@ -573,8 +582,8 @@ using a Template instead of a lambda (see the documentation of
     // Renders "Lionel Richie has a Mustache."
     let rendering = template.render(Box(data))!
 
-:param: lambda  A `() -> String` function
-:returns: A RenderFunction
+- parameter lambda:  A `() -> String` function
+- returns: A RenderFunction
 */
 public func Lambda(lambda: () -> String) -> RenderFunction {
     return { (info: RenderingInfo, error: NSErrorPointer) in
@@ -587,18 +596,31 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             //
             // Let's render a text template:
             
-            var templateRepository = TemplateRepository()
+            let templateRepository = TemplateRepository()
             templateRepository.configuration.contentType = .Text
             
             let templateString = lambda()
-            let template = templateRepository.template(string: templateString)
-            return template?.render(info.context, error: error)
+            let template: Template?
+            do {
+                template = try templateRepository.template(string: templateString)
+            } catch _ {
+                template = nil
+            }
+            do {
+                return try template?.render(info.context)
+            } catch _ {
+                return nil
+            }
         case .Section:
             // {{# lambda }}...{{/ lambda }}
             //
             // Behave as a true object, and render the section.
             let context = info.context.extendedContext(Box(Lambda(lambda)))
-            return info.tag.render(context, error: error)
+            do {
+                return try info.tag.render(context)
+            } catch _ {
+                return nil
+            }
         }
     }
 }
@@ -625,8 +647,8 @@ public struct Rendering {
         Rendering("foo", .Text)
         Rendering("foo", .HTML)
     
-    :param: string       A string
-    :param: contentType  A content type
+    - parameter string:       A string
+    - parameter contentType:  A content type
     */
     public init(_ string: String, _ contentType: ContentType = .Text) {
         self.string = string

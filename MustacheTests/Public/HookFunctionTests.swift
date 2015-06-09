@@ -32,9 +32,9 @@ class HookFunctionTests: XCTestCase {
             success = false
             return box
         }
-        let template = Template(string: "---")!
+        let template = try! Template(string: "---")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
     }
@@ -45,9 +45,9 @@ class HookFunctionTests: XCTestCase {
             success = false
         }
         
-        let template = Template(string: "---")!
+        let template = try! Template(string: "---")
         template.baseContext = template.baseContext.extendedContext(Box(didRender))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "---")
         XCTAssertTrue(success)
     }
@@ -67,9 +67,9 @@ class HookFunctionTests: XCTestCase {
             postRenderingTagType = tag.type
         }
         
-        let template = Template(string: "---{{foo}}---")!
+        let template = try! Template(string: "---{{foo}}---")
         template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
-        let rendering = template.render(Box(["foo": "value"]))!
+        let rendering = try! template.render(Box(["foo": "value"]))
         
         XCTAssertEqual(rendering, "---1---")
         XCTAssertEqual(preRenderingTagType!, TagType.Variable)
@@ -89,9 +89,9 @@ class HookFunctionTests: XCTestCase {
             postRenderingTagType = tag.type
         }
         
-        let template = Template(string: "<{{#false}}{{not_rendered}}{{/false}}>")!
+        let template = try! Template(string: "<{{#false}}{{not_rendered}}{{/false}}>")
         template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         
         XCTAssertEqual(rendering, "<>")
         XCTAssertEqual(preRenderingTagType!, TagType.Section)
@@ -106,7 +106,7 @@ class HookFunctionTests: XCTestCase {
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             preRenderingValues.append(box)
             preRenderingTagTypes.append(tag.type)
-            if count(preRenderingValues) == 1 {
+            if preRenderingValues.count == 1 {
                 return Box(true)
             } else {
                 return Box("observer")
@@ -117,13 +117,13 @@ class HookFunctionTests: XCTestCase {
             postRenderingTagTypes.append(tag.type)
         }
         
-        let template = Template(string: "<{{#foo}}{{bar}}{{/foo}}>")!
+        let template = try! Template(string: "<{{#foo}}{{bar}}{{/foo}}>")
         template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender, didRender: didRender))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         
         XCTAssertEqual(rendering, "<observer>")
-        XCTAssertEqual(count(preRenderingValues), 2)
-        XCTAssertEqual(count(postRenderingValues), 2)
+        XCTAssertEqual(preRenderingValues.count, 2)
+        XCTAssertEqual(postRenderingValues.count, 2)
         XCTAssertTrue(preRenderingValues[0].isEmpty)
         XCTAssertTrue(preRenderingValues[1].isEmpty)
         XCTAssertEqual(postRenderingValues[0].value as! String, "observer")
@@ -146,74 +146,74 @@ class HookFunctionTests: XCTestCase {
             return Box(string?.uppercaseString)
         }
         
-        var template = Template(string: "{{subject}}")!
+        var template = try! Template(string: "{{subject}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        var rendering = template.render()!
+        var rendering = try! template.render()
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
         
-        template = Template(string: "{{subject}}")!
+        template = try! Template(string: "{{subject}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["subject": "foo"]))!
+        rendering = try! template.render(Box(["subject": "foo"]))
         XCTAssertEqual(rendering, "foo")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual(renderedValue!.value as! String, "foo")
         
-        template = Template(string: "{{subject.foo}}")!
+        template = try! Template(string: "{{subject.foo}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render()!
+        rendering = try! template.render()
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
         
-        template = Template(string: "{{subject.foo}}")!
+        template = try! Template(string: "{{subject.foo}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["subject": "foo"]))!
+        rendering = try! template.render(Box(["subject": "foo"]))
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
         
-        template = Template(string: "{{subject.foo}}")!
+        template = try! Template(string: "{{subject.foo}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["subject": ["foo": "bar"]]))!
+        rendering = try! template.render(Box(["subject": ["foo": "bar"]]))
         XCTAssertEqual(rendering, "bar")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual(renderedValue!.value as! String, "bar")
         
-        template = Template(string: "{{filter(subject)}}")!
+        template = try! Template(string: "{{filter(subject)}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["filter": Box(Filter(filter))]))!
+        rendering = try! template.render(Box(["filter": Box(Filter(filter))]))
         XCTAssertEqual(rendering, "")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertTrue(renderedValue!.isEmpty)
         
-        template = Template(string: "{{filter(subject)}}")!
+        template = try! Template(string: "{{filter(subject)}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))!
+        rendering = try! template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))
         XCTAssertEqual(rendering, "FOO")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual(renderedValue!.value as! String, "FOO")
         
-        template = Template(string: "{{filter(subject).length}}")!
+        template = try! Template(string: "{{filter(subject).length}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))!
+        rendering = try! template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))
         XCTAssertEqual(rendering, "3")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual(renderedValue!.value as! Int, 3)
@@ -226,15 +226,15 @@ class HookFunctionTests: XCTestCase {
         }
         let box = Box(["value": "<>"])
         
-        var template = Template(string: "-{{value}}-")!
+        var template = try! Template(string: "-{{value}}-")
         template.baseContext = template.baseContext.extendedContext(Box(didRender))
-        var rendering = template.render(box)!
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "-&lt;&gt;-")
         XCTAssertEqual(recordedRendering!, "&lt;&gt;")
         
-        template = Template(string: "-{{{value}}}-")!
+        template = try! Template(string: "-{{{value}}}-")
         template.baseContext = template.baseContext.extendedContext(Box(didRender))
-        rendering = template.render(box)!
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "-<>-")
         XCTAssertEqual(recordedRendering!, "<>")
     }
@@ -245,14 +245,20 @@ class HookFunctionTests: XCTestCase {
             failedRendering = (string == nil)
         }
         
-        let template = Template(string: "-{{.}}-")!
+        let template = try! Template(string: "-{{.}}-")
         template.baseContext = template.baseContext.extendedContext(Box(didRender))
         failedRendering = false
         var error: NSError?
-        let rendering = template.render(Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
-            return nil
-        }), error: &error)
+        let rendering: String?
+        do {
+            rendering = try template.render(Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                        error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
+                        return nil
+                    }))
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, "TagObserverError")
         XCTAssertEqual(error!.code, 1)
@@ -311,14 +317,17 @@ class HookFunctionTests: XCTestCase {
             }
         }
         
-        let template = Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")!
+        let template = try! Template(string: "{{#observer2}}{{#observer3}}{{observed}}{{/}}{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender: willRender1, didRender: didRender1))
         let box = Box([
             "observer2": Box(willRender: willRender2, didRender: didRender2),
             "observer3": Box(willRender: willRender3, didRender: didRender3),
             "observed": Box("observed")
             ])
-        template.render(box)
+        do {
+            try template.render(box)
+        } catch _ {
+        }
         
         XCTAssertEqual(willRenderIndex1, 2)
         XCTAssertEqual(willRenderIndex2, 1)
@@ -342,9 +351,12 @@ class HookFunctionTests: XCTestCase {
             return box
         }
         
-        let template = Template(string: "{{#items}}{{.}}{{/items}}")!
+        let template = try! Template(string: "{{#items}}{{.}}{{/items}}")
         let box = Box(["items": Box([Box(willRender1), Box(willRender2)])])
-        template.render(box)
+        do {
+            try template.render(box)
+        } catch _ {
+        }
         
         XCTAssertTrue(willRenderCalled1)
         XCTAssertTrue(willRenderCalled2)
@@ -362,16 +374,16 @@ class HookFunctionTests: XCTestCase {
             return Rendering("&you")
         }
         var box = Box(["object": Box(render), "observer": Box(willRender)])
-        var template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "{{# observer }}{{ object }}{{/ }}")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "&amp;YOU")
         
         render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 return Rendering("&you", .HTML)
             }
         box = Box(["object": Box(render), "observer": Box(willRender)])
-        template = Template(string: "{{# observer }}{{ object }}{{/ }}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{# observer }}{{ object }}{{/ }}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "&YOU")
     }
 }

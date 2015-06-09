@@ -131,10 +131,10 @@ public protocol MustacheBoxable {
 Values that conform to the `MustacheBoxable` protocol can feed Mustache
 templates.
 
-:param: boxable An optional value that conform to the `MustacheBoxable`
+- parameter boxable: An optional value that conform to the `MustacheBoxable`
                 protocol.
 
-:returns: A MustacheBox that wraps `boxable`
+- returns: A MustacheBox that wraps `boxable`
 */
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
@@ -195,17 +195,25 @@ extension Bool : MustacheBoxable {
                     return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
                 case .Section:
                     if info.enumerationItem {
-                        // {{# bools }}...{{/ bools }}
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        do {
+                            // {{# bools }}...{{/ bools }}
+                            return try info.tag.render(info.context.extendedContext(Box(self)))
+                        } catch _ {
+                            return nil
+                        }
                     } else {
-                        // {{# bool }}...{{/ bool }}
-                        //
-                        // Bools do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.render(info.context, error: error)
+                        do {
+                            // {{# bool }}...{{/ bool }}
+                            //
+                            // Bools do not enter the context stack when used in a
+                            // boolean section.
+                            //
+                            // This behavior must not change:
+                            // https://github.com/groue/GRMustache/issues/83
+                            return try info.tag.render(info.context)
+                        } catch _ {
+                            return nil
+                        }
                     }
                 }
         })
@@ -246,17 +254,25 @@ extension Int : MustacheBoxable {
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
-                        // {{# ints }}...{{/ ints }}
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        do {
+                            // {{# ints }}...{{/ ints }}
+                            return try info.tag.render(info.context.extendedContext(Box(self)))
+                        } catch _ {
+                            return nil
+                        }
                     } else {
-                        // {{# int }}...{{/ int }}
-                        //
-                        // Ints do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.render(info.context, error: error)
+                        do {
+                            // {{# int }}...{{/ int }}
+                            //
+                            // Ints do not enter the context stack when used in a
+                            // boolean section.
+                            //
+                            // This behavior must not change:
+                            // https://github.com/groue/GRMustache/issues/83
+                            return try info.tag.render(info.context)
+                        } catch _ {
+                            return nil
+                        }
                     }
                 }
         })
@@ -297,17 +313,25 @@ extension UInt : MustacheBoxable {
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
-                        // {{# uints }}...{{/ uints }}
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        do {
+                            // {{# uints }}...{{/ uints }}
+                            return try info.tag.render(info.context.extendedContext(Box(self)))
+                        } catch _ {
+                            return nil
+                        }
                     } else {
-                        // {{# uint }}...{{/ uint }}
-                        //
-                        // Uints do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.render(info.context, error: error)
+                        do {
+                            // {{# uint }}...{{/ uint }}
+                            //
+                            // Uints do not enter the context stack when used in a
+                            // boolean section.
+                            //
+                            // This behavior must not change:
+                            // https://github.com/groue/GRMustache/issues/83
+                            return try info.tag.render(info.context)
+                        } catch _ {
+                            return nil
+                        }
                     }
                 }
         })
@@ -348,17 +372,25 @@ extension Double : MustacheBoxable {
                     return Rendering("\(self)")
                 case .Section:
                     if info.enumerationItem {
-                        // {{# doubles }}...{{/ doubles }}
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        do {
+                            // {{# doubles }}...{{/ doubles }}
+                            return try info.tag.render(info.context.extendedContext(Box(self)))
+                        } catch _ {
+                            return nil
+                        }
                     } else {
-                        // {{# double }}...{{/ double }}
-                        //
-                        // Doubles do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return info.tag.render(info.context, error: error)
+                        do {
+                            // {{# double }}...{{/ double }}
+                            //
+                            // Doubles do not enter the context stack when used in a
+                            // boolean section.
+                            //
+                            // This behavior must not change:
+                            // https://github.com/groue/GRMustache/issues/83
+                            return try info.tag.render(info.context)
+                        } catch _ {
+                            return nil
+                        }
                     }
                 }
         })
@@ -402,11 +434,11 @@ extension String : MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            boolValue: (count(self) > 0),
+            boolValue: (self.characters.count > 0),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
-                    return Box(count(self))
+                    return Box(self.characters.count)
                 default:
                     return Box()
                 }
@@ -450,7 +482,8 @@ extension String : MustacheBoxable {
 //
 // Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has revelead
 // that the generic function would not compile in Release configuration.
-private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo) throws -> Rendering {
+    var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
     
     // Prepare the rendering. We don't known the contentType yet: it depends on items
     var buffer = ""
@@ -487,15 +520,10 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
             }
             else
             {
-                // Inconsistent content type: this is an error. How are we
-                // supposed to mix Text and HTML?
-                if error != nil {
-                    error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
-                }
-                return nil
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
             }
         } else {
-            return nil
+            throw error
         }
     }
     
@@ -527,7 +555,7 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo, error
         // Renderings have a content type. In order to render an empty
         // rendering that has the contentType of the tag, let's use the
         // `render` method of the tag.
-        return info.tag.render(info.context, error: error)
+        return try info.tag.render(info.context)
     }
 }
 
@@ -591,10 +619,10 @@ property: it reliably returns an Array of MustacheBox, whatever the actual
 type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 
-:param: collection A collection of values that conform to the `MustacheBoxable`
+- parameter collection: A collection of values that conform to the `MustacheBoxable`
                    protocol.
 
-:returns: A MustacheBox that wraps `collection`
+- returns: A MustacheBox that wraps `collection`
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -602,7 +630,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: map(collection, { Box($0) })),
+            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -631,12 +659,20 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
+                    do {
+                        // {{# collections }}...{{/ collections }}
+                        return try info.tag.render(info.context.extendedContext(Box(collection)))
+                    } catch _ {
+                        return nil
+                    }
                 } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return renderBoxArray(map(collection, { Box($0) }), info, error)
+                    do {
+                        // {{ collection }}
+                        // {{# collection }}...{{/ collection }}
+                        return try renderBoxArray(collection.map({ Box($0) }), info: info)
+                    } catch _ {
+                        return nil
+                    }
                 }
         })
     } else {
@@ -688,10 +724,10 @@ property: it reliably returns an Array of MustacheBox, whatever the actual
 type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 
-:param: collection A collection of optional values that conform to the
+- parameter collection: A collection of optional values that conform to the
                    `MustacheBoxable` protocol.
 
-:returns: A MustacheBox that wraps `collection`
+- returns: A MustacheBox that wraps `collection`
 */
 public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -699,7 +735,7 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
         return MustacheBox(
             boolValue: (count > 0),
             value: collection,
-            converter: MustacheBox.Converter(arrayValue: map(collection, { Box($0) })),
+            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -728,13 +764,21 @@ public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return info.tag.render(info.context.extendedContext(Box(collection)), error: error)
+                    do {
+                        // {{# collections }}...{{/ collections }}
+                        return try info.tag.render(info.context.extendedContext(Box(collection)))
+                    } catch _ {
+                        return nil
+                    }
                 } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    // {{^ collection }}...{{/ collection }}
-                    return renderBoxArray(map(collection, { Box($0) }), info, error)
+                    do {
+                        // {{ collection }}
+                        // {{# collection }}...{{/ collection }}
+                        // {{^ collection }}...{{/ collection }}
+                        return try renderBoxArray(collection.map({ Box($0) }), info: info)
+                    } catch _ {
+                        return nil
+                    }
                 }
         })
     } else {
@@ -784,9 +828,9 @@ property: it reliably returns an Array of MustacheBox, whatever the actual
 type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 
-:param: set A set of values that conform to the `MustacheBoxable` protocol.
+- parameter set: A set of values that conform to the `MustacheBoxable` protocol.
 
-:returns: A MustacheBox that wraps `set`
+- returns: A MustacheBox that wraps `set`
 */
 public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
     if let set = set {
@@ -794,7 +838,7 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
         return MustacheBox(
             boolValue: (count > 0),
             value: set,
-            converter: MustacheBox.Converter(arrayValue: map(set, { Box($0) })),
+            converter: MustacheBox.Converter(arrayValue: set.map({ Box($0) })),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "count":
@@ -807,13 +851,21 @@ public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    // {{# sets }}...{{/ sets }}
-                    return info.tag.render(info.context.extendedContext(Box(set)), error: error)
+                    do {
+                        // {{# sets }}...{{/ sets }}
+                        return try info.tag.render(info.context.extendedContext(Box(set)))
+                    } catch _ {
+                        return nil
+                    }
                 } else {
-                    // {{ set }}
-                    // {{# set }}...{{/ set }}
-                    // {{^ set }}...{{/ set }}
-                    return renderBoxArray(map(set, { Box($0) }), info, error)
+                    do {
+                        // {{ set }}
+                        // {{# set }}...{{/ set }}
+                        // {{^ set }}...{{/ set }}
+                        return try renderBoxArray(set.map({ Box($0) }), info: info)
+                    } catch _ {
+                        return nil
+                    }
                 }
         })
     } else {
@@ -864,17 +916,17 @@ Whenever you want to extract a dictionary of a MustacheBox, use the
 dictionary, whatever the actual type of the raw boxed value.
 
 
-:param: dictionary A dictionary of values that conform to the `MustacheBoxable`
+- parameter dictionary: A dictionary of values that conform to the `MustacheBoxable`
                    protocol.
 
-:returns: A MustacheBox that wraps `dictionary`
+- returns: A MustacheBox that wraps `dictionary`
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: reduce(dictionary, [String: MustacheBox](), { (var boxDictionary, pair) -> [String: MustacheBox] in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) -> [String: MustacheBox] in
                         let (key, value) = pair
                         boxDictionary[key] = Box(value)
                         return boxDictionary
@@ -929,17 +981,17 @@ Whenever you want to extract a dictionary of a MustacheBox, use the
 dictionary, whatever the actual type of the raw boxed value.
 
 
-:param: dictionary A dictionary of optional values that conform to the
+- parameter dictionary: A dictionary of optional values that conform to the
                    `MustacheBoxable` protocol.
 
-:returns: A MustacheBox that wraps `dictionary`
+- returns: A MustacheBox that wraps `dictionary`
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: reduce(dictionary, [String: MustacheBox](), { (var boxDictionary, pair) -> [String: MustacheBox] in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) -> [String: MustacheBox] in
                     let (key, value) = pair
                     boxDictionary[key] = Box(value)
                     return boxDictionary
@@ -985,8 +1037,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 /**
 See the documentation of `NSObject.mustacheBox`.
 
-:param: object An NSObject
-:returns: A MustacheBox that wraps `object`
+- parameter object: An NSObject
+- returns: A MustacheBox that wraps `object`
 */
 public func Box(object: NSObject?) -> MustacheBox {
     if let object = object {
@@ -1102,9 +1154,9 @@ protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.
 
 Otherwise, GRMustache logs a warning, and returns the empty box.
 
-:param: object An object
+- parameter object: An object
 
-:returns: A MustacheBox that wraps `object`
+- returns: A MustacheBox that wraps `object`
 */
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
@@ -1268,12 +1320,20 @@ extension NSObject : MustacheBoxable {
                 },
                 render: { (info: RenderingInfo, error: NSErrorPointer) in
                     if info.enumerationItem {
-                        // {{# collections }}...{{/ collections }}
-                        return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                        do {
+                            // {{# collections }}...{{/ collections }}
+                            return try info.tag.render(info.context.extendedContext(Box(self)))
+                        } catch _ {
+                            return nil
+                        }
                     } else {
-                        // {{ collection }}
-                        // {{# collection }}...{{/ collection }}
-                        return renderBoxArray(boxArray, info, error)
+                        do {
+                            // {{ collection }}
+                            // {{# collection }}...{{/ collection }}
+                            return try renderBoxArray(boxArray, info: info)
+                        } catch _ {
+                            return nil
+                        }
                     }
             })
         } else {
@@ -1457,7 +1517,7 @@ extension NSDictionary {
         return MustacheBox(
             value: self,
             converter: MustacheBox.Converter(
-                dictionaryValue: reduce(GeneratorSequence(NSFastGenerator(self)), [String: MustacheBox](), { (var boxDictionary, key) in
+                dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (var boxDictionary, key) in
                     if let key = key as? String {
                         let item = (self as AnyObject)[key] // Cast to AnyObject so that we can use subscript notation.
                         boxDictionary[key] = BoxAnyObject(item)
@@ -1534,13 +1594,21 @@ extension NSSet {
             },
             render: { (info: RenderingInfo, error: NSErrorPointer) in
                 if info.enumerationItem {
-                    // {{# sets }}...{{/ sets }}
-                    return info.tag.render(info.context.extendedContext(Box(self)), error: error)
+                    do {
+                        // {{# sets }}...{{/ sets }}
+                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                    } catch _ {
+                        return nil
+                    }
                 } else {
                     // {{ set }}
                     // {{# set }}...{{/ set }}
                     let boxes = map(GeneratorSequence(NSFastGenerator(self)), BoxAnyObject)
-                    return renderBoxArray(boxes, info, error)
+                    do {
+                        return try renderBoxArray(boxes, info)
+                    } catch _ {
+                        return nil
+                    }
                 }
         })
     }
@@ -1564,8 +1632,8 @@ feed template.
     // Renders "100"
     template.render(Box(["x": 10]))!
 
-:param: filter A FilterFunction
-:returns: A MustacheBox
+- parameter filter: A FilterFunction
+- returns: A MustacheBox
 
 :see: FilterFunction
 */
@@ -1583,8 +1651,8 @@ feed template.
     let template = Template(string: "{{ foo }}")!
     template.render(Box(["foo": Box(foo)]))!
 
-:param: render A RenderFunction
-:returns: A MustacheBox
+- parameter render: A RenderFunction
+- returns: A MustacheBox
 
 :see: RenderFunction
 */
@@ -1613,8 +1681,8 @@ feed template.
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
     template.render(Box(data))!
 
-:param: willRender A WillRenderFunction
-:returns: A MustacheBox
+- parameter willRender: A WillRenderFunction
+- returns: A MustacheBox
 
 :see: WillRenderFunction
 */
@@ -1644,8 +1712,8 @@ feed template.
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
     template.render(Box(data))!
 
-:param: didRender A DidRenderFunction
-:returns: A MustacheBox
+- parameter didRender: A DidRenderFunction
+- returns: A MustacheBox
 
 :see: DidRenderFunction
 */
@@ -1892,14 +1960,14 @@ to implement 2:
     let template = Template(string: "{{# person }}The person is {{.}}{{/ person }}")!
     template.render(Box(["person": person]))!
 
-:param: boolValue      An optional boolean value for the Box.
-:param: value          An optional boxed value
-:param: keyedSubscript An optional KeyedSubscriptFunction
-:param: filter         An optional FilterFunction
-:param: render         An optional RenderFunction
-:param: willRender     An optional WillRenderFunction
-:param: didRender      An optional DidRenderFunction
-:returns: A MustacheBox
+- parameter boolValue:      An optional boolean value for the Box.
+- parameter value:          An optional boxed value
+- parameter keyedSubscript: An optional KeyedSubscriptFunction
+- parameter filter:         An optional FilterFunction
+- parameter render:         An optional RenderFunction
+- parameter willRender:     An optional WillRenderFunction
+- parameter didRender:      An optional DidRenderFunction
+- returns: A MustacheBox
 */
 public func Box(
     boolValue: Bool? = nil,

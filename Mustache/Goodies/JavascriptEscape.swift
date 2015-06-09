@@ -40,7 +40,7 @@ class JavascriptEscape : MustacheBoxable {
     }
     
     // This function is used for evaluating `javascriptEscape(x)` expressions.
-    private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+    private func filter(rendering: Rendering) throws -> Rendering {
         return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
     }
     
@@ -56,7 +56,11 @@ class JavascriptEscape : MustacheBoxable {
             // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
-                    return self.filter(rendering, error: error)
+                    do {
+                        return try self.filter(rendering)
+                    } catch _ {
+                        return nil
+                    }
                 } else {
                     return nil
                 }
@@ -135,7 +139,7 @@ class JavascriptEscape : MustacheBoxable {
             "\r\n": "\\u000D\\u000A",
         ]
         var escaped = ""
-        for c in string {
+        for c in string.characters {
             if let escapedString = escapeTable[c] {
                 escaped += escapedString
             } else {

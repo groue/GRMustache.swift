@@ -34,17 +34,17 @@ class ConfigurationBaseContextTests: XCTestCase {
     func testDefaultConfigurationCustomBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
-        let template = Template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! Template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
         
-        let template = Template(string: "{{foo}}")!
+        let template = try! Template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -52,8 +52,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
         
         let repository = TemplateRepository()
-        let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -64,8 +64,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -73,8 +73,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "success"]))
         
-        let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -87,8 +87,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -98,8 +98,8 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "success"]))
         
-        let template = repository.template(string: "{{foo}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{foo}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -110,10 +110,10 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration = configuration
         
-        let template = repository.template(string: "{{foo}}")!
+        let template = try! repository.template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
         
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
@@ -121,38 +121,38 @@ class ConfigurationBaseContextTests: XCTestCase {
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "failure"]))
         
-        let template = repository.template(string: "{{foo}}")!
+        let template = try! repository.template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
         
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
     
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        var rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
         XCTAssertEqual(rendering, "success")
         
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
-        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        var rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
         XCTAssertEqual(rendering, "success")
         
         repository.configuration.baseContext = Context(Box(["foo": "failure"]))
-        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
         XCTAssertEqual(rendering, "success")
         
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "failure"]))
         repository.configuration = configuration
-        rendering = repository.template(string: "{{^foo}}success{{/foo}}")!.render()!
+        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
         XCTAssertEqual(rendering, "success")
     }
 }

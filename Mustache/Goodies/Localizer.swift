@@ -63,9 +63,9 @@ extension StandardLibrary {
         /**
         Returns a Localizer.
         
-        :param: bundle The bundle where to look for localized strings. If nil,
+        - parameter bundle: The bundle where to look for localized strings. If nil,
                        the main bundle is used.
-        :param: table  The table where to look for localized strings. If nil,
+        - parameter table:  The table where to look for localized strings. If nil,
                        the default Localizable.strings table would be used.
         */
         public init(bundle: NSBundle?, table: String?) {
@@ -104,12 +104,12 @@ extension StandardLibrary {
         private var formatArguments: [String]?
         
         // This function is used for evaluating `localize(x)` expressions.
-        private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+        private func filter(rendering: Rendering) throws -> Rendering {
             return Rendering(localizedStringForKey(rendering.string), rendering.contentType)
         }
         
         // This functionis used to render a {{# localize }}Hello{{/ localize }} section.
-        private func render(info: RenderingInfo, error: NSErrorPointer) -> Rendering? {
+        private func render(info: RenderingInfo) throws -> Rendering {
             
             // Perform a first rendering of the section tag, that will turn
             // variable tags into a custom placeholder.
@@ -132,81 +132,77 @@ extension StandardLibrary {
             let context = info.context.extendedContext(Box(self))
             
             
-            // Render the localizable format string
+            let localizableFormatRendering = try info.tag.render(context)
+                
+            // Now perform a second rendering that will fill our
+            // formatArguments array with HTML-escaped tag renderings.
+            //
+            // Now our willRender() method will let the tags render regular
+            // values. Our didRender() method will grab those renderings,
+            // and fill self.formatArguments.
+            //
+            // This behavior of willRender() is not the same as the previous
+            // one, and is trigerred by the non-nil value of
+            // self.formatArguments:
             
-            if let localizableFormatRendering = info.tag.render(context, error: error) {
-                
-                // Now perform a second rendering that will fill our
-                // formatArguments array with HTML-escaped tag renderings.
-                //
-                // Now our willRender() method will let the tags render regular
-                // values. Our didRender() method will grab those renderings,
-                // and fill self.formatArguments.
-                //
-                // This behavior of willRender() is not the same as the previous
-                // one, and is trigerred by the non-nil value of
-                // self.formatArguments:
-                
-                formatArguments = []
+            formatArguments = []
                 
                 
+            do {
                 // Render again
                 
-                info.tag.render(context)
-                
-                
-                let rendering: Rendering
-                if formatArguments!.isEmpty
-                {
-                    // There is no format argument, which means no inner
-                    // variable tag: {{# localize }}plain text{{/ localize }}
-                    rendering = Rendering(localizedStringForKey(localizableFormatRendering.string), localizableFormatRendering.contentType)
-                }
-                else
-                {
-                    // There are format arguments, which means inner variable
-                    // tags: {{# localize }}...{{ name }}...{{/ localize }}.
-                    //
-                    // Take special precaution with the "%" character:
-                    //
-                    // When rendering {{#localize}}%d {{name}}{{/localize}},
-                    // the localizable format we need is "%%d %@".
-                    //
-                    // Yet the localizable format we have built so far is
-                    // "%d GRMustacheLocalizerValuePlaceholder".
-                    //
-                    // In order to get an actual format string, we have to:
-                    // - turn GRMustacheLocalizerValuePlaceholder into %@
-                    // - escape % into %%.
-                    //
-                    // The format string will then be "%%d %@", as needed.
-                    
-                    let localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%").stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
-                    
-                    // Now localize the format
-                    let localizedFormat = localizedStringForKey(localizableFormat)
-                    
-                    // Apply arguments
-                    let localizedRendering = stringWithFormat(format: localizedFormat, argumentsArray: formatArguments!)
-                    
-                    // And we have the final rendering
-                    rendering = Rendering(localizedRendering, localizableFormatRendering.contentType)
-                }
-                
-                
-                // Clean up
-                
-                formatArguments = nil
-                
-                
-                // Done
-                
-                return rendering
-            } else {
-                // Error in the rendering of the inner content of the localized
-                // section
-                return nil
+            try info.tag.render(context)
+            } catch _ {
             }
+                
+                
+            let rendering: Rendering
+            if formatArguments!.isEmpty
+            {
+                // There is no format argument, which means no inner
+                // variable tag: {{# localize }}plain text{{/ localize }}
+                rendering = Rendering(localizedStringForKey(localizableFormatRendering.string), localizableFormatRendering.contentType)
+            }
+            else
+            {
+                // There are format arguments, which means inner variable
+                // tags: {{# localize }}...{{ name }}...{{/ localize }}.
+                //
+                // Take special precaution with the "%" character:
+                //
+                // When rendering {{#localize}}%d {{name}}{{/localize}},
+                // the localizable format we need is "%%d %@".
+                //
+                // Yet the localizable format we have built so far is
+                // "%d GRMustacheLocalizerValuePlaceholder".
+                //
+                // In order to get an actual format string, we have to:
+                // - turn GRMustacheLocalizerValuePlaceholder into %@
+                // - escape % into %%.
+                //
+                // The format string will then be "%%d %@", as needed.
+                
+                let localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%").stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
+                
+                // Now localize the format
+                let localizedFormat = localizedStringForKey(localizableFormat)
+                
+                // Apply arguments
+                let localizedRendering = stringWithFormat(format: localizedFormat, argumentsArray: formatArguments!)
+                
+                // And we have the final rendering
+                rendering = Rendering(localizedRendering, localizableFormatRendering.contentType)
+            }
+                
+                
+            // Clean up
+            
+            formatArguments = nil
+                
+                
+            // Done
+            
+            return rendering
         }
         
         private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
@@ -256,8 +252,8 @@ extension StandardLibrary {
             return bundle.localizedStringForKey(key, value:"", table:table)
         }
         
-        private func stringWithFormat(#format: String, argumentsArray args:[String]) -> String {
-            switch count(args) {
+        private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
+            switch args.count {
             case 0:
                 return format
             case 1:
@@ -281,7 +277,7 @@ extension StandardLibrary {
             case 10:
                 return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9])
             default:
-                fatalError("Not implemented: format with \(count(args)) parameters")
+                fatalError("Not implemented: format with \(args.count) parameters")
             }
         }
         

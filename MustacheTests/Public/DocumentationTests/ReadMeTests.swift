@@ -33,13 +33,13 @@ class ReadMeTests: XCTestCase {
     
     func testReadmeExample1() {
         let testBundle = NSBundle(forClass: self.dynamicType)
-        let template = Template(named: "ReadMeExample1", bundle: testBundle)!
+        let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
         let data = [
             "name": "Chris",
             "value": 10000,
             "taxed_value": 10000 - (10000 * 0.4),
             "in_ca": true]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     
@@ -69,9 +69,9 @@ class ReadMeTests: XCTestCase {
         // I have 3 cats.
         
         let testBundle = NSBundle(forClass: self.dynamicType)
-        let template = Template(named: "ReadMeExample2", bundle: testBundle)!
+        let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "I have 3 cats.")
     }
     
@@ -96,8 +96,8 @@ class ReadMeTests: XCTestCase {
         }
         
         let user = User(name: "Arthur")
-        let template = Template(string: "Hello {{name}}!")!
-        let rendering = template.render(Box(user))!
+        let template = try! Template(string: "Hello {{name}}!")
+        let rendering = try! template.render(Box(user))
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     
@@ -106,11 +106,11 @@ class ReadMeTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .PercentStyle
         
-        let template = Template(string: "{{ percent(x) }}")!
+        let template = try! Template(string: "{{ percent(x) }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
         
         let data = ["x": 0.5]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "50%")
     }
     
@@ -119,11 +119,11 @@ class ReadMeTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .PercentStyle
         
-        let template = Template(string: "{{# percent }}{{ x }}{{/ }}")!
+        let template = try! Template(string: "{{# percent }}{{ x }}{{/ }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
         
         let data = ["x": 0.5]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "50%")
     }
     
@@ -137,7 +137,7 @@ class ReadMeTests: XCTestCase {
         let dateFormatter = NSDateFormatter()
         dateFormatter.dateStyle = .MediumStyle
         
-        let template = Template(string: templateString)!
+        let template = try! Template(string: templateString)
         template.registerInBaseContext("format", Box(dateFormatter))
         
         let data = [
@@ -146,7 +146,7 @@ class ReadMeTests: XCTestCase {
             "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
             "late": true
         ]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
     }
 }
 

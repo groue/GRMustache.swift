@@ -25,7 +25,8 @@ import Foundation
 
 final class ExpressionParser {
     
-    func parse(string: String, inout empty outEmpty: Bool, error: NSErrorPointer) -> Expression? {
+    func parse(string: String, inout empty outEmpty: Bool) throws -> Expression {
+        let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         
         enum State {
             case Error(String)
@@ -295,22 +296,16 @@ final class ExpressionParser {
         switch state {
         case .Empty:
             outEmpty = true
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
-            }
-            return nil
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
         case .Error(let description):
             outEmpty = false
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
-            }
-            return nil
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
         case .Valid(expression: let validExpression):
             return validExpression
         default:
             fatalError("Unexpected state")
         }
         
-        return nil
+        throw error
     }
 }

@@ -28,18 +28,18 @@ class TemplateTests: XCTestCase {
     
     func testTemplateBelongsToItsOriginTemplateRepository() {
         let repo = TemplateRepository()
-        let template = repo.template(string:"")!
+        let template = try! repo.template(string:"")
         XCTAssertTrue(template.repository === repo)
     }
     
     func testTemplateExtendBaseContextWithValue() {
-        let template = Template(string: "{{name}}")!
+        let template = try! Template(string: "{{name}}")
         template.extendBaseContext(Box(["name": Box("Arthur")]))
         
-        var rendering = template.render()!
+        var rendering = try! template.render()
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(Box(["name": "Bobby"]))!
+        rendering = try! template.render(Box(["name": "Bobby"]))
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -52,9 +52,9 @@ class TemplateTests: XCTestCase {
             return Box("observer")
         }
         
-        let template = Template(string: "{{name}}")!
+        let template = try! Template(string: "{{name}}")
         template.extendBaseContext(Box(willRender))
-        let rendering = template.render()!
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "observer")
     }
 }

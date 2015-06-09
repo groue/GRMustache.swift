@@ -30,9 +30,9 @@ class MustacheBoxDocumentationTests: XCTestCase {
         let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
             return Rendering("foo")
         }
-        let template = Template(string: "{{object}}")!
+        let template = try! Template(string: "{{object}}")
         let data = ["object": Box(render)]
-        let rendering = template.render(Box(data))!
+        let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "foo")
     }
     
@@ -49,19 +49,23 @@ class MustacheBoxDocumentationTests: XCTestCase {
                 // Extend the current context with ["value": "foo"], and proceed
                 // with regular rendering of the inner content of the section.
                 let context = info.context.extendedContext(Box(["value": "foo"]))
-                return info.tag.render(context, error: error)
+                do {
+                    return try info.tag.render(context)
+                } catch _ {
+                    return nil
+                }
             }
         }
         let data = ["object": Box(render)]
         
         // Renders "variable"
-        let template1 = Template(string: "{{object}}")!
-        let rendering1 = template1.render(Box(data))!
+        let template1 = try! Template(string: "{{object}}")
+        let rendering1 = try! template1.render(Box(data))
         XCTAssertEqual(rendering1, "variable")
         
         // Renders "value: foo"
-        let template2 = Template(string: "{{#object}}value: {{value}}{{/object}}")!
-        let rendering2 = template2.render(Box(data))!
+        let template2 = try! Template(string: "{{#object}}value: {{value}}{{/object}}")
+        let rendering2 = try! template2.render(Box(data))
         XCTAssertEqual(rendering2, "value: foo")
     }
 }

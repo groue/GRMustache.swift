@@ -37,8 +37,8 @@ class KeyedSubscriptFunctionTests: XCTestCase {
     }
     
     func testBoxedKeyedSubscriptFunction() {
-        let template = Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")!
-        let rendering = template.render(Box(keyedSubscript: makeKeyedSubscriptFunction()))!
+        let template = try! Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")
+        let rendering = try! template.render(Box(keyedSubscript: makeKeyedSubscriptFunction()))
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

@@ -36,13 +36,13 @@ class FilterTests: XCTestCase {
                 return Box("prefix\(string!)")
             })
             ])
-        let template = Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<Name> <prefixName> <NAME> <prefixNAME> <PREFIXNAME>")
     }
     
     func testScopedValueAreExtractedOutOfAFilterExpression() {
-        let template = Template(string:"<{{f(object).name}}> {{#f(object)}}<{{name}}>{{/f(object)}}")!
+        let template = try! Template(string:"<{{f(object).name}}> {{#f(object)}}<{{name}}>{{/f(object)}}")
         var box: MustacheBox
         var rendering: String
         
@@ -53,7 +53,7 @@ class FilterTests: XCTestCase {
                 return box
             })
             ])
-        rendering = template.render(box)!
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<objectName> <objectName>")
         
         box = Box([
@@ -63,7 +63,7 @@ class FilterTests: XCTestCase {
                 return Box(["name": "filterName"])
             })
             ])
-        rendering = template.render(box)!
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<filterName> <filterName>")
         
         box = Box([
@@ -73,7 +73,7 @@ class FilterTests: XCTestCase {
                 return Box(true)
             })
             ])
-        rendering = template.render(box)!
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<> <rootName>")
     }
     
@@ -84,8 +84,8 @@ class FilterTests: XCTestCase {
             "filter": Box(Filter { (_: MustacheBox, _: NSErrorPointer) -> MustacheBox? in
                 return Box(true)
             })])
-        let template = Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<success instead of failure>")
     }
     
@@ -97,8 +97,8 @@ class FilterTests: XCTestCase {
             "x": Box(1),
             "math": Box(["double": doubleFilter])
             ])
-        let template = Template(string:"{{ math.double(x) }}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{ math.double(x) }}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "2")
     }
     
@@ -112,8 +112,8 @@ class FilterTests: XCTestCase {
             "prefix": Box("prefix"),
             "value": Box("value"),
             "f": filterValue])
-        let template = Template(string:"{{f(prefix)(value)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{f(prefix)(value)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "prefixvalue")
     }
     
@@ -121,8 +121,8 @@ class FilterTests: XCTestCase {
         let box = Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
             return Box("filter")
         })
-        let template = Template(string:"{{.(a)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{.(a)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "filter")
     }
     
@@ -134,27 +134,48 @@ class FilterTests: XCTestCase {
             })
         ])
         
-        var template = Template(string:"<{{missing(missing)}}>")!
+        var template = try! Template(string:"<{{missing(missing)}}>")
         var error: NSError?
-        var rendering = template.render(box, error: &error)
+        var rendering: String?
+        do {
+            rendering = try template.render(box)
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
-        template = Template(string:"<{{missing(name)}}>")!
-        rendering = template.render(box, error: &error)
+        template = try! Template(string:"<{{missing(name)}}>")
+        do {
+            rendering = try template.render(box)
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
-        template = Template(string:"<{{replace(missing(name))}}>")!
-        rendering = template.render(box, error: &error)
+        template = try! Template(string:"<{{replace(missing(name))}}>")
+        do {
+            rendering = try template.render(box)
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
         
-        template = Template(string:"<{{missing(replace(name))}}>")!
-        rendering = template.render(box, error: &error)
+        template = try! Template(string:"<{{missing(replace(name))}}>")
+        do {
+            rendering = try template.render(box)
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -166,9 +187,15 @@ class FilterTests: XCTestCase {
             "filter": "filter"
             ])
         
-        var template = Template(string:"<{{filter(name)}}>")!
+        var template = try! Template(string:"<{{filter(name)}}>")
         var error: NSError?
-        var rendering = template.render(box, error: &error)
+        var rendering: String?
+        do {
+            rendering = try template.render(box)
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -176,9 +203,14 @@ class FilterTests: XCTestCase {
     
     // TODO: port this test to Objective-C GRMustache
     func testMissingFilterErrorDescriptionContainsLineNumber() {
-        let template = Template(string: "\n{{f(x)}}")!
+        let template = try! Template(string: "\n{{f(x)}}")
         var error: NSError?
-        let rendering = template.render(error: &error)
+        let rendering: String?
+        do {
+            rendering = try template.render(error: &error)
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -193,9 +225,15 @@ class FilterTests: XCTestCase {
     
     // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsLineNumber() {
-        let template = Template(string: "\n{{f(x)}}")!
+        let template = try! Template(string: "\n{{f(x)}}")
         var error: NSError?
-        let rendering = template.render(Box(["f": "foo"]), error: &error)
+        let rendering: String?
+        do {
+            rendering = try template.render(Box(["f": "foo"]))
+        } catch var error1 as NSError {
+            error = error1
+            rendering = nil
+        }
         XCTAssertNil(rendering)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeRenderingError)
@@ -216,19 +254,36 @@ class FilterTests: XCTestCase {
                 return Box("Nil")
             }
         }
-        let template = Template(string: "{{square(x)}}")!
+        let template = try! Template(string: "{{square(x)}}")
         template.registerInBaseContext("square", Box(square))
         
-        var rendering = template.render(Box(["x": 10]))
+        var rendering: String?
+        do {
+            rendering = try template.render(Box(["x": 10]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "100")
         
-        rendering = template.render(Box())
+        do {
+            rendering = try template.render(Box())
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
         
-        rendering = template.render(Box(["x": NSNull()]))
+        do {
+            rendering = try template.render(Box(["x": NSNull()]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
         
-        rendering = template.render(Box(["x": "foo"]))
+        do {
+            rendering = try template.render(Box(["x": "foo"]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
     }
     
@@ -240,22 +295,43 @@ class FilterTests: XCTestCase {
                 return Box("Nil")
             }
         }
-        let template = Template(string: "{{twice(x)}}")!
+        let template = try! Template(string: "{{twice(x)}}")
         template.registerInBaseContext("twice", Box(twice))
         
-        var rendering = template.render(Box(["x": "A"]))
+        var rendering: String?
+        do {
+            rendering = try template.render(Box(["x": "A"]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "AA")
         
-        rendering = template.render(Box(["x": "A" as NSString]))
+        do {
+            rendering = try template.render(Box(["x": "A" as NSString]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "AA")
         
-        rendering = template.render(Box())
+        do {
+            rendering = try template.render(Box())
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
         
-        rendering = template.render(Box(["x": NSNull()]))
+        do {
+            rendering = try template.render(Box(["x": NSNull()]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
         
-        rendering = template.render(Box(["x": 1]))
+        do {
+            rendering = try template.render(Box(["x": 1]))
+        } catch _ {
+            rendering = nil
+        }
         XCTAssertEqual(rendering!, "Nil")
     }
     

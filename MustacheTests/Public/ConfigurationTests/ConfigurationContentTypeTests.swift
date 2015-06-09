@@ -44,15 +44,15 @@ class ConfigurationContentTypeTests: XCTestCase {
     
     func testDefaultConfigurationContentTypeHTMLHasTemplateRenderEscapedInput() {
         DefaultConfiguration.contentType = .HTML
-        let template = Template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! Template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
 
     func testDefaultConfigurationContentTypeTextLHasTemplateRenderUnescapedInput() {
         DefaultConfiguration.contentType = .Text
-        let template = Template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! Template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
@@ -66,18 +66,29 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         DefaultConfiguration.contentType = .HTML
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try testedTemplate.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -91,104 +102,159 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         DefaultConfiguration.contentType = .Text
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = testedTemplate.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try testedTemplate.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasSectionTagRenderHTML() {
         DefaultConfiguration.contentType = .HTML
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try info.tag.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{#.}}{{/.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasSectionTagRenderText() {
         DefaultConfiguration.contentType = .Text
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try info.tag.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{#.}}{{/.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{#.}}{{/.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasVariableTagRenderHTML() {
         DefaultConfiguration.contentType = .HTML
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try info.tag.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasVariableTagRenderText() {
         DefaultConfiguration.contentType = .Text
         
-        let testedTemplate = Template(string: "")!
+        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
         let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            let rendering = info.tag.render(info.context, error: error)
+                let rendering: Rendering?
+                do {
+                    rendering = try info.tag.render(info.context)
+                } catch var error1 as NSError {
+                    error.memory = error1
+                    rendering = nil
+                } catch {
+                    fatalError()
+                }
             if let rendering = rendering {
                 testedContentType = rendering.contentType
             }
             return rendering
         }
         
-        let template = Template(string: "{{.}}")!
-        template.render(Box(render))
+        let template = try! Template(string: "{{.}}")
+        do {
+            try template.render(Box(render))
+        } catch _ {
+        }
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testPragmaContentTypeTextOverridesDefaultConfiguration() {
         DefaultConfiguration.contentType = .HTML
-        let template = Template(string:"{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! Template(string:"{{%CONTENT_TYPE:TEXT}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
     func testPragmaContentTypeHTMLOverridesDefaultConfiguration() {
         DefaultConfiguration.contentType = .Text
-        let template = Template(string:"{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! Template(string:"{{%CONTENT_TYPE:HTML}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -207,16 +273,16 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .HTML
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testRepositoryConfigurationContentTypeHTMLHasTemplateRenderEscapedInputWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -225,16 +291,16 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .Text
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
     func testRepositoryConfigurationContentTypeTextHasTemplateRenderUnescapedInputWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
 
@@ -244,8 +310,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .Text
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
@@ -253,8 +319,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         DefaultConfiguration.contentType = .HTML
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
@@ -264,8 +330,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .HTML
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -273,8 +339,8 @@ class ConfigurationContentTypeTests: XCTestCase {
         DefaultConfiguration.contentType = .Text
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
-        let template = repository.template(string: "{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -283,16 +349,16 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .HTML
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
     func testPragmaContentTypeTextOverridesRepositoryConfigurationContentTypeHTMLWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.contentType = .HTML
-        let template = repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{%CONTENT_TYPE:TEXT}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&")
     }
     
@@ -301,44 +367,44 @@ class ConfigurationContentTypeTests: XCTestCase {
         configuration.contentType = .Text
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testPragmaContentTypeHTMLOverridesRepositoryConfigurationContentTypeTextWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.contentType = .Text
-        let template = repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")!
-        let rendering = template.render(Box("&"))!
+        let template = try! repository.template(string: "{{%CONTENT_TYPE:HTML}}{{.}}")
+        let rendering = try! template.render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        var rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         DefaultConfiguration.contentType = .Text
-        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        var rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         repository.configuration.contentType = .Text
-        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         var configuration = Configuration()
         configuration.contentType = .Text
         repository.configuration = configuration
-        rendering = repository.template(string: "{{.}}")!.render(Box("&"))!
+        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
 }

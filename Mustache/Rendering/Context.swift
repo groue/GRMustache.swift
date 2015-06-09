@@ -69,8 +69,8 @@ final public class Context {
     /**
     Builds a context that contains the provided box.
     
-    :param: box A box
-    :returns: a new context that contains the provided box.
+    - parameter box: A box
+    - returns: a new context that contains the provided box.
     */
     public convenience init(_ box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
@@ -80,8 +80,8 @@ final public class Context {
     Builds a context with a registered key. Registered keys are looked up first
     when evaluating Mustache tags.
     
-    :param: key An identifier
-    :param: box The box registered for `key`
+    - parameter key: An identifier
+    - parameter box: The box registered for `key`
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
@@ -95,8 +95,8 @@ final public class Context {
     Returns a new context with the provided box pushed at the top of the context
     stack.
     
-    :param: box The box pushed on the top of the context stack
-    :returns: a new context
+    - parameter box: The box pushed on the top of the context stack
+    - returns: a new context
     */
     public func extendedContext(box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
@@ -106,9 +106,9 @@ final public class Context {
     Returns a new context with the provided box at the top of the context stack.
     Registered keys are looked up first when evaluating Mustache tags.
     
-    :param: key An identifier
-    :param: box The box registered for `key`
-    :returns: a new context
+    - parameter key: An identifier
+    - parameter box: The box registered for `key`
+    - returns: a new context
     */
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
@@ -189,30 +189,32 @@ final public class Context {
         // "Albert Einstein"
         context.boxForMustacheExpression("person.name")!.value
     
-    :param: string The expression string
-    :param: error  If there is a problem parsing or evaluating the expression,
+    - parameter string: The expression string
+    - parameter error:  If there is a problem parsing or evaluating the expression,
                    upon return contains an NSError object that describes the
                    problem.
     
-    :returns: The value of the expression
+    - returns: The value of the expression
     */
-    public func boxForMustacheExpression(string: String, error: NSErrorPointer = nil) -> MustacheBox? {
+    public func boxForMustacheExpression(string: String) throws -> MustacheBox {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let parser = ExpressionParser()
         var empty = false
-        if let expression = parser.parse(string, empty: &empty, error: error) {
+        do {
+            let expression = try parser.parse(string, empty: &empty)
             let invocation = ExpressionInvocation(expression: expression)
             let invocationResult = invocation.invokeWithContext(self)
             switch invocationResult {
             case .Error(let invocationError):
-                if error != nil {
-                    error.memory = invocationError
-                }
-                return nil
+                # /* TODO: Finish migration: rewrite code to move the next statement out of enclosing do/catch */
+                throw invocationError
             case .Success(let box):
                 return box
             }
+        } catch var error1 as NSError {
+            error = error1
         }
-        return nil
+        throw error
     }
     
     
@@ -274,12 +276,12 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(# inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
+    func extendedContext(inheritedPartial  inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
         return Context(type: .InheritedPartial(inheritedPartial: inheritedPartial, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
 
-extension Context: DebugPrintable {
+extension Context: CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         switch type {

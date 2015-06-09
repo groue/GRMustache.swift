@@ -40,7 +40,7 @@ class URLEscape : MustacheBoxable {
     }
     
     // This function is used for evaluating `URLEscape(x)` expressions.
-    private func filter(rendering: Rendering, error: NSErrorPointer) -> Rendering? {
+    private func filter(rendering: Rendering) throws -> Rendering {
         return Rendering(URLEscape.escapeURL(rendering.string), rendering.contentType)
     }
     
@@ -56,7 +56,11 @@ class URLEscape : MustacheBoxable {
             // rendering.
             return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
                 if let rendering = box.render(info: info, error: error) {
-                    return self.filter(rendering, error: error)
+                    do {
+                        return try self.filter(rendering)
+                    } catch _ {
+                        return nil
+                    }
                 } else {
                     return nil
                 }
@@ -67,7 +71,7 @@ class URLEscape : MustacheBoxable {
     }
     
     private class func escapeURL(string: String) -> String {
-        var s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
+        let s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
         s.removeCharactersInString("?&=")
         return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
     }

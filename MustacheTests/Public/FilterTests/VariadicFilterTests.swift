@@ -35,8 +35,8 @@ class VariadicFilterTests: XCTestCase {
             "b": Box("b"),
             "c": Box("c"),
             "join": Box(filter)])
-        let template = Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "a a,b a,b,c")
     }
 
@@ -52,8 +52,8 @@ class VariadicFilterTests: XCTestCase {
             "b": Box("b"),
             "c": Box("c"),
             "f": Box(filter)])
-        let template = Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
     }
     
@@ -62,8 +62,8 @@ class VariadicFilterTests: XCTestCase {
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
-        let template = Template(string:"{{f(a,b).foo}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{f(a,b).foo}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "bar")
     }
     
@@ -72,8 +72,8 @@ class VariadicFilterTests: XCTestCase {
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
-        let template = Template(string:"{{#f(a,b)}}{{foo}}{{/}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{#f(a,b)}}{{foo}}{{/}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "bar")
     }
     
@@ -86,8 +86,8 @@ class VariadicFilterTests: XCTestCase {
             "b": Box("b"),
             "c": Box("c"),
             "f": Box(filter)])
-        let template = Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "ab abc")
     }
     
@@ -99,8 +99,8 @@ class VariadicFilterTests: XCTestCase {
             "yes": Box(true),
             "no": Box(false),
             "f": Box(filter)])
-        let template = Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "YES NO")
     }
     
@@ -109,8 +109,8 @@ class VariadicFilterTests: XCTestCase {
             return nil
         })
         let box = Box(["f": Box(filter)])
-        let template = Template(string:"{{^f(x)}}nil{{/}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{^f(x)}}nil{{/}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "nil")
     }
     
@@ -120,15 +120,15 @@ class VariadicFilterTests: XCTestCase {
                 var result = ""
                 for box in boxes {
                     if let dictionary = box.dictionaryValue {
-                        result += String(count(dictionary))
+                        result += String(dictionary.count)
                     }
                 }
                 return Box(result)
             })),
             "foo": Box(["a": "a", "b": "b", "c": "c"])
             ])
-        let template = Template(string:"{{f(foo,.)}} {{f(.,foo)}}")!
-        let rendering = template.render(box)!
+        let template = try! Template(string:"{{f(foo,.)}} {{f(.,foo)}}")
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "32 23")
     }
 }

@@ -146,8 +146,8 @@ public class MustacheBox : NSObject {
         let box = Box(["firstName": "Arthur"])
         box["firstName"].value  // "Arthur"
     
-    :param: key  A key
-    :returns: the MustacheBox for this key.
+    - parameter key:  A key
+    - returns: the MustacheBox for this key.
     */
     public subscript (key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()
@@ -226,7 +226,11 @@ public class MustacheBox : NSObject {
                 case .Section:
                     // {{# box }}...{{/ box }}
                     let context = info.context.extendedContext(self)
-                    return info.tag.render(context, error: error)
+                    do {
+                        return try info.tag.render(context)
+                    } catch _ {
+                        return nil
+                    }
                 }
             }
         }
@@ -301,7 +305,7 @@ public class MustacheBox : NSObject {
     }
 }
 
-extension MustacheBox : DebugPrintable {
+extension MustacheBox : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public override var debugDescription: String {
         if let value = value {

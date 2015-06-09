@@ -34,22 +34,41 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         let repo = TemplateRepository(templates: templates)
         
         var error: NSError?
-        var template = repo.template(named: "not_found", error: &error)
+        var template: Template?
+        do {
+            template = try repo.template(named: "not_found")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
-        template = repo.template(string: "{{>not_found}}", error: &error)
+        do {
+            template = try repo.template(string: "{{>not_found}}")
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
 
-        template = repo.template(named: "a")
-        var rendering = template!.render()!
+        do {
+            template = try repo.template(named: "a")
+        } catch _ {
+            template = nil
+        }
+        var rendering = try! template!.render()
         XCTAssertEqual(rendering, "ABC")
         
-        template = repo.template(string: "{{>a}}")
-        rendering = template!.render()!
+        do {
+            template = try repo.template(string: "{{>a}}")
+        } catch _ {
+            template = nil
+        }
+        rendering = try! template!.render()
         XCTAssertEqual(rendering, "ABC")
     }
     
@@ -68,8 +87,8 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         templateString += "{{> bar }}"
         templates["bar"] = "bar"
         
-        let template = repo.template(named: "a")!
-        let rendering = template.render()!
+        let template = try! repo.template(named: "a")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "foo")
     }
     

@@ -61,11 +61,11 @@ enum Expression: Equatable {
         return .Identifier(identifier: identifier)
     }
     
-    static func scoped(# baseExpression: Expression, identifier: String) -> Expression {
+    static func scoped(baseExpression  baseExpression: Expression, identifier: String) -> Expression {
         return .Scoped(baseExpression: Wrapper(baseExpression), identifier: identifier)
     }
     
-    static func filter(# filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) -> Expression {
+    static func filter(filterExpression  filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) -> Expression {
         return .Filter(filterExpression: Wrapper(filterExpression), argumentExpression: Wrapper(argumentExpression), partialApplication: partialApplication)
     }
 }

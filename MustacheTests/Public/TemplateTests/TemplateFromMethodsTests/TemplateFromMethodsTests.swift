@@ -41,32 +41,32 @@ class TemplateFromMethodsTests: XCTestCase {
     let templateName = "TemplateFromMethodsTests"
     var templateURL: NSURL { return testBundle.URLForResource(templateName, withExtension: "mustache")! }
     var templatePath: String { return templateURL.path! }
-    var templateString: String { return String(contentsOfFile: templatePath, encoding: NSUTF8StringEncoding, error: nil)! }
+    var templateString: String { return try! String(contentsOfFile: templatePath, encoding: NSUTF8StringEncoding) }
     
     let parserErrorTemplateName = "TemplateFromMethodsTests_parserError"
     var parserErrorTemplateURL: NSURL { return testBundle.URLForResource(parserErrorTemplateName, withExtension: "mustache")! }
     var parserErrorTemplatePath: String { return parserErrorTemplateURL.path! }
-    var parserErrorTemplateString: String { return String(contentsOfFile: parserErrorTemplatePath, encoding: NSUTF8StringEncoding, error: nil)! }
+    var parserErrorTemplateString: String { return try! String(contentsOfFile: parserErrorTemplatePath, encoding: NSUTF8StringEncoding) }
     
     let parserErrorTemplateWrapperName = "TemplateFromMethodsTests_parserErrorWrapper"
     var parserErrorTemplateWrapperURL: NSURL { return testBundle.URLForResource(parserErrorTemplateWrapperName, withExtension: "mustache")! }
     var parserErrorTemplateWrapperPath: String { return parserErrorTemplateWrapperURL.path! }
-    var parserErrorTemplateWrapperString: String { return String(contentsOfFile: parserErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding, error: nil)! }
+    var parserErrorTemplateWrapperString: String { return try! String(contentsOfFile: parserErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
     let compilerErrorTemplateName = "TemplateFromMethodsTests_compilerError"
     var compilerErrorTemplateURL: NSURL { return testBundle.URLForResource(compilerErrorTemplateName, withExtension: "mustache")! }
     var compilerErrorTemplatePath: String { return compilerErrorTemplateURL.path! }
-    var compilerErrorTemplateString: String { return String(contentsOfFile: compilerErrorTemplatePath, encoding: NSUTF8StringEncoding, error: nil)! }
+    var compilerErrorTemplateString: String { return try! String(contentsOfFile: compilerErrorTemplatePath, encoding: NSUTF8StringEncoding) }
     
     let compilerErrorTemplateWrapperName = "TemplateFromMethodsTests_compilerErrorWrapper"
     var compilerErrorTemplateWrapperURL: NSURL { return testBundle.URLForResource(compilerErrorTemplateWrapperName, withExtension: "mustache")! }
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path! }
-    var compilerErrorTemplateWrapperString: String { return String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding, error: nil)! }
+    var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
     func valueForKey(key: String, inRendering rendering: String) -> AnyObject? {
         let data = rendering.dataUsingEncoding(NSUTF8StringEncoding)!
         var error: NSError?
-        let object: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(0), error: &error)!
+        let object: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
         return object.valueForKey(key)
     }
     
@@ -79,37 +79,43 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     func testTemplateFromString() {
-        let template = Template(string: templateString)!
+        let template = try! Template(string: templateString)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
-        let rendering = template.render(Box(keyedSubscript: keyedSubscript))!
+        let rendering = try! template.render(Box(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
-        let template = Template(path: templatePath)!
+        let template = try! Template(path: templatePath)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
-        let rendering = template.render(Box(keyedSubscript: keyedSubscript))!
+        let rendering = try! template.render(Box(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
-        let template = Template(URL: templateURL)!
+        let template = try! Template(URL: templateURL)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
-        let rendering = template.render(Box(keyedSubscript: keyedSubscript))!
+        let rendering = try! template.render(Box(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
-        let template = Template(named: templateName, bundle: testBundle)!
+        let template = try! Template(named: templateName, bundle: testBundle)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
-        let rendering = template.render(Box(keyedSubscript: keyedSubscript))!
+        let rendering = try! template.render(Box(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }
     
     func testParserErrorFromString() {
         var error: NSError?
-        let template = Template(string: parserErrorTemplateString, error: &error)
+        let template: Template?
+        do {
+            template = try Template(string: parserErrorTemplateString)
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -118,14 +124,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testParserErrorFromPath() {
         var error: NSError?
-        var template = Template(path: parserErrorTemplatePath, error: &error)
+        var template: Template?
+        do {
+            template = try Template(path: parserErrorTemplatePath, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
-        template = Template(path: parserErrorTemplateWrapperPath, error: &error)
+        do {
+            template = try Template(path: parserErrorTemplateWrapperPath, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -135,14 +150,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testParserErrorFromURL() {
         var error: NSError?
-        var template = Template(URL: parserErrorTemplateURL, error: &error)
+        var template: Template?
+        do {
+            template = try Template(URL: parserErrorTemplateURL, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
-        template = Template(URL: parserErrorTemplateWrapperURL, error: &error)
+        do {
+            template = try Template(URL: parserErrorTemplateWrapperURL, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -152,14 +176,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testParserErrorFromResource() {
         var error: NSError?
-        var template = Template(named: parserErrorTemplateName, bundle: testBundle, error: &error)
+        var template: Template?
+        do {
+            template = try Template(named: parserErrorTemplateName, bundle: testBundle, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
-        template = Template(named: parserErrorTemplateWrapperName, bundle: testBundle, error: &error)
+        do {
+            template = try Template(named: parserErrorTemplateWrapperName, bundle: testBundle, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -169,7 +202,13 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testCompilerErrorFromString() {
         var error: NSError?
-        let template = Template(string: compilerErrorTemplateString, error: &error)
+        let template: Template?
+        do {
+            template = try Template(string: compilerErrorTemplateString)
+        } catch var error1 as NSError {
+            error = error1
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -178,14 +217,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testCompilerErrorFromPath() {
         var error: NSError?
-        var template = Template(path: compilerErrorTemplatePath, error: &error)
+        var template: Template?
+        do {
+            template = try Template(path: compilerErrorTemplatePath, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
-        template = Template(path: compilerErrorTemplateWrapperPath, error: &error)
+        do {
+            template = try Template(path: compilerErrorTemplateWrapperPath, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -195,14 +243,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testCompilerErrorFromURL() {
         var error: NSError?
-        var template = Template(URL: compilerErrorTemplateURL, error: &error)
+        var template: Template?
+        do {
+            template = try Template(URL: compilerErrorTemplateURL, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
-        template = Template(URL: compilerErrorTemplateWrapperURL, error: &error)
+        do {
+            template = try Template(URL: compilerErrorTemplateWrapperURL, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
@@ -212,14 +269,23 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func testCompilerErrorFromResource() {
         var error: NSError?
-        var template = Template(named: compilerErrorTemplateName, bundle: testBundle, error: &error)
+        var template: Template?
+        do {
+            template = try Template(named: compilerErrorTemplateName, bundle: testBundle, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
         XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
         XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
-        template = Template(named: compilerErrorTemplateWrapperName, bundle: testBundle, error: &error)
+        do {
+            template = try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle, error: &error)
+        } catch _ {
+            template = nil
+        }
         XCTAssertNil(template)
         XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
         XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)

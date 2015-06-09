@@ -34,21 +34,23 @@ final public class Template {
     /**
     Parses a template string, and returns a template.
     
-    :param: string The template string
-    :param: error  If there is an error loading or parsing template and
+    - parameter string: The template string
+    - parameter error:  If there is an error loading or parsing template and
                    partials, upon return contains an NSError object that
                    describes the problem.
     
-    :returns: The created template
+    - returns: The created template
     */
-    public convenience init?(string: String, error: NSErrorPointer = nil) {
+    public convenience init(string: String) throws {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let repository = TemplateRepository()
         
-        if let templateAST = repository.templateAST(string: string, error: error) {
+        do {
+            let templateAST = try repository.templateAST(string: string, error: error)
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } else {
+        } catch _ {
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            return nil
+            throw error
         }
     }
     
@@ -61,25 +63,27 @@ final public class Template {
         // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
         let template = Template(path: "/path/to/template.txt")!
     
-    :param: path     The path of the template.
-    :param: encoding The encoding of the template file.
-    :param: error    If there is an error loading or parsing template and
+    - parameter path:     The path of the template.
+    - parameter encoding: The encoding of the template file.
+    - parameter error:    If there is an error loading or parsing template and
                      partials, upon return contains an NSError object that
                      describes the problem.
     
-    :returns: The created template
+    - returns: The created template
     */
-    public convenience init?(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
+    public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let directoryPath = path.stringByDeletingLastPathComponent
         let templateExtension = path.pathExtension
         let templateName = path.lastPathComponent.stringByDeletingPathExtension
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         
-        if let templateAST = repository.templateAST(named: templateName, error: error) {
+        do {
+            let templateAST = try repository.templateAST(named: templateName, error: error)
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } else {
+        } catch _ {
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            return nil
+            throw error
         }
     }
     
@@ -92,25 +96,27 @@ final public class Template {
         // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
         let template = Template(URL: "file://path/to/template.txt")!
     
-    :param: URL      The URL of the template.
-    :param: encoding The encoding of template file.
-    :param: error    If there is an error loading or parsing template and
+    - parameter URL:      The URL of the template.
+    - parameter encoding: The encoding of template file.
+    - parameter error:    If there is an error loading or parsing template and
                      partials, upon return contains an NSError object that
                      describes the problem.
     
-    :returns: The created template
+    - returns: The created template
     */
-    public convenience init?(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
+    public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let baseURL = URL.URLByDeletingLastPathComponent!
         let templateExtension = URL.pathExtension
         let templateName = URL.lastPathComponent!.stringByDeletingPathExtension
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
         
-        if let templateAST = repository.templateAST(named: templateName, error: error) {
+        do {
+            let templateAST = try repository.templateAST(named: templateName, error: error)
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } else {
+        } catch _ {
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            return nil
+            throw error
         }
     }
     
@@ -124,27 +130,29 @@ final public class Template {
         // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
         let template = Template(named: "template")!
     
-    :param: name               The name of a bundle resource.
-    :param: bundle             The bundle where to look for the template
+    - parameter name:               The name of a bundle resource.
+    - parameter bundle:             The bundle where to look for the template
                                resource. If nil, the main bundle is used.
-    :param: templateExtension  If extension is an empty string or nil, the
+    - parameter templateExtension:  If extension is an empty string or nil, the
                                extension is assumed not to exist and the
                                template file should exactly matches name.
-    :param: encoding           The encoding of template resource.
-    :param: error              If there is an error loading or parsing template
+    - parameter encoding:           The encoding of template resource.
+    - parameter error:              If there is an error loading or parsing template
                                and partials, upon return contains an NSError
                                object that describes the problem.
     
-    :returns: The created template
+    - returns: The created template
     */
-    public convenience init?(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding, error: NSErrorPointer = nil) {
+    public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         
-        if let templateAST = repository.templateAST(named: name, error: error) {
+        do {
+            let templateAST = try repository.templateAST(named: name, error: error)
             self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } else {
+        } catch _ {
             self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            return nil
+            throw error
         }
     }
     
@@ -156,18 +164,15 @@ final public class Template {
     Renders a template with a context stack initialized with the provided box
     on top of the templates's base context.
     
-    :param: box   A boxed value used for evaluating Mustache tags
-    :param: error If there is an error rendering the tag, upon return contains
+    - parameter box:   A boxed value used for evaluating Mustache tags
+    - parameter error: If there is an error rendering the tag, upon return contains
                   an NSError object that describes the problem.
     
-    :returns: The rendered string
+    - returns: The rendered string
     */
-    public func render(_ box: MustacheBox = Box(), error: NSErrorPointer = nil) -> String? {
-        if let rendering = render(baseContext.extendedContext(box), error: error) {
-            return rendering.string
-        } else {
-            return nil
-        }
+    public func render(_ box: MustacheBox = Box()) throws -> String {
+        let rendering = try render(baseContext.extendedContext(box))
+        return rendering.string
     }
     
     /**
@@ -178,18 +183,18 @@ final public class Template {
     the rendered string and its content type (HTML or Text). It is intended to
     be used when you perform custom rendering in a `RenderFunction`.
     
-    :param: context A context stack
-    :param: error   If there is an error rendering the tag, upon return contains
+    - parameter context: A context stack
+    - parameter error:   If there is an error rendering the tag, upon return contains
                     an NSError object that describes the problem.
     
-    :returns: The template rendering
+    - returns: The template rendering
     
     :see: RenderFunction
     :see: Template.contentType
     */
-    public func render(context: Context, error: NSErrorPointer = nil) -> Rendering? {
+    public func render(context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
-        return renderingEngine.render(error: error)
+        return try renderingEngine.render()
     }
     
     /**
@@ -354,10 +359,14 @@ extension Template : MustacheBoxable {
         return Box(value: self, render: { (var info, error) in
             switch info.tag.type {
             case .Variable:
-                // {{ template }} behaves just like {{> partial }}
-                //
-                // Let's simply render the template:
-                return self.render(info.context, error: error)
+                do {
+                    // {{ template }} behaves just like {{> partial }}
+                    //
+                    // Let's simply render the template:
+                    return try self.render(info.context)
+                } catch _ {
+                    return nil
+                }
                 
             case .Section:
                 // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
@@ -375,7 +384,11 @@ extension Template : MustacheBoxable {
                 let renderingEngine = RenderingEngine(
                     templateAST: TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType),
                     context: info.context)
-                return renderingEngine.render(error: error)
+                do {
+                    return try renderingEngine.render()
+                } catch _ {
+                    return nil
+                }
             }
         })
     }

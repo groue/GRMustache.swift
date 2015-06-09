@@ -31,12 +31,12 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         configuration.extendBaseContext(Box(["name": Box("Arthur")]))
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{name}}")!
+        let template = try! repository.template(string: "{{name}}")
         
-        var rendering = template.render()!
+        var rendering = try! template.render()
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = template.render(Box(["name": "Bobby"]))!
+        rendering = try! template.render(Box(["name": "Bobby"]))
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -52,8 +52,8 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         configuration.extendBaseContext(Box(willRender))
         let repository = TemplateRepository()
         repository.configuration = configuration
-        let template = repository.template(string: "{{name}}")!
-        let rendering = template.render()!
+        let template = try! repository.template(string: "{{name}}")
+        let rendering = try! template.render()
         XCTAssertEqual(rendering, "delegate")
     }
 }

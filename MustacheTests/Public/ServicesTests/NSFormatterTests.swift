@@ -35,9 +35,9 @@ class NSFormatterTests: XCTestCase {
         XCTAssertEqual(percentFormatter.stringFromNumber(0.5)!, "50%")
 
         // test filtering a number
-        let template = Template(string: "{{ percent(number) }}")!
+        let template = try! Template(string: "{{ percent(number) }}")
         let box = Box(["number": Box(0.5), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "50%")
     }
     
@@ -50,9 +50,9 @@ class NSFormatterTests: XCTestCase {
         XCTAssertNil(percentFormatter.stringForObjectValue("foo"))
         
         // test filtering a string
-        let template = Template(string: "{{ percent(string) }}")!
+        let template = try! Template(string: "{{ percent(string) }}")
         let box = Box(["string": Box("foo"), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "")
     }
     
@@ -61,9 +61,9 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.numberStyle = .PercentStyle
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
-        let template = Template(string: "{{# percent }}{{ number }} {{ number }}{{/ percent }}")!
+        let template = try! Template(string: "{{# percent }}{{ number }} {{ number }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "50% 50%")
     }
     
@@ -72,9 +72,9 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.numberStyle = .PercentStyle
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
-        let template = Template(string: "{{# percent }}{{ value }}{{/ percent }}")!
+        let template = try! Template(string: "{{# percent }}{{ value }}{{/ percent }}")
         let box = Box(["value": Box("foo"), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "foo")
     }
     
@@ -83,9 +83,9 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.numberStyle = .PercentStyle
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
-        let template = Template(string: "{{# percent }}{{# number }}Number is {{ number }}.{{/ number }}{{/ percent }}")!
+        let template = try! Template(string: "{{# percent }}{{# number }}Number is {{ number }}.{{/ number }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "Number is 50%.")
     }
     
@@ -94,26 +94,26 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.numberStyle = .PercentStyle
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
-        let template = Template(string: "NO is {{ NO }}. {{^ NO }}NO is false.{{/ NO }} percent(NO) is {{ percent(NO) }}. {{# percent(NO) }}percent(NO) is true.{{/ percent(NO) }} {{# percent }}{{^ NO }}NO is now {{ NO }} and is still false.{{/ NO }}{{/ percent }}")!
+        let template = try! Template(string: "NO is {{ NO }}. {{^ NO }}NO is false.{{/ NO }} percent(NO) is {{ percent(NO) }}. {{# percent(NO) }}percent(NO) is true.{{/ percent(NO) }} {{# percent }}{{^ NO }}NO is now {{ NO }} and is still false.{{/ NO }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "NO": Box(0), "percent": Box(percentFormatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO is 0. NO is false. percent(NO) is 0%. percent(NO) is true. NO is now 0% and is still false.")
     }
     
     func testFormatterIsTruthy() {
         let formatter = NSFormatter()
-        let template = Template(string: "{{# formatter }}Formatter is true.{{/ formatter }}{{^ formatter }}Formatter is false.{{/ formatter }}")!
+        let template = try! Template(string: "{{# formatter }}Formatter is true.{{/ formatter }}{{^ formatter }}Formatter is false.{{/ formatter }}")
         let box = Box(["formatter": Box(formatter)])
-        let rendering = template.render(box)!
+        let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "Formatter is true.")
     }
     
     func testFormatterRendersSelfAsSomething() {
         let formatter = NSFormatter()
-        let template = Template(string: "{{ formatter }}")!
+        let template = try! Template(string: "{{ formatter }}")
         let box = Box(["formatter": Box(formatter)])
-        let rendering = template.render(box)!
-        XCTAssertTrue(count(rendering) > 0)
+        let rendering = try! template.render(box)
+        XCTAssertTrue(rendering.characters.count > 0)
     }
     
     func testNumberFormatterRendersNothingForMissingValue() {
@@ -126,12 +126,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(percentFormatter)])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -142,12 +142,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(percentFormatter), "value": Box(NSNull())])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -158,32 +158,32 @@ class NSFormatterTests: XCTestCase {
         
         var box = Box(["format": Box(percentFormatter), "value": Box("1")])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
         
         box = Box(["format": Box(percentFormatter), "value": Box("YES")])
         
-        template = Template(string: "<{{format(value)}}>")!
-        rendering = template.render(box)!
+        template = try! Template(string: "<{{format(value)}}>")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
         
         box = Box(["format": Box(percentFormatter), "value": Box("foo")])
         
-        template = Template(string: "<{{format(value)}}>")!
-        rendering = template.render(box)!
+        template = try! Template(string: "<{{format(value)}}>")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -197,12 +197,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(percentFormatter), "value": Box(NSDate())])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -215,12 +215,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(dateFormatter)])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -230,12 +230,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(dateFormatter), "value": Box(NSNull())])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -245,32 +245,32 @@ class NSFormatterTests: XCTestCase {
         
         var box = Box(["format": Box(dateFormatter), "value": Box("1")])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
         
         box = Box(["format": Box(dateFormatter), "value": Box("YES")])
         
-        template = Template(string: "<{{format(value)}}>")!
-        rendering = template.render(box)!
+        template = try! Template(string: "<{{format(value)}}>")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
         
         box = Box(["format": Box(dateFormatter), "value": Box("foo")])
         
-        template = Template(string: "<{{format(value)}}>")!
-        rendering = template.render(box)!
+        template = try! Template(string: "<{{format(value)}}>")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
     
@@ -283,12 +283,12 @@ class NSFormatterTests: XCTestCase {
         
         let box = Box(["format": Box(dateFormatter), "value": Box(0)])
         
-        var template = Template(string: "<{{format(value)}}>")!
-        var rendering = template.render(box)!
+        var template = try! Template(string: "<{{format(value)}}>")
+        var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<>")
         
-        template = Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")!
-        rendering = template.render(box)!
+        template = try! Template(string: "{{#format(value)}}YES{{/}}{{^format(value)}}NO{{/}}")
+        rendering = try! template.render(box)
         XCTAssertEqual(rendering, "NO")
     }
 }

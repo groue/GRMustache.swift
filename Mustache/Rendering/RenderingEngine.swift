@@ -31,14 +31,11 @@ final class RenderingEngine {
         buffer = ""
     }
     
-    func render(# error: NSErrorPointer) -> Rendering? {
+    func render() throws -> Rendering {
         buffer = ""
         switch renderTemplateAST(templateAST, inContext: baseContext) {
         case .Error(let renderError):
-            if error != nil {
-                error.memory = renderError
-            }
-            return nil
+            throw renderError
         default:
             return Rendering(buffer, templateAST.contentType)
         }
@@ -92,7 +89,8 @@ final class RenderingEngine {
             // the templateAST before appending to our buffer.
             let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
             var error: NSError?
-            if let rendering = renderingEngine.render(error: &error) {
+            do {
+                let rendering = try renderingEngine.render()
                 switch (targetContentType, rendering.contentType) {
                 case (.HTML, .Text):
                     buffer.extend(escapeHTML(rendering.string))
@@ -100,7 +98,8 @@ final class RenderingEngine {
                     buffer.extend(rendering.string)
                 }
                 return .Success
-            } else {
+            } catch var error1 as NSError {
+                error = error1
                 return .Error(error!)
             }
         }
@@ -192,8 +191,13 @@ final class RenderingEngine {
                     let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
                     rendering = box.render(info: info, error: &error)
                 case (true, false):
-                    // {{^ false }}...{{/ false }}
-                    rendering = tag.render(context, error: &error)
+                    do {
+                        // {{^ false }}...{{/ false }}
+                        rendering = try tag.render(context)
+                    } catch var error1 as NSError {
+                        error = error1
+                        rendering = nil
+                    }
                 default:
                     // {{^ true }}...{{/ true }}
                     // {{# false }}...{{/ false }}
@@ -242,7 +246,7 @@ final class RenderingEngine {
         // We also update an array of used parent template AST in order to support
         // nested inherited partials.
         var usedParentTemplateASTs: [TemplateAST] = []
-        return reduce(context.inheritedPartialStack, section) { (section, inheritedPartial) in
+        return context.inheritedPartialStack.reduce(section) { (section, inheritedPartial) in
             // Don't apply already used partial
             //
             // Relevant test:
@@ -258,7 +262,7 @@ final class RenderingEngine {
             // }
             
             let parentTemplateAST = inheritedPartial.parentPartial.templateAST
-            if (contains(usedParentTemplateASTs) { $0 === parentTemplateAST }) {
+            if (usedParentTemplateASTs.contains { $0 === parentTemplateAST }) {
                 return section
             } else {
                 let (resolvedSection, modified) = resolveInheritableSection(section, inOverridingTemplateAST: inheritedPartial.overridingTemplateAST)
@@ -279,7 +283,7 @@ final class RenderingEngine {
         // section in the template AST.
         //
         // The boolean turns to true once the section has been actually overriden.
-        return reduce(overridingTemplateAST.nodes, (section, false)) { (step, node) in
+        return overridingTemplateAST.nodes.reduce((section, false)) { (step, node) in
             let (section, modified) = step
             switch node {
             case .InheritableSectionNode(let resolvedSection) where resolvedSection.name == section.name:
