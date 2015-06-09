@@ -263,7 +263,7 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(inheritedPartial  inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
+    func extendedContext(inheritedPartial inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
         return Context(type: .InheritedPartial(inheritedPartial: inheritedPartial, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }

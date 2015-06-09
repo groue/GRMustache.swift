@@ -102,35 +102,31 @@ class SuiteTestCase: XCTestCase {
                     var templates: [Template] = []
                     let templateExtension = templateName.pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
-                        var error: NSError?
                         do {
                             let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
                             templates.append(template)
-                        } catch let caughtError as NSError {
-                            error = caughtError
+                        } catch let error as NSError {
+                            testError(error, replayOnFailure: {
+                                do {
+                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                                } catch {
+                                    // ignore error on replay
+                                }
+                            })
                         }
-                        testError(error, replayOnFailure: {
-                            do {
-                                try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
-                            } catch {
-                                // ignore error on replay
-                            }
-                        })
                         
-                        error = nil
                         do {
                             let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
                             templates.append(template)
-                        } catch let caughtError as NSError {
-                            error = caughtError
+                        } catch let error as NSError {
+                            testError(error, replayOnFailure: {
+                                do {
+                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                                } catch {
+                                    // ignore error on replay
+                                }
+                            })
                         }
-                        testError(error, replayOnFailure: {
-                            do {
-                                try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
-                            } catch {
-                                // ignore error on replay
-                            }
-                        })
                     }
                     return templates
                 } else if let templateString = templateString {
@@ -194,7 +190,6 @@ class SuiteTestCase: XCTestCase {
         }
         
         func testRendering(template: Template) {
-            var error: NSError?
             do {
                 let rendering = try template.render(renderedValue)
                 if let expectedRendering = expectedRendering as String! {
@@ -209,38 +204,32 @@ class SuiteTestCase: XCTestCase {
                         // ignore error on replay
                     }
                 })
-            } catch let caughtError as NSError {
-                error = caughtError
+            } catch let error as NSError {
+                testError(error, replayOnFailure: {
+                    do {
+                        try template.render(self.renderedValue)
+                    } catch {
+                        // ignore error on replay
+                    }
+                })
             }
-            testError(error, replayOnFailure: {
-                do {
-                    try template.render(self.renderedValue)
-                } catch {
-                    // ignore error on replay
-                }
-            })
         }
         
-        func testError(error: NSError?, replayOnFailure replayBlock: ()->()) {
+        func testError(error: NSError, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
-                if let error = error {
-                    do {
-                        let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))
-                        let errorMessage = error.localizedDescription
-                        let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, (errorMessage as NSString).length))
-                        if matches.count == 0 {
-                            XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
-                            replayBlock()
-                        }
-                    } catch let error as NSError {
-                        XCTFail("Invalid expected_error in \(description): \(error)")
+                do {
+                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))
+                    let errorMessage = error.localizedDescription
+                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, (errorMessage as NSString).length))
+                    if matches.count == 0 {
+                        XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
                     }
-                } else {
-                    XCTAssertNotNil(error, "Expected error in \(description)")
+                } catch let error as NSError {
+                    XCTFail("Invalid expected_error in \(description): \(error)")
                     replayBlock()
                 }
-            } else if let error = error {
+            } else {
                 XCTFail("Unexpected error in \(description): \(error)")
                 replayBlock()
             }

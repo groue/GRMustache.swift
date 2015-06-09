@@ -486,6 +486,8 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo) throw
         }
         else
         {
+            // Inconsistent content type: this is an error. How are we
+            // supposed to mix Text and HTML?
             throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
         }
     }
@@ -685,54 +687,54 @@ type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps `collection`
 */
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-//    if let collection = collection {
-//        let count = collection.count // C.Index.Distance == Int
-//        return MustacheBox(
-//            boolValue: (count > 0),
-//            value: collection,
-//            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
-//            keyedSubscript: { (key: String) in
-//                switch key {
-//                case "count":
-//                    // Support for both Objective-C and Swift arrays.
-//                    return Box(count)
-//                    
-//                case "firstObject", "first":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.startIndex])
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                case "lastObject", "last":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                default:
-//                    return Box()
-//                }
-//            },
-//            render: { (info: RenderingInfo) in
-//                if info.enumerationItem {
-//                    // {{# collections }}...{{/ collections }}
-//                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-//                } else {
-//                    // {{ collection }}
-//                    // {{# collection }}...{{/ collection }}
-//                    // {{^ collection }}...{{/ collection }}
-//                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
-//                }
-//        })
-//    } else {
-//        return Box()
-//    }
-//}
+public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+    if let collection = collection {
+        let count = collection.count // C.Index.Distance == Int
+        return MustacheBox(
+            boolValue: (count > 0),
+            value: collection,
+            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
+            keyedSubscript: { (key: String) in
+                switch key {
+                case "count":
+                    // Support for both Objective-C and Swift arrays.
+                    return Box(count)
+                    
+                case "firstObject", "first":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.startIndex])
+                    } else {
+                        return Box()
+                    }
+                    
+                case "lastObject", "last":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
+                    } else {
+                        return Box()
+                    }
+                    
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(Box(collection)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    // {{^ collection }}...{{/ collection }}
+                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
+                }
+        })
+    } else {
+        return Box()
+    }
+}
 
 
 /**
@@ -867,13 +869,13 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
             value: dictionary,
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) -> [String: MustacheBox] in
-                        let (key, value) = pair
-                        boxDictionary[key] = Box(value)
-                        return boxDictionary
-                    })),
+                    let (key, value) = pair
+                    boxDictionary[key] = Box(value)
+                    return boxDictionary
+                })),
             keyedSubscript: { (key: String) in
                 return Box(dictionary[key])
-            })
+        })
     } else {
         return Box()
     }
@@ -1309,9 +1311,7 @@ extension NSNull {
         return MustacheBox(
             boolValue: false,
             value: self,
-            render: { (info: RenderingInfo) in
-                return Rendering("")
-        })
+            render: { (info: RenderingInfo) in return Rendering("") })
     }
 }
 
@@ -1884,8 +1884,8 @@ to implement 2:
     let template = Template(string: "{{# person }}The person is {{.}}{{/ person }}")!
     template.render(Box(["person": person]))!
 
-- parameter boolValue:      An optional boolean value for the Box.
 - parameter value:          An optional boxed value
+- parameter boolValue:      An optional boolean value for the Box.
 - parameter keyedSubscript: An optional KeyedSubscriptFunction
 - parameter filter:         An optional FilterFunction
 - parameter render:         An optional RenderFunction

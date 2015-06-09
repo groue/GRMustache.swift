@@ -29,12 +29,17 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
             func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
-                return name
+                switch name {
+                case "not_found":
+                    return nil
+                default:
+                    return name
+                }
             }
             func templateStringForTemplateID(templateID: TemplateID) throws -> String {
                 switch templateID {
                 case "not_found":
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: nil)
+                    fatalError("Unexpected")
                 case "error":
                     throw NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
                 default:

@@ -66,28 +66,28 @@ enum TemplateASTNode {
     
     // Factory methods
     
-    static func inheritableSection(innerTemplateAST  innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
+    static func inheritableSection(innerTemplateAST innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
         return .InheritableSectionNode(InheritableSection(innerTemplateAST: innerTemplateAST, name: name))
     }
     
-    static func inheritedPartial(overridingTemplateAST  overridingTemplateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String? = nil) -> TemplateASTNode {
+    static func inheritedPartial(overridingTemplateAST overridingTemplateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String? = nil) -> TemplateASTNode {
         return .InheritedPartialNode(InheritedPartial(overridingTemplateAST: overridingTemplateAST, parentPartial: Partial(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
     }
     
-    static func partial(templateAST  templateAST: TemplateAST, name: String?) -> TemplateASTNode {
+    static func partial(templateAST templateAST: TemplateAST, name: String?) -> TemplateASTNode {
         return .PartialNode(Partial(templateAST: templateAST, name: name))
     }
     
-    static func section(templateAST  templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
+    static func section(templateAST templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
         let tag = SectionTag(innerTemplateAST: templateAST, openingToken: openingToken, innerTemplateString: innerTemplateString)
         return .SectionNode(Section(tag: tag, expression: expression, inverted: inverted))
     }
     
-    static func text(text  text: String) -> TemplateASTNode {
+    static func text(text text: String) -> TemplateASTNode {
         return .TextNode(text)
     }
     
-    static func variable(expression  expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
+    static func variable(expression expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
         let tag = VariableTag(contentType: contentType, token: token)
         return .VariableNode(Variable(tag: tag, expression: expression, escapesHTML: escapesHTML))
     }

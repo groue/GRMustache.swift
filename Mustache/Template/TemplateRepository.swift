@@ -340,33 +340,35 @@ final public class TemplateRepository {
     // MARK: - Not public
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
-        if let templateID = dataSource?.templateIDForName(name, relativeToTemplateID: templateID) {
-            if let templateAST = templateASTCache[templateID] {
-                // Return cached AST
-                return templateAST
-            } else {
-                guard let templateString = try dataSource?.templateStringForTemplateID(templateID) else {
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
-                }
-                
-                // Cache an empty AST for that name so that we support
-                // recursive partials.
-                let templateAST = TemplateAST()
-                templateASTCache[templateID] = templateAST
-                
-                do {
-                    let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
-                    // Success: update the empty AST
-                    templateAST.updateFromTemplateAST(compiledAST)
-                    return templateAST
-                } catch let error as NSError {
-                    // Failure: remove the empty AST
-                    templateASTCache.removeValueForKey(templateID)
-                    throw error
-                }
-            }
-        } else {
+        guard let dataSource = self.dataSource else {
             throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+        }
+        
+        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: templateID) else {
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+        }
+        
+        if let templateAST = templateASTCache[templateID] {
+            // Return cached AST
+            return templateAST
+        }
+        
+        let templateString = try dataSource.templateStringForTemplateID(templateID)
+        
+        // Cache an empty AST for that name so that we support recursive
+        // partials.
+        let templateAST = TemplateAST()
+        templateASTCache[templateID] = templateAST
+        
+        do {
+            let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
+            // Success: update the empty AST
+            templateAST.updateFromTemplateAST(compiledAST)
+            return templateAST
+        } catch let error as NSError {
+            // Failure: remove the empty AST
+            templateASTCache.removeValueForKey(templateID)
+            throw error
         }
     }
     
@@ -463,6 +465,7 @@ final public class TemplateRepository {
             
             let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
             let templateAbsoluteString = templateURL.absoluteString
+            
             // Make sure partial relative paths can not escape repository root
             if templateAbsoluteString.rangeOfString(baseURLAbsoluteString)?.startIndex == templateAbsoluteString.startIndex {
                 return templateAbsoluteString
