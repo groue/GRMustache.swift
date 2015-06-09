@@ -102,23 +102,23 @@ you want to build. The example above processes `Int`. Other filters are:
 
 - Filters that process values:
 
-    - `(MustacheBox, NSErrorPointer) -> MustacheBox?`
-    - `(T?, NSErrorPointer) -> MustacheBox?` (Generic)
+    - `(MustacheBox) throws -> MustacheBox`
+    - `(T?) throws -> MustacheBox` (Generic)
 
 - Filters that perform post-rendering:
 
-    - `(Rendering, NSErrorPointer) -> Rendering?`
+    - `(Rendering) throws -> Rendering`
 
 - Filters that perform custom rendering:
 
-    - `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
-    - `(T?, RenderingInfo, NSErrorPointer) -> Rendering?` (Generic)
+    - `(MustacheBox, RenderingInfo) throws -> Rendering`
+    - `(T?, RenderingInfo) throws -> Rendering` (Generic)
 
 - Filters that accept several arguments, built with `VariadicFilter()`:
 
-    - `(boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?`
+    - `(boxes: [MustacheBox]) throws -> MustacheBox`
 */
-public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) -> MustacheBox?
+public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool) throws -> MustacheBox
 
 
 // -----------------------------------------------------------------------------
@@ -142,20 +142,16 @@ For example, here is the trivial `identity` filter:
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(MustacheBox, NSErrorPointer) -> MustacheBox?`
+- parameter filter: a function `(MustacheBox) throws -> MustacheBox`
 - returns: a FilterFunction
 */
-public func Filter(filter: (MustacheBox, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
+public func Filter(filter: (MustacheBox) throws -> MustacheBox) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool) in
+        guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else {
-            return filter(box, error)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
+        return try filter(box)
     }
 }
 
@@ -180,20 +176,16 @@ given to the filter.
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(T?, NSErrorPointer) -> MustacheBox?`
+- parameter filter: a function `(T?) throws -> MustacheBox`
 - returns: a FilterFunction
 */
-public func Filter<T>(filter: (T?, NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
+public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool) in
+        guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else {
-            return filter(box.value as? T, error)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
+        return try filter(box.value as? T)
     }
 }
 
@@ -222,22 +214,15 @@ or Text). This filter turns a rendering in another one:
 Beware that when this filter is executed, eventual HTML-escaping has not
 happened yet: the rendering argument may contain raw text.
 */
-public func Filter(filter: (Rendering, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
-        if partialApplication {
+public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool) in
+        guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
-            }
-            return nil
-        } else {
-            return Box { (info: RenderingInfo, error: NSErrorPointer) in
-                if let rendering = box.render(info: info, error: error) {
-                    return filter(rendering, error)
-                } else {
-                    return nil
-                }
-            }
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+        }
+        return Box { (info: RenderingInfo) in
+            let rendering = try box.render(info: info)
+            return try filter(rendering)
         }
     }
 }
@@ -253,17 +238,17 @@ See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
 For an example of such a filter, see the documentation of
-`func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction`.
+`func Filter<T>(filter: (T?, RenderingInfo) throws -> Rendering) -> FilterFunction`.
 This example processes `T?` instead of `MustacheBox`, but the idea is the same.
 
-- parameter filter: a function `(MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?`
+- parameter filter: a function `(MustacheBox, RenderingInfo) throws -> Rendering`
 - returns: a FilterFunction
 */
-public func Filter(filter: (MustacheBox, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (box: MustacheBox, error: NSErrorPointer) in
+public func Filter(filter: (MustacheBox, RenderingInfo) throws -> Rendering) -> FilterFunction {
+    return Filter { (box: MustacheBox) in
         // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(box, info, error)
+        return Box { (info: RenderingInfo) in
+            return try filter(box, info)
         }
     }
 }
@@ -303,14 +288,14 @@ domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
-- parameter filter: a function `(T?, RenderingInfo, NSErrorPointer) -> Rendering?`
+- parameter filter: a function `(T?, RenderingInfo) throws -> Rendering`
 - returns: a FilterFunction
 */
-public func Filter<T>(filter: (T?, RenderingInfo, NSErrorPointer) -> Rendering?) -> FilterFunction {
-    return Filter { (t: T?, error: NSErrorPointer) in
+public func Filter<T>(filter: (T?, RenderingInfo) throws -> Rendering) -> FilterFunction {
+    return Filter { (t: T?) in
         // Box a RenderFunction
-        return Box { (info: RenderingInfo, error: NSErrorPointer) in
-            return filter(t, info, error)
+        return Box { (info: RenderingInfo) in
+            return try filter(t, info)
         }
     }
 }
@@ -342,22 +327,22 @@ If your filter is given too many or too few arguments, you should return nil and
 set error to an NSError of domain `GRMustacheErrorDomain` and code
 `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(boxes: [MustacheBox], error: NSErrorPointer) -> Rendering?`
+- parameter filter: a function `(boxes: [MustacheBox]) throws -> Rendering`
 - returns: a FilterFunction
 */
-public func VariadicFilter(filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
+public func VariadicFilter(filter: (boxes: [MustacheBox]) throws -> MustacheBox) -> FilterFunction {
     return _VariadicFilter([], filter: filter)
 }
 
-private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox?) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool, error: NSErrorPointer) in
+private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool) in
         let boxes = boxes + [box]
         if partialApplication {
             // Wait for another argument
             return Box(_VariadicFilter(boxes, filter: filter))
         } else {
             // No more argument: compute final value
-            return filter(boxes: boxes, error: error)
+            return try filter(boxes: boxes)
         }
     }
 }
@@ -412,7 +397,7 @@ about the requested rendering:
   unrendered. For the section tag `{{# person }}Hello {{ name }}!{{/ person }}`,
   it is `Hello {{ name }}!`.
 
-- `info.tag.render: (Context, NSErrorPointer) -> Rendering?` is a
+- `info.tag.render: (Context) throws -> Rendering` is a
   function that renders the inner content of the tag, given a context stack.
   For example, the section tag `{{# person }}Hello {{ name }}!{{/ person }}`
   would render `Hello Arthur!`, assuming the provided context stack provides
@@ -435,7 +420,7 @@ rendering of a value:
 The default rendering thus reads:
 
     let value = ... // Some value
-    let renderValue: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
+    let renderValue: RenderFunction = { (info: RenderingInfo) throws in
         
         // Rendering depends on the tag type:
         switch info.tag.type {
@@ -453,7 +438,7 @@ The default rendering thus reads:
             let context = info.context.extendedContext(Box(value))
 
             // Renders the inner content of the section tag:
-            return info.tag.render(context, error: error)
+            return try info.tag.render(context)
         }
     }
 
@@ -466,7 +451,7 @@ The default rendering thus reads:
 
 - returns: a Rendering, or nil in case of error.
 */
-public typealias RenderFunction = (info: RenderingInfo, error: NSErrorPointer) -> Rendering?
+public typealias RenderFunction = (info: RenderingInfo) throws -> Rendering
 
 
 // -----------------------------------------------------------------------------
@@ -497,6 +482,8 @@ the example above, this is inefficient because the inner content of the bolded
 section has already been parsed with its template. You may prefer the raw
 `RenderFunction` type, capable of an equivalent and faster implementation:
 
+TODO: rewrite example below in Swift 2
+
     let bold: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
         if let rendering = info.tag.render(info.context, error: error) {
             return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
@@ -515,7 +502,7 @@ section has already been parsed with its template. You may prefer the raw
 - returns: A RenderFunction
 */
 public func Lambda(lambda: String -> String) -> RenderFunction {
-    return { (info: RenderingInfo, error: NSErrorPointer) in
+    return { (info: RenderingInfo) in
         switch info.tag.type {
         case .Variable:
             // {{ lambda }}
@@ -530,17 +517,8 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             templateRepository.configuration.tagDelimiterPair = info.tag.tagDelimiterPair
             
             let templateString = lambda(info.tag.innerTemplateString)
-            let template: Template?
-            do {
-                template = try templateRepository.template(string: templateString)
-            } catch _ {
-                template = nil
-            }
-            do {
-                return try template?.render(info.context)
-            } catch _ {
-                return nil
-            }
+            let template = try templateRepository.template(string: templateString)
+            return try template.render(info.context)
         }
     }
 }
@@ -586,7 +564,7 @@ using a Template instead of a lambda (see the documentation of
 - returns: A RenderFunction
 */
 public func Lambda(lambda: () -> String) -> RenderFunction {
-    return { (info: RenderingInfo, error: NSErrorPointer) in
+    return { (info: RenderingInfo) in
         switch info.tag.type {
         case .Variable:
             // {{ lambda }}
@@ -600,27 +578,14 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             templateRepository.configuration.contentType = .Text
             
             let templateString = lambda()
-            let template: Template?
-            do {
-                template = try templateRepository.template(string: templateString)
-            } catch _ {
-                template = nil
-            }
-            do {
-                return try template?.render(info.context)
-            } catch _ {
-                return nil
-            }
+            let template = try templateRepository.template(string: templateString)
+            return try template.render(info.context)
         case .Section:
             // {{# lambda }}...{{/ lambda }}
             //
             // Behave as a true object, and render the section.
             let context = info.context.extendedContext(Box(Lambda(lambda)))
-            do {
-                return try info.tag.render(context)
-            } catch _ {
-                return nil
-            }
+            return try info.tag.render(context)
         }
     }
 }

@@ -27,7 +27,7 @@ import Mustache
 class StandardLibraryTests: XCTestCase {
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
-        let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = Box({ (info: RenderingInfo) -> Rendering in
             return Rendering("<")
         })
         
@@ -43,7 +43,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
-        let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = Box({ (info: RenderingInfo) -> Rendering in
             return Rendering("<br>", .HTML)
         })
         
@@ -59,7 +59,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryJavascriptEscapeDoesEscapeRenderFunction() {
-        let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = Box({ (info: RenderingInfo) -> Rendering in
             return Rendering("\"double quotes\" and 'single quotes'")
         })
         
@@ -71,7 +71,7 @@ class StandardLibraryTests: XCTestCase {
     }
     
     func testStandardLibraryURLEscapeDoesEscapeRenderFunctions() {
-        let render = Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = Box({ (info: RenderingInfo) -> Rendering in
             return Rendering("&")
         })
         

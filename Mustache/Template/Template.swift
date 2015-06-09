@@ -42,16 +42,9 @@ final public class Template {
     - returns: The created template
     */
     public convenience init(string: String) throws {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let repository = TemplateRepository()
-        
-        do {
-            let templateAST = try repository.templateAST(string: string, error: error)
-            self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } catch _ {
-            self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            throw error
-        }
+        let templateAST = try repository.templateAST(string: string)
+        self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
     
     /**
@@ -72,19 +65,12 @@ final public class Template {
     - returns: The created template
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let directoryPath = path.stringByDeletingLastPathComponent
         let templateExtension = path.pathExtension
         let templateName = path.lastPathComponent.stringByDeletingPathExtension
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
-        
-        do {
-            let templateAST = try repository.templateAST(named: templateName, error: error)
-            self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } catch _ {
-            self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            throw error
-        }
+        let templateAST = try repository.templateAST(named: templateName)
+        self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
     
     /**
@@ -105,19 +91,12 @@ final public class Template {
     - returns: The created template
     */
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let baseURL = URL.URLByDeletingLastPathComponent!
         let templateExtension = URL.pathExtension
         let templateName = URL.lastPathComponent!.stringByDeletingPathExtension
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
-        
-        do {
-            let templateAST = try repository.templateAST(named: templateName, error: error)
-            self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } catch _ {
-            self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            throw error
-        }
+        let templateAST = try repository.templateAST(named: templateName)
+        self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
     
     /**
@@ -144,16 +123,9 @@ final public class Template {
     - returns: The created template
     */
     public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
-        
-        do {
-            let templateAST = try repository.templateAST(named: name, error: error)
-            self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
-        } catch _ {
-            self.init(repository: TemplateRepository(), templateAST: TemplateAST(), baseContext: Context())
-            throw error
-        }
+        let templateAST = try repository.templateAST(named: name)
+        self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
     
     
@@ -170,7 +142,7 @@ final public class Template {
     
     - returns: The rendered string
     */
-    public func render(_ box: MustacheBox = Box()) throws -> String {
+    public func render(box: MustacheBox = Box()) throws -> String {
         let rendering = try render(baseContext.extendedContext(box))
         return rendering.string
     }
@@ -356,17 +328,13 @@ extension Template : MustacheBoxable {
     included in an HTML template.
     */
     public var mustacheBox: MustacheBox {
-        return Box(value: self, render: { (var info, error) in
+        return Box(value: self, render: { (info) in
             switch info.tag.type {
             case .Variable:
-                do {
-                    // {{ template }} behaves just like {{> partial }}
-                    //
-                    // Let's simply render the template:
-                    return try self.render(info.context)
-                } catch _ {
-                    return nil
-                }
+                // {{ template }} behaves just like {{> partial }}
+                //
+                // Let's simply render the template:
+                return try self.render(info.context)
                 
             case .Section:
                 // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
@@ -384,11 +352,7 @@ extension Template : MustacheBoxable {
                 let renderingEngine = RenderingEngine(
                     templateAST: TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType),
                     context: info.context)
-                do {
-                    return try renderingEngine.render()
-                } catch _ {
-                    return nil
-                }
+                return try renderingEngine.render()
             }
         })
     }

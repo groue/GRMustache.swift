@@ -29,10 +29,10 @@ class FilterTests: XCTestCase {
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
-            "uppercase": Box(Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
+            "uppercase": Box(Filter { (string: String?) -> MustacheBox in
                 return Box(string?.uppercaseString)
             }),
-            "prefix": Box(Filter { (string: String?, error: NSErrorPointer) -> MustacheBox? in
+            "prefix": Box(Filter { (string: String?) -> MustacheBox in
                 return Box("prefix\(string!)")
             })
             ])
@@ -49,7 +49,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter { (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (box: MustacheBox) -> MustacheBox in
                 return box
             })
             ])
@@ -59,7 +59,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (_: MustacheBox) -> MustacheBox in
                 return Box(["name": "filterName"])
             })
             ])
@@ -69,7 +69,7 @@ class FilterTests: XCTestCase {
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
-            "f": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(Filter { (_: MustacheBox) -> MustacheBox in
                 return Box(true)
             })
             ])
@@ -90,7 +90,7 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterNameSpace() {
-        let doubleFilter = Box(Filter { (x: Int?, error: NSErrorPointer) -> MustacheBox? in
+        let doubleFilter = Box(Filter { (x: Int?) -> MustacheBox in
             return Box((x ?? 0) * 2)
         })
         let box = Box([
@@ -103,8 +103,8 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanReturnFilter() {
-        let filterValue = Box(Filter { (string1: String?, error: NSErrorPointer) -> MustacheBox? in
-            return Box(Filter { (string2: String?, error: NSErrorPointer) -> MustacheBox? in
+        let filterValue = Box(Filter { (string1: String?) -> MustacheBox in
+            return Box(Filter { (string2: String?) -> MustacheBox in
                     return Box("\(string1!)\(string2!)")
                 })
             })
@@ -118,7 +118,7 @@ class FilterTests: XCTestCase {
     }
     
     func testImplicitIteratorCanReturnFilter() {
-        let box = Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+        let box = Box(Filter { (_: MustacheBox) -> MustacheBox in
             return Box("filter")
         })
         let template = try! Template(string:"{{.(a)}}")
@@ -129,7 +129,7 @@ class FilterTests: XCTestCase {
     func testMissingFilterError() {
         let box = Box([
             "name": Box("Name"),
-            "replace": Box(Filter { (_: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            "replace": Box(Filter { (_: MustacheBox) -> MustacheBox in
                 return Box("replace")
             })
         ])

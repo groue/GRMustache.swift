@@ -95,7 +95,7 @@ class BoxTests: XCTestCase {
 //            }
 //        }
 //        
-//        let filter1 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
+//        let filter1 = { (value: Boxable?) -> MustacheBox in
 //            if let value = value {
 //                return Box(value.name)
 //            } else {
@@ -103,7 +103,7 @@ class BoxTests: XCTestCase {
 //            }
 //        }
 //        
-//        let filter2 = { (value: Boxable?, error: NSErrorPointer) -> MustacheBox? in
+//        let filter2 = { (value: Boxable?) -> MustacheBox in
 //            if let value = value {
 //                return Box(value.name)
 //            } else {
@@ -111,7 +111,7 @@ class BoxTests: XCTestCase {
 //            }
 //        }
 //        
-//        let filter3 = { (value: NSDate?, error: NSErrorPointer) -> MustacheBox? in
+//        let filter3 = { (value: NSDate?) -> MustacheBox in
 //            if let value = value {
 //                return Box("custom3")
 //            } else {
@@ -149,7 +149,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
-        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering.characters) != nil)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
     }
     
     // TODO

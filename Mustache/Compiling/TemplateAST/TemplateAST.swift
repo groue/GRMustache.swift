@@ -67,7 +67,7 @@ final class TemplateAST {
         switch type {
         case .Undefined:
             return nil
-        case .Defined(let nodes, let _):
+        case .Defined(let nodes, _):
             return nodes
         }
     }
@@ -79,7 +79,7 @@ final class TemplateAST {
         switch type {
         case .Undefined:
             return nil
-        case .Defined(let _, let contentType):
+        case .Defined(_, let contentType):
             return contentType
         }
     }

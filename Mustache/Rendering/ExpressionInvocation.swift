@@ -38,72 +38,47 @@ final class ExpressionInvocation {
         case Error(NSError)
     }
     
-    func invokeWithContext(context: Context) -> InvocationResult {
+    func invokeWithContext(context: Context) throws -> MustacheBox {
         self.context = context
-        if let error = evaluate(expression) {
-            return .Error(error)
-        } else {
-            return .Success(result)
-        }
+        try evaluate(expression)
+        return result
     }
     
     // On error, return an error
     // On success, self.result is the evaluation of the expression
-    private func evaluate(expression: Expression) -> NSError? {
+    private func evaluate(expression: Expression) throws {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
             
             result = context!.topBox
-            return nil
             
         case .Identifier(let identifier):
             // {{ identifier }}
             
             result = context![identifier]
-            return nil
 
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            if let error = evaluate(baseExpression.expression) {
-                return error
-            } else {
-                result = result[identifier]
-                return nil
-            }
+            try evaluate(baseExpression.expression)
+            result = result[identifier]
             
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
-            if let error = evaluate(filterExpression.expression) {
-                return error
-            }
+            try evaluate(filterExpression.expression)
             let filterBox = result
             
-            if let error = evaluate(argumentExpression.expression) {
-                return error
-            }
+            try evaluate(argumentExpression.expression)
             let argumentBox = result
             
             if let filter = filterBox.filter {
-                var filterError: NSError? = nil
-                if let filterResult = filter(box: argumentBox, partialApplication: partialApplication, error: &filterError) {
-                    result = filterResult
-                    return nil
-                } else if let filterError = filterError {
-                    return filterError
-                } else {
-                    // MustacheFilter result is nil, but filter error is not set.
-                    // Assume a filter coded by a lazy programmer, whose
-                    // intention is to return the empty value.
-                    result = Box()
-                    return nil
-                }
+                result = try filter(box: argumentBox, partialApplication: partialApplication)
             } else if filterBox.isEmpty {
-                return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
             } else {
-                return NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
             }
         }
     }

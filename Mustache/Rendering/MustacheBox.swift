@@ -177,8 +177,8 @@ public class MustacheBox : NSObject {
     let converter: Converter?
     
     init(
-        boolValue: Bool? = nil,
         value: Any? = nil,
+        boolValue: Bool? = nil,
         converter: Converter? = nil,
         keyedSubscript: KeyedSubscriptFunction? = nil,
         filter: FilterFunction? = nil,
@@ -212,9 +212,9 @@ public class MustacheBox : NSObject {
             // Despite this message, the `self` "captured" in the second closure
             // is the one whose `render` property contains that same second
             // closure: everything works as if no value was actually captured.
-            self.render = { (_, _) in return nil }
+            self.render = { (_) in return Rendering("") }
             super.init()
-            self.render = { (info: RenderingInfo, error: NSErrorPointer) in
+            self.render = { (info: RenderingInfo) in
                 switch info.tag.type {
                 case .Variable:
                     // {{ box }}
@@ -226,11 +226,7 @@ public class MustacheBox : NSObject {
                 case .Section:
                     // {{# box }}...{{/ box }}
                     let context = info.context.extendedContext(self)
-                    do {
-                        return try info.tag.render(context)
-                    } catch _ {
-                        return nil
-                    }
+                    return try info.tag.render(context)
                 }
             }
         }

@@ -197,24 +197,11 @@ final public class Context {
     - returns: The value of the expression
     */
     public func boxForMustacheExpression(string: String) throws -> MustacheBox {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
         let parser = ExpressionParser()
         var empty = false
-        do {
-            let expression = try parser.parse(string, empty: &empty)
-            let invocation = ExpressionInvocation(expression: expression)
-            let invocationResult = invocation.invokeWithContext(self)
-            switch invocationResult {
-            case .Error(let invocationError):
-                # /* TODO: Finish migration: rewrite code to move the next statement out of enclosing do/catch */
-                throw invocationError
-            case .Success(let box):
-                return box
-            }
-        } catch var error1 as NSError {
-            error = error1
-        }
-        throw error
+        let expression = try parser.parse(string, empty: &empty)
+        let invocation = ExpressionInvocation(expression: expression)
+        return try invocation.invokeWithContext(self)
     }
     
     
@@ -289,7 +276,7 @@ extension Context: CustomDebugStringConvertible {
             return "Context.Root"
         case .Box(box: let box, parent: let parent):
             return "Context.Box(\(box)):\(parent.debugDescription)"
-        case .InheritedPartial(inheritedPartial: let inheritedPartial, parent: let parent):
+        case .InheritedPartial(inheritedPartial: _, parent: let parent):
             return "Context.inheritedPartial:\(parent.debugDescription)"
         }
     }

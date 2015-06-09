@@ -84,7 +84,7 @@ extension NSFormatter {
             value: self,
             
             // This function is used for evaluating `formatter(x)` expressions.
-            filter: Filter { (box: MustacheBox, error: NSErrorPointer) in
+            filter: Filter { (box: MustacheBox) in
                 // NSFormatter documentation for stringForObjectValue: states:
                 //
                 // > First test the passed-in object to see if it’s of the

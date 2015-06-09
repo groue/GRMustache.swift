@@ -178,7 +178,7 @@ final public class TemplateRepository {
                               is NSUTF8StringEncoding.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true)!, templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
     
     /**
@@ -291,13 +291,8 @@ final public class TemplateRepository {
     - returns: A Mustache Template
     */
     public func template(string string: String) throws -> Template {
-        var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-        do {
-            let templateAST = try self.templateAST(string: string, error: error)
-            return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
-        } catch _ {
-            throw error
-        }
+        let templateAST = try self.templateAST(string: string)
+        return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
     
     /**
@@ -320,7 +315,7 @@ final public class TemplateRepository {
     :see: reloadTemplates
     */
     public func template(named name: String) throws -> Template {
-        let templateAST = try templateAST(named: name, relativeToTemplateID: nil)
+        let templateAST = try self.templateAST(named: name, relativeToTemplateID: nil)
         return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
     
@@ -350,28 +345,24 @@ final public class TemplateRepository {
                 // Return cached AST
                 return templateAST
             } else {
-                var dataSourceError: NSError?
-                if let templateString = dataSource?.templateStringForTemplateID(templateID, error: &dataSourceError) {
-                    // Cache an empty AST for that name so that we support
-                    // recursive partials.
-                    let templateAST = TemplateAST()
-                    templateASTCache[templateID] = templateAST
-                    
-                    do {
-                        let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
-                        // Success: update the empty AST
-                        templateAST.updateFromTemplateAST(compiledAST)
-                        return templateAST
-                    } catch var error1 as NSError {
-                        // Failure: remove the empty AST
-                        templateASTCache.removeValueForKey(templateID)
-                        throw error1
-                    }
-                } else {
-                    if dataSourceError == nil {
-                        dataSourceError = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
-                    }
-                    throw dataSourceError
+                guard let templateString = try dataSource?.templateStringForTemplateID(templateID) else {
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+                }
+                
+                // Cache an empty AST for that name so that we support
+                // recursive partials.
+                let templateAST = TemplateAST()
+                templateASTCache[templateID] = templateAST
+                
+                do {
+                    let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
+                    // Success: update the empty AST
+                    templateAST.updateFromTemplateAST(compiledAST)
+                    return templateAST
+                } catch let error as NSError {
+                    // Failure: remove the empty AST
+                    templateASTCache.removeValueForKey(templateID)
+                    throw error
                 }
             }
         } else {
@@ -471,21 +462,17 @@ final public class TemplateRepository {
             }
             
             let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
-            if let templateAbsoluteString = templateURL.absoluteString {
-                // Make sure partial relative paths can not escape repository root
-                if templateAbsoluteString.rangeOfString(baseURLAbsoluteString)?.startIndex == templateAbsoluteString.startIndex {
-                    return templateAbsoluteString
-                }
+            let templateAbsoluteString = templateURL.absoluteString
+            // Make sure partial relative paths can not escape repository root
+            if templateAbsoluteString.rangeOfString(baseURLAbsoluteString)?.startIndex == templateAbsoluteString.startIndex {
+                return templateAbsoluteString
+            } else {
+                return nil
             }
-            return nil
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-            if let value = NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding) as? String {
-                return value
-            }
-            throw error
+            return try NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding) as String
         }
     }
     
@@ -529,11 +516,7 @@ final public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-            if let value = NSString(contentsOfFile: templateID, encoding: encoding) as? String {
-                return value
-            }
-            throw error
+            return try NSString(contentsOfFile: templateID, encoding: encoding) as String
         }
     }
 }

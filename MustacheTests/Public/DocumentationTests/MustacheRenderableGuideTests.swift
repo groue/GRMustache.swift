@@ -27,7 +27,7 @@ import Mustache
 class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample1() {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Variable:
                 return Rendering("I'm rendering a {{ variable }} tag.")
@@ -44,7 +44,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample2() {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("Arthur & Cie")
         }
         
@@ -53,7 +53,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample3() {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo) -> Rendering in
             let rendering = try! info.tag.render(info.context)
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
@@ -66,7 +66,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func textExample4() {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo) -> Rendering in
             let rendering = try! info.tag.render(info.context)
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
@@ -76,7 +76,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
 
     func textExample5() {
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render = { (info: RenderingInfo) -> Rendering in
             let template = try! Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")
             do {
                 return try template.render(info.context)
@@ -126,7 +126,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                         return Box()
                     }
                 }
-                let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                let render = { (info: RenderingInfo) -> Rendering in
                     let template = try! Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
                     let context = info.context.extendedContext(Box(self))
                     do {
@@ -156,7 +156,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                         return Box()
                     }
                 }
-                let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+                let render = { (info: RenderingInfo) -> Rendering in
                     let template = try! Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
                     let context = info.context.extendedContext(Box(self))
                     do {
@@ -181,7 +181,7 @@ class MustacheRenderableGuideTests: XCTestCase {
     }
     
     func testExample8() {
-        let listFilter = { (box: MustacheBox, info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let listFilter = { (box: MustacheBox, info: RenderingInfo) -> Rendering in
             let items = box.value as! [MustacheBox]
             var buffer = "<ul>"
             for item in items {

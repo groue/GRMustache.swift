@@ -27,7 +27,7 @@ import Mustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return Box(",".join(boxes.map { ($0.value as? String) ?? "" }))
         })
         let box = Box([
@@ -41,9 +41,9 @@ class VariadicFilterTests: XCTestCase {
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             let joined = ",".join(boxes.map { ($0.value as? String) ?? "" })
-            return Box(Filter({ (box: MustacheBox, error: NSErrorPointer) -> MustacheBox? in
+            return Box(Filter({ (box: MustacheBox) -> MustacheBox in
                 return Box(joined + "+" + ((box.value as? String) ?? ""))
             }))
         })
@@ -58,7 +58,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -68,7 +68,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return Box(["foo": "bar"])
         })
         let box = Box(["f": Box(filter)])
@@ -78,7 +78,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return Box(boxes)
         })
         let box = Box([
@@ -92,7 +92,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return boxes.first
         })
         let box = Box([
@@ -105,7 +105,7 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return nil
         })
         let box = Box(["f": Box(filter)])
@@ -116,7 +116,7 @@ class VariadicFilterTests: XCTestCase {
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let box = Box([
-            "f": Box(VariadicFilter({ (boxes: [MustacheBox], error: NSErrorPointer) -> MustacheBox? in
+            "f": Box(VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
                 var result = ""
                 for box in boxes {
                     if let dictionary = box.dictionaryValue {

@@ -23,7 +23,7 @@
 
 import Foundation
 
-let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
+let ZipFilter = VariadicFilter { (boxes) in
     
     // Turn collection arguments into generators. Generators can be iterated
     // all together, and this is what we need.
@@ -40,10 +40,7 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
             zippedGenerators.append(anyGenerator(array.generate()))
         } else {
             // Error
-            if error != nil {
-                error.memory = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Non-enumerable argument in zip filter: `\(box.value)`"])
-            }
-            return nil
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Non-enumerable argument in zip filter: `\(box.value)`"])
         }
     }
     
@@ -79,16 +76,9 @@ let ZipFilter = VariadicFilter { (boxes, error) -> MustacheBox? in
         // Build a render function which extends the rendering context with
         // zipped boxes before rendering the tag.
         
-        let renderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-            var context = info.context
-            for box in zippedBoxes {
-                context = context.extendedContext(box)
-            }
-            do {
-                return try info.tag.render(context)
-            } catch _ {
-                return nil
-            }
+        let renderFunction: RenderFunction = { (info) -> Rendering in
+            var context = zippedBoxes.reduce(info.context) { (context, box) in context.extendedContext(box) }
+            return try info.tag.render(context)
         }
         
         renderFunctions.append(renderFunction)

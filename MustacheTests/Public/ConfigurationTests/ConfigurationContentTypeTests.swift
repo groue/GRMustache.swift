@@ -68,27 +68,14 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try testedTemplate.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try testedTemplate.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
@@ -104,143 +91,75 @@ class ConfigurationContentTypeTests: XCTestCase {
         
         let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try testedTemplate.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try testedTemplate.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasSectionTagRenderHTML() {
         DefaultConfiguration.contentType = .HTML
         
-        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try info.tag.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try info.tag.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{#.}}{{/.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasSectionTagRenderText() {
         DefaultConfiguration.contentType = .Text
         
-        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try info.tag.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try info.tag.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{#.}}{{/.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     
     func testDefaultConfigurationContentTypeHTMLHasVariableTagRenderHTML() {
         DefaultConfiguration.contentType = .HTML
         
-        let testedTemplate = try! Template(string: "")
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try info.tag.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try info.tag.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.HTML)
     }
     
     func testDefaultConfigurationContentTypeTextHasVariableTagRenderText() {
         DefaultConfiguration.contentType = .Text
         
-        let testedTemplate = try! Template(string: "")
+
         var testedContentType: ContentType?
-        let render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                let rendering: Rendering?
-                do {
-                    rendering = try info.tag.render(info.context)
-                } catch var error1 as NSError {
-                    error.memory = error1
-                    rendering = nil
-                } catch {
-                    fatalError()
-                }
-            if let rendering = rendering {
-                testedContentType = rendering.contentType
-            }
+        let render = { (info: RenderingInfo) -> Rendering in
+            let rendering = try info.tag.render(info.context)
+            testedContentType = rendering.contentType
             return rendering
         }
         
         let template = try! Template(string: "{{.}}")
-        do {
-            try template.render(Box(render))
-        } catch _ {
-        }
+        try! template.render(Box(render))
         XCTAssertEqual(testedContentType!, ContentType.Text)
     }
     

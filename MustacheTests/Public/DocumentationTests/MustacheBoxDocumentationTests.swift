@@ -27,7 +27,7 @@ import Mustache
 class MustacheBoxDocumentationTests: XCTestCase {
     
     func testRenderingDocumentation() {
-        let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render: RenderFunction = { (info: RenderingInfo) -> Rendering in
             return Rendering("foo")
         }
         let template = try! Template(string: "{{object}}")
@@ -37,7 +37,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
     }
     
     func testRenderingInfoDocumentation() {
-        let render: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        let render: RenderFunction = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Variable:
                 // Render a {{object}} variable tag

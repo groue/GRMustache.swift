@@ -33,12 +33,8 @@ final class RenderingEngine {
     
     func render() throws -> Rendering {
         buffer = ""
-        switch renderTemplateAST(templateAST, inContext: baseContext) {
-        case .Error(let renderError):
-            throw renderError
-        default:
-            return Rendering(buffer, templateAST.contentType)
-        }
+        try renderTemplateAST(templateAST, inContext: baseContext)
+        return Rendering(buffer, templateAST.contentType)
     }
     
     
@@ -48,12 +44,7 @@ final class RenderingEngine {
     private let baseContext: Context
     private var buffer: String
 
-    private enum RenderResult {
-        case Success
-        case Error(NSError)
-    }
-    
-    private func renderTemplateAST(templateAST: TemplateAST, inContext context: Context) -> RenderResult {
+    private func renderTemplateAST(templateAST: TemplateAST, inContext context: Context) throws {
         // We must take care of eventual content-type mismatch between the
         // currently rendered AST (defined by init), and the argument.
         //
@@ -71,15 +62,8 @@ final class RenderingEngine {
             // Content-type match
             
             for node in templateAST.nodes {
-                let result = renderNode(node, inContext: context)
-                switch result {
-                case .Error:
-                    return result
-                default:
-                    break
-                }
+                try renderNode(node, inContext: context)
             }
-            return .Success
         }
         else
         {
@@ -88,44 +72,37 @@ final class RenderingEngine {
             // Render separately, so that we can HTML-escape the rendering of
             // the templateAST before appending to our buffer.
             let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
-            var error: NSError?
-            do {
-                let rendering = try renderingEngine.render()
-                switch (targetContentType, rendering.contentType) {
-                case (.HTML, .Text):
-                    buffer.extend(escapeHTML(rendering.string))
-                default:
-                    buffer.extend(rendering.string)
-                }
-                return .Success
-            } catch var error1 as NSError {
-                error = error1
-                return .Error(error!)
+            let rendering = try renderingEngine.render()
+            switch (targetContentType, rendering.contentType) {
+            case (.HTML, .Text):
+                buffer.extend(escapeHTML(rendering.string))
+            default:
+                buffer.extend(rendering.string)
             }
         }
     }
     
-    private func renderNode(node: TemplateASTNode, inContext context: Context) -> RenderResult {
+    private func renderNode(node: TemplateASTNode, inContext context: Context) throws {
         switch node {
         case .InheritableSectionNode(let inheritableSection):
             // {{$ name }}...{{/ name }}
             //
             // Render the inner content of the resolved inheritable section.
             let resolvedSection = resolveInheritableSection(inheritableSection, inContext: context)
-            return renderTemplateAST(resolvedSection.innerTemplateAST, inContext: context)
+            return try renderTemplateAST(resolvedSection.innerTemplateAST, inContext: context)
             
         case .InheritedPartialNode(let inheritedPartial):
             // {{< name }}...{{/ name }}
             //
             // Extend the inheritance stack, and render the content of the parent partial
             let context = context.extendedContext(inheritedPartial: inheritedPartial)
-            return renderTemplateAST(inheritedPartial.parentPartial.templateAST, inContext: context)
+            return try renderTemplateAST(inheritedPartial.parentPartial.templateAST, inContext: context)
             
         case .PartialNode(let partial):
             // {{> name }}
             //
             // Render the content of the partial
-            return renderTemplateAST(partial.templateAST, inContext: context)
+            return try renderTemplateAST(partial.templateAST, inContext: context)
             
         case .SectionNode(let section):
             // {{# name }}...{{/ name }}
@@ -133,12 +110,11 @@ final class RenderingEngine {
             //
             // We have common rendering for sections and variable tags, yet with
             // a few specific flags:
-            return renderTag(section.tag, escapesHTML: true, inverted: section.inverted, expression: section.expression, inContext: context)
+            return try renderTag(section.tag, escapesHTML: true, inverted: section.inverted, expression: section.expression, inContext: context)
             
         case .TextNode(let text):
             // text is the trivial case:
             buffer.extend(text)
-            return .Success
             
         case .VariableNode(let variable):
             // {{ name }}
@@ -147,92 +123,84 @@ final class RenderingEngine {
             //
             // We have common rendering for sections and variable tags, yet with
             // a few specific flags:
-            return renderTag(variable.tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression, inContext: context)
+            return try renderTag(variable.tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression, inContext: context)
         }
     }
     
-    private func renderTag(tag: Tag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) -> RenderResult {
+    private func renderTag(tag: Tag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
         
         // 1. Evaluate expression
         
-        switch ExpressionInvocation(expression: expression).invokeWithContext(context) {
-            
-        case .Error(let error):
+        var box: MustacheBox
+
+        do {
+            box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
+        } catch let error as NSError {
+            // Rewrite error with tag description
             var userInfo = error.userInfo ?? [:]
             if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
                 userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description): \(originalLocalizedDescription)"
             } else {
                 userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag.description)"
             }
-            return .Error(NSError(domain: error.domain, code: error.code, userInfo: userInfo))
-            
-        case .Success(var box):
-            
-            // 2. Let willRender functions alter the box
-            
-            for willRender in context.willRenderStack {
-                box = willRender(tag: tag, box: box)
-            }
-            
-            
-            // 3. Render the box
-            
-            var error: NSError?
-            let rendering: Rendering?
+            throw NSError(domain: error.domain, code: error.code, userInfo: userInfo)
+        }
+        
+        
+        // 2. Let willRender functions alter the box
+        
+        for willRender in context.willRenderStack {
+            box = willRender(tag: tag, box: box)
+        }
+        
+        
+        // 3. Render the box
+        
+        let rendering: Rendering
+        do {
             switch tag.type {
             case .Variable:
                 let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                rendering = box.render(info: info, error: &error)
+                rendering = try box.render(info: info)
             case .Section:
                 switch (inverted, box.boolValue) {
                 case (false, true):
                     // {{# true }}...{{/ true }}
                     // Only case where we trigger the RenderFunction of the Box
                     let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                    rendering = box.render(info: info, error: &error)
+                    rendering = try box.render(info: info)
                 case (true, false):
-                    do {
-                        // {{^ false }}...{{/ false }}
-                        rendering = try tag.render(context)
-                    } catch var error1 as NSError {
-                        error = error1
-                        rendering = nil
-                    }
+                    // {{^ false }}...{{/ false }}
+                    rendering = try tag.render(context)
                 default:
                     // {{^ true }}...{{/ true }}
                     // {{# false }}...{{/ false }}
                     rendering = Rendering("")
                 }
             }
-            
-            if let rendering = rendering {
-                
-                // 4. Extend buffer with the rendering, HTML-escaped if needed.
-                
-                let string: String
-                switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
-                case (.HTML, .Text, true):
-                    string = escapeHTML(rendering.string)
-                default:
-                    string = rendering.string
-                }
-                buffer.extend(string)
-                
-                
-                // 5. Let didRender functions do their job
-                
-                for didRender in context.didRenderStack {
-                    didRender(tag: tag, box: box, string: string)
-                }
-                
-                return .Success
-            } else {
-                for didRender in context.didRenderStack {
-                    didRender(tag: tag, box: box, string: nil)
-                }
-                
-                return .Error(error!)
+        } catch let error {
+            for didRender in context.didRenderStack {
+                didRender(tag: tag, box: box, string: nil)
             }
+            throw error
+        }
+        
+        // 4. Extend buffer with the rendering, HTML-escaped if needed.
+        
+        let string: String
+        switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
+        case (.HTML, .Text, true):
+            string = escapeHTML(rendering.string)
+        default:
+            string = rendering.string
+        }
+        buffer.extend(string)
+        
+        
+        // 5. Let didRender functions do their job
+        
+        for didRender in context.didRenderStack {
+            didRender(tag: tag, box: box, string: string)
         }
     }
     

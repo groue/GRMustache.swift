@@ -80,7 +80,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     switch compilationState.compilerContentType {
                     case .Unlocked:
                         compilationState.compilerContentType = .Unlocked(.Text)
-                    case .Locked(let contentType):
+                    case .Locked(_):
                         state = .Error(parseErrorAtToken(token, description: "CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag."))
                         return false
                     }
@@ -88,7 +88,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     switch compilationState.compilerContentType {
                     case .Unlocked:
                         compilationState.compilerContentType = .Unlocked(.HTML)
-                    case .Locked(let contentType):
+                    case .Locked(_):
                         state = .Error(parseErrorAtToken(token, description: "CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag."))
                         return false
                     }
@@ -100,86 +100,74 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 return true
                 
             case .EscapedVariable(content: let content, tagDelimiterPair: _):
-                var error: NSError?
                 var empty = false
                 do {
                     let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                } catch let error as NSError {
+                    state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                     return false
                 }
                 
             case .UnescapedVariable(content: let content, tagDelimiterPair: _):
-                var error: NSError?
                 var empty = false
                 do {
                     let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                } catch let error as NSError {
+                    state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                     return false
                 }
                 
             case .Section(content: let content, tagDelimiterPair: _):
-                var error: NSError?
                 var empty = false
                 do {
                     let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                } catch let error as NSError {
+                    state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                     return false
                 }
                 
             case .InvertedSection(content: let content, tagDelimiterPair: _):
-                var error: NSError?
                 var empty = false
                 do {
                     let expression = try ExpressionParser().parse(content, empty: &empty)
                     compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
+                } catch let error as NSError {
+                    state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                     return false
                 }
                 
             case .InheritableSection(content: let content):
-                var error: NSError?
                 var empty: Bool = false
                 do {
                     let inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .InheritableSection(openingToken: token, inheritableSectionName: inheritableSectionName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(error!)
+                } catch let error as NSError {
+                    state = .Error(error)
                     return false
                 }
                 
             case .InheritedPartial(content: let content):
-                var error: NSError?
                 var empty: Bool = false
                 do {
                     let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .InheritedPartial(openingToken: token, partialName: partialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } catch var error1 as NSError {
-                    error = error1
-                    state = .Error(error!)
+                } catch let error as NSError {
+                    state = .Error(error)
                     return false
                 }
                 
@@ -190,24 +178,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     return false
                     
                 case .Section(openingToken: let openingToken, expression: let closedExpression):
-                    var error: NSError?
                     var empty: Bool = false
-                    let expression: Expression?
                     do {
-                        expression = try ExpressionParser().parse(content, empty: &empty)
-                    } catch var error1 as NSError {
-                        error = error1
-                        expression = nil
-                    }
-                    switch (expression, empty) {
-                    case (nil, true):
-                        break
-                    case (nil, false):
-                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
-                        return false
-                    default:
+                        let expression = try ExpressionParser().parse(content, empty: &empty)
                         if expression != closedExpression {
                             state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    } catch let error as NSError {
+                        if empty == false {
+                            state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                             return false
                         }
                     }
@@ -228,24 +208,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     return true
                     
                 case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
-                    var error: NSError?
                     var empty: Bool = false
-                    let expression: Expression?
                     do {
-                        expression = try ExpressionParser().parse(content, empty: &empty)
-                    } catch var error1 as NSError {
-                        error = error1
-                        expression = nil
-                    }
-                    switch (expression, empty) {
-                    case (nil, true):
-                        break
-                    case (nil, false):
-                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
-                        return false
-                    default:
+                        let expression = try ExpressionParser().parse(content, empty: &empty)
                         if expression != closedExpression {
                             state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    } catch let error as NSError {
+                        if empty == false {
+                            state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                             return false
                         }
                     }
@@ -265,25 +237,17 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     compilationState.currentScope.appendNode(sectionTag)
                     return true
                     
-                case .InheritedPartial(openingToken: let openingToken, partialName: let inheritedPartialName):
-                    var error: NSError?
+                case .InheritedPartial(openingToken: _, partialName: let inheritedPartialName):
                     var empty: Bool = false
-                    let partialName: String?
                     do {
-                        partialName = try partialNameFromString(content, inToken: token, empty: &empty)
-                    } catch var error1 as NSError {
-                        error = error1
-                        partialName = nil
-                    }
-                    switch (partialName, empty) {
-                    case (nil, true):
-                        break
-                    case (nil, false):
-                        state = .Error(error!)
-                        return false
-                    default:
+                        let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
                         if (partialName != inheritedPartialName) {
                             state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    } catch let error as NSError {
+                        if empty == false {
+                            state = .Error(error)
                             return false
                         }
                     }
@@ -306,31 +270,22 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(inheritedPartialNode)
                         return true
-                    } catch var error1 as NSError {
-                        error = error1
-                        state = .Error(error!)
+                    } catch let error as NSError {
+                        state = .Error(error)
                         return false
                     }
                     
-                case .InheritableSection(openingToken: let openingToken, inheritableSectionName: let closedInheritableSectionName):
-                    var error: NSError?
+                case .InheritableSection(openingToken: _, inheritableSectionName: let closedInheritableSectionName):
                     var empty: Bool = false
-                    let inheritableSectionName: String?
                     do {
-                        inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
-                    } catch var error1 as NSError {
-                        error = error1
-                        inheritableSectionName = nil
-                    }
-                    switch (inheritableSectionName, empty) {
-                    case (nil, true):
-                        break
-                    case (nil, false):
-                        state = .Error(parseErrorAtToken(token, description: error!.localizedDescription))
-                        return false
-                    default:
+                        let inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
                         if inheritableSectionName != closedInheritableSectionName {
                             state = .Error(parseErrorAtToken(token, description: "Unmatched closing tag"))
+                            return false
+                        }
+                    } catch let error as NSError {
+                        if empty == false {
+                            state = .Error(parseErrorAtToken(token, description: error.localizedDescription))
                             return false
                         }
                     }
@@ -344,17 +299,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 }
                 
             case .Partial(content: let content):
-                var error: NSError?
                 var empty: Bool = false
-                if let partialName = partialNameFromString(content, inToken: token, empty: &empty),
-                   let partialTemplateAST = repository.templateAST(named: partialName, relativeToTemplateID: templateID)
-                {
+                do {
+                    let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    let partialTemplateAST = try repository.templateAST(named: partialName, relativeToTemplateID: templateID)
                     let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
                     compilationState.currentScope.appendNode(partialNode)
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     return true
-                } else {
-                    state = .Error(error!)
+                } catch let error as NSError {
+                    state = .Error(error)
                     return false
                 }
             }

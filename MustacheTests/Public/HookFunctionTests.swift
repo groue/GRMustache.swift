@@ -142,7 +142,7 @@ class HookFunctionTests: XCTestCase {
             renderedValue = box
             return box
         }
-        let filter = { (string: String?, error: NSErrorPointer) -> MustacheBox? in
+        let filter = { (string: String?) -> MustacheBox in
             return Box(string?.uppercaseString)
         }
         
@@ -251,7 +251,7 @@ class HookFunctionTests: XCTestCase {
         var error: NSError?
         let rendering: String?
         do {
-            rendering = try template.render(Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+            rendering = try template.render(Box({ (info: RenderingInfo) -> Rendering in
                         error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
                         return nil
                     }))
@@ -370,7 +370,7 @@ class HookFunctionTests: XCTestCase {
             })
         }
         
-        var render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        var render = { (info: RenderingInfo) -> Rendering in
             return Rendering("&you")
         }
         var box = Box(["object": Box(render), "observer": Box(willRender)])
@@ -378,7 +378,7 @@ class HookFunctionTests: XCTestCase {
         var rendering = try! template.render(box)
         XCTAssertEqual(rendering, "&amp;YOU")
         
-        render = { (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
+        render = { (info: RenderingInfo) -> Rendering in
                 return Rendering("&you", .HTML)
             }
         box = Box(["object": Box(render), "observer": Box(willRender)])

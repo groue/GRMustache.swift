@@ -55,16 +55,9 @@ class HTMLEscape : MustacheBoxable {
             // {{ value }}
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box({ (info: RenderingInfo, error: NSErrorPointer) -> Rendering? in
-                if let rendering = box.render(info: info, error: error) {
-                    do {
-                        return try self.filter(rendering)
-                    } catch _ {
-                        return nil
-                    }
-                } else {
-                    return nil
-                }
+            return Box({ (info: RenderingInfo) -> Rendering in
+                let rendering = try box.render(info: info)
+                return try self.filter(rendering)
             })
         case .Section:
             // {{# value }}...{{/ value }}
