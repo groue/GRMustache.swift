@@ -163,7 +163,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw parseErrorAtToken(token, description: error.localizedDescription)
                             }
                         }
-                        if expression != closedExpression {
+                        if expression != nil && expression != closedExpression {
                             throw parseErrorAtToken(token, description: "Unmatched closing tag")
                         }
                         
@@ -191,7 +191,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw parseErrorAtToken(token, description: error.localizedDescription)
                             }
                         }
-                        if expression != closedExpression {
+                        if expression != nil && expression != closedExpression {
                             throw parseErrorAtToken(token, description: "Unmatched closing tag")
                         }
                         
@@ -219,7 +219,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw error
                             }
                         }
-                        if (partialName != inheritedPartialName) {
+                        if partialName != nil && partialName != inheritedPartialName {
                             throw parseErrorAtToken(token, description: "Unmatched closing tag")
                         }
                         
@@ -249,7 +249,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw parseErrorAtToken(token, description: error.localizedDescription)
                             }
                         }
-                        if inheritableSectionName != closedInheritableSectionName {
+                        if inheritableSectionName != nil && inheritableSectionName != closedInheritableSectionName {
                             throw parseErrorAtToken(token, description: "Unmatched closing tag")
                         }
                         

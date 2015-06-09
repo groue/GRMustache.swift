@@ -136,35 +136,31 @@ class SuiteTestCase: XCTestCase {
                 } else if let templateString = templateString {
                     var templates: [Template] = []
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
-                        var error: NSError?
                         do {
                             let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
-                        } catch let caughtError as NSError {
-                            error = caughtError
+                        } catch let error as NSError {
+                            testError(error, replayOnFailure: {
+                                do {
+                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
+                                } catch {
+                                    // ignore error on replay
+                                }
+                            })
                         }
-                        testError(error, replayOnFailure: {
-                            do {
-                                try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
-                            } catch {
-                                // ignore error on replay
-                            }
-                        })
                         
-                        error = nil
                         do {
                             let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
-                        } catch let caughtError as NSError {
-                            error = caughtError
+                        } catch let error as NSError {
+                            testError(error, replayOnFailure: {
+                                do {
+                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                                } catch {
+                                    // ignore error on replay
+                                }
+                            })
                         }
-                        testError(error, replayOnFailure: {
-                            do {
-                                try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
-                            } catch {
-                                // ignore error on replay
-                            }
-                        })
                     }
                     return templates
                 } else {
@@ -177,20 +173,18 @@ class SuiteTestCase: XCTestCase {
                     return []
                 } else if let templateString = templateString {
                     var templates: [Template] = []
-                    var error: NSError?
                     do {
                         let template = try TemplateRepository().template(string: templateString)
                         templates.append(template)
-                    } catch let caughtError as NSError {
-                        error = caughtError
+                    } catch let error as NSError {
+                        testError(error, replayOnFailure: {
+                            do {
+                                try TemplateRepository().template(string: templateString)
+                            } catch {
+                                // ignore error on replay
+                            }
+                        })
                     }
-                    testError(error, replayOnFailure: {
-                        do {
-                            try TemplateRepository().template(string: templateString)
-                        } catch {
-                            // ignore error on replay
-                        }
-                    })
                     return templates
                 } else {
                     XCTFail("Missing `template` and `template_name` in \(description)")
@@ -243,9 +237,10 @@ class SuiteTestCase: XCTestCase {
                         replayBlock()
                     }
                 } else {
-                    XCTAssertNotNil(error, "Expected parsing error in \(description)")
+                    XCTAssertNotNil(error, "Expected error in \(description)")
+                    replayBlock()
                 }
-            } else {
+            } else if let error = error {
                 XCTFail("Unexpected error in \(description): \(error)")
                 replayBlock()
             }

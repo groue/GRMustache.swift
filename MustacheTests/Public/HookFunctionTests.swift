@@ -353,8 +353,8 @@ class HookFunctionTests: XCTestCase {
     
     func testWillRenderFunctionCanProcessRenderFunction() {
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            return Box({ (info, error) -> Rendering? in
-                let rendering = box.render(info: info, error: error)!
+            return Box({ (info) -> Rendering in
+                let rendering = try box.render(info: info)
                 return Rendering(rendering.string.uppercaseString, rendering.contentType)
             })
         }

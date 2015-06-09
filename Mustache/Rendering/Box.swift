@@ -587,53 +587,54 @@ type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps `collection`
 */
-//public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-//    if let collection = collection {
-//        let count = collection.count // C.Index.Distance == Int
-//        return MustacheBox(
-//            boolValue: (count > 0),
-//            value: collection,
-//            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
-//            keyedSubscript: { (key: String) in
-//                switch key {
-//                case "count":
-//                    // Support for both Objective-C and Swift arrays.
-//                    return Box(count)
-//                    
-//                case "firstObject", "first":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.startIndex])
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                case "lastObject", "last":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                default:
-//                    return Box()
-//                }
-//            },
-//            render: { (info: RenderingInfo) in
-//                if info.enumerationItem {
-//                    // {{# collections }}...{{/ collections }}
-//                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-//                } else {
-//                    // {{ collection }}
-//                    // {{# collection }}...{{/ collection }}
-//                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
-//                }
-//        })
-//    } else {
-//        return Box()
-//    }
-//}
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+    if let collection = collection {
+        let count = collection.count // C.Index.Distance == Int
+        return MustacheBox(
+            boolValue: (count > 0),
+            value: collection,
+            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
+            keyedSubscript: { (key: String) in
+                switch key {
+                case "count":
+                    // Support for both Objective-C and Swift arrays.
+                    return Box(count)
+                    
+                case "firstObject", "first":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.startIndex])
+                    } else {
+                        return Box()
+                    }
+                    
+                case "lastObject", "last":
+                    // Support for both Objective-C and Swift arrays.
+                    if count > 0 {
+                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
+                    } else {
+                        return Box()
+                    }
+                    
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(Box(collection)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
+                }
+            }
+        )
+    } else {
+        return Box()
+    }
+}
 
 /**
 A collection of optional values that conform to the `MustacheBoxable` protocol
