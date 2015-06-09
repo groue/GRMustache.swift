@@ -248,20 +248,15 @@ class HookFunctionTests: XCTestCase {
         let template = try! Template(string: "-{{.}}-")
         template.baseContext = template.baseContext.extendedContext(Box(didRender))
         failedRendering = false
-        var error: NSError?
-        let rendering: String?
         do {
-            rendering = try template.render(Box({ (info: RenderingInfo) -> Rendering in
-                        error.memory = NSError(domain: "TagObserverError", code: 1, userInfo: nil)
-                        return nil
-                    }))
-        } catch var error1 as NSError {
-            error = error1
-            rendering = nil
+            try template.render(Box({ (info: RenderingInfo) -> Rendering in
+                throw NSError(domain: "TagObserverError", code: 1, userInfo: nil)
+            }))
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, "TagObserverError")
+            XCTAssertEqual(error.code, 1)
         }
-        XCTAssertNil(rendering)
-        XCTAssertEqual(error!.domain, "TagObserverError")
-        XCTAssertEqual(error!.code, 1)
         XCTAssertTrue(failedRendering)
     }
     
@@ -324,10 +319,7 @@ class HookFunctionTests: XCTestCase {
             "observer3": Box(willRender: willRender3, didRender: didRender3),
             "observed": Box("observed")
             ])
-        do {
-            try template.render(box)
-        } catch _ {
-        }
+        try! template.render(box)
         
         XCTAssertEqual(willRenderIndex1, 2)
         XCTAssertEqual(willRenderIndex2, 1)
@@ -353,10 +345,7 @@ class HookFunctionTests: XCTestCase {
         
         let template = try! Template(string: "{{#items}}{{.}}{{/items}}")
         let box = Box(["items": Box([Box(willRender1), Box(willRender2)])])
-        do {
-            try template.render(box)
-        } catch _ {
-        }
+        try! template.render(box)
         
         XCTAssertTrue(willRenderCalled1)
         XCTAssertTrue(willRenderCalled2)

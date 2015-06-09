@@ -406,11 +406,11 @@ final public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-            if let value = templates[templateID] {
-                return value
+            if let string = templates[templateID] {
+                return string
+            } else {
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: nil)
             }
-            throw error
         }
     }
     

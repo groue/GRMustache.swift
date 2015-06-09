@@ -92,9 +92,9 @@ class VariadicFilterTests: XCTestCase {
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return boxes.first
-        })
+        let filter = VariadicFilter { (boxes) -> MustacheBox in
+            return boxes.first!
+        }
         let box = Box([
             "yes": Box(true),
             "no": Box(false),
@@ -104,19 +104,9 @@ class VariadicFilterTests: XCTestCase {
         XCTAssertEqual(rendering, "YES NO")
     }
     
-    func testVariadicFilterThatReturnNilCanBeUsedInBooleanSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return nil
-        })
-        let box = Box(["f": Box(filter)])
-        let template = try! Template(string:"{{^f(x)}}nil{{/}}")
-        let rendering = try! template.render(box)
-        XCTAssertEqual(rendering, "nil")
-    }
-    
     func testImplicitIteratorCanBeVariadicFilterArgument() {
         let box = Box([
-            "f": Box(VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
+            "f": Box(VariadicFilter { (boxes) -> MustacheBox in
                 var result = ""
                 for box in boxes {
                     if let dictionary = box.dictionaryValue {
@@ -124,7 +114,7 @@ class VariadicFilterTests: XCTestCase {
                     }
                 }
                 return Box(result)
-            })),
+            }),
             "foo": Box(["a": "a", "b": "b", "c": "c"])
             ])
         let template = try! Template(string:"{{f(foo,.)}} {{f(.,foo)}}")

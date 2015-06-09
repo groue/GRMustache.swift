@@ -148,12 +148,9 @@ extension StandardLibrary {
             formatArguments = []
                 
                 
-            do {
-                // Render again
+            // Render again
                 
-            try info.tag.render(context)
-            } catch _ {
-            }
+            try! info.tag.render(context)
                 
                 
             let rendering: Rendering

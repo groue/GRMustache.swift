@@ -131,28 +131,28 @@ class ConfigurationBaseContextTests: XCTestCase {
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
+        var rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
         
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
-        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
+        rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
     }
     
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
+        var rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
         
         repository.configuration.baseContext = Context(Box(["foo": "failure"]))
-        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
+        rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
         
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "failure"]))
         repository.configuration = configuration
-        rendering = try! (try! repository.template(string: "{{^foo}}success{{/foo}}")).render()
+        rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
     }
 }

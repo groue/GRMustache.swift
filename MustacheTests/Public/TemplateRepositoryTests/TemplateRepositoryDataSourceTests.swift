@@ -32,10 +32,9 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                 return name
             }
             func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-                var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
                 switch templateID {
                 case "not_found":
-                    throw error
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: nil)
                 case "error":
                     throw NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
                 default:
@@ -45,52 +44,31 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         }
         
         let repo = TemplateRepository(dataSource: TestedDataSource())
+        var template: Template
+        var rendering: String
         
-        var error: NSError?
-        var template: Template?
-        do {
-            template = try repo.template(named: "foo")
-        } catch _ {
-            template = nil
-        }
-        var rendering: String?
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "foo")
+        template = try! repo.template(named: "foo")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "foo")
+        
+        template = try! repo.template(string: "{{>foo}}")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "foo")
         
         do {
-            template = try repo.template(string: "{{>foo}}")
-        } catch _ {
-            template = nil
+            try repo.template(string: "{{>not_found}}")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "foo")
         
         do {
-            template = try repo.template(string: "{{>not_found}}")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try repo.template(string: "{{>error}}")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, "TestedDataSource")
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
-        
-        do {
-            template = try repo.template(string: "{{>error}}")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
-        }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, "TestedDataSource")
     }
     
 }

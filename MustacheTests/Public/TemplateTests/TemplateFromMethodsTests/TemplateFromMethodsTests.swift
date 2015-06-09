@@ -65,7 +65,6 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func valueForKey(key: String, inRendering rendering: String) -> AnyObject? {
         let data = rendering.dataUsingEncoding(NSUTF8StringEncoding)!
-        var error: NSError?
         let object: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
         return object.valueForKey(key)
     }
@@ -108,188 +107,156 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     func testParserErrorFromString() {
-        var error: NSError?
-        let template: Template?
         do {
-            template = try Template(string: parserErrorTemplateString)
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try Template(string: parserErrorTemplateString)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
     func testParserErrorFromPath() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(path: parserErrorTemplatePath, error: &error)
-        } catch _ {
-            template = nil
+            try Template(path: parserErrorTemplatePath)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         do {
-            template = try Template(path: parserErrorTemplateWrapperPath, error: &error)
-        } catch _ {
-            template = nil
+            try Template(path: parserErrorTemplateWrapperPath)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
     
     func testParserErrorFromURL() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(URL: parserErrorTemplateURL, error: &error)
-        } catch _ {
-            template = nil
+            try Template(URL: parserErrorTemplateURL)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         do {
-            template = try Template(URL: parserErrorTemplateWrapperURL, error: &error)
-        } catch _ {
-            template = nil
+            try Template(URL: parserErrorTemplateWrapperURL)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
     
     func testParserErrorFromResource() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(named: parserErrorTemplateName, bundle: testBundle, error: &error)
-        } catch _ {
-            template = nil
+            try Template(named: parserErrorTemplateName, bundle: testBundle)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         
         do {
-            template = try Template(named: parserErrorTemplateWrapperName, bundle: testBundle, error: &error)
-        } catch _ {
-            template = nil
+            try Template(named: parserErrorTemplateWrapperName, bundle: testBundle)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
     }
     
     func testCompilerErrorFromString() {
-        var error: NSError?
-        let template: Template?
         do {
-            template = try Template(string: compilerErrorTemplateString)
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try Template(string: compilerErrorTemplateString)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
     }
     
     func testCompilerErrorFromPath() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(path: compilerErrorTemplatePath, error: &error)
-        } catch _ {
-            template = nil
+            try Template(path: compilerErrorTemplatePath)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         do {
-            template = try Template(path: compilerErrorTemplateWrapperPath, error: &error)
-        } catch _ {
-            template = nil
+            try Template(path: compilerErrorTemplateWrapperPath)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }
     
     func testCompilerErrorFromURL() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(URL: compilerErrorTemplateURL, error: &error)
-        } catch _ {
-            template = nil
+            try Template(URL: compilerErrorTemplateURL)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         do {
-            template = try Template(URL: compilerErrorTemplateWrapperURL, error: &error)
-        } catch _ {
-            template = nil
+            try Template(URL: compilerErrorTemplateWrapperURL)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }
     
     func testCompilerErrorFromResource() {
-        var error: NSError?
-        var template: Template?
         do {
-            template = try Template(named: compilerErrorTemplateName, bundle: testBundle, error: &error)
-        } catch _ {
-            template = nil
+            try Template(named: compilerErrorTemplateName, bundle: testBundle)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         
         do {
-            template = try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle, error: &error)
-        } catch _ {
-            template = nil
+            try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle)
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeParseError)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString("line 2") != nil)
-        XCTAssertTrue(error!.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
     }
 }

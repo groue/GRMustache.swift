@@ -29,28 +29,21 @@ class TemplateRepositoryTests: XCTestCase {
     func testTemplateRepositoryWithoutDataSourceCanNotLoadPartialTemplate() {
         let repo = TemplateRepository()
         
-        var error: NSError? = nil
-        var template: Template?
         do {
-            template = try repo.template(named:"partial")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try repo.template(named:"partial")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
         
-        error = nil
         do {
-            template = try repo.template(string:"{{>partial}}")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try repo.template(string:"{{>partial}}")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
     }
 
     func testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate() {
@@ -85,21 +78,21 @@ class TemplateRepositoryTests: XCTestCase {
                 return name
             }
             func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-                var error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-                if var value = templates[templateID] {
-                    return value
+                if let string = templates[templateID] {
+                    return string
+                } else {
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: nil)
                 }
-                throw error
             }
             func setTemplateString(templateString: String, forKey key: String) {
                 templates[key] = templateString
             }
         }
         
-        var templates = [
+        let templates = [
             "template": "foo{{>partial}}",
             "partial": "bar"]
-        var dataSource = TestedDataSource(templates: templates)
+        let dataSource = TestedDataSource(templates: templates)
         let repo = TemplateRepository(dataSource: dataSource)
         
         var template = try! repo.template(named: "template")

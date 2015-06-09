@@ -31,7 +31,7 @@ class EachFilterTests: XCTestCase {
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering.characters) != nil)
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
     }
     
     func testEachFilterEnumeratesNSSet() {
@@ -39,7 +39,7 @@ class EachFilterTests: XCTestCase {
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering.characters) != nil)
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
     }
     
     func testEachFilterTriggersRenderFunctionsInArray() {
@@ -67,7 +67,7 @@ class EachFilterTests: XCTestCase {
     }
     
     func testEachFilterDoesNotMessWithItemValues() {
-        let increment = Filter { (int: Int?, _) -> MustacheBox? in
+        let increment = Filter { (int: Int?) -> MustacheBox in
             return Box(int! + 1)
         }
         let items = [1,2,3]

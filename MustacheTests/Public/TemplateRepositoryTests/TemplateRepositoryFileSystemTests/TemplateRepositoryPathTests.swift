@@ -30,66 +30,30 @@ class TemplateRepositoryPathTests: XCTestCase {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
-        var template: Template?
-        var error: NSError?
-        var rendering: String?
+        var template: Template
+        var rendering: String
         
         do {
-            template = try repo.template(named: "notFound")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try repo.template(named: "notFound")
+            XCTAssert(false)
+        } catch {
         }
-        XCTAssertNil(template)
-        XCTAssertNotNil(error)
         
-        do {
-            template = try repo.template(named: "file1")
-        } catch _ {
-            template = nil
-        }
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
+        template = try! repo.template(named: "file1")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        do {
-            template = try repo.template(string: "{{>file1}}")
-        } catch _ {
-            template = nil
-        }
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
+        template = try! repo.template(string: "{{>file1}}")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        do {
-            template = try repo.template(string: "{{>dir/file1}}")
-        } catch _ {
-            template = nil
-        }
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "dir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n")
+        template = try! repo.template(string: "{{>dir/file1}}")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "dir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n")
         
-        do {
-            template = try repo.template(string: "{{>dir/dir/file1}}")
-        } catch _ {
-            template = nil
-        }
-        do {
-            rendering = try template?.render()
-        } catch _ {
-            rendering = nil
-        }
-        XCTAssertEqual(rendering!, "dir/dir/é1.mustache\ndir/dir/é2.mustache\n\n")
+        template = try! repo.template(string: "{{>dir/dir/file1}}")
+        rendering = try! template.render()
+        XCTAssertEqual(rendering, "dir/dir/é1.mustache\ndir/dir/é2.mustache\n\n")
     }
     
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
@@ -154,16 +118,12 @@ class TemplateRepositoryPathTests: XCTestCase {
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
         
-        var error: NSError?
-        let badTemplate: Template?
         do {
-            badTemplate = try repo.template(named: "up")
-        } catch var error1 as NSError {
-            error = error1
-            badTemplate = nil
+            try repo.template(named: "up")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        XCTAssertNil(badTemplate)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
     }
 }

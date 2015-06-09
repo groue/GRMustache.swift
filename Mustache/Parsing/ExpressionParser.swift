@@ -26,8 +26,6 @@ import Foundation
 final class ExpressionParser {
     
     func parse(string: String, inout empty outEmpty: Bool) throws -> Expression {
-        let error: NSError! = NSError(domain: "Migrator", code: 0, userInfo: nil)
-        
         enum State {
             case Error(String)
             case Initial
@@ -305,7 +303,5 @@ final class ExpressionParser {
         default:
             fatalError("Unexpected state")
         }
-        
-        throw error
     }
 }

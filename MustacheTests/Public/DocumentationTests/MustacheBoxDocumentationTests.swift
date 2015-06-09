@@ -49,11 +49,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
                 // Extend the current context with ["value": "foo"], and proceed
                 // with regular rendering of the inner content of the section.
                 let context = info.context.extendedContext(Box(["value": "foo"]))
-                do {
-                    return try info.tag.render(context)
-                } catch _ {
-                    return nil
-                }
+                return try info.tag.render(context)
             }
         }
         let data = ["object": Box(render)]

@@ -330,11 +330,11 @@ set error to an NSError of domain `GRMustacheErrorDomain` and code
 - parameter filter: a function `(boxes: [MustacheBox]) throws -> Rendering`
 - returns: a FilterFunction
 */
-public func VariadicFilter(filter: (boxes: [MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
     return _VariadicFilter([], filter: filter)
 }
 
-private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+private func _VariadicFilter(boxes: [MustacheBox], filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         let boxes = boxes + [box]
         if partialApplication {
@@ -342,7 +342,7 @@ private func _VariadicFilter(boxes: [MustacheBox], filter: (boxes: [MustacheBox]
             return Box(_VariadicFilter(boxes, filter: filter))
         } else {
             // No more argument: compute final value
-            return try filter(boxes: boxes)
+            return try filter(boxes)
         }
     }
 }
@@ -484,12 +484,9 @@ section has already been parsed with its template. You may prefer the raw
 
 TODO: rewrite example below in Swift 2
 
-    let bold: RenderFunction = { (info: RenderingInfo, error: NSErrorPointer) in
-        if let rendering = info.tag.render(info.context, error: error) {
-            return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
-        } else {
-            return nil
-        }
+    let bold: RenderFunction = { (info: RenderingInfo) in
+        let rendering = try info.tag.render(info.context) {
+        return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
     }
     let data = [
         "name": Box("Clark Gable"),

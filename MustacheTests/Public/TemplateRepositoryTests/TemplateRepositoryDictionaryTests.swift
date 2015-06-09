@@ -32,43 +32,31 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
             "b": "B{{>c}}",
             "c": "C"]
         let repo = TemplateRepository(templates: templates)
-        
-        var error: NSError?
-        var template: Template?
-        do {
-            template = try repo.template(named: "not_found")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
-        }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+        var template: Template
+        var rendering: String
         
         do {
-            template = try repo.template(string: "{{>not_found}}")
-        } catch var error1 as NSError {
-            error = error1
-            template = nil
+            try repo.template(named: "not_found")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        XCTAssertNil(template)
-        XCTAssertEqual(error!.domain, GRMustacheErrorDomain)
-        XCTAssertEqual(error!.code, GRMustacheErrorCodeTemplateNotFound)
+        
+        do {
+            try repo.template(string: "{{>not_found}}")
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
+        }
 
-        do {
-            template = try repo.template(named: "a")
-        } catch _ {
-            template = nil
-        }
-        var rendering = try! template!.render()
+        template = try! repo.template(named: "a")
+        rendering = try! template.render()
         XCTAssertEqual(rendering, "ABC")
         
-        do {
-            template = try repo.template(string: "{{>a}}")
-        } catch _ {
-            template = nil
-        }
-        rendering = try! template!.render()
+        template = try! repo.template(string: "{{>a}}")
+        rendering = try! template.render()
         XCTAssertEqual(rendering, "ABC")
     }
     

@@ -302,28 +302,28 @@ class ConfigurationContentTypeTests: XCTestCase {
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
+        var rendering = try! repository.template(string: "{{.}}").render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         DefaultConfiguration.contentType = .Text
-        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
+        rendering = try! repository.template(string: "{{.}}").render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
     
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
+        var rendering = try! repository.template(string: "{{.}}").render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         repository.configuration.contentType = .Text
-        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
+        rendering = try! repository.template(string: "{{.}}").render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
         
         var configuration = Configuration()
         configuration.contentType = .Text
         repository.configuration = configuration
-        rendering = try! (try! repository.template(string: "{{.}}")).render(Box("&"))
+        rendering = try! repository.template(string: "{{.}}").render(Box("&"))
         XCTAssertEqual(rendering, "&amp;")
     }
 }

@@ -50,10 +50,7 @@ class ContextTests: XCTestCase {
         }
         let template = try! Template(string: "{{success}}")
         template.baseContext = Context(Box(willRender))
-        do {
-            try template.render()
-        } catch _ {
-        }
+        try! template.render()
         XCTAssertTrue(success)
     }
     
