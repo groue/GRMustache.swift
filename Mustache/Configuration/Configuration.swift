@@ -49,7 +49,7 @@ You setup a configuration *before* loading templates:
     Mustache.DefaultConfiguration.contentType = .Text
     
     // A text template
-    let template = Template(string: "...")
+    let template = try! Template(string: "...")
 
 
 ### Configuration levels
@@ -61,7 +61,7 @@ There are three levels of configuration:
     Mustache.DefaultConfiguration.contentType = .Text
 
     // A text template
-    let template = Template(named: "Document")
+    let template = try! Template(named: "Document")
 
 `TemplateRepository.configuration` only applies to templates loaded from the
 template repository:
@@ -70,7 +70,7 @@ template repository:
     repository.configuration.contentType = .Text
 
     // A text template
-    let template = repository.template(named: "Document")
+    let template = try! repository.template(named: "Document")
 
 Templates can also be configured individually. See the documentation of each
 Configuration method for more details.
@@ -130,13 +130,13 @@ public struct Configuration {
         // Globally, with Mustache.DefaultConfiguration:
     
         Mustache.DefaultConfiguration.contentType = .Text
-        let textTemplate = Template(named: "Script")!
+        let textTemplate = try! Template(named: "Script")
     
         // Locally, using a TemplateRepository:
     
         let repository = TemplateRepository(bundle: NSBundle.mainBundle())
         repository.configuration.contentType = .HTML
-        let HTMLTemplate = repository.template(named: "HTMLDocument")!
+        let HTMLTemplate = try! repository.template(named: "HTMLDocument")
     
     In order to set the content type of an individual templates, use pragma tags
     right in the content of your templates:
@@ -174,8 +174,8 @@ public struct Configuration {
         Mustache.DefaultConfiguration.baseContext = Context(Box(["foo": "bar"]))
 
         // "bar"
-        let template1 = Template(string: "{{foo}}")!
-        template1.render()!
+        let template1 = try! Template(string: "{{foo}}")
+        try! template1.render()
     
         // Locally, using a TemplateRepository:
         
@@ -183,16 +183,16 @@ public struct Configuration {
         repository.configuration.baseContext = Context(Box(["foo": "bar"]))
         
         // "bar"
-        let template2 = repository.template(string: "{{foo}}")!
-        template2.render()!
+        let template2 = try! repository.template(string: "{{foo}}")
+        try! template2.render()
     
     The base context can also be set for individual templates:
 
-        let template3 = Template(string: "{{foo}}")!
+        let template3 = try! Template(string: "{{foo}}")
         template3.baseContext = Context(Box(["foo": "bar"]))
         
         // "bar"
-        template3.render()!
+        try! template3.render()
 
     :see: extendBaseContext
     :see: registerInBaseContext
@@ -208,8 +208,8 @@ public struct Configuration {
         Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
 
         // "bar"
-        let template1 = Template(string: "{{foo}}")!
-        template1.render()!
+        let template1 = try! Template(string: "{{foo}}")
+        try! template1.render()
     
         // Locally, using a TemplateRepository:
         
@@ -217,16 +217,16 @@ public struct Configuration {
         repository.configuration.extendBaseContext(Box(["foo": "bar"]))
         
         // "bar"
-        let template2 = repository.template(string: "{{foo}}")!
-        template2.render()!
+        let template2 = try! repository.template(string: "{{foo}}")
+        try! template2.render()
     
     The base context can also be extended for individual templates:
 
-        let template3 = Template(string: "{{foo}}")!
+        let template3 = try! Template(string: "{{foo}}")
         template3.extendBaseContext(Box(["foo": "bar"]))
         
         // "bar"
-        template3.render()!
+        try! template3.render()
 
     - parameter box: The box pushed on the top of the context stack
     
@@ -248,11 +248,11 @@ public struct Configuration {
         Mustache.DefaultConfiguration.registerInBaseContext("foo", Box("bar"))
 
         // Renders "bar"
-        let template1 = Template(string: "{{foo}}")!
-        template1.render()!
+        let template1 = try! Template(string: "{{foo}}")
+        try! template1.render()
 
         // Renders "bar" again, because the registered key "foo" has priority.
-        template1.render(Box(["foo": "qux"]))!
+        try! template1.render(Box(["foo": "qux"]))
     
         // Locally, using a TemplateRepository:
         
@@ -260,16 +260,16 @@ public struct Configuration {
         repository.configuration.registerInBaseContext("foo", Box("bar"))
         
         // "bar"
-        let template2 = repository.template(string: "{{foo}}")!
-        template2.render()!
+        let template2 = try! repository.template(string: "{{foo}}")
+        try! template2.render()
     
     Keys can also be registered in the base context of individual templates:
 
-        let template3 = Template(string: "{{foo}}")!
+        let template3 = try! Template(string: "{{foo}}")
         template3.registerInBaseContext("foo", Box("bar"))
         
         // "bar"
-        template3.render()!
+        try! template3.render()
 
     
     - parameter key: An identifier
@@ -298,13 +298,13 @@ public struct Configuration {
         // Globally, with Mustache.DefaultConfiguration:
     
         Mustache.DefaultConfiguration.tagDelimiterPair = ("<%", "%>")
-        let template1 = Template(string: "<% name %>)!
+        let template1 = try! Template(string: "<% name %>)
     
         // Locally, using a TemplateRepository:
     
         let repository = TemplateRepository(bundle: NSBundle.mainBundle())
         repository.configuration.tagDelimiterPair = ("[[", "]]")
-        let HTMLTemplate = repository.template(string: "[[ name ]]")!
+        let HTMLTemplate = try! repository.template(string: "[[ name ]]")
     
     You can also change the delimiters right in your templates using a "Set
     Delimiter tag": `{{=[[ ]]=}}` changes delimiters to `[[` and `]]`.
