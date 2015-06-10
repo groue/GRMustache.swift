@@ -33,7 +33,7 @@ feed templates:
 
 - Basic Swift values:
 
-        `template.render(Box("foo"))`
+        template.render(Box("foo"))
 
 - Dictionaries & collections:
 
@@ -47,12 +47,12 @@ feed templates:
 - Functions such as `FilterFunction`, `RenderFunction`, `WillRenderFunction` and
   `DidRenderFunction`:
 
-        let square = Filter { (x?: Int, _) in Box(x! * x!) }
+        let square = Filter { (x: Int?) in Box(x! * x!) }
         template.registerInBaseContext("square", Box(square))
 
 Warning: the fact that `MustacheBox` is a subclass of NSObject is an
-implementation detail that is enforced by the Swift 1.2 language itself. This
-may change in the future: do not rely on it.
+implementation detail that is enforced by the Swift 2 language itself. This may
+change in the future: do not rely on it.
 */
 public class MustacheBox : NSObject {
     
@@ -237,12 +237,7 @@ public class MustacheBox : NSObject {
     }
     
     // Converter wraps all the conversion closures that help MustacheBox expose
-    // its raw value (typed Any) as useful types such as Int, Double, etc.
-    //
-    // Without those conversions, it would be very difficult for the library
-    // user to write code that processes, for example, a boxed number: she
-    // would have to try casting the boxed value to Int, UInt, Double, NSNumber
-    // etc. until she finds its actual type.
+    // its raw value (typed Any) as useful types.
     struct Converter {
         let arrayValue: (() -> [MustacheBox]?)
         let dictionaryValue: (() -> [String: MustacheBox]?)
@@ -254,54 +249,6 @@ public class MustacheBox : NSObject {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
         }
-        
-        
-        // IMPLEMENTATION NOTE
-        //
-        // It looks like Swift does not provide any way to perform a safe
-        // conversion between its numeric types.
-        //
-        // For example, there exists a UInt(Int) initializer, but it fails
-        // with EXC_BAD_INSTRUCTION when given a negative Int.
-        //
-        // So we implement below our own numeric conversion functions.
-        
-        static func uint(x: Int) -> UInt? {
-            if x >= 0 {
-                return UInt(x)
-            } else {
-                return nil
-            }
-        }
-        
-        static func uint(x: Double) -> UInt? {
-            if x == Double(UInt.max) {
-                return UInt.max
-            } else if x >= 0 && x < Double(UInt.max) {
-                return UInt(x)
-            } else {
-                return nil
-            }
-        }
-        
-        static func int(x: UInt) -> Int? {
-            if x <= UInt(Int.max) {
-                return Int(x)
-            } else {
-                return nil
-            }
-        }
-        
-        static func int(x: Double) -> Int? {
-            if x == Double(Int.max) {
-                return Int.max
-            } else if x >= Double(Int.min) && x < Double(Int.max) {
-                return Int(x)
-            } else {
-                return nil
-            }
-        }
-
     }
 }
 
