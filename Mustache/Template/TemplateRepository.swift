@@ -118,7 +118,7 @@ final public class TemplateRepository {
     any `{{> partial }}` tag.
     
         let repository = TemplateRepository()
-        let template = repository.template(string: "Hello {{name}}")!
+        let template = try! repository.template(string: "Hello {{name}}")
     */
     public init(dataSource: TemplateRepositoryDataSource? = nil) {
         configuration = DefaultConfiguration
@@ -133,8 +133,8 @@ final public class TemplateRepository {
         let repository = TemplateRepository(templates: templates)
 
         // Renders "Hulk Hogan has a Mustache." twice
-        repository.template(named: "template")!.render()!
-        repository.template(string: "{{>template}}")!.render()!
+        try! repository.template(named: "template").render()
+        try! repository.template(string: "{{>template}}").render()
     
     - parameter templates: A dictionary whose keys are template names and values
                       template strings.
@@ -149,7 +149,7 @@ final public class TemplateRepository {
         let repository = TemplateRepository(directoryPath: "/path/to/templates")
 
         // Loads /path/to/templates/template.mustache
-        let template = repository.template(named: "template")!
+        let template = try! repository.template(named: "template")
 
     
     Eventual partial tags in template files refer to sibling template files.
@@ -188,7 +188,7 @@ final public class TemplateRepository {
         let repository = TemplateRepository(baseURL: templatesURL)
 
         // Loads /path/to/templates/template.mustache
-        let template = repository.template(named: "template")!
+        let template = try! repository.template(named: "template")
     
     
     Eventual partial tags in template files refer to sibling template files.
@@ -226,7 +226,7 @@ final public class TemplateRepository {
         let repository = TemplateRepository(bundle: nil)
 
         // Loads the template.mustache resource of the main bundle:
-        let template = repository.template(named: "template")!
+        let template = try! repository.template(named: "template")
     
     - parameter bundle:            The bundle that stores templates as resources.
                               Nil stands for the main bundle.
@@ -257,10 +257,10 @@ final public class TemplateRepository {
         repository.configuration.tagDelimiterPair = ("<%", "%>")
 
         // Renders "Hello Luigi"
-        let template = repository.template(string: "Hello <%name%>")!
-        template.render(Box(["name": "Luigi"]))!
+        let template = try! repository.template(string: "Hello <%name%>")
+        try! template.render(Box(["name": "Luigi"]))
     
-    **Important**: changing the configuration has no effect after the repository
+    **Warning**: changing the configuration has no effect after the repository
     has loaded one template.
     */
     public var configuration: Configuration
@@ -323,11 +323,11 @@ final public class TemplateRepository {
     Clears the cache of parsed template strings.
     
         // May reuse a cached parsing:
-        let template = repository.template(named:"profile")!
+        let template = try! repository.template(named:"profile")
 
         // Forces the reloading of the template:
         repository.reloadTemplates();
-        let template = repository.template(named:"profile")!
+        let template = try! repository.template(named:"profile")
     
     Warning: previously created Template instances are not reloaded.
     */
