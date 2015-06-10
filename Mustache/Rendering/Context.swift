@@ -33,14 +33,14 @@ The top of the context stack is called the "current context". It is the value
 rendered by the `{{.}}` tag:
 
     // Renders "Kitty, Pussy, Melba, "
-    let template = Template(string: "{{#cats}}{{.}}, {{/cats}}")!
-    template.render(Box(["cats": ["Kitty", "Pussy", "Melba"]]))!
+    let template = try! Template(string: "{{#cats}}{{.}}, {{/cats}}")
+    try! template.render(Box(["cats": ["Kitty", "Pussy", "Melba"]]))
 
 Key lookup starts with the current context and digs down the stack until if
 finds a value:
 
     // Renders "<child>, <parent>, "
-    let template = Template(string: "{{#children}}<{{name}}>, {{/children}}")!
+    let template = try! Template(string: "{{#children}}<{{name}}>, {{/children}}")
     let data = [
       "name": "parent",
       "children": [
@@ -48,7 +48,7 @@ finds a value:
           [:]    // a child without a name
       ]
     ]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 :see: Configuration
 :see: TemplateRepository
@@ -189,7 +189,7 @@ final public class Context {
         let context = Context(Box(data))
 
         // "Albert Einstein"
-        context.boxForMustacheExpression("person.name")!.value
+        try! context.boxForMustacheExpression("person.name").value
     
     - parameter string: The expression string
     - parameter error:  If there is a problem parsing or evaluating the expression,
