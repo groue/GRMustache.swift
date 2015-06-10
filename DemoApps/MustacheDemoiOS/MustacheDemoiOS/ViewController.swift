@@ -15,8 +15,8 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        let template = Template(named: "Document")!
-        let rendering = template.render()!
+        let template = try! Template(named: "Document")
+        let rendering = try! template.render()
         webView.loadHTMLString(rendering, baseURL: nil)
     }
 }
