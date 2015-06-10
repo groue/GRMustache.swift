@@ -26,8 +26,8 @@ class ViewController: NSViewController {
     }
     
     @IBAction func render(sender: AnyObject) {
-        var error: NSError?
-        if let template = Template(string: model.templateString, error: &error) {
+        do {
+            let template = try Template(string: model.templateString)
 
             // Uncomment and play with those goodies in your templates:
             // They are documented at https://github.com/groue/GRMustache.swift/blob/master/Guides/goodies.md
@@ -43,15 +43,13 @@ class ViewController: NSViewController {
 //            template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
 
             let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
-            if let JSONObject: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: &error),
-               let string = template.render(BoxAnyObject(JSONObject), error: &error)
-            {
-                presentRenderingString(string)
-                return
-            }
+            let JSONObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
+            let string = try template.render(BoxAnyObject(JSONObject))
+            presentRenderingString(string)
         }
-        
-        presentRenderingString("\(error!.domain): \(error!.localizedDescription)")
+        catch let error as NSError {
+            presentRenderingString("\(error.domain): \(error.localizedDescription)")
+        }
     }
     
     func presentRenderingString(string: String) {
