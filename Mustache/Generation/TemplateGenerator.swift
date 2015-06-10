@@ -22,19 +22,26 @@
 
 
 extension TemplateAST : CustomDebugStringConvertible {
+    /// A textual representation of `self`, suitable for debugging.
     var debugDescription: String {
-        return TemplateGenerator().stringFromTemplateAST(self)
+        var string = TemplateGenerator().stringFromTemplateAST(self)
+        string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        return "TemplateAST(\(string))"
     }
 }
 
 extension Template : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
-        return TemplateGenerator().stringFromTemplateAST(templateAST)
+        var string = TemplateGenerator().stringFromTemplateAST(templateAST)
+        string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        return "Template(\(string))"
     }
 }
 
-private class TemplateGenerator {
+class TemplateGenerator {
     let configuration: Configuration
     
     init(configuration: Configuration? = nil) {
@@ -78,9 +85,11 @@ private class TemplateGenerator {
             buffer.extend("\(tagStartDelimiter)>\(name)\(tagEndDelimiter)")
             
         case .SectionNode(let section):
+            // Change delimiters tags are ignored. Always use configuration tag
+            // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = "TODO"
+            let expression = ExpressionGenerator().stringFromExpression(section.expression)
             if section.inverted {
                 buffer.extend("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
             } else {
@@ -93,13 +102,17 @@ private class TemplateGenerator {
             buffer.extend(text)
             
         case .VariableNode(let variable):
+            // Change delimiters tags are ignored. Always use configuration tag
+            // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = "TODO"
+            let expression = ExpressionGenerator().stringFromExpression(variable.expression)
             if variable.escapesHTML {
-                buffer.extend("\(tagStartDelimiter)&\(expression)\(tagEndDelimiter)")
-            } else {
                 buffer.extend("\(tagStartDelimiter)\(expression)\(tagEndDelimiter)")
+            } else if tagStartDelimiter == "{{" && tagEndDelimiter == "}}" {
+                buffer.extend("\(tagStartDelimiter){\(expression)}\(tagEndDelimiter)")
+            } else {
+                buffer.extend("\(tagStartDelimiter)&\(expression)\(tagEndDelimiter)")
             }
         }
     }

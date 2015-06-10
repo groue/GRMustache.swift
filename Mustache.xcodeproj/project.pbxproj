@@ -133,6 +133,8 @@
 		563AE20119FC62330028C6C1 /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
 		563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */; };
 		564717311A18EAE600E383F9 /* FilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564717301A18EAE600E383F9 /* FilterTests.swift */; };
+		5660B9901B2832BE00102EF1 /* ExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */; };
+		5660B9911B2832BE00102EF1 /* ExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */; };
 		566244571AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
 		566244581AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
 		566244931AF1638F008BAD41 /* GRMustacheSuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */; };
@@ -261,6 +263,7 @@
 		563AE20019FC62330028C6C1 /* Tag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tag.swift; sourceTree = "<group>"; };
 		563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionInvocation.swift; sourceTree = "<group>"; };
 		564717301A18EAE600E383F9 /* FilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTests.swift; sourceTree = "<group>"; };
+		5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionGenerator.swift; sourceTree = "<group>"; };
 		566244561AEBC88C008BAD41 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRMustacheSuiteTests.swift; sourceTree = "<group>"; };
 		566244951AF163A3008BAD41 /* GRMustacheSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GRMustacheSuite; sourceTree = "<group>"; };
@@ -563,6 +566,7 @@
 			isa = PBXGroup;
 			children = (
 				566244B01AF201E7008BAD41 /* TemplateGenerator.swift */,
+				5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */,
 			);
 			path = Generation;
 			sourceTree = "<group>";
@@ -929,6 +933,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				561E72801A8BDC4D004ED48B /* TemplateAST.swift in Sources */,
+				5660B9911B2832BE00102EF1 /* ExpressionGenerator.swift in Sources */,
 				561E728F1A8BDC4D004ED48B /* ExpressionParser.swift in Sources */,
 				561E72D81A8BDEEF004ED48B /* GRMustacheKeyAccess.m in Sources */,
 				561E72921A8BDC4D004ED48B /* Context.swift in Sources */,
@@ -1008,6 +1013,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				561336061B21745A005BB0F7 /* Common.swift in Sources */,
+				5660B9901B2832BE00102EF1 /* ExpressionGenerator.swift in Sources */,
 				563AE20119FC62330028C6C1 /* Tag.swift in Sources */,
 				563AE1D019FC446A0028C6C1 /* VariableTag.swift in Sources */,
 				56BD79401A0E381900937A76 /* MustacheBox.swift in Sources */,
