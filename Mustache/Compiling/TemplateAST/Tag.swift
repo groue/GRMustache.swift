@@ -53,9 +53,11 @@ You may meet the Tag class when you implement your own `RenderFunction`,
 `WillRenderFunction` or `DidRenderFunction`, or filters that perform custom
 rendering (see `FilterFunction`).
 
-:see: RenderFunction
-:see: WillRenderFunction
-:see: DidRenderFunction
+See also:
+
+- RenderFunction
+- WillRenderFunction
+- DidRenderFunction
 */
 public class Tag: CustomStringConvertible {
     

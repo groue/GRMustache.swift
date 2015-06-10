@@ -735,7 +735,9 @@ section.
 The string argument of DidRenderFunction is optional: it is nil if and only if
 the tag could not render because of a rendering error.
 
-:see: WillRenderFunction
+See also:
+
+- WillRenderFunction
 */
 public typealias DidRenderFunction = (tag: Tag, box: MustacheBox, string: String?) -> Void
 

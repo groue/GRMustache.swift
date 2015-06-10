@@ -1553,7 +1553,9 @@ feed template.
 - parameter filter: A FilterFunction.
 - returns: A MustacheBox that wraps *filter*.
 
-:see: FilterFunction
+See also:
+
+- FilterFunction
 */
 public func Box(filter: FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
@@ -1572,7 +1574,9 @@ feed template.
 - parameter render: A RenderFunction.
 - returns: A MustacheBox that wraps *render*.
 
-:see: RenderFunction
+See also:
+
+- RenderFunction
 */
 public func Box(render: RenderFunction) -> MustacheBox {
     return MustacheBox(render: render)
@@ -1602,7 +1606,9 @@ feed template.
 - parameter willRender: A WillRenderFunction
 - returns: A MustacheBox that wraps *willRender*.
 
-:see: WillRenderFunction
+See also:
+
+- WillRenderFunction
 */
 public func Box(willRender: WillRenderFunction) -> MustacheBox {
     return MustacheBox(willRender: willRender)
@@ -1633,7 +1639,9 @@ feed template.
 - parameter didRender: A DidRenderFunction/
 - returns: A MustacheBox that wraps *didRender*.
 
-:see: DidRenderFunction
+See also:
+
+- DidRenderFunction
 */
 public func Box(didRender: DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)

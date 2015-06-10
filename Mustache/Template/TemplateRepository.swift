@@ -309,7 +309,9 @@ final public class TemplateRepository {
                        partials, throws an NSError that describes the problem.
     - returns: A Mustache Template.
     
-    :see: reloadTemplates
+    See also:
+    
+    - reloadTemplates
     */
     public func template(named name: String) throws -> Template {
         let templateAST = try self.templateAST(named: name, relativeToTemplateID: nil)

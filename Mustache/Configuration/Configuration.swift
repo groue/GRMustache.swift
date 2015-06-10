@@ -194,8 +194,10 @@ public struct Configuration {
         // "bar"
         try! template3.render()
 
-    :see: extendBaseContext
-    :see: registerInBaseContext
+    See also:
+    
+    - extendBaseContext
+    - registerInBaseContext
     */
     public var baseContext: Context
     
@@ -230,8 +232,10 @@ public struct Configuration {
 
     - parameter box: The box pushed on the top of the context stack.
     
-    :see: baseContext
-    :see: registerInBaseContext
+    See also:
+    
+    - baseContext
+    - registerInBaseContext
     */
     public mutating func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
@@ -275,8 +279,10 @@ public struct Configuration {
     - parameter key: An identifier.
     - parameter box: The box registered for *key*.
     
-    :see: baseContext
-    :see: extendBaseContext
+    See also:
+    
+    - baseContext
+    - extendBaseContext
     */
     public mutating func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
@@ -321,6 +327,8 @@ public struct Configuration {
 The default configuration that is used unless specified otherwise by a
 `TemplateRepository`.
 
-:see: TemplateRepository
+See also:
+
+- TemplateRepository
 */
 public var DefaultConfiguration = Configuration()

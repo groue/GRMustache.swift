@@ -50,9 +50,11 @@ finds a value:
     ]
     try! template.render(Box(data))
 
-:see: Configuration
-:see: TemplateRepository
-:see: RenderFunction
+See also:
+
+- Configuration
+- TemplateRepository
+- RenderFunction
 */
 final public class Context {
     
@@ -158,7 +160,9 @@ final public class Context {
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the `boxForMustacheExpression` method.
     
-    :see: boxForMustacheExpression
+    See also:
+    
+    - boxForMustacheExpression
     */
     public subscript (key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {

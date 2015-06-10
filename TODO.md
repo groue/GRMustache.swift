@@ -4,6 +4,6 @@ TODO
 - [ ] Rewrite GRMustacheKeyAccess.m in pure Swift
 - [X] Finish Generator, since Playground now uses debugDescription for templates
 - [X] Realign migrated `- parameter` multiline comments
-- [ ] `:see:` in documentation comments has not been migrated for Swift 2: find an appropriate replacement.
+- [X] `:see:` in documentation comments has not been migrated for Swift 2: find an appropriate replacement.
 - [X] Rewrite all `- parameter error:` documentation comments
 - [X] Turn all documentation warnings to bold **Warning**

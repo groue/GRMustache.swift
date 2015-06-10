@@ -154,8 +154,10 @@ final public class Template {
                          NSError that describes the problem.
     - returns: The template rendering.
     
-    :see: RenderFunction
-    :see: Template.contentType
+    See also:
+    
+    - RenderFunction
+    - Template.contentType
     */
     public func render(context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
@@ -190,8 +192,10 @@ final public class Template {
         template.baseContext = Context(Box(["foo": "bar"]))
         try! template.render()
     
-    :see: extendBaseContext
-    :see: registerInBaseContext
+    See also:
+    
+    - extendBaseContext
+    - registerInBaseContext
     */
     public var baseContext: Context
     
@@ -204,9 +208,11 @@ final public class Template {
         template.extendBaseContext(Box(["foo": "bar"]))
         try! template.render()
     
-    :see: baseContext
-    :see: registerInBaseContext
-    :see: Context.extendedContext
+    See also:
+    
+    - baseContext
+    - registerInBaseContext
+    - Context.extendedContext
     */
     public func extendBaseContext(box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
@@ -226,9 +232,11 @@ final public class Template {
         // Renders "bar" again, because the registered key "foo" has priority.
         try! template.render(Box(["foo": "qux"]))
     
-    :see: baseContext
-    :see: extendBaseContext
-    :see: Context.contextWithRegisteredKey
+    See also:
+    
+    - baseContext
+    - extendBaseContext
+    - Context.contextWithRegisteredKey
     */
     public func registerInBaseContext(key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
@@ -262,11 +270,13 @@ final public class Template {
       `TemplateRepository.template(string:)` belong to the invoked
       repository.
     
-    :see: TemplateRepository
-    :see: init(string:)
-    :see: init(path:)
-    :see: init(URL:)
-    :see: init(named:bundle:templateExtension:encoding:)
+    See also:
+    
+    - TemplateRepository
+    - init(string:)
+    - init(path:)
+    - init(URL:)
+    - init(named:bundle:templateExtension:encoding:)
     */
     public let repository: TemplateRepository
     
