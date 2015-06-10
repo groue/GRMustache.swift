@@ -6,3 +6,4 @@ TODO
 - [ ] Realign migrated `- parameter` multiline comments
 - [ ] `:see:` in documentation comments has not been migrated for Swift 2: find an appropriate replacement.
 - [ ] Rewrite all `- parameter error:` documentation comments
+- [ ] Turn all documentation warnings to bold **Warning**
