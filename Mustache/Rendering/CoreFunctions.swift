@@ -98,31 +98,31 @@ To let a template use a filter, register it:
     template.render(Box(["x": 1]))!
 
 `Filter()` can take several types of functions, depending on the type of filter
-you want to build. The example above processes `Int`. Other filters are:
+you want to build. The example above processes `Int` values. There are three
+types of filters:
 
-- Filters that process values:
+- Values filters:
 
     - `(MustacheBox) throws -> MustacheBox`
     - `(T?) throws -> MustacheBox` (Generic)
+    - `([MustacheBox]) throws -> MustacheBox` (Multiple arguments)
 
-- Filters that perform post-rendering:
+- Post-rendering filters:
 
     - `(Rendering) throws -> Rendering`
 
-- Filters that perform custom rendering:
+- Custom rendering filters:
 
     - `(MustacheBox, RenderingInfo) throws -> Rendering`
     - `(T?, RenderingInfo) throws -> Rendering` (Generic)
 
-- Filters that accept several arguments, built with `VariadicFilter()`:
-
-    - `(boxes: [MustacheBox]) throws -> MustacheBox`
+See the documentation of the `Filter()` functions.
 */
 public typealias FilterFunction = (box: MustacheBox, partialApplication: Bool) throws -> MustacheBox
 
 
 // -----------------------------------------------------------------------------
-// MARK: - Filters that process values
+// MARK: - Values Filters
 
 /**
 Builds a filter that takes a single argument.
@@ -189,9 +189,52 @@ public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
     }
 }
 
+/**
+Returns a filter than accepts any number of arguments.
+
+For example:
+
+    // `sum(x, ...)` evaluates to the sum of provided integers
+    let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+        // Extract integers out of input boxes, assuming zero for non numeric values
+        let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
+        let sum = reduce(integers, 0, +)
+        return Box(sum)
+    }
+
+    let template = Template(string: "{{ sum(a,b,c) }}")!
+    template.registerInBaseContext("sum", Box(sum))
+
+    // Renders "6"
+    template.render(Box(["a": 1, "b": 2, "c": 3]))!
+
+If your filter is given too many or too few arguments, you should return nil and
+set error to an NSError of domain `GRMustacheErrorDomain` and code
+`GRMustacheErrorCodeRenderingError`.
+
+- parameter filter: a function `(boxes: [MustacheBox]) throws -> Rendering`
+- returns: a FilterFunction
+*/
+public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+    return _VariadicFilter([], filter: filter)
+}
+
+private func _VariadicFilter(boxes: [MustacheBox], filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+    return { (box: MustacheBox, partialApplication: Bool) in
+        let boxes = boxes + [box]
+        if partialApplication {
+            // Wait for another argument
+            return Box(_VariadicFilter(boxes, filter: filter))
+        } else {
+            // No more argument: compute final value
+            return try filter(boxes)
+        }
+    }
+}
+
 
 // -----------------------------------------------------------------------------
-// MARK: - Filters that perform post-rendering
+// MARK: - Post-Rendering Filters
 
 /**
 Builds a filter that performs post rendering.
@@ -231,7 +274,7 @@ public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
 
 
 // -----------------------------------------------------------------------------
-// MARK: - Filters that perform custom rendering
+// MARK: - Custom Rendering Filters
 
 /**
 Builds a filter that takes a single argument and performs custom rendering.
@@ -298,53 +341,6 @@ public func Filter<T>(filter: (T?, RenderingInfo) throws -> Rendering) -> Filter
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
             return try filter(t, info)
-        }
-    }
-}
-
-
-// -----------------------------------------------------------------------------
-// MARK: - Filters that accept several arguments
-
-/**
-Returns a filter than accepts any number of arguments.
-
-For example:
-
-    // `sum(x, ...)` evaluates to the sum of provided integers
-    let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-        // Extract integers out of input boxes, assuming zero for non numeric values
-        let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
-        let sum = reduce(integers, 0, +)
-        return Box(sum)
-    }
-
-    let template = Template(string: "{{ sum(a,b,c) }}")!
-    template.registerInBaseContext("sum", Box(sum))
-
-    // Renders "6"
-    template.render(Box(["a": 1, "b": 2, "c": 3]))!
-
-If your filter is given too many or too few arguments, you should return nil and
-set error to an NSError of domain `GRMustacheErrorDomain` and code
-`GRMustacheErrorCodeRenderingError`.
-
-- parameter filter: a function `(boxes: [MustacheBox]) throws -> Rendering`
-- returns: a FilterFunction
-*/
-public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
-    return _VariadicFilter([], filter: filter)
-}
-
-private func _VariadicFilter(boxes: [MustacheBox], filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool) in
-        let boxes = boxes + [box]
-        if partialApplication {
-            // Wait for another argument
-            return Box(_VariadicFilter(boxes, filter: filter))
-        } else {
-            // No more argument: compute final value
-            return try filter(boxes)
         }
     }
 }
