@@ -32,13 +32,11 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     
     // {{# each(dictionary) }}...{{/ }}
     //
-    // ::
-    //
-    //   // Renders "firstName: Charles, lastName: Bronson."
-    //   let dictionary = ["firstName": "Charles", "lastName": "Bronson"]
-    //   let template = Template(string: "{{# each(dictionary) }}{{ @key }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(dictionary) }}.")!
-    //   template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //   template.render(Box(["dictionary": dictionary]))!
+    //     // Renders "firstName: Charles, lastName: Bronson."
+    //     let dictionary = ["firstName": "Charles", "lastName": "Bronson"]
+    //     let template = try! Template(string: "{{# each(dictionary) }}{{ @key }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(dictionary) }}.")
+    //     template.registerInBaseContext("each", Box(StandardLibrary.each))
+    //     try! template.render(Box(["dictionary": dictionary]))
     //
     // The dictionaryValue box property makes sure to return a
     // [String: MustacheBox] whatever the boxed dictionary-like value
@@ -67,13 +65,11 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     
     // {{# each(array) }}...{{/ }}
     //
-    // ::
-    //
-    //   // Renders "1: bread, 2: ham, 3: butter"
-    //   let array = ["bread", "ham", "butter"]
-    //   let template = Template(string: "{{# each(array) }}{{ @indexPlusOne }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(array) }}.")!
-    //   template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //   template.render(Box(["array": array]))!
+    //     // Renders "1: bread, 2: ham, 3: butter"
+    //     let array = ["bread", "ham", "butter"]
+    //     let template = try! Template(string: "{{# each(array) }}{{ @indexPlusOne }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(array) }}.")
+    //     template.registerInBaseContext("each", Box(StandardLibrary.each))
+    //     try! template.render(Box(["array": array]))
     //
     // The arrayValue box property makes sure to return a [MustacheBox] whatever
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
