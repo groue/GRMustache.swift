@@ -378,10 +378,7 @@ let rendering = try! template.render(Box(data))
 let sum = VariadicFilter { (boxes: [MustacheBox]) in
     var sum = 0
     for box in boxes {
-        // Make sure the box contains an Int
-        if let int = box.value as? Int {
-            sum += int
-        }
+        sum += box.value as! Int
     }
     return Box(sum)
 }
