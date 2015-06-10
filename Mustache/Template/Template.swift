@@ -54,7 +54,7 @@ final public class Template {
     the same extension.
     
         // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
-        let template = Template(path: "/path/to/template.txt")!
+        let template = try! Template(path: "/path/to/template.txt")
     
     - parameter path:     The path of the template.
     - parameter encoding: The encoding of the template file.
@@ -80,7 +80,7 @@ final public class Template {
     the same extension.
     
         // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
-        let template = Template(URL: "file://path/to/template.txt")!
+        let template = try! Template(URL: "file://path/to/template.txt")
     
     - parameter URL:      The URL of the template.
     - parameter encoding: The encoding of template file.
@@ -107,7 +107,7 @@ final public class Template {
     the same extension.
     
         // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
-        let template = Template(named: "template")!
+        let template = try! Template(named: "template")
     
     - parameter name:               The name of a bundle resource.
     - parameter bundle:             The bundle where to look for the template
@@ -193,9 +193,9 @@ final public class Template {
     `extendBaseContext` and `registerInBaseContext` methods.
     
         // Renders "bar"
-        let template = Template(string: "{{foo}}")!
+        let template = try! Template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "bar"]))
-        template.render()!
+        try! template.render()
     
     :see: extendBaseContext
     :see: registerInBaseContext
@@ -207,9 +207,9 @@ final public class Template {
     start from this extended context.
     
         // Renders "bar"
-        let template = Template(string: "{{foo}}")!
+        let template = try! Template(string: "{{foo}}")
         template.extendBaseContext(Box(["foo": "bar"]))
-        template.render()!
+        try! template.render()
     
     :see: baseContext
     :see: registerInBaseContext
@@ -226,12 +226,12 @@ final public class Template {
     Registered keys are looked up first when evaluating Mustache tags.
     
         // Renders "bar"
-        let template = Template(string: "{{foo}}")!
+        let template = try! Template(string: "{{foo}}")
         template.registerInBaseContext("foo", Box("bar"))
-        template.render()!
+        try! template.render()
 
         // Renders "bar" again, because the registered key "foo" has priority.
-        template.render(Box(["foo": "qux"]))!
+        try! template.render(Box(["foo": "qux"]))
     
     :see: baseContext
     :see: extendBaseContext
@@ -250,30 +250,30 @@ final public class Template {
     
     All templates belong a template repository:
     
-    - Templates returned by ``init?(string:error:)`` have a template
+    - Templates returned by `init(string:)` have a template
       repository that can not load any template or partial by name.
     
-    - Templates returned by ``init?(path:encoding:error:)`` have a template
+    - Templates returned by `init(path:encoding:)` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
     
-    - Templates returned by ``init?(URL:encoding:error:)`` have a template
+    - Templates returned by `init(URL:encoding:)` have a template
       repository that loads templates and partials stored in the directory of
       the receiver, with the same file extension.
     
-    - Templates returned by ``init?(named:bundle:templateExtension:encoding:error:)``
+    - Templates returned by `init(named:bundle:templateExtension:encoding:)`
       have a template repository that loads templates and partials stored as
       resources in the specified bundle.
     
-    - Templates returned by ``TemplateRepository.template(named:error:)`` and
-      `TemplateRepository.template(string:error:)` belong to the invoked
+    - Templates returned by `TemplateRepository.template(named:)` and
+      `TemplateRepository.template(string:)` belong to the invoked
       repository.
     
     :see: TemplateRepository
-    :see: init(string:error:)
-    :see: init(path:error:)
-    :see: init(URL:error:)
-    :see: init(named:bundle:templateExtension:encoding:error:)
+    :see: init(string:)
+    :see: init(path:)
+    :see: init(URL:)
+    :see: init(named:bundle:templateExtension:encoding:)
     */
     public let repository: TemplateRepository
     
