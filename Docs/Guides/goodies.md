@@ -22,12 +22,12 @@ GRMustache provides built-in support for NSFormatter and its subclasses such as 
 let percentFormatter = NSNumberFormatter()
 percentFormatter.numberStyle = .PercentStyle
 
-let template = Template(string: "{{ percent(x) }}")!
+let template = try! Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
 
 // Rendering: 50%
 let data = ["x": 0.5]
-let rendering = template.render(Box(data))!
+let rendering = try! template.render(Box(data))
 ```
 
 #### Formatting all values in a section
@@ -48,7 +48,7 @@ Rendering code:
 let percentFormatter = NSNumberFormatter()
 percentFormatter.numberStyle = .PercentStyle
 
-let template = Template(named: "Document")!
+let template = try! Template(named: "Document")
 template.registerInBaseContext("percent", Box(percentFormatter))
 
 // Rendering:
@@ -62,7 +62,7 @@ id data = [
     "daily": 1.5,
     "weekly": 4,
 };
-let rendering = template.render(Box(data))!
+let rendering = try! template.render(Box(data))
 ```
 
 Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections. However, values that can't be formatted are left untouched:
