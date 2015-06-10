@@ -7,6 +7,8 @@ It ships with built-in goodies and extensibility hooks that let you avoid the st
 
 **June 9, 2015: GRMustache.swift 0.9.3 is out.** [Release notes](RELEASE_NOTES.md)
 
+**SWIFT 2 ALERT!** Check the [Swift2 branch](https://github.com/groue/GRMustache.swift/tree/Swift2).
+
 Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
 
 Jump to:
