@@ -34,9 +34,9 @@ import Foundation
 // Playground included in `Mustache.xcworkspace` to run those examples.
 //
 //
-// - MustacheBoxable and the Boxing of Swift types
+// - MustacheBoxable and the Boxing of value types
 //
-//   The MustacheBoxable protocol makes any Swift type able to be boxed with the
+//   The MustacheBoxable protocol makes any value able to be boxed with the
 //   Box(MustacheBoxable?) function.
 //
 //   Learn how the Swift types Bool, Int, UInt, Double, and String are rendered.
@@ -50,8 +50,6 @@ import Foundation
 //
 // - Boxing of NSObject
 //
-//   There is a Box() function for NSObject.
-//
 //   Learn how NSObject, NSNull, NSString, NSNumber, NSArray, NSDictionary and
 //   NSSet are rendered.
 //
@@ -59,8 +57,7 @@ import Foundation
 // - Boxing of Core Mustache functions
 //
 //   The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
-//   can be boxed as well so that you can feed templates with filters, Mustache
-//   lambdas, and more.
+//   can be boxed as well so that you can feed templates with them.
 //
 //
 // - Boxing of multi-facetted values
