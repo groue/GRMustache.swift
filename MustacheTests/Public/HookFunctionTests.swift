@@ -239,7 +239,7 @@ class HookFunctionTests: XCTestCase {
         XCTAssertEqual(recordedRendering!, "<>")
     }
     
-    func testDidRenderFunctionObservesRenderingFailure() {
+    func testDidRenderFunctionObservesRenderingNSError() {
         var failedRendering = false
         let didRender = { (tag: Tag, box: MustacheBox, string: String?) in
             failedRendering = (string == nil)
@@ -256,6 +256,31 @@ class HookFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "TagObserverError")
             XCTAssertEqual(error.code, 1)
+        } catch {
+            XCTAssert(false)
+        }
+        XCTAssertTrue(failedRendering)
+    }
+    
+    func testDidRenderFunctionObservesRenderingMustacheError() {
+        var failedRendering = false
+        let didRender = { (tag: Tag, box: MustacheBox, string: String?) in
+            failedRendering = (string == nil)
+        }
+        
+        let template = try! Template(string: "-\n\n{{.}}-")
+        template.baseContext = template.baseContext.extendedContext(Box(didRender))
+        failedRendering = false
+        do {
+            try template.render(Box({ (info: RenderingInfo) -> Rendering in
+                throw MustacheError.RenderingError(message: "TagObserverError", location: nil)
+            }))
+            XCTAssert(false)
+        } catch MustacheError.RenderingError(message: let description, location: let location) {
+            XCTAssertEqual(description, "TagObserverError")
+            XCTAssertEqual(location!.lineNumber, 3)
+        } catch {
+            XCTAssert(false)
         }
         XCTAssertTrue(failedRendering)
     }

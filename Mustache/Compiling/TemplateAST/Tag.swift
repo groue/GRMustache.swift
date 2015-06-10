@@ -138,7 +138,7 @@ public class Tag: CustomStringConvertible {
     
     - parameter context: The context stack for evaluating mustache tags.
     - parameter error:   If there is a problem rendering the tag, throws an
-                         NSError that describes the problem.
+                         error that describes the problem.
     - returns: The rendering of the tag.
     
     */
@@ -159,5 +159,9 @@ public class Tag: CustomStringConvertible {
         self.type = type
         self.innerTemplateString = innerTemplateString
         self.tagDelimiterPair = tagDelimiterPair
+    }
+    
+    var location: TemplateLocation {
+        fatalError("Subclass must override")
     }
 }

@@ -121,9 +121,10 @@ class TemplateRepositoryURLTests: XCTestCase {
         do {
             try repo.template(named: "up")
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
+        } catch MustacheError.TemplateNotFound {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
         }
     }
 }

@@ -40,8 +40,10 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                 switch templateID {
                 case "not_found":
                     fatalError("Unexpected")
-                case "error":
+                case "NSError":
                     throw NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
+                case "MustacheError.TemplateNotFound":
+                    throw MustacheError.TemplateNotFound(message: "Custom Not Found Error", location: nil)
                 default:
                     return templateID
                 }
@@ -61,18 +63,32 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         XCTAssertEqual(rendering, "foo")
         
         do {
-            try repo.template(string: "{{>not_found}}")
+            try repo.template(string: "\n\n{{>not_found}}")
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
+        } catch MustacheError.TemplateNotFound(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString("not_found") != nil)
+            XCTAssertEqual(location!.lineNumber, 3)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
-            try repo.template(string: "{{>error}}")
+            try repo.template(string: "{{>NSError}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "TestedDataSource")
+        } catch {
+            XCTAssert(false)
+        }
+        
+        do {
+            try repo.template(string: "\n\n{{>MustacheError.TemplateNotFound}}")
+            XCTAssert(false)
+        } catch MustacheError.TemplateNotFound(message: let message, location: let location) {
+            XCTAssertEqual(message, "Custom Not Found Error")
+            XCTAssertEqual(location!.lineNumber, 3)
+        } catch {
+            XCTAssert(false)
         }
     }
     

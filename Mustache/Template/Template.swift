@@ -36,7 +36,7 @@ final public class Template {
     
     - parameter string: The template string.
     - parameter error:  If there is an error loading or parsing template and
-                        partials, throws an NSError that describes the problem.
+                        partials, throws an error that describes the problem.
     - returns: A new Template.
     */
     public convenience init(string: String) throws {
@@ -57,8 +57,7 @@ final public class Template {
     - parameter path:     The path to the template file.
     - parameter encoding: The encoding of the template file.
     - parameter error:    If there is an error loading or parsing template and
-                          partials, throws an NSError that describes the
-                          problem.
+                          partials, throws an error that describes the problem.
     - returns: A new Template.
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
@@ -82,8 +81,7 @@ final public class Template {
     - parameter URL:      The URL of the template.
     - parameter encoding: The encoding of the template resource.
     - parameter error:    If there is an error loading or parsing template and
-                          partials, throws an NSError that describes the
-                          problem.
+                          partials, throws an error that describes the problem.
     - returns: A new Template.
     */
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
@@ -113,8 +111,8 @@ final public class Template {
                                    template file should exactly matches name.
     - parameter encoding:          The encoding of template resource.
     - parameter error:             If there is an error loading or parsing
-                                   template and partials, throws an NSError
-                                   that describes the problem.
+                                   template and partials, throws an error that
+                                   describes the problem.
     - returns: A new Template.
     */
     public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
@@ -132,7 +130,7 @@ final public class Template {
     on top of the templates's base context.
     
     - parameter box:   A boxed value used for evaluating Mustache tags.
-    - parameter error: If there is an error rendering the tag, throws an NSError
+    - parameter error: If there is an error rendering the tag, throws an error
                        that describes the problem.
     - returns: The rendered string.
     */
@@ -151,7 +149,7 @@ final public class Template {
     
     - parameter context: A context stack
     - parameter error:   If there is an error rendering the tag, throws an
-                         NSError that describes the problem.
+                         error that describes the problem.
     - returns: The template rendering.
     
     See also:

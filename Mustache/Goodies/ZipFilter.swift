@@ -40,7 +40,7 @@ let ZipFilter = VariadicFilter { (boxes) in
             zippedGenerators.append(anyGenerator(array.generate()))
         } else {
             // Error
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Non-enumerable argument in zip filter: `\(box.value)`"])
+            throw MustacheError.RenderingError(message: "Non-enumerable argument in zip filter: `\(box.value)`", location: nil)
         }
     }
     

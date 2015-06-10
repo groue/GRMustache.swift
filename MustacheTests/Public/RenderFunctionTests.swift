@@ -98,7 +98,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "&amp;")
     }
     
-    func testRenderFunctionCanSetErrorFromVariableTag() {
+    func testRenderFunctionCanThrowNSErrorFromVariableTag() {
         let errorDomain = "ClusterTests"
         let render = { (info: RenderingInfo) -> Rendering in
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
@@ -108,10 +108,28 @@ class RenderFunctionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
+        } catch {
+            XCTAssert(false)
         }
     }
     
-    func testRenderFunctionCanSetErrorFromSectionTag() {
+    func testRenderFunctionCanThrowMustacheErrorFromVariableTag() {
+        let errorDescription = "ClusterTests"
+        let render = { (info: RenderingInfo) -> Rendering in
+            throw MustacheError.RenderingError(message: errorDescription, location: nil)
+        }
+        do {
+            try Template(string: "\n\n{{.}}").render(Box(render))
+            XCTAssert(false)
+        } catch MustacheError.RenderingError(message: let description, location: let location) {
+            XCTAssertEqual(description, errorDescription)
+            XCTAssertEqual(location!.lineNumber, 3)
+        } catch {
+            XCTAssert(false)
+        }
+    }
+    
+    func testRenderFunctionCanThrowNSErrorFromSectionTag() {
         let errorDomain = "ClusterTests"
         let render = { (info: RenderingInfo) -> Rendering in
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
@@ -121,6 +139,24 @@ class RenderFunctionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
+        } catch {
+            XCTAssert(false)
+        }
+    }
+    
+    func testRenderFunctionCanThrowMustacheErrorFromSectionTag() {
+        let errorDescription = "ClusterTests"
+        let render = { (info: RenderingInfo) -> Rendering in
+            throw MustacheError.RenderingError(message: errorDescription, location: nil)
+        }
+        do {
+            try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(Box(render))
+            XCTAssert(false)
+        } catch MustacheError.RenderingError(message: let description, location: let location) {
+            XCTAssertEqual(description, errorDescription)
+            XCTAssertEqual(location!.lineNumber, 3)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -454,9 +490,10 @@ class RenderFunctionTests: XCTestCase {
         do {
             try Template(string: "{{items}}").render(box)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+        } catch MustacheError.RenderingError {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -471,9 +508,10 @@ class RenderFunctionTests: XCTestCase {
         do {
             try Template(string: "{{#items}}{{/items}}").render(box)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+        } catch MustacheError.RenderingError {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
         }
     }
     

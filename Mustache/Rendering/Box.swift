@@ -483,7 +483,7 @@ private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo) throw
         {
             // Inconsistent content type: this is an error. How are we
             // supposed to mix Text and HTML?
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+            throw MustacheError.RenderingError(message: "Content type mismatch", location: nil)
         }
     }
     

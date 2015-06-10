@@ -110,10 +110,10 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(string: parserErrorTemplateString)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+        } catch MustacheError.ParseError(message: _, location: let location) {
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -121,21 +121,34 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(path: parserErrorTemplatePath)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
+        }
+        
+        do {
+            try Template(path: parserErrorTemplatePath)
+            XCTAssert(false)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(path: parserErrorTemplateWrapperPath)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -143,21 +156,25 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(URL: parserErrorTemplateURL)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(URL: parserErrorTemplateWrapperURL)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -165,21 +182,25 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(named: parserErrorTemplateName, bundle: testBundle)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(named: parserErrorTemplateWrapperName, bundle: testBundle)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -187,10 +208,10 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(string: compilerErrorTemplateString)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+        } catch MustacheError.ParseError(message: _, location: let location) {
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -198,21 +219,25 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(path: compilerErrorTemplatePath)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(path: compilerErrorTemplateWrapperPath)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -220,21 +245,25 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(URL: compilerErrorTemplateURL)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(URL: compilerErrorTemplateWrapperURL)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -242,21 +271,25 @@ class TemplateFromMethodsTests: XCTestCase {
         do {
             try Template(named: compilerErrorTemplateName, bundle: testBundle)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
         
         do {
             try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle)
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+        } catch MustacheError.ParseError(message: let message, location: let location) {
+            XCTAssertTrue(message.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(message.rangeOfString("line 2") != nil)
+            XCTAssertNotNil(location!.templateID)
+            XCTAssertEqual(location!.lineNumber, 2)
+        } catch {
+            XCTAssert(false)
         }
     }
 }

@@ -42,18 +42,21 @@ class SectionTag: Tag {
     its public superclass Tag. Return a nice user-friendly description:
     */
     override var description: String {
-        if let templateID = openingToken.templateID {
-            return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber) of template \(templateID)"
-        } else {
-            return "\(openingToken.templateSubstring) at line \(openingToken.lineNumber)"
-        }
+        return "\(openingToken.location.templateSubstring) at \(openingToken.location)"
     }
     
     /**
-    Inherited from the public super class Tag
+    Inherited from the public super class Tag.
     */
     override func render(context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
+    }
+    
+    /**
+    Inherited from the public super class Tag.
+    */
+    override var location: TemplateLocation {
+        return openingToken.location
     }
 }

@@ -25,7 +25,7 @@ import Foundation
 
 protocol TemplateTokenConsumer {
     func parser(parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
-    func parser(parser:TemplateParser, didFailWithError error:NSError)
+    func parser(parser:TemplateParser, didFailWithError error:MustacheError)
 }
 
 final class TemplateParser {
@@ -91,11 +91,8 @@ final class TemplateParser {
                     if stateStart != i {
                         let range = stateStart..<i
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: stateStart..<i,
                             type: .Text(text: templateString[range]),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<i, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
@@ -108,11 +105,8 @@ final class TemplateParser {
                     if stateStart != i {
                         let range = stateStart..<i
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: stateStart..<i,
                             type: .Text(text: templateString[range]),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<i, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
@@ -125,11 +119,8 @@ final class TemplateParser {
                     if stateStart != i {
                         let range = stateStart..<i
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: stateStart..<i,
                             type: .Text(text: templateString[range]),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<i, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
@@ -149,118 +140,80 @@ final class TemplateParser {
                     switch tagInitial {
                     case "!":
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .Comment,
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "#":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
-                            type: .Section(
-                                content: content,
-                                tagDelimiterPair: currentDelimiters.tagDelimiterPair),
-                            templateID: templateID)
+                            type: .Section(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "^":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
-                            type: .InvertedSection(
-                                content: content,
-                                tagDelimiterPair: currentDelimiters.tagDelimiterPair),
-                            templateID: templateID)
+                            type: .InvertedSection(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "$":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .InheritableSection(content: content),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "/":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .Close(content: content),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case ">":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .Partial(content: content),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "<":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .InheritedPartial(content: content),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "&":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
-                            type: .UnescapedVariable(
-                                content: content,
-                                tagDelimiterPair: currentDelimiters.tagDelimiterPair),
-                            templateID: templateID)
+                            type: .UnescapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     case "%":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
                             type: .Pragma(content: content),
-                            templateID: templateID)
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     default:
                         let content = templateString.substringWithRange(tagInitialIndex..<i)
                         let token = TemplateToken(
-                            lineNumber: startLineNumber,
-                            templateString: templateString,
-                            range: tokenRange,
-                            type: .EscapedVariable(
-                                content: content,
-                                tagDelimiterPair: currentDelimiters.tagDelimiterPair),
-                            templateID: templateID)
+                            type: .EscapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
+                            location: TemplateLocation(templateString: templateString, templateID: templateID, range: tokenRange, lineNumber: startLineNumber))
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
@@ -277,13 +230,8 @@ final class TemplateParser {
                     let tagInitialIndex = advance(stateStart, currentDelimiters.unescapedTagStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let token = TemplateToken(
-                        lineNumber: startLineNumber,
-                        templateString: templateString,
-                        range: stateStart..<advance(i, currentDelimiters.unescapedTagEndLength),
-                        type: .UnescapedVariable(
-                            content: content,
-                            tagDelimiterPair: currentDelimiters.tagDelimiterPair),
-                        templateID: templateID)
+                        type: .UnescapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
+                        location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<advance(i, currentDelimiters.unescapedTagEndLength), lineNumber: startLineNumber))
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
@@ -299,16 +247,14 @@ final class TemplateParser {
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
-                        failWithParseError(lineNumber: lineNumber, templateID: templateID, description: "Invalid set delimiters tag")
+                        let error = MustacheError.ParseError(message: "Invalid set delimiters tag", location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<advance(i, currentDelimiters.setDelimitersEndLength), lineNumber: startLineNumber))
+                        tokenConsumer.parser(self, didFailWithError: error)
                         return;
                     }
                     
                     let token = TemplateToken(
-                        lineNumber: startLineNumber,
-                        templateString: templateString,
-                        range: stateStart..<advance(i, currentDelimiters.setDelimitersEndLength),
                         type: .SetDelimiters,
-                        templateID: templateID)
+                        location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<advance(i, currentDelimiters.setDelimitersEndLength), lineNumber: startLineNumber))
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
@@ -333,17 +279,15 @@ final class TemplateParser {
         case .Text:
             let range = stateStart..<end
             let token = TemplateToken(
-                lineNumber: startLineNumber,
-                templateString: templateString,
-                range: range,
                 type: .Text(text: templateString[range]),
-                templateID: templateID)
+                location: TemplateLocation(templateString: templateString, templateID: templateID, range: range, lineNumber: startLineNumber))
             if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                 return
             }
         case .Tag, .UnescapedTag, .SetDelimitersTag:
-            failWithParseError(lineNumber: startLineNumber, templateID: templateID, description: "Unclosed Mustache tag")
-            return
+            let error = MustacheError.ParseError(message: "Unclosed Mustache tag", location: TemplateLocation(templateString: templateString, templateID: templateID, range: stateStart..<end, lineNumber: startLineNumber))
+            tokenConsumer.parser(self, didFailWithError: error)
+            return;
         }
     }
     
@@ -388,16 +332,5 @@ final class TemplateParser {
             setDelimitersEnd = "=\(tagDelimiterPair.1)"
             setDelimitersEndLength = distance(setDelimitersEnd.startIndex, setDelimitersEnd.endIndex)
         }
-    }
-    
-    private func failWithParseError(lineNumber lineNumber: Int, templateID: TemplateID?, description: String) {
-        let localizedDescription: String
-        if let templateID = templateID {
-            localizedDescription = "Parse error at line \(lineNumber) of template \(templateID): \(description)"
-        } else {
-            localizedDescription = "Parse error at line \(lineNumber): \(description)"
-        }
-        let error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: localizedDescription])
-        tokenConsumer.parser(self, didFailWithError: error)
     }
 }

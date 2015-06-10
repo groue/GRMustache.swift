@@ -7,3 +7,7 @@ TODO
 - [X] `:see:` in documentation comments has not been migrated for Swift 2: find an appropriate replacement.
 - [X] Rewrite all `- parameter error:` documentation comments
 - [X] Turn all documentation warnings to bold **Warning**
+- [ ] Experiment with ErrorType
+- [ ] Wait for Swift 2 `indirect` enum cases
+- [ ] Use `do { ... }` to limit scopes.
+- [ ] catch { error } no need for `let error`

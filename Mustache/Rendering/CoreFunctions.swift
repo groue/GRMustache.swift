@@ -149,7 +149,7 @@ public func Filter(filter: (MustacheBox) throws -> MustacheBox) -> FilterFunctio
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
         }
         return try filter(box)
     }
@@ -183,7 +183,7 @@ public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
         }
         return try filter(box.value as? T)
     }
@@ -208,9 +208,8 @@ For example:
     // Renders "6"
     try! template.render(Box(["a": 1, "b": 2, "c": 3]))
 
-If your filter is given too many or too few arguments, you should return nil and
-set error to an NSError of domain `GRMustacheErrorDomain` and code
-`GRMustacheErrorCodeRenderingError`.
+If your filter is given too many or too few arguments, you should throw a
+`MustacheError.RenderingError`.
 
 - parameter filter: A function `([MustacheBox]) throws -> MustacheBox`.
 - returns: A FilterFunction.
@@ -265,7 +264,7 @@ public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
+            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
         }
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
@@ -447,7 +446,7 @@ The default rendering thus reads:
     let rendering = try! template.render(Box(["value": Box(renderValue)]))
 
 - parameter info:  A RenderingInfo.
-- parameter error: If there is a problem in the rendering, throws an NSError
+- parameter error: If there is a problem in the rendering, throws an error
                    that describes the problem.
 - returns: A Rendering.
 */

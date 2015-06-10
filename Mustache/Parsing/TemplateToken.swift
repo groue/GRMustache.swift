@@ -37,13 +37,9 @@ struct TemplateToken {
         case InheritableSection(content: String)
     }
     
-    let lineNumber: Int
-    let templateString: String
-    let range: Range<String.Index>
     let type: Type
-    let templateID: TemplateID?
+    let location: TemplateLocation
     
-    var templateSubstring: String { return templateString[range] }
     var tagDelimiterPair: TagDelimiterPair? {
         switch type {
         case .EscapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):

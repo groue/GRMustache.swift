@@ -2,7 +2,19 @@
 
 import Mustache
 
-// Renders "Hello Arthur"
-let template = try! Template(string: "Hello {{ name }}")
-let rendering = try! template.render(Box(["name": "Arthur"]))
-print(rendering)
+enum MyError : ErrorType {
+    case Error1
+    case Error2
+    
+    var description: String { return "MyError" }
+    var localizedDescription: String { return "MyError" }
+}
+
+do {
+    throw MyError.Error1
+} catch let error as NSError {
+    // Error Domain=MyError Code=0 "The operation couldn’t be completed. (MyError error 0.)"
+    error
+    // "The operation couldn’t be completed. (MyError error 0.)"
+    error.localizedDescription
+}

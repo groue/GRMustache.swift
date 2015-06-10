@@ -198,8 +198,7 @@ final public class Context {
     
     - parameter string: The expression string.
     - parameter error:  If there is a problem parsing or evaluating the
-                        expression, throws an NSError that describes the
-                        problem.
+                        expression, throws an error that describes the problem.
     
     - returns: The value of the expression.
     */

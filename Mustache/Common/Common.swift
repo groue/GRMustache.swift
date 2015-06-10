@@ -52,19 +52,120 @@ public enum ContentType {
 
 
 // =============================================================================
+// MARK: - TemplateLocation
+
+/**
+*/
+public struct TemplateLocation {
+    /// The line numer
+    public let lineNumber: Int
+    
+    /// The ID of the template
+    public let templateID: TemplateID?
+    
+    let templateString: String
+    let range: Range<String.Index>
+
+    var templateSubstring: String { return templateString[range] }
+    
+    init(templateString: String, templateID: TemplateID?, range: Range<String.Index>, lineNumber: Int) {
+        self.templateString = templateString
+        self.templateID = templateID
+        self.range = range
+        self.lineNumber = lineNumber
+    }
+}
+
+
+// TODO: choose between CustomDebugStringConvertible and CustomStringConvertible
+extension TemplateLocation : CustomStringConvertible {
+    /// A textual representation of `self`.
+    public var description: String {
+        if let templateID = templateID {
+            return "line \(lineNumber) of template \(templateID)"
+        } else {
+            return "line \(lineNumber)"
+        }
+    }
+}
+
+
+// =============================================================================
 // MARK: - Errors
 
-/// The domain of a Mustache-generated NSError
-public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
+public enum MustacheError : ErrorType {
+    case TemplateNotFound(message: String, location: TemplateLocation?)
+    case ParseError(message: String, location: TemplateLocation?)
+    case RenderingError(message: String, location: TemplateLocation?)
+    
+    static func error(error: ErrorType, withDefaultLocation defaultLocation: TemplateLocation) -> ErrorType {
+        do {
+            do {
+                throw error
+                
+            } catch MustacheError.ParseError(message: let message, location: let location) {
+                if location == nil {
+                    throw MustacheError.ParseError(message: message, location: defaultLocation)
+                } else {
+                    return error
+                }
+                
+            } catch MustacheError.RenderingError(message: let message, location: let location) {
+                if location == nil {
+                    throw MustacheError.RenderingError(message: message, location: defaultLocation)
+                } else {
+                    return error
+                }
+                
+            } catch MustacheError.TemplateNotFound(message: let message, location: let location) {
+                if location == nil {
+                    throw MustacheError.TemplateNotFound(message: message, location: defaultLocation)
+                } else {
+                    return error
+                }
+                
+            } catch let error as NSError {
+                var userInfo = error.userInfo ?? [:]
+                if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
+                    userInfo[NSLocalizedDescriptionKey] = "Error at \(defaultLocation): \(originalLocalizedDescription)"
+                } else {
+                    userInfo[NSLocalizedDescriptionKey] = "Error at \(defaultLocation)"
+                }
+                throw NSError(domain: error.domain, code: error.code, userInfo: userInfo)
+            }
+        } catch {
+            return error
+        }
+    }
+}
 
-/// The error code for parse errors
-public let GRMustacheErrorCodeParseError = 0
-
-/// The error code for missing templates and partials
-public let GRMustacheErrorCodeTemplateNotFound = 1
-
-/// The error code for rendering errors
-public let GRMustacheErrorCodeRenderingError = 2
+extension MustacheError : CustomStringConvertible {
+    /// A textual representation of `self`.
+    public var description: String {
+        switch self {
+        case .TemplateNotFound(message: let message, location: let location):
+            if let location = location {
+                return "Template not found at \(location): \(message)"
+            } else {
+                return "Template not found: \(message)"
+            }
+            
+        case .ParseError(message: let message, location: let location):
+            if let location = location {
+                return "Parse error at \(location): \(message)"
+            } else {
+                return "Parse error: \(message)"
+            }
+            
+        case .RenderingError(message: let message, location: let location):
+            if let location = location {
+                return "Rendering error at \(location): \(message)"
+            } else {
+                return "Rendering error: \(message)"
+            }
+        }
+    }
+}
 
 
 // =============================================================================

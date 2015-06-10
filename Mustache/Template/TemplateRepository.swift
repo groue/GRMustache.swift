@@ -44,8 +44,7 @@ public protocol TemplateRepositoryDataSource {
     use paths to the templates.
     
     The return value of this method can be nil: the library user would then
-    eventually get an NSError of domain GRMustacheErrorDomain and code
-    GRMustacheErrorCodeTemplateNotFound.
+    eventually catch a MustacheError.TemplateNotFound.
     
     ### Template hierarchies
     
@@ -77,9 +76,12 @@ public protocol TemplateRepositoryDataSource {
     /**
     Returns the Mustache template string that matches the template ID.
     
+    When you can't return a String and have no ready-made error to throw, throw
+    `MustacheError.TemplateNotFound(templateID)`.
+    
     - parameter templateID: The template ID of the template.
     - parameter error:      If there is an error returning a template string,
-                            throws an NSError that describes the problem.
+                            throws an error that describes the problem.
     - returns: A Mustache template string.
     */
     func templateStringForTemplateID(templateID: TemplateID) throws -> String
@@ -285,8 +287,8 @@ final public class TemplateRepository {
     
     - parameter templateString: A Mustache template string.
     - parameter error:          If there is an error loading or parsing template
-                                and partials, throws an NSError that describes
-                                the problem.
+                                and partials, throws an error that describes the
+                                problem.
     - returns: A Mustache Template.
     */
     public func template(string string: String) throws -> Template {
@@ -306,7 +308,7 @@ final public class TemplateRepository {
     
     - parameter name:  The template name.
     - parameter error: If there is an error loading or parsing template and
-                       partials, throws an NSError that describes the problem.
+                       partials, throws an error that describes the problem.
     - returns: A Mustache Template.
     
     See also:
@@ -340,11 +342,11 @@ final public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            throw MustacheError.TemplateNotFound(message: "Template not found: \(name)", location: nil)
         }
         
         guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: templateID) else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            throw MustacheError.TemplateNotFound(message: "Template not found: \(name)", location: nil)
         }
         
         if let templateAST = templateASTCache[templateID] {
@@ -364,7 +366,7 @@ final public class TemplateRepository {
             // Success: update the empty AST
             templateAST.updateFromTemplateAST(compiledAST)
             return templateAST
-        } catch let error as NSError {
+        } catch {
             // Failure: remove the empty AST
             templateASTCache.removeValueForKey(templateID)
             throw error
@@ -410,7 +412,8 @@ final public class TemplateRepository {
             if let string = templates[templateID] {
                 return string
             } else {
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: nil)
+                // TODO: this is not nice public API. Why do users have to bother about writing the localizedDescription, and what is this nil location?
+                throw MustacheError.TemplateNotFound(message: "Template not found: \(templateID)", location: nil)
             }
         }
     }

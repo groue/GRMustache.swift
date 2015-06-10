@@ -62,9 +62,10 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         do {
             try context.boxForMustacheExpression("a.")
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)  // Invalid expression
+        } catch MustacheError.ParseError {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
         }
     }
     
@@ -73,9 +74,10 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         do {
             try context.boxForMustacheExpression("f(x)")
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)  // Missing filter
+        } catch MustacheError.RenderingError {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
         }
     }
 }

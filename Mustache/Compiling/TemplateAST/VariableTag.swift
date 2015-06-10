@@ -41,11 +41,7 @@ class VariableTag: Tag {
     from its public superclass Tag. Return a nice user-friendly description:
     */
     override var description: String {
-        if let templateID = token.templateID {
-            return "\(token.templateSubstring) at line \(token.lineNumber) of template \(templateID)"
-        } else {
-            return "\(token.templateSubstring) at line \(token.lineNumber)"
-        }
+        return "\(token.location.templateSubstring) at \(token.location)"
     }
     
     /**
@@ -53,5 +49,12 @@ class VariableTag: Tag {
     */
     override func render(context: Context) throws -> Rendering {
         return Rendering("", contentType)
+    }
+    
+    /**
+    Inherited from the public super class Tag.
+    */
+    override var location: TemplateLocation {
+        return token.location
     }
 }
