@@ -25,7 +25,7 @@ import XCTest
 import Mustache
 
 class TemplateRepositoryDictionaryTests: XCTestCase {
-
+    
     func testTemplateRepositoryWithDictionary() {
         let templates = [
             "a": "A{{>b}}",
@@ -38,21 +38,19 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         do {
             try repo.template(named: "not_found")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound {
-            XCTAssert(true)
-        } catch {
-            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
         
         do {
             try repo.template(string: "{{>not_found}}")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound {
-            XCTAssert(true)
-        } catch {
-            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-
+        
         template = try! repo.template(named: "a")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "ABC")

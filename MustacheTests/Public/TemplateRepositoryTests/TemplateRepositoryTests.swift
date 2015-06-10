@@ -32,8 +32,9 @@ class TemplateRepositoryTests: XCTestCase {
         do {
             try repo.template(named:"partial")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         } catch {
             XCTAssert(false)
         }
@@ -41,8 +42,9 @@ class TemplateRepositoryTests: XCTestCase {
         do {
             try repo.template(string:"{{>partial}}")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         } catch {
             XCTAssert(false)
         }
@@ -83,7 +85,7 @@ class TemplateRepositoryTests: XCTestCase {
                 if let string = templates[templateID] {
                     return string
                 } else {
-                    throw MustacheError.TemplateNotFound(message: "Template not found: \(templateID)", location: nil)
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Template not found: \(templateID)"])
                 }
             }
             func setTemplateString(templateString: String, forKey key: String) {

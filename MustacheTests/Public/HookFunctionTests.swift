@@ -26,6 +26,10 @@ import Mustache
 
 class HookFunctionTests: XCTestCase {
     
+    enum CustomErrorType : ErrorType {
+        case Error
+    }
+    
     func testWillRenderFunctionIsNotTriggeredByText() {
         var success = true
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
@@ -262,7 +266,7 @@ class HookFunctionTests: XCTestCase {
         XCTAssertTrue(failedRendering)
     }
     
-    func testDidRenderFunctionObservesRenderingMustacheError() {
+    func testDidRenderFunctionObservesRenderingCustomError() {
         var failedRendering = false
         let didRender = { (tag: Tag, box: MustacheBox, string: String?) in
             failedRendering = (string == nil)
@@ -273,12 +277,11 @@ class HookFunctionTests: XCTestCase {
         failedRendering = false
         do {
             try template.render(Box({ (info: RenderingInfo) -> Rendering in
-                throw MustacheError.RenderingError(message: "TagObserverError", location: nil)
+                throw CustomErrorType.Error
             }))
             XCTAssert(false)
-        } catch MustacheError.RenderingError(message: let description, location: let location) {
-            XCTAssertEqual(description, "TagObserverError")
-            XCTAssertEqual(location!.lineNumber, 3)
+        } catch CustomErrorType.Error {
+            XCTAssert(true)
         } catch {
             XCTAssert(false)
         }

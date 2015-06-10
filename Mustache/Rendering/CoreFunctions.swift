@@ -149,7 +149,7 @@ public func Filter(filter: (MustacheBox) throws -> MustacheBox) -> FilterFunctio
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
         return try filter(box)
     }
@@ -183,7 +183,7 @@ public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
         return try filter(box.value as? T)
     }
@@ -264,7 +264,7 @@ public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw MustacheError.RenderingError(message: "Too many arguments", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in

@@ -138,8 +138,9 @@ class FilterTests: XCTestCase {
         do {
             try template.render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -148,8 +149,9 @@ class FilterTests: XCTestCase {
         do {
             try template.render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -158,8 +160,9 @@ class FilterTests: XCTestCase {
         do {
             try template.render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -168,8 +171,9 @@ class FilterTests: XCTestCase {
         do {
             try template.render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -185,8 +189,9 @@ class FilterTests: XCTestCase {
         do {
             try template.render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -198,9 +203,11 @@ class FilterTests: XCTestCase {
         do {
             try template.render()
             XCTAssert(false)
-        } catch MustacheError.RenderingError(message: let description, location: let location) {
-            XCTAssertTrue(description.rangeOfString("Missing filter") != nil)
-            XCTAssertEqual(location!.lineNumber, 2)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("Missing filter") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
         } catch {
             XCTAssert(false)
         }
@@ -217,9 +224,11 @@ class FilterTests: XCTestCase {
         do {
             try template.render(Box(["f": "foo"]))
             XCTAssert(false)
-        } catch MustacheError.RenderingError(message: let description, location: let location) {
-            XCTAssertTrue(description.rangeOfString("Not a filter") != nil)
-            XCTAssertEqual(location!.lineNumber, 2)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("Not a filter") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
         } catch {
             XCTAssert(false)
         }

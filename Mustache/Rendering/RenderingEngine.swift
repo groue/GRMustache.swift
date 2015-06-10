@@ -135,8 +135,14 @@ final class RenderingEngine {
 
         do {
             box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
-        } catch {
-            throw MustacheError.error(error, withDefaultLocation: tag.location)
+        } catch let error as NSError {
+            var userInfo = error.userInfo ?? [:]
+            if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag) at \(tag.location): \(originalLocalizedDescription)"
+            } else {
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag) at \(tag.location)"
+            }
+            throw NSError(domain: error.domain, code: error.code, userInfo: userInfo)
         }
         
         
@@ -171,12 +177,12 @@ final class RenderingEngine {
                     rendering = Rendering("")
                 }
             }
-        } catch let error {
+        } catch {
             for didRender in context.didRenderStack {
                 didRender(tag: tag, box: box, string: nil)
             }
-            // Inject location in error
-            throw MustacheError.error(error, withDefaultLocation: tag.location)
+            // TODO? Inject location in error
+            throw error
         }
         
         // 4. Extend buffer with the rendering, HTML-escaped if needed.

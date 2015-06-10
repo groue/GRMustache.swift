@@ -1,20 +1,21 @@
 // To run this playground, select and build the MustacheOSX scheme.
 
-import Mustache
+//import Mustache
+//
+//let percentFormatter = NSNumberFormatter()
+//percentFormatter.numberStyle = .PercentStyle
+//
+//var template = try! Template(string: "{{ percent(x) }}")
+//template.registerInBaseContext("percent", Box(percentFormatter))
+//
+//// Renders "50%"
+//try! template.render(Box(["x": 0.5]))
 
-enum MyError : ErrorType {
-    case Error1
-    case Error2
-    
-    var description: String { return "MyError" }
-    var localizedDescription: String { return "MyError" }
+let s = "toto"
+
+func f(s: String) -> String {
+    return s + "titi"
 }
 
-do {
-    throw MyError.Error1
-} catch let error as NSError {
-    // Error Domain=MyError Code=0 "The operation couldn’t be completed. (MyError error 0.)"
-    error
-    // "The operation couldn’t be completed. (MyError error 0.)"
-    error.localizedDescription
-}
+let x = f(s)
+let slice = x[x.startIndex..<x.endIndex]

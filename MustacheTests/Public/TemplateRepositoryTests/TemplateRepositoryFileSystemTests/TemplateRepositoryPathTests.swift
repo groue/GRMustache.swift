@@ -121,8 +121,9 @@ class TemplateRepositoryPathTests: XCTestCase {
         do {
             try repo.template(named: "up")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         } catch {
             XCTAssert(false)
         }

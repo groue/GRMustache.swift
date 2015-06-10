@@ -26,6 +26,10 @@ import Mustache
 
 class TemplateRepositoryDataSourceTests: XCTestCase {
     
+    enum CustomErrorType : ErrorType {
+        case Error
+    }
+    
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
             func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
@@ -40,10 +44,12 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                 switch templateID {
                 case "not_found":
                     fatalError("Unexpected")
-                case "NSError":
-                    throw NSError(domain: "TestedDataSource", code: 0, userInfo: nil)
-                case "MustacheError.TemplateNotFound":
-                    throw MustacheError.TemplateNotFound(message: "Custom Not Found Error", location: nil)
+                case "CustomErrorType":
+                    throw CustomErrorType.Error
+                case "CustomNSError":
+                    throw NSError(domain: "CustomNSError", code: 0, userInfo: nil)
+                case "GRMustacheErrorCodeTemplateNotFound":
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Custom Not Found Error"])
                 default:
                     return templateID
                 }
@@ -65,30 +71,33 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         do {
             try repo.template(string: "\n\n{{>not_found}}")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound(message: let message, location: let location) {
-            XCTAssertTrue(message.rangeOfString("not_found") != nil)
-            XCTAssertEqual(location!.lineNumber, 3)
-        } catch {
-            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
         
         do {
-            try repo.template(string: "{{>NSError}}")
+            try repo.template(string: "{{>CustomNSError}}")
             XCTAssert(false)
         } catch let error as NSError {
-            XCTAssertEqual(error.domain, "TestedDataSource")
+            XCTAssertEqual(error.domain, "CustomNSError")
+        }
+        
+        do {
+            try repo.template(string: "{{>CustomErrorType}}")
+            XCTAssert(false)
+        } catch CustomErrorType.Error {
+            XCTAssert(true)
         } catch {
             XCTAssert(false)
         }
         
         do {
-            try repo.template(string: "\n\n{{>MustacheError.TemplateNotFound}}")
+            try repo.template(string: "\n\n{{>GRMustacheErrorCodeTemplateNotFound}}")
             XCTAssert(false)
-        } catch MustacheError.TemplateNotFound(message: let message, location: let location) {
-            XCTAssertEqual(message, "Custom Not Found Error")
-            XCTAssertEqual(location!.lineNumber, 3)
-        } catch {
-            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
     }
     

@@ -26,6 +26,10 @@ import Mustache
 
 class RenderFunctionTests: XCTestCase {
 
+    enum CustomErrorType : ErrorType {
+        case Error
+    }
+    
     func testRenderFunctionInVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("---")
@@ -113,17 +117,15 @@ class RenderFunctionTests: XCTestCase {
         }
     }
     
-    func testRenderFunctionCanThrowMustacheErrorFromVariableTag() {
-        let errorDescription = "ClusterTests"
+    func testRenderFunctionCanThrowCustomErrorFromVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw MustacheError.RenderingError(message: errorDescription, location: nil)
+            throw CustomErrorType.Error
         }
         do {
             try Template(string: "\n\n{{.}}").render(Box(render))
             XCTAssert(false)
-        } catch MustacheError.RenderingError(message: let description, location: let location) {
-            XCTAssertEqual(description, errorDescription)
-            XCTAssertEqual(location!.lineNumber, 3)
+        } catch CustomErrorType.Error {
+            XCTAssert(true)
         } catch {
             XCTAssert(false)
         }
@@ -144,17 +146,15 @@ class RenderFunctionTests: XCTestCase {
         }
     }
     
-    func testRenderFunctionCanThrowMustacheErrorFromSectionTag() {
-        let errorDescription = "ClusterTests"
+    func testRenderFunctionCanThrowCustomErrorFromSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw MustacheError.RenderingError(message: errorDescription, location: nil)
+            throw CustomErrorType.Error
         }
         do {
             try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(Box(render))
             XCTAssert(false)
-        } catch MustacheError.RenderingError(message: let description, location: let location) {
-            XCTAssertEqual(description, errorDescription)
-            XCTAssertEqual(location!.lineNumber, 3)
+        } catch CustomErrorType.Error {
+            XCTAssert(true)
         } catch {
             XCTAssert(false)
         }
@@ -490,8 +490,9 @@ class RenderFunctionTests: XCTestCase {
         do {
             try Template(string: "{{items}}").render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }
@@ -508,8 +509,9 @@ class RenderFunctionTests: XCTestCase {
         do {
             try Template(string: "{{#items}}{{/items}}").render(box)
             XCTAssert(false)
-        } catch MustacheError.RenderingError {
-            XCTAssert(true)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
         } catch {
             XCTAssert(false)
         }

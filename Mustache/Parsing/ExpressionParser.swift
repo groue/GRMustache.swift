@@ -294,10 +294,10 @@ final class ExpressionParser {
         switch state {
         case .Empty:
             outEmpty = true
-            throw MustacheError.ParseError(message: "Missing expression", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Missing expression"])
         case .Error(let description):
             outEmpty = false
-            throw MustacheError.ParseError(message: "Invalid expression `\(string)`: \(description)", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Invalid expression `\(string)`: \(description)"])
         case .Valid(expression: let validExpression):
             return validExpression
         default:

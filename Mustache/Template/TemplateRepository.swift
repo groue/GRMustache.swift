@@ -43,8 +43,8 @@ public protocol TemplateRepositoryDataSource {
     identity a template or a partial. For example, a file-based data source may
     use paths to the templates.
     
-    The return value of this method can be nil: the library user would then
-    eventually catch a MustacheError.TemplateNotFound.
+    The return value of this method can be nil: the library user will then
+    eventually catch an missing template error.
     
     ### Template hierarchies
     
@@ -75,9 +75,6 @@ public protocol TemplateRepositoryDataSource {
     
     /**
     Returns the Mustache template string that matches the template ID.
-    
-    When you can't return a String and have no ready-made error to throw, throw
-    `MustacheError.TemplateNotFound(templateID)`.
     
     - parameter templateID: The template ID of the template.
     - parameter error:      If there is an error returning a template string,
@@ -342,11 +339,11 @@ final public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw MustacheError.TemplateNotFound(message: "Template not found: \(name)", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Template not found: \(name)"])
         }
         
         guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: templateID) else {
-            throw MustacheError.TemplateNotFound(message: "Template not found: \(name)", location: nil)
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Template not found: \(name)"])
         }
         
         if let templateAST = templateASTCache[templateID] {
@@ -412,8 +409,7 @@ final public class TemplateRepository {
             if let string = templates[templateID] {
                 return string
             } else {
-                // TODO: this is not nice public API. Why do users have to bother about writing the localizedDescription, and what is this nil location?
-                throw MustacheError.TemplateNotFound(message: "Template not found: \(templateID)", location: nil)
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Template not found: \(templateID)"])
             }
         }
     }
