@@ -63,10 +63,11 @@ extension StandardLibrary {
         /**
         Returns a Localizer.
         
-        - parameter bundle: The bundle where to look for localized strings. If nil,
-                       the main bundle is used.
-        - parameter table:  The table where to look for localized strings. If nil,
-                       the default Localizable.strings table would be used.
+        - parameter bundle: The bundle where to look for localized strings. If
+                            nil, the main bundle is used.
+        - parameter table:  The table where to look for localized strings. If
+                            nil, the default `Localizable.strings` is used.
+        - returns: A new Localizer.
         */
         public init(bundle: NSBundle?, table: String?) {
             self.bundle = bundle ?? NSBundle.mainBundle()

@@ -146,8 +146,8 @@ public class MustacheBox : NSObject {
         let box = Box(["firstName": "Arthur"])
         box["firstName"].value  // "Arthur"
     
-    - parameter key:  A key
-    - returns: the MustacheBox for this key.
+    - parameter key: A key.
+    - returns: The MustacheBox for *key*.
     */
     public subscript (key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()

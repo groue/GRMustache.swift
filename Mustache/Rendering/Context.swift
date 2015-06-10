@@ -69,8 +69,8 @@ final public class Context {
     /**
     Builds a context that contains the provided box.
     
-    - parameter box: A box
-    - returns: a new context that contains the provided box.
+    - parameter box: A box.
+    - returns: A new context that contains *box*.
     */
     public convenience init(_ box: MustacheBox) {
         self.init(type: .Box(box: box, parent: Context()))
@@ -80,8 +80,9 @@ final public class Context {
     Builds a context with a registered key. Registered keys are looked up first
     when evaluating Mustache tags.
     
-    - parameter key: An identifier
-    - parameter box: The box registered for `key`
+    - parameter key: An identifier.
+    - parameter box: A box.
+    - returns: A new context with *box* registered for *key*.
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
@@ -95,8 +96,8 @@ final public class Context {
     Returns a new context with the provided box pushed at the top of the context
     stack.
     
-    - parameter box: The box pushed on the top of the context stack
-    - returns: a new context
+    - parameter box: A box.
+    - returns: A new context with *box* pushed at the top of the stack.
     */
     @warn_unused_result(message="Context.extendedContext returns a new Context.")
     public func extendedContext(box: MustacheBox) -> Context {
@@ -107,9 +108,9 @@ final public class Context {
     Returns a new context with the provided box at the top of the context stack.
     Registered keys are looked up first when evaluating Mustache tags.
     
-    - parameter key: An identifier
-    - parameter box: The box registered for `key`
-    - returns: a new context
+    - parameter key: An identifier.
+    - parameter box: A box.
+    - returns: A new context with *box* registered for *key*.
     */
     @warn_unused_result(message="Context.contextWithRegisteredKey returns a new Context.")
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
@@ -191,12 +192,12 @@ final public class Context {
         // "Albert Einstein"
         try! context.boxForMustacheExpression("person.name").value
     
-    - parameter string: The expression string
-    - parameter error:  If there is a problem parsing or evaluating the expression,
-                   upon return contains an NSError object that describes the
-                   problem.
+    - parameter string: The expression string.
+    - parameter error:  If there is a problem parsing or evaluating the
+                        expression, throws an NSError that describes the
+                        problem.
     
-    - returns: The value of the expression
+    - returns: The value of the expression.
     */
     public func boxForMustacheExpression(string: String) throws -> MustacheBox {
         let parser = ExpressionParser()

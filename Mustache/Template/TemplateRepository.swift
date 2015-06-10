@@ -69,23 +69,19 @@ public protocol TemplateRepositoryDataSource {
     following this rule yields undefined behavior.
     
     - parameter name:           The name of the template or template partial.
-    - parameter baseTemplateID: The template ID of the enclosing template, or nil.
-    
-    - returns: a template ID
+    - parameter baseTemplateID: The template ID of the enclosing template.
+    - returns: A template ID.
     */
     func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
     
     /**
     Returns the Mustache template string that matches the template ID.
     
-    - parameter templateID: The template ID of the template
-    - parameter error:      If there is an error returning a template string, upon
-                       return contains nil, or an NSError object that describes
-                       the problem.
-    
-    - returns: a Mustache template string
+    - parameter templateID: The template ID of the template.
+    - parameter error:      If there is an error returning a template string,
+                            throws an NSError that describes the problem.
+    - returns: A Mustache template string.
     */
-    
     func templateStringForTemplateID(templateID: TemplateID) throws -> String
 }
 
@@ -137,7 +133,8 @@ final public class TemplateRepository {
         try! repository.template(string: "{{>template}}").render()
     
     - parameter templates: A dictionary whose keys are template names and values
-                      template strings.
+                           template strings.
+    - returns: A new TemplateRepository.
     */
     convenience public init(templates: [String: String]) {
         self.init(dataSource: DictionaryDataSource(templates: templates))
@@ -171,11 +168,12 @@ final public class TemplateRepository {
     
     
     - parameter directoryPath:     The path to the directory containing template
-                              files.
-    - parameter templateExtension: The extension of template files. Default extension
-                              is "mustache".
-    - parameter encoding:          The encoding of template files. Default encoding
-                              is NSUTF8StringEncoding.
+                                   files.
+    - parameter templateExtension: The extension of template files. Default
+                                   extension is "mustache".
+    - parameter encoding:          The encoding of template files. Default
+                                   encoding is NSUTF8StringEncoding.
+    - returns: A new TemplateRepository.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
@@ -210,10 +208,11 @@ final public class TemplateRepository {
     
     
     - parameter baseURL:           The base URL where to look for templates.
-    - parameter templateExtension: The extension of template files. Default extension
-                              is "mustache".
-    - parameter encoding:          The encoding of template files. Default encoding
-                              is NSUTF8StringEncoding.
+    - parameter templateExtension: The extension of template resources. Default
+                                   extension is "mustache".
+    - parameter encoding:          The encoding of template resources. Default
+                                   encoding is NSUTF8StringEncoding.
+    - returns: A new TemplateRepository.
     */
     convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
@@ -228,12 +227,13 @@ final public class TemplateRepository {
         // Loads the template.mustache resource of the main bundle:
         let template = try! repository.template(named: "template")
     
-    - parameter bundle:            The bundle that stores templates as resources.
-                              Nil stands for the main bundle.
-    - parameter templateExtension: The extension of template files. Default extension
-                              is "mustache".
-    - parameter encoding:          The encoding of template files. Default encoding
-                              is NSUTF8StringEncoding.
+    - parameter bundle:            The bundle that stores templates resources.
+                                   Nil stands for the main bundle.
+    - parameter templateExtension: The extension of template resources. Default
+                                   extension is "mustache".
+    - parameter encoding:          The encoding of template resources. Default
+                                   encoding is NSUTF8StringEncoding.
+    - returns: A new TemplateRepository.
     */
     convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
         self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
@@ -283,12 +283,11 @@ final public class TemplateRepository {
     `{{>partial}}` load partial templates from URLs, file paths, keys in a
     dictionary, or whatever is relevant to the repository's data source.
     
-    - parameter templateString: A Mustache template string
-    - parameter error:          If there is an error loading or parsing template and
-                           partials, upon return contains an NSError object that
-                           describes the problem.
-    
-    - returns: A Mustache Template
+    - parameter templateString: A Mustache template string.
+    - parameter error:          If there is an error loading or parsing template
+                                and partials, throws an NSError that describes
+                                the problem.
+    - returns: A Mustache Template.
     */
     public func template(string string: String) throws -> Template {
         let templateAST = try self.templateAST(string: string)
@@ -305,12 +304,10 @@ final public class TemplateRepository {
     method always return new Template instances, which you can further configure
     independently.
     
-    - parameter name:  The template name
-    - parameter error: If there is an error loading or parsing template and partials,
-                  upon return contains an NSError object that describes the
-                  problem.
-    
-    - returns: A Mustache Template
+    - parameter name:  The template name.
+    - parameter error: If there is an error loading or parsing template and
+                       partials, throws an NSError that describes the problem.
+    - returns: A Mustache Template.
     
     :see: reloadTemplates
     */

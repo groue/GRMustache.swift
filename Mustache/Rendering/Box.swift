@@ -129,9 +129,9 @@ Values that conform to the `MustacheBoxable` protocol can feed Mustache
 templates.
 
 - parameter boxable: An optional value that conform to the `MustacheBoxable`
-                protocol.
+                     protocol.
 
-- returns: A MustacheBox that wraps `boxable`
+- returns: A MustacheBox that wraps *boxable*.
 */
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
     if let boxable = boxable {
@@ -579,10 +579,10 @@ property: it reliably returns an Array of MustacheBox, whatever the actual
 type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 
-- parameter collection: A collection of values that conform to the `MustacheBoxable`
-                   protocol.
+- parameter collection: a collection of values that conform to the
+                        `MustacheBoxable` protocol.
 
-- returns: A MustacheBox that wraps `collection`
+- returns: A MustacheBox that wraps *collection*.
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
     if let collection = collection {
@@ -682,7 +682,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 //- parameter collection: A collection of optional values that conform to the
 //                        `MustacheBoxable` protocol.
 //
-//- returns: A MustacheBox that wraps `collection`
+//- returns: A MustacheBox that wraps *collection*.
 //*/
 //public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
 //    if let collection = collection {
@@ -777,7 +777,7 @@ type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 - parameter set: A set of values that conform to the `MustacheBoxable` protocol.
 
-- returns: A MustacheBox that wraps `set`
+- returns: A MustacheBox that wraps *set*.
 */
 public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
     if let set = set {
@@ -855,10 +855,10 @@ Whenever you want to extract a dictionary of a MustacheBox, use the
 dictionary, whatever the actual type of the raw boxed value.
 
 
-- parameter dictionary: A dictionary of values that conform to the `MustacheBoxable`
-                   protocol.
+- parameter dictionary: A dictionary of values that conform to the
+                        `MustacheBoxable` protocol.
 
-- returns: A MustacheBox that wraps `dictionary`
+- returns: A MustacheBox that wraps *dictionary*.
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -923,7 +923,7 @@ dictionary, whatever the actual type of the raw boxed value.
 - parameter dictionary: A dictionary of optional values that conform to the
                         `MustacheBoxable` protocol.
 
-- returns: A MustacheBox that wraps `dictionary`
+- returns: A MustacheBox that wraps *dictionary*.
 */
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
@@ -976,8 +976,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 /**
 See the documentation of `NSObject.mustacheBox`.
 
-- parameter object: An NSObject
-- returns: A MustacheBox that wraps `object`
+- parameter object: An NSObject.
+- returns: A MustacheBox that wraps *object*.
 */
 public func Box(object: NSObject?) -> MustacheBox {
     if let object = object {
@@ -1093,9 +1093,8 @@ protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.
 
 Otherwise, GRMustache logs a warning, and returns the empty box.
 
-- parameter object: An object
-
-- returns: A MustacheBox that wraps `object`
+- parameter object: An object.
+- returns: A MustacheBox that wraps *object*.
 */
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
@@ -1551,8 +1550,8 @@ feed template.
     // Renders "100"
     try! template.render(Box(["x": 10]))
 
-- parameter filter: A FilterFunction
-- returns: A MustacheBox
+- parameter filter: A FilterFunction.
+- returns: A MustacheBox that wraps *filter*.
 
 :see: FilterFunction
 */
@@ -1570,8 +1569,8 @@ feed template.
     let template = try! Template(string: "{{ foo }}")
     try! template.render(Box(["foo": Box(foo)]))
 
-- parameter render: A RenderFunction
-- returns: A MustacheBox
+- parameter render: A RenderFunction.
+- returns: A MustacheBox that wraps *render*.
 
 :see: RenderFunction
 */
@@ -1601,7 +1600,7 @@ feed template.
     try! template.render(Box(data))
 
 - parameter willRender: A WillRenderFunction
-- returns: A MustacheBox
+- returns: A MustacheBox that wraps *willRender*.
 
 :see: WillRenderFunction
 */
@@ -1631,8 +1630,8 @@ feed template.
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
     try! template.render(Box(data))
 
-- parameter didRender: A DidRenderFunction
-- returns: A MustacheBox
+- parameter didRender: A DidRenderFunction/
+- returns: A MustacheBox that wraps *didRender*.
 
 :see: DidRenderFunction
 */
@@ -1874,14 +1873,14 @@ to implement 2:
     let template = try! Template(string: "{{# person }}The person is {{.}}{{/ person }}")
     try! template.render(Box(["person": person]))
 
-- parameter value:          An optional boxed value
+- parameter value:          An optional boxed value.
 - parameter boolValue:      An optional boolean value for the Box.
-- parameter keyedSubscript: An optional KeyedSubscriptFunction
-- parameter filter:         An optional FilterFunction
-- parameter render:         An optional RenderFunction
-- parameter willRender:     An optional WillRenderFunction
-- parameter didRender:      An optional DidRenderFunction
-- returns: A MustacheBox
+- parameter keyedSubscript: An optional `KeyedSubscriptFunction`.
+- parameter filter:         An optional `FilterFunction`.
+- parameter render:         An optional `RenderFunction`.
+- parameter willRender:     An optional `WillRenderFunction`.
+- parameter didRender:      An optional `DidRenderFunction`.
+- returns: A MustacheBox.
 */
 public func Box(
     value value: Any? = nil,

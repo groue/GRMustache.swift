@@ -34,12 +34,10 @@ final public class Template {
     /**
     Parses a template string, and returns a template.
     
-    - parameter string: The template string
+    - parameter string: The template string.
     - parameter error:  If there is an error loading or parsing template and
-                   partials, upon return contains an NSError object that
-                   describes the problem.
-    
-    - returns: The created template
+                        partials, throws an NSError that describes the problem.
+    - returns: A new Template.
     */
     public convenience init(string: String) throws {
         let repository = TemplateRepository()
@@ -56,13 +54,12 @@ final public class Template {
         // `{{>partial}}` in `/path/to/template.txt` loads `/path/to/partial.txt`:
         let template = try! Template(path: "/path/to/template.txt")
     
-    - parameter path:     The path of the template.
+    - parameter path:     The path to the template file.
     - parameter encoding: The encoding of the template file.
     - parameter error:    If there is an error loading or parsing template and
-                     partials, upon return contains an NSError object that
-                     describes the problem.
-    
-    - returns: The created template
+                          partials, throws an NSError that describes the
+                          problem.
+    - returns: A new Template.
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let directoryPath = path.stringByDeletingLastPathComponent
@@ -83,12 +80,11 @@ final public class Template {
         let template = try! Template(URL: "file://path/to/template.txt")
     
     - parameter URL:      The URL of the template.
-    - parameter encoding: The encoding of template file.
+    - parameter encoding: The encoding of the template resource.
     - parameter error:    If there is an error loading or parsing template and
-                     partials, upon return contains an NSError object that
-                     describes the problem.
-    
-    - returns: The created template
+                          partials, throws an NSError that describes the
+                          problem.
+    - returns: A new Template.
     */
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let baseURL = URL.URLByDeletingLastPathComponent!
@@ -109,18 +105,17 @@ final public class Template {
         // `{{>partial}}` in `template.mustache` loads resource `partial.mustache`:
         let template = try! Template(named: "template")
     
-    - parameter name:               The name of a bundle resource.
-    - parameter bundle:             The bundle where to look for the template
-                               resource. If nil, the main bundle is used.
-    - parameter templateExtension:  If extension is an empty string or nil, the
-                               extension is assumed not to exist and the
-                               template file should exactly matches name.
-    - parameter encoding:           The encoding of template resource.
-    - parameter error:              If there is an error loading or parsing template
-                               and partials, upon return contains an NSError
-                               object that describes the problem.
-    
-    - returns: The created template
+    - parameter name:              The name of a bundle resource.
+    - parameter bundle:            The bundle where to look for the template
+                                   resource. If nil, the main bundle is used.
+    - parameter templateExtension: If extension is an empty string or nil, the
+                                   extension is assumed not to exist and the
+                                   template file should exactly matches name.
+    - parameter encoding:          The encoding of template resource.
+    - parameter error:             If there is an error loading or parsing
+                                   template and partials, throws an NSError
+                                   that describes the problem.
+    - returns: A new Template.
     */
     public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
@@ -136,11 +131,10 @@ final public class Template {
     Renders a template with a context stack initialized with the provided box
     on top of the templates's base context.
     
-    - parameter box:   A boxed value used for evaluating Mustache tags
-    - parameter error: If there is an error rendering the tag, upon return contains
-                  an NSError object that describes the problem.
-    
-    - returns: The rendered string
+    - parameter box:   A boxed value used for evaluating Mustache tags.
+    - parameter error: If there is an error rendering the tag, throws an NSError
+                       that describes the problem.
+    - returns: The rendered string.
     */
     public func render(box: MustacheBox = Box()) throws -> String {
         let rendering = try render(baseContext.extendedContext(box))
@@ -156,10 +150,9 @@ final public class Template {
     be used when you perform custom rendering in a `RenderFunction`.
     
     - parameter context: A context stack
-    - parameter error:   If there is an error rendering the tag, upon return contains
-                    an NSError object that describes the problem.
-    
-    - returns: The template rendering
+    - parameter error:   If there is an error rendering the tag, throws an
+                         NSError that describes the problem.
+    - returns: The template rendering.
     
     :see: RenderFunction
     :see: Template.contentType

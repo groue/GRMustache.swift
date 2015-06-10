@@ -228,7 +228,7 @@ public struct Configuration {
         // "bar"
         try! template3.render()
 
-    - parameter box: The box pushed on the top of the context stack
+    - parameter box: The box pushed on the top of the context stack.
     
     :see: baseContext
     :see: registerInBaseContext
@@ -272,8 +272,8 @@ public struct Configuration {
         try! template3.render()
 
     
-    - parameter key: An identifier
-    - parameter box: The box registered for `key`
+    - parameter key: An identifier.
+    - parameter box: The box registered for *key*.
     
     :see: baseContext
     :see: extendBaseContext

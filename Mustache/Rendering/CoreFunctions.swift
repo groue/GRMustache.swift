@@ -142,8 +142,8 @@ For example, here is the trivial `identity` filter:
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(MustacheBox) throws -> MustacheBox`
-- returns: a FilterFunction
+- parameter filter: A function `(MustacheBox) throws -> MustacheBox`.
+- returns: A FilterFunction.
 */
 public func Filter(filter: (MustacheBox) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
@@ -176,8 +176,8 @@ given to the filter.
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(T?) throws -> MustacheBox`
-- returns: a FilterFunction
+- parameter filter: A function `(T?) throws -> MustacheBox`.
+- returns: A FilterFunction.
 */
 public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
@@ -212,8 +212,8 @@ If your filter is given too many or too few arguments, you should return nil and
 set error to an NSError of domain `GRMustacheErrorDomain` and code
 `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `([MustacheBox]) throws -> MustacheBox`
-- returns: a FilterFunction
+- parameter filter: A function `([MustacheBox]) throws -> MustacheBox`.
+- returns: A FilterFunction.
 */
 public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
     return _VariadicFilter([], filter: filter)
@@ -258,8 +258,8 @@ When this filter is executed, eventual HTML-escaping performed by the rendering
 engine has not happened yet: the rendering argument may contain raw text. This
 allows you to chain post-rendering filters without mangling HTML entities.
 
-- parameter filter: a function `(Rendering) throws -> Rendering`
-- returns: a FilterFunction
+- parameter filter: A function `(Rendering) throws -> Rendering`.
+- returns: A FilterFunction.
 */
 public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
@@ -289,8 +289,8 @@ For an example of such a filter, see the documentation of
 `func Filter<T>(filter: (T?, RenderingInfo) throws -> Rendering) -> FilterFunction`.
 This example processes `T?` instead of `MustacheBox`, but the idea is the same.
 
-- parameter filter: a function `(MustacheBox, RenderingInfo) throws -> Rendering`
-- returns: a FilterFunction
+- parameter filter: A function `(MustacheBox, RenderingInfo) throws -> Rendering`.
+- returns: A FilterFunction.
 */
 public func Filter(filter: (MustacheBox, RenderingInfo) throws -> Rendering) -> FilterFunction {
     return Filter { (box: MustacheBox) in
@@ -336,8 +336,8 @@ domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
 See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.
 
-- parameter filter: a function `(T?, RenderingInfo) throws -> Rendering`
-- returns: a FilterFunction
+- parameter filter: A function `(T?, RenderingInfo) throws -> Rendering`.
+- returns: A FilterFunction.
 */
 public func Filter<T>(filter: (T?, RenderingInfo) throws -> Rendering) -> FilterFunction {
     return Filter { (t: T?) in
@@ -446,11 +446,10 @@ The default rendering thus reads:
     let template = try! Template(string: "{{value}}")
     let rendering = try! template.render(Box(["value": Box(renderValue)]))
 
-- parameter info:   A RenderingInfo
-- parameter error:  If there is a problem in the rendering, upon return contains an
-               NSError object that describes the problem.
-
-- returns: a Rendering, or nil in case of error.
+- parameter info:  A RenderingInfo.
+- parameter error: If there is a problem in the rendering, throws an NSError
+                   that describes the problem.
+- returns: A Rendering.
 */
 public typealias RenderFunction = (info: RenderingInfo) throws -> Rendering
 
@@ -496,8 +495,8 @@ TODO: rewrite example below in Swift 2
     // Renders "<b>Lionel Richie has a Mustache.</b>"
     let rendering = try! template.render(Box(data))
 
-- parameter lambda:  A `String -> String` function
-- returns: A RenderFunction
+- parameter lambda: A `String -> String` function.
+- returns: A RenderFunction.
 */
 public func Lambda(lambda: String -> String) -> RenderFunction {
     return { (info: RenderingInfo) in
@@ -558,8 +557,8 @@ using a Template instead of a lambda (see the documentation of
     // Renders "Lionel Richie has a Mustache."
     let rendering = try! template.render(Box(data))
 
-- parameter lambda: A `() -> String` function
-- returns: A RenderFunction
+- parameter lambda: A `() -> String` function.
+- returns: A RenderFunction.
 */
 public func Lambda(lambda: () -> String) -> RenderFunction {
     return { (info: RenderingInfo) in
@@ -610,8 +609,9 @@ public struct Rendering {
         Rendering("foo", .Text)
         Rendering("foo", .HTML)
     
-    - parameter string:       A string
-    - parameter contentType:  A content type
+    - parameter string:      A string.
+    - parameter contentType: A content type.
+    - returns: A Rendering.
     */
     public init(_ string: String, _ contentType: ContentType = .Text) {
         self.string = string

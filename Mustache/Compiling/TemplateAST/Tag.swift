@@ -134,11 +134,10 @@ public class Tag: CustomStringConvertible {
         // Renders "<strong>Hello Arthur</strong>"
         try! template.render(Box(["name": Box("Arthur")]))
     
-    - parameter context: The context stack for evaluating mustache tags
-    - parameter error:   If there is a problem rendering the tag, upon return
-                    contains an NSError object that describes the problem.
-    
-    - returns: The rendering of the tag
+    - parameter context: The context stack for evaluating mustache tags.
+    - parameter error:   If there is a problem rendering the tag, throws an
+                         NSError that describes the problem.
+    - returns: The rendering of the tag.
     
     */
     public func render(context: Context) throws -> Rendering {
