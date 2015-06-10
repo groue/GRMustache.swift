@@ -3,6 +3,6 @@
 import Mustache
 
 // Renders "Hello Arthur"
-let template = Template(string: "Hello {{ name }}")!
-let rendering = template.render(Box(["name": "Arthur"]))!
-println(rendering)
+let template = try! Template(string: "Hello {{ name }}")
+let rendering = try! template.render(Box(["name": "Arthur"]))
+print(rendering)
