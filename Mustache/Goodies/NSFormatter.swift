@@ -36,21 +36,21 @@ extension NSFormatter {
         let percentFormatter = NSNumberFormatter()
         percentFormatter.numberStyle = .PercentStyle
 
-        var template = Template(string: "{{ percent(x) }}")!
+        var template = try! Template(string: "{{ percent(x) }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
 
         // Renders "50%"
-        template.render(Box(["x": 0.5]))!
+        try! template.render(Box(["x": 0.5]))
     
     
     `NSFormatter` can also format all variable tags in a Mustache section:
     
-        template = Template(string:
+        template = try! Template(string:
             "{{# percent }}" +
               "{{#ingredients}}" +
                 "- {{name}} ({{proportion}})\n" +
               "{{/ingredients}}" +
-            "{{/percent}}")!
+            "{{/percent}}")
         template.registerInBaseContext("percent", Box(percentFormatter))
 
         // - bread (50%)
@@ -61,7 +61,7 @@ extension NSFormatter {
                 ["name": "bread", "proportion": 0.5],
                 ["name": "ham", "proportion": 0.35],
                 ["name": "butter", "proportion": 0.15]]]
-        template.render(Box(data))!
+        try! template.render(Box(data))
     
     As seen in the example above, variable tags buried inside inner sections are
     escaped as well, so that you can render loop and conditional sections.
