@@ -23,63 +23,45 @@
 
 import Foundation
 
-final class ExpressionInvocation {
-    private let expression: Expression
-    private var result: MustacheBox
-    private var context: Context?
-    
-    init (expression: Expression) {
-        self.result = Box()
-        self.expression = expression
-    }
-    
-    enum InvocationResult {
-        case Success(MustacheBox)
-        case Error(NSError)
-    }
+struct ExpressionInvocation {
+    let expression: Expression
     
     func invokeWithContext(context: Context) throws -> MustacheBox {
-        self.context = context
-        try evaluate(expression)
-        return result
+        return try evaluate(context: context, expression: expression)
     }
     
-    // On error, return an error
-    // On success, self.result is the evaluation of the expression
-    private func evaluate(expression: Expression) throws {
+    private func evaluate(context context: Context, expression: Expression) throws -> MustacheBox {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
             
-            result = context!.topBox
+            return context.topBox
             
         case .Identifier(let identifier):
             // {{ identifier }}
             
-            result = context![identifier]
+            return context[identifier]
 
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            try evaluate(baseExpression.expression)
-            result = result[identifier]
+            return try evaluate(context: context, expression: baseExpression.expression)[identifier]
             
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
-            try evaluate(filterExpression.expression)
-            let filterBox = result
+            let filterBox = try evaluate(context: context, expression: filterExpression.expression)
             
-            try evaluate(argumentExpression.expression)
-            let argumentBox = result
-            
-            if let filter = filterBox.filter {
-                result = try filter(box: argumentBox, partialApplication: partialApplication)
-            } else if filterBox.isEmpty {
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
-            } else {
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+            guard let filter = filterBox.filter else {
+                if filterBox.isEmpty {
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
+                } else {
+                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+                }
             }
+            
+            let argumentBox = try evaluate(context: context, expression: argumentExpression.expression)
+            return try filter(box: argumentBox, partialApplication: partialApplication)
         }
     }
 }
