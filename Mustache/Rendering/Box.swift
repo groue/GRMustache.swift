@@ -80,8 +80,8 @@ Your own types can conform to it as well, so that they can feed templates:
     extension Profile: MustacheBoxable { ... }
 
     let profile = ...
-    let template = Template(named: "Profile")!
-    let rendering = template.render(Box(profile))!
+    let template = try! Template(named: "Profile")
+    let rendering = try! template.render(Box(profile))
 */
 public protocol MustacheBoxable {
     
@@ -114,9 +114,9 @@ public protocol MustacheBoxable {
         }
 
         // Renders "Tom Selleck"
-        let template = Template(string: "{{person.fullName}}")!
+        let template = try! Template(string: "{{person.fullName}}")
         let person = Person(firstName: "Tom", lastName: "Selleck")
-        template.render(Box(["person": Box(person)]))!
+        try! template.render(Box(["person": Box(person)]))
 
     However, there are multiple ways to build a box, several `Box()` functions.
     See their documentations.
@@ -431,13 +431,11 @@ extension String : MustacheBoxable {
 // This allows collections to avoid enumerating their items when they are part
 // of another collections:
 //
-// ::
-//
-//   {{# arrays }}  // Each array renders as an enumeration item, and has itself enter the context stack.
-//     {{#.}}       // Each array renders "normally", and enumerates its items
-//       ...
-//     {{/.}}
-//   {{/ arrays }}
+//     {{# arrays }}  // Each array renders as an enumeration item, and has itself enter the context stack.
+//       {{#.}}       // Each array renders "normally", and enumerates its items
+//         ...
+//       {{/.}}
+//     {{/ arrays }}
 //
 //
 // IMPLEMENTATION NOTE 2
@@ -544,8 +542,8 @@ Mustache templates. It behaves exactly like Objective-C `NSArray`.
     let collection: [Int] = [1,2,3]
 
     // Renders "123"
-    let template = Template(string: "{{#collection}}{{.}}{{/collection}}")!
-    template.render(Box(["collection": Box(collection)]))!
+    let template = try! Template(string: "{{#collection}}{{.}}{{/collection}}")
+    try! template.render(Box(["collection": Box(collection)]))
 
 
 ### Rendering
@@ -644,8 +642,8 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 //    let collection: [Int] = [1,2,3]
 //
 //    // Renders "123"
-//    let template = Template(string: "{{#collection}}{{.}}{{/collection}}")!
-//    template.render(Box(["collection": Box(collection)]))!
+//    let template = try! Template(string: "{{#collection}}{{.}}{{/collection}}")
+//    try! template.render(Box(["collection": Box(collection)]))
 //
 //
 //### Rendering
@@ -682,7 +680,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 //
 //
 //- parameter collection: A collection of optional values that conform to the
-//                   `MustacheBoxable` protocol.
+//                        `MustacheBoxable` protocol.
 //
 //- returns: A MustacheBox that wraps `collection`
 //*/
@@ -743,8 +741,8 @@ templates. It behaves exactly like Objective-C `NSSet`.
     let set: Set<Int> = [1,2,3]
 
     // Renders "213"
-    let template = Template(string: "{{#set}}{{.}}{{/set}}")!
-    template.render(Box(["set": Box(set)]))!
+    let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
+    try! template.render(Box(["set": Box(set)]))
 
 
 ### Rendering
@@ -823,8 +821,8 @@ Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
     let dictionary: [String: String] = [
         "firstName": "Freddy",
         "lastName": "Mercury"]
-    let template = Template(string: "{{firstName}} {{lastName}}")!
-    let rendering = template.render(Box(dictionary))!
+    let template = try! Template(string: "{{firstName}} {{lastName}}")
+    let rendering = try! template.render(Box(dictionary))
 
 
 ### Rendering
@@ -842,12 +840,12 @@ In order to iterate over the key/value pairs of a dictionary, use the `each`
 filter from the Standard Library:
 
     // Register StandardLibrary.each for the key "each":
-    let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+    let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
     template.registerInBaseContext("each", Box(StandardLibrary.each))
 
     // Renders "<firstName:Freddy, lastName:Mercury,>"
     let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-    let rendering = template.render(Box(["dictionary": dictionary]))!
+    let rendering = try! template.render(Box(["dictionary": dictionary]))
 
 
 ### Unwrapping from MustacheBox
@@ -888,8 +886,8 @@ can feed Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
     let dictionary: [String: String?] = [
         "firstName": "Freddy",
         "lastName": "Mercury"]
-    let template = Template(string: "{{firstName}} {{lastName}}")!
-    let rendering = template.render(Box(dictionary))!
+    let template = try! Template(string: "{{firstName}} {{lastName}}")
+    let rendering = try! template.render(Box(dictionary))
 
 
 ### Rendering
@@ -907,12 +905,12 @@ In order to iterate over the key/value pairs of a dictionary, use the `each`
 filter from the Standard Library:
 
     // Register StandardLibrary.each for the key "each":
-    let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+    let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
     template.registerInBaseContext("each", Box(StandardLibrary.each))
 
     // Renders "<firstName:Freddy, lastName:Mercury,>"
     let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-    let rendering = template.render(Box(["dictionary": dictionary]))!
+    let rendering = try! template.render(Box(["dictionary": dictionary]))
 
 
 ### Unwrapping from MustacheBox
@@ -923,7 +921,7 @@ dictionary, whatever the actual type of the raw boxed value.
 
 
 - parameter dictionary: A dictionary of optional values that conform to the
-                   `MustacheBoxable` protocol.
+                        `MustacheBoxable` protocol.
 
 - returns: A MustacheBox that wraps `dictionary`
 */
@@ -1113,27 +1111,25 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
         // Thing class conforms to the AnyObject protocol, just as all Swift
         // classes.
         //
-        // ::
+        //     class Thing { }
         //
-        //   class Thing { }
-        //   
-        //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
-        //   Box(Thing())
-        //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //   BoxAnyObject(Thing())
-        //   
-        //   // Foundation collections can also contain unsupported classes:
-        //   let array = NSArray(object: Thing())
-        //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //   Box(array)
-        //   
-        //   // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
-        //   Box(array[0])
-        //   
-        //   // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //   BoxAnyObject(array[0])
+        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
+        //     Box(Thing())
+        //
+        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+        //     BoxAnyObject(Thing())
+        //
+        //     // Foundation collections can also contain unsupported classes:
+        //     let array = NSArray(object: Thing())
+        //
+        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+        //     Box(array)
+        //
+        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
+        //     Box(array[0])
+        //
+        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+        //     BoxAnyObject(array[0])
         
         NSLog("Mustache.BoxAnyObject(): value `\(object)` is does not conform to MustacheBoxable: it is discarded.")
         return Box()
@@ -1410,8 +1406,8 @@ extension NSDictionary {
         let dictionary: NSDictionary = [
             "firstName": "Freddy",
             "lastName": "Mercury"]
-        let template = Template(string: "{{firstName}} {{lastName}}")!
-        let rendering = template.render(Box(dictionary))!
+        let template = try! Template(string: "{{firstName}} {{lastName}}")
+        let rendering = try! template.render(Box(dictionary))
 
 
     ### Rendering
@@ -1430,12 +1426,12 @@ extension NSDictionary {
     filter from the Standard Library:
     
         // Attach StandardLibrary.each to the key "each":
-        let template = Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")!
+        let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
 
         // Renders "<name:Arthur, age:36, >"
         let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
-        let rendering = template.render(Box(["dictionary": dictionary]))!
+        let rendering = try! template.render(Box(["dictionary": dictionary]))
 
 
     ### Unwrapping from MustacheBox
@@ -1475,8 +1471,8 @@ extension NSSet {
         let set: NSSet = [1,2,3]
         
         // Renders "213"
-        let template = Template(string: "{{#set}}{{.}}{{/set}}")!
-        template.render(Box(["set": Box(set)]))!
+        let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
+        try! template.render(Box(["set": Box(set)]))
         
         
     ### Rendering
@@ -1545,15 +1541,15 @@ extension NSSet {
 A function that wraps a `FilterFunction` into a `MustacheBox` so that it can
 feed template.
 
-    let square: FilterFunction = Filter { (x: Int?, _) in
+    let square: FilterFunction = Filter { (x: Int?) in
         return Box(x! * x!)
     }
 
-    let template = Template(string: "{{ square(x) }}")!
+    let template = try! Template(string: "{{ square(x) }}")
     template.registerInBaseContext("square", Box(square))
 
     // Renders "100"
-    template.render(Box(["x": 10]))!
+    try! template.render(Box(["x": 10]))
 
 - parameter filter: A FilterFunction
 - returns: A MustacheBox
@@ -1568,11 +1564,11 @@ public func Box(filter: FilterFunction) -> MustacheBox {
 A function that wraps a `RenderFunction` into a `MustacheBox` so that it can
 feed template.
 
-    let foo: RenderFunction = { (_, _) in Rendering("foo") }
+    let foo: RenderFunction = { (_) in Rendering("foo") }
 
     // Renders "foo"
-    let template = Template(string: "{{ foo }}")!
-    template.render(Box(["foo": Box(foo)]))!
+    let template = try! Template(string: "{{ foo }}")
+    try! template.render(Box(["foo": Box(foo)]))
 
 - parameter render: A RenderFunction
 - returns: A MustacheBox
@@ -1588,13 +1584,13 @@ A function that wraps a `WillRenderFunction` into a `MustacheBox` so that it can
 feed template.
 
     let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
-        println("\(tag) will render \(box.value!)")
+        print("\(tag) will render \(box.value!)")
         return box
     }
 
     // By entering the base context of the template, the logTags function
     // will be notified of all tags.
-    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
     template.extendBaseContext(Box(logTags))
 
     // Prints:
@@ -1602,7 +1598,7 @@ feed template.
     // {{ firstName }} at line 1 will render Errol
     // {{ lastName }} at line 1 will render Flynn
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 - parameter willRender: A WillRenderFunction
 - returns: A MustacheBox
@@ -1618,12 +1614,12 @@ A function that wraps a `DidRenderFunction` into a `MustacheBox` so that it can
 feed template.
 
     let logRenderings: DidRenderFunction = { (tag: Tag, box: MustacheBox, string: String?) in
-        println("\(tag) did render \(box.value!) as `\(string!)`")
+        print("\(tag) did render \(box.value!) as `\(string!)`")
     }
 
     // By entering the base context of the template, the logRenderings function
     // will be notified of all tags.
-    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
     template.extendBaseContext(Box(logRenderings))
 
     // Renders "Errol Flynn"
@@ -1633,7 +1629,7 @@ feed template.
     // {{ lastName }} at line 1 did render Flynn as `Flynn`
     // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 - parameter didRender: A DidRenderFunction
 - returns: A MustacheBox
@@ -1698,7 +1694,7 @@ prevent the rendering of regular `{{#section}}...{{/}}` and inverted
 called without argument to build the empty box: `Box()`.
 
     // Render "true", "false"
-    let template = Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")!
+    let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
     template.render(Box(boolValue: true))!
     template.render(Box(boolValue: false))!
 
@@ -1711,8 +1707,8 @@ box is rendered (unless you provide a custom RenderFunction).
     let aBox = Box(value: 1)
 
     // Renders "1"
-    let template = Template(string: "{{a}}")!
-    let rendering = template.render(Box(["a": aBox]))!
+    let template = try! Template(string: "{{a}}")
+    try! template.render(Box(["a": aBox]))
 
 
 ### keyedSubscript
@@ -1731,8 +1727,8 @@ See `KeyedSubscriptFunction` for a full discussion of this type.
     })
 
     // Renders "key:a"
-    let template = Template(string:"{{a}}")!
-    template.render(box)!
+    let template = try! Template(string:"{{a}}")
+    try! template.render(box)
 
 
 ### filter
@@ -1748,8 +1744,8 @@ See `FilterFunction` for a full discussion of this type.
     })
 
     // Renders "100"
-    let template = Template(string:"{{square(x)}}")!
-    template.render(Box(["square": box, "x": Box(10)]))!
+    let template = try! Template(string:"{{square(x)}}")
+    try! template.render(Box(["square": box, "x": Box(10)]))
 
 
 ### render
@@ -1774,13 +1770,13 @@ not HTML-escaped.
 
 See `RenderFunction` for a full discussion of this type.
 
-    let box = Box(render: { (info: RenderingInfo, _) in
+    let box = Box(render: { (info: RenderingInfo) in
         return Rendering("foo")
     })
 
     // Renders "foo"
-    let template = Template(string:"{{.}}")!
-    template.render(box)!
+    let template = try! Template(string:"{{.}}")
+    try! template.render(box)
 
 
 ### willRender, didRender
@@ -1797,8 +1793,8 @@ types.
     })
 
     // Renders "baz baz"
-    let template = Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")!
-    template.render(box)!
+    let template = try! Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")
+    try! template.render(box)
 
 
 ### Multi-facetted boxes
@@ -1814,16 +1810,11 @@ See for example:
 
 Let's give an example:
 
-    // A regular class:
+    // A regular type:
 
-    class Person {
+    struct Person {
         let firstName: String
         let lastName: String
-        
-        init(firstName: String, lastName: String) {
-            self.firstName = firstName
-            self.lastName = lastName
-        }
     }
 
 We want:
@@ -1871,7 +1862,7 @@ to implement 2:
                         // Perform the default rendering: push self on the top
                         // of the context stack, and render the section:
                         let context = info.context.extendedContext(Box(self))
-                        return try info.tag.render(context, error: error)
+                        return try info.tag.render(context)
                     }
                 }
             )
@@ -1880,8 +1871,8 @@ to implement 2:
 
     // Renders "The person is Errol Flynn"
     let person = Person(firstName: "Errol", lastName: "Flynn")
-    let template = Template(string: "{{# person }}The person is {{.}}{{/ person }}")!
-    template.render(Box(["person": person]))!
+    let template = try! Template(string: "{{# person }}The person is {{.}}{{/ person }}")
+    try! template.render(Box(["person": person]))
 
 - parameter value:          An optional boxed value
 - parameter boolValue:      An optional boolean value for the Box.
