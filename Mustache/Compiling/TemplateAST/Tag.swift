@@ -62,7 +62,7 @@ public class Tag: CustomStringConvertible {
     /**
     The type of the tag: variable or section:
     
-        let render: RenderFunction = { (info: RenderingInfo, _) in
+        let render: RenderFunction = { (info: RenderingInfo) in
             switch info.tag.type {
             case .Variable:
                 return Rendering("variable")
@@ -71,10 +71,10 @@ public class Tag: CustomStringConvertible {
             }
         }
 
-        let template = Template(string: "{{object}}, {{#object}}...{{/object}}")!
+        let template = try! Template(string: "{{object}}, {{#object}}...{{/object}}")
 
         // Renders "variable, section"
-        template.render(Box(["object": Box(render)]))!
+        try! template.render(Box(["object": Box(render)]))
     */
     public let type: TagType
     
@@ -89,23 +89,23 @@ public class Tag: CustomStringConvertible {
     
         // {{# pluralize(count) }}...{{/ }} renders the plural form of the section
         // content if the `count` argument is greater than 1.
-        let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
-
+        let pluralize = Filter { (count: Int?, info: RenderingInfo) in
+            
             // Pluralize the inner content of the section tag:
             var string = info.tag.innerTemplateString
             if count > 1 {
                 string += "s"  // naive
             }
-
+            
             return Rendering(string)
         }
 
-        let template = Template(string: "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.")!
+        let template = try! Template(string: "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.")
         template.registerInBaseContext("pluralize", Box(pluralize))
 
         // Renders "I have 3 cats."
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-        template.render(Box(data))!
+        try! template.render(Box(data))
     */
     public let innerTemplateString: String
     
@@ -123,16 +123,16 @@ public class Tag: CustomStringConvertible {
     a `{{% CONTENT_TYPE:TEXT }}` pragma tag.
     
         // The strong RenderFunction below wraps a section in a <strong> HTML tag.
-        let strong: RenderFunction = { (info: RenderingInfo, _) -> Rendering? in
-            let rendering = info.tag.render(info.context)
-            return Rendering("<strong>\(rendering!.string)</strong>", .HTML)
+        let strong: RenderFunction = { (info: RenderingInfo) -> Rendering in
+            let rendering = try info.tag.render(info.context)
+            return Rendering("<strong>\(rendering.string)</strong>", .HTML)
         }
 
-        let template = Template(string: "{{#strong}}Hello {{name}}{{/strong}}")!
+        let template = try! Template(string: "{{#strong}}Hello {{name}}{{/strong}}")
         template.registerInBaseContext("strong", Box(strong))
 
         // Renders "<strong>Hello Arthur</strong>"
-        template.render(Box(["name": Box("Arthur")]))!
+        try! template.render(Box(["name": Box("Arthur")]))
     
     - parameter context: The context stack for evaluating mustache tags
     - parameter error:   If there is a problem rendering the tag, upon return
