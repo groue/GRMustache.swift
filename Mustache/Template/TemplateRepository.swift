@@ -326,7 +326,7 @@ final public class TemplateRepository {
         repository.reloadTemplates();
         let template = try! repository.template(named:"profile")
     
-    Warning: previously created Template instances are not reloaded.
+    **Warning**: previously created Template instances are not reloaded.
     */
     public func reloadTemplates() {
         templateASTCache.removeAll()

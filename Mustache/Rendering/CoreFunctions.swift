@@ -477,9 +477,9 @@ For example:
     // Renders "<b>Clark Gable has a Mustache.</b>"
     let rendering = try! template.render(Box(data))
 
-Warning: the returned String is *parsed* each time the lambda is executed. In
-the example above, this is inefficient because the inner content of the bolded
-section has already been parsed with its template. You may prefer the raw
+**Warning**: the returned String is *parsed* each time the lambda is executed.
+In the example above, this is inefficient because the inner content of the
+bolded section has already been parsed with its template. You may prefer the raw
 `RenderFunction` type, capable of an equivalent and faster implementation:
 
 TODO: rewrite example below in Swift 2
@@ -542,8 +542,8 @@ For example:
     // Renders "Lionel Richie has a Mustache."
     let rendering = try! template.render(Box(data))
 
-Warning: the returned String is *parsed* each time the lambda is executed. In
-the example above, this is inefficient because the same
+**Warning**: the returned String is *parsed* each time the lambda is executed.
+In the example above, this is inefficient because the same
 `"{{firstName}} {{lastName}}"` would be parsed several times. You may prefer
 using a Template instead of a lambda (see the documentation of
 `Template.mustacheBox` for more information):

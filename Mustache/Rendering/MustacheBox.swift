@@ -50,7 +50,7 @@ feed templates:
         let square = Filter { (x: Int?) in Box(x! * x!) }
         template.registerInBaseContext("square", Box(square))
 
-Warning: the fact that `MustacheBox` is a subclass of NSObject is an
+**Warning**: the fact that `MustacheBox` is a subclass of NSObject is an
 implementation detail that is enforced by the Swift 2 language itself. This may
 change in the future: do not rely on it.
 */
