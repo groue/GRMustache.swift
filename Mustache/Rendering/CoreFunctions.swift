@@ -57,9 +57,9 @@ advanced usage, only supported with the low-level function
     }
 
     // Render "FOO & BAR"
-    let template = Template(string: "{{foo}} & {{bar}}")!
+    let template = try! Template(string: "{{foo}} & {{bar}}")
     let box = Box(keyedSubscript: keyedSubscript)
-    template.render(box)!
+    try! template.render(box)
 
 
 ### Missing keys vs. missing values.
@@ -85,17 +85,17 @@ expressions such as `{{ uppercase(string) }}`.
 To build a filter, you use the `Filter()` function. It takes a function as an
 argument. For example:
     
-    let increment = Filter { (x: Int?, _) in
+    let increment = Filter { (x: Int?) in
         return Box(x! + 1)
     }
 
 To let a template use a filter, register it:
 
-    let template = Template(string: "{{increment(x)}}")!
+    let template = try! Template(string: "{{increment(x)}}")
     template.registerInBaseContext("increment", Box(increment))
     
     // "2"
-    template.render(Box(["x": 1]))!
+    try! template.render(Box(["x": 1]))
 
 `Filter()` can take several types of functions, depending on the type of filter
 you want to build. The example above processes `Int` values. There are three
@@ -129,15 +129,15 @@ Builds a filter that takes a single argument.
 
 For example, here is the trivial `identity` filter:
 
-    let identity = Filter { (box: MustacheBox, _) in
+    let identity = Filter { (box: MustacheBox) in
         return box
     }
 
-    let template = Template(string: "{{identity(a)}}, {{identity(b)}}")!
+    let template = try! Template(string: "{{identity(a)}}, {{identity(b)}}")
     template.registerInBaseContext("identity", Box(identity))
 
     // "foo, 1"
-    template.render(Box(["a": "foo", "b": 1]))!
+    try! template.render(Box(["a": "foo", "b": 1]))
 
 If the template provides more than one argument, the filter returns an error of
 domain `GRMustacheErrorDomain` and code `GRMustacheErrorCodeRenderingError`.
@@ -160,15 +160,15 @@ Builds a filter that takes a single argument of type `T?`.
 
 For example:
 
-    let increment = Filter { (x: Int?, _) in
+    let increment = Filter { (x: Int?) in
         return Box(x! + 1)
     }
 
-    let template = Template(string: "{{increment(x)}}")!
+    let template = try! Template(string: "{{increment(x)}}")
     template.registerInBaseContext("increment", Box(increment))
 
     // "2"
-    template.render(Box(["x": 1]))!
+    try! template.render(Box(["x": 1]))
 
 The argument is converted to `T` using the built-in `as?` operator before being
 given to the filter.
@@ -195,24 +195,24 @@ Returns a filter than accepts any number of arguments.
 For example:
 
     // `sum(x, ...)` evaluates to the sum of provided integers
-    let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+    let sum = VariadicFilter { (boxes: [MustacheBox]) in
         // Extract integers out of input boxes, assuming zero for non numeric values
-        let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
-        let sum = reduce(integers, 0, +)
+        let integers = boxes.map { (box) in (box.value as? Int) ?? 0 }
+        let sum = integers.reduce(0, combine: +)
         return Box(sum)
     }
 
-    let template = Template(string: "{{ sum(a,b,c) }}")!
+    let template = try! Template(string: "{{ sum(a,b,c) }}")
     template.registerInBaseContext("sum", Box(sum))
 
     // Renders "6"
-    template.render(Box(["a": 1, "b": 2, "c": 3]))!
+    try! template.render(Box(["a": 1, "b": 2, "c": 3]))
 
 If your filter is given too many or too few arguments, you should return nil and
 set error to an NSError of domain `GRMustacheErrorDomain` and code
 `GRMustacheErrorCodeRenderingError`.
 
-- parameter filter: a function `(boxes: [MustacheBox]) throws -> Rendering`
+- parameter filter: a function `([MustacheBox]) throws -> MustacheBox`
 - returns: a FilterFunction
 */
 public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
@@ -243,20 +243,23 @@ Builds a filter that performs post rendering.
 or Text). This filter turns a rendering in another one:
 
     // twice filter renders its argument twice:
-    let twice = Filter { (rendering: Rendering, _) in
+    let twice = Filter { (rendering: Rendering) in
         return Rendering(rendering.string + rendering.string, rendering.contentType)
     }
 
-    let template = Template(string: "{{ twice(x) }}")!
+    let template = try! Template(string: "{{ twice(x) }}")
     template.registerInBaseContext("twice", Box(twice))
 
     // Renders "foofoo", "123123"
-    template.render(Box(["x": "foo"]))!
-    template.render(Box(["x": 123]))!
+    try! template.render(Box(["x": "foo"]))
+    try! template.render(Box(["x": 123]))
 
 When this filter is executed, eventual HTML-escaping performed by the rendering
 engine has not happened yet: the rendering argument may contain raw text. This
 allows you to chain post-rendering filters without mangling HTML entities.
+
+- parameter filter: a function `(Rendering) throws -> Rendering`
+- returns: a FilterFunction
 */
 public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
@@ -306,7 +309,7 @@ For example:
 
     // {{# pluralize(count) }}...{{/ }} renders the plural form of the section
     // content if the `count` argument is greater than 1.
-    let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
+    let pluralize = Filter { (count: Int?, info: RenderingInfo) in
 
         // Pluralize the inner content of the section tag:
         var string = info.tag.innerTemplateString
@@ -317,12 +320,12 @@ For example:
         return Rendering(string)
     }
 
-    let template = Template(string: "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.")!
+    let template = try! Template(string: "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.")
     template.registerInBaseContext("pluralize", Box(pluralize))
 
     // Renders "I have 3 cats."
     let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 The argument is converted to `T` using the built-in `as?` operator before being
 given to the filter.
@@ -366,17 +369,17 @@ content type of templates).
 
 For example:
 
-    let HTML: RenderFunction = { (_, _) in
+    let HTML: RenderFunction = { (_) in
         return Rendering("<HTML>", .HTML)
     }
-    let text: RenderFunction = { (_, _) in
+    let text: RenderFunction = { (_) in
         return Rendering("<text>")   // default content type is text
     }
 
     // Renders "<HTML>, &lt;text&gt;"
-    let template = Template(string: "{{HTML}}, {{text}}")!
+    let template = try! Template(string: "{{HTML}}, {{text}}")
     let data = ["HTML": Box(HTML), "text": Box(text)]
-    let rendering = template.render(Box(data))!
+    let rendering = try! template.render(Box(data))
 
 
 ### Input: `RenderingInfo`
@@ -420,7 +423,7 @@ The default rendering thus reads:
     let value = ... // Some value
     let renderValue: RenderFunction = { (info: RenderingInfo) throws in
         
-        // Rendering depends on the tag type:
+        // Default rendering depends on the tag type:
         switch info.tag.type {
 
         case .Variable:
@@ -440,8 +443,8 @@ The default rendering thus reads:
         }
     }
 
-    let template = Template(string: "{{value}}")!
-    let rendering = template.render(Box(["value": Box(renderValue)]))!
+    let template = try! Template(string: "{{value}}")
+    let rendering = try! template.render(Box(["value": Box(renderValue)]))
 
 - parameter info:   A RenderingInfo
 - parameter error:  If there is a problem in the rendering, upon return contains an
@@ -465,15 +468,15 @@ against the current delimiters.
 
 For example:
 
-    let template = Template(string: "{{#bold}}{{name}} has a Mustache!{{/bold}}")!
+    let template = try! Template(string: "{{#bold}}{{name}} has a Mustache!{{/bold}}")
 
     let bold = Lambda { (string) in "<b>\(string)</b>" }
     let data = [
         "name": Box("Clark Gable"),
         "bold": Box(bold)]
 
-    // Renders "<b>Lionel Richie has a Mustache.</b>"
-    let rendering = template.render(Box(data))!
+    // Renders "<b>Clark Gable has a Mustache.</b>"
+    let rendering = try! template.render(Box(data))
 
 Warning: the returned String is *parsed* each time the lambda is executed. In
 the example above, this is inefficient because the inner content of the bolded
@@ -483,7 +486,7 @@ section has already been parsed with its template. You may prefer the raw
 TODO: rewrite example below in Swift 2
 
     let bold: RenderFunction = { (info: RenderingInfo) in
-        let rendering = try info.tag.render(info.context) {
+        let rendering = try info.tag.render(info.context)
         return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
     }
     let data = [
@@ -491,7 +494,7 @@ TODO: rewrite example below in Swift 2
         "bold": Box(bold)]
 
     // Renders "<b>Lionel Richie has a Mustache.</b>"
-    let rendering = template.render(Box(data))!
+    let rendering = try! template.render(Box(data))
 
 - parameter lambda:  A `String -> String` function
 - returns: A RenderFunction
@@ -529,7 +532,7 @@ The returned `RenderFunction` renders this string against the default `{{` and
 
 For example:
 
-    let template = Template(string: "{{fullName}} has a Mustache.")!
+    let template = try! Template(string: "{{fullName}} has a Mustache.")
     
     let fullName = Lambda { "{{firstName}} {{lastName}}" }
     let data = [
@@ -538,7 +541,7 @@ For example:
         "fullName": Box(fullName)]
 
     // Renders "Lionel Richie has a Mustache."
-    let rendering = template.render(Box(data))!
+    let rendering = try! template.render(Box(data))
 
 Warning: the returned String is *parsed* each time the lambda is executed. In
 the example above, this is inefficient because the same
@@ -546,16 +549,16 @@ the example above, this is inefficient because the same
 using a Template instead of a lambda (see the documentation of
 `Template.mustacheBox` for more information):
 
-    let fullName = Template(string:"{{firstName}} {{lastName}}")!
+    let fullName = try! Template(string:"{{firstName}} {{lastName}}")
     let data = [
         "firstName": Box("Lionel"),
         "lastName": Box("Richie"),
         "fullName": Box(fullName)]
 
     // Renders "Lionel Richie has a Mustache."
-    let rendering = template.render(Box(data))!
+    let rendering = try! template.render(Box(data))
 
-- parameter lambda:  A `() -> String` function
+- parameter lambda: A `() -> String` function
 - returns: A RenderFunction
 */
 public func Lambda(lambda: () -> String) -> RenderFunction {
@@ -653,36 +656,36 @@ before tags are about to render, and has the opportunity to replace the value
 they are about to render.
 
     let logTags: WillRenderFunction = { (tag: Tag, box: MustacheBox) in
-        println("\(tag) will render \(box.value!)")
+        print("\(tag) will render \(box.value!)")
         return box
     }
 
     // By entering the base context of the template, the logTags function
     // will be notified of all tags.
-    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
-    template.extendBaseContext(Box(willRender))
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
+    template.extendBaseContext(Box(logTags))
 
     // Prints:
     // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
     // {{ firstName }} at line 1 will render Errol
     // {{ lastName }} at line 1 will render Flynn
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 `WillRenderFunction` don't have to enter the base context of a template to
 perform: they can enter the context stack just like any other value, by being
 attached to a section. In this case, they are only notified of tags inside that
 section.
 
-    let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")
 
     // Prints:
     // {{ lastName }} at line 1 will render Flynn
     let data = [
         "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
-        "spy": Box(willRender)
+        "spy": Box(logTags)
     ]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 */
 public typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
 
@@ -700,7 +703,7 @@ after tags have been rendered.
 
     // By entering the base context of the template, the logRenderings function
     // will be notified of all tags.
-    let template = Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")!
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
     template.extendBaseContext(Box(logRenderings))
 
     // Renders "Errol Flynn"
@@ -710,14 +713,14 @@ after tags have been rendered.
     // {{ lastName }} at line 1 did render Flynn as `Flynn`
     // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 DidRender functions don't have to enter the base context of a template to
 perform: they can enter the context stack just like any other value, by being
 attached to a section. In this case, they are only notified of tags inside that
 section.
 
-    let template = Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")!
+    let template = try! Template(string: "{{# user }}{{ firstName }} {{# spy }}{{ lastName }}{{/ spy }}{{/ user }}")
 
     // Renders "Errol Flynn"
     //
@@ -725,9 +728,9 @@ section.
     // {{ lastName }} at line 1 did render Flynn as `Flynn`
     let data = [
         "user": Box(["firstName": "Errol", "lastName": "Flynn"]),
-        "spy": Box(didRender)
+        "spy": Box(logRenderings)
     ]
-    template.render(Box(data))!
+    try! template.render(Box(data))
 
 The string argument of DidRenderFunction is optional: it is nil if and only if
 the tag could not render because of a rendering error.
