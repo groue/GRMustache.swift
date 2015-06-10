@@ -211,8 +211,9 @@ or Text). This filter turns a rendering in another one:
     template.render(Box(["x": "foo"]))!
     template.render(Box(["x": 123]))!
 
-Beware that when this filter is executed, eventual HTML-escaping has not
-happened yet: the rendering argument may contain raw text.
+When this filter is executed, eventual HTML-escaping performed by the rendering
+engine has not happened yet: the rendering argument may contain raw text. This
+allows you to chain post-rendering filters without mangling HTML entities.
 */
 public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
@@ -220,6 +221,7 @@ public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
             // This is a single-argument filter: we do not wait for another one.
             throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Too many arguments"])
         }
+        // Box a RenderFunction
         return Box { (info: RenderingInfo) in
             let rendering = try box.render(info: info)
             return try filter(rendering)
