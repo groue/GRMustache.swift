@@ -64,7 +64,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)   // Invalid expression
         } catch {
             XCTAssert(false)
         }
@@ -77,7 +77,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)   // Missing filter
         } catch {
             XCTAssert(false)
         }

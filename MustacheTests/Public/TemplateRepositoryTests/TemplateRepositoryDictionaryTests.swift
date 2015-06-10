@@ -25,7 +25,7 @@ import XCTest
 import Mustache
 
 class TemplateRepositoryDictionaryTests: XCTestCase {
-    
+
     func testTemplateRepositoryWithDictionary() {
         let templates = [
             "a": "A{{>b}}",
@@ -50,7 +50,7 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
         }
-        
+
         template = try! repo.template(named: "a")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "ABC")

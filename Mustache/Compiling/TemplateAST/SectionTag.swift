@@ -52,11 +52,4 @@ class SectionTag: Tag {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
     }
-    
-    /**
-    Inherited from the public super class Tag.
-    */
-    override var location: TemplateLocation {
-        return openingToken.location
-    }
 }

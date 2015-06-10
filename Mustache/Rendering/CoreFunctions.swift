@@ -208,9 +208,6 @@ For example:
     // Renders "6"
     try! template.render(Box(["a": 1, "b": 2, "c": 3]))
 
-If your filter is given too many or too few arguments, you should throw a
-`MustacheError.RenderingError`.
-
 - parameter filter: A function `([MustacheBox]) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */

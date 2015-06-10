@@ -160,8 +160,4 @@ public class Tag: CustomStringConvertible {
         self.innerTemplateString = innerTemplateString
         self.tagDelimiterPair = tagDelimiterPair
     }
-    
-    var location: TemplateLocation {
-        fatalError("Subclass must override")
-    }
 }

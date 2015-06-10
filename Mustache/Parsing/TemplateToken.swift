@@ -40,7 +40,6 @@ extension TemplateLocation : CustomStringConvertible {
     }
 }
 
-
 struct TemplateToken {
     enum Type {
         case Text(text: String)
@@ -62,6 +61,8 @@ struct TemplateToken {
     let templateString: String
     let range: Range<String.Index>
     
+    var templateSubstring: String { return templateString[range] }
+    
     var tagDelimiterPair: TagDelimiterPair? {
         switch type {
         case .EscapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
@@ -76,6 +77,4 @@ struct TemplateToken {
             return nil
         }
     }
-    
-    var templateSubstring: String { return templateString[range] }
 }

@@ -314,14 +314,11 @@ final class TemplateParser {
                 location: TemplateLocation(lineNumber: startLineNumber, templateID: templateID),
                 templateString: templateString,
                 range: range)
-            if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
-                return
-            }
+            tokenConsumer.parser(self, shouldContinueAfterParsingToken: token)
         case .Tag, .UnescapedTag, .SetDelimitersTag:
             let location = TemplateLocation(lineNumber: startLineNumber, templateID: templateID)
             let error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(location): Unclosed Mustache tag"])
             tokenConsumer.parser(self, didFailWithError: error)
-            return;
         }
     }
     

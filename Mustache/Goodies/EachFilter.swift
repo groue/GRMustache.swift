@@ -94,5 +94,5 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     }
     
     // Non-iterable value
-    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Non-enumerable argument in each filter: \(box.value)"])
+    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Non-enumerable argument in each filter: \(box.value)"])
 }

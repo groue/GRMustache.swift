@@ -136,11 +136,12 @@ final class RenderingEngine {
         do {
             box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
         } catch let error as NSError {
+            // Rewrite error with tag description & location
             var userInfo = error.userInfo ?? [:]
             if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
-                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag) at \(tag.location): \(originalLocalizedDescription)"
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag): \(originalLocalizedDescription)"
             } else {
-                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag) at \(tag.location)"
+                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag)"
             }
             throw NSError(domain: error.domain, code: error.code, userInfo: userInfo)
         }

@@ -44,7 +44,7 @@ public protocol TemplateRepositoryDataSource {
     use paths to the templates.
     
     The return value of this method can be nil: the library user will then
-    eventually catch an missing template error.
+    eventually catch a missing template error.
     
     ### Template hierarchies
     

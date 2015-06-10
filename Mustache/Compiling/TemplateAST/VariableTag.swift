@@ -50,11 +50,4 @@ class VariableTag: Tag {
     override func render(context: Context) throws -> Rendering {
         return Rendering("", contentType)
     }
-    
-    /**
-    Inherited from the public super class Tag.
-    */
-    override var location: TemplateLocation {
-        return token.location
-    }
 }
