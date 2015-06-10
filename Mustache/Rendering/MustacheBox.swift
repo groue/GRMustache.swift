@@ -208,24 +208,28 @@ public class MustacheBox : NSObject {
             // We have to set self.render twice in order to avoid the compiler
             // error: "variable 'self.render' captured by a closure before being
             // initialized"
-            //
-            // Despite this message, the `self` "captured" in the second closure
-            // is the one whose `render` property contains that same second
-            // closure: everything works as if no value was actually captured.
             self.render = { (_) in return Rendering("") }
             super.init()
             self.render = { (info: RenderingInfo) in
+                
+                // Default rendering depends on the tag type:
                 switch info.tag.type {
                 case .Variable:
-                    // {{ box }}
+                    // {{ box }} and {{{ box }}}
+                    
                     if let value = value {
-                        return Rendering("\(value)")
+                        // Use the built-in Swift String Interpolation:
+                        return Rendering("\(value)", .Text)
                     } else {
-                        return Rendering("")
+                        return Rendering("", .Text)
                     }
                 case .Section:
                     // {{# box }}...{{/ box }}
+                    
+                    // Push the value on the top of the context stack:
                     let context = info.context.extendedContext(self)
+                    
+                    // Renders the inner content of the section tag:
                     return try info.tag.render(context)
                 }
             }
