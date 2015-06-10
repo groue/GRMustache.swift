@@ -1,7 +1,7 @@
 GRMustache.swift
 ================
 
-GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift 1.2, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift 2, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
 
 It ships with built-in goodies and extensibility hooks that let you avoid the strict minimalism of the genuine Mustache language when you need it.
 
@@ -48,7 +48,7 @@ Well, on {{format(real_date)}} because of a Martian attack.
 ```swift
 import Mustache
 
-let template = Template(named: "document")!
+let template = try! Template(named: "document")
 
 let dateFormatter = NSDateFormatter()
 dateFormatter.dateStyle = .MediumStyle
@@ -60,7 +60,7 @@ let data = [
     "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
     "late": true
 ]
-let rendering = template.render(Box(data))!
+let rendering = try! template.render(Box(data))
 ```
 
 Installation
@@ -121,14 +121,14 @@ The main entry points are:
 - the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)):
     
     ```swift
-    let template = Template(named: "template")!
+    let template = try! Template(named: "template")
     ```
 
 - the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Functions.html)):
     
     ```swift
     let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
-    let rendering = template.render(Box(data))!
+    let rendering = try! template.render(Box(data))
     ```
 
 - The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)):
@@ -150,35 +150,40 @@ Not funny, but they happen. Whenever the library needs to access the file system
 - Code `GRMustacheErrorCodeTemplateNotFound`:
     
     ```swift
-    // No such template: `inexistent`
-    var error: NSError?
-    Template(named: "inexistent", error: &error)
-    error!.localizedDescription
+    do {
+        let template = try Template(named: "inexistant")
+    } catch let error {
+        // No such template: `inexistant`
+    }
     ```
     
 - Code `GRMustacheErrorCodeParseError`:
     
     ```swift
-    // Parse error at line 1: Unclosed Mustache tag
-    Template(string: "Hello {{name", error: &error)
-    error!.localizedDescription
+    do {
+        let template = try Template(string: "Hello {{name")
+    } catch let error {
+        // Parse error at line 1: Unclosed Mustache tag
+    }
     ```
     
 - Code `GRMustacheErrorCodeRenderingError`:
     
     ```swift
-    // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-    template = Template(string: "{{undefinedFilter(x)}}")!
-    template.render(error: &error)
-    error!.localizedDescription
+    do {
+        let template = try Template(string: "{{undefinedFilter(x)}}")
+        let rendering = try template.render()
+    } catch let error {
+        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+    }
     ```
 
-When you render trusted valid templates with trusted valid data, you can avoid error handling: ignore the `error` argument, and use the bang `!` to force the unwrapping of templates and their renderings, as in this example:
+When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
 
 ```swift
 // Assume valid parsing and rendering
-template = Template(string: "{{name}} has a Mustache.")!
-template.render(Box(data))!
+let template = try! Template(string: "{{name}} has a Mustache.")
+let rendering = try! template.render(Box(data))
 ```
 
 
@@ -199,8 +204,8 @@ class Person : NSObject {
 
 // Charlie Chaplin has a mustache.
 let person = Person(name: "Charlie Chaplin")
-let template = Template(string: "{{name}} has a mustache.")!
-let rendering = template.render(Box(person))!
+let template = try! Template(string: "{{name}} has a mustache.")
+let rendering = try! template.render(Box(person))
 ```
 
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the "Boxing of NSObject" section in [Box.swift](Mustache/Rendering/Box.swift).
@@ -213,11 +218,11 @@ Many standard APIs return values of type `AnyObject`. You get AnyObject when you
 ```swift
 // Decode some JSON data
 let data = "{ \"name\": \"Lionel Richie\" }".dataUsingEncoding(NSUTF8StringEncoding)!
-let json: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)!
+let json: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
 
 // Lionel Richie has a Mustache.
-let template = Template(string: "{{ name }} has a Mustache.")!
-let rendering = template.render(BoxAnyObject(json))
+let template = try! Template(string: "{{ name }} has a Mustache.")
+let rendering = try! template.render(BoxAnyObject(json))
 ```
 
 
@@ -251,8 +256,8 @@ Now we can box and render a user:
 ```swift
 // Freddy Mercury has a mustache.
 let person = Person(name: "Freddy Mercury")
-let template = Template(string: "{{name}} has a mustache.")!
-let rendering = template.render(Box(person))!
+let template = try! Template(string: "{{name}} has a mustache.")
+let rendering = try! template.render(Box(person))
 ```
 
 For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
@@ -282,13 +287,13 @@ let wrapped = Lambda { (string) in "<b>\(string)</b>" }
 
 // <b>Frank Zappa is awesome.</b>
 let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
-let template = Template(string: templateString)!
+let template = try! Template(string: templateString)
 let data = [
     "firstName": Box("Frank"),
     "lastName": Box("Zappa"),
     "fullName": Box(fullName),
     "wrapped": Box(wrapped)]
-let rendering = template.render(Box(data))!
+let rendering = try! template.render(Box(data))
 ```
 
 Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
@@ -302,20 +307,20 @@ Those "lambdas" are a special case of custom rendering functions. The raw `Rende
 // Define the `square` filter.
 //
 // square(n) evaluates to the square of the provided integer.
-let square = Filter { (n: Int?, _) in
+let square = Filter { (n: Int?) in
     return Box(n! * n!)
 }
 
 
 // Register the square filter in our template:
 
-let template = Template(string: "{{n}} × {{n}} = {{square(n)}}")!
+let template = try! Template(string: "{{n}} × {{n}} = {{square(n)}}")
 template.registerInBaseContext("square", Box(square))
 
 
 // 10 × 10 = 100
 
-let rendering = template.render(Box(["n": 10]))!
+let rendering = try! template.render(Box(["n": 10]))
 ```
 
 
@@ -338,7 +343,7 @@ I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
 
-let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
+let pluralize = Filter { (count: Int?, info: RenderingInfo) in
     
     // Pluralize the inner content of the section tag:
     var string = info.tag.innerTemplateString
@@ -352,14 +357,14 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
 
 // Register the pluralize filter in our template:
 
-let template = Template(named: "cats")!
+let template = try! Template(named: "cats")
 template.registerInBaseContext("pluralize", Box(pluralize))
 
 
 // I have 3 cats.
 
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-let rendering = template.render(Box(data))!
+let rendering = try! template.render(Box(data))
 ```
 
 
@@ -370,23 +375,27 @@ let rendering = template.render(Box(data))!
 //
 // sum(x, ...) evaluates to the sum of provided integers
 
-let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-    // Extract integers out of input boxes, assuming zero for non integer values
-    let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
-    let sum = reduce(integers, 0, +)
+let sum = VariadicFilter { (boxes: [MustacheBox]) in
+    var sum = 0
+    for box in boxes {
+        // Make sure the box contains an Int
+        if let int = box.value as? Int {
+            sum += int
+        }
+    }
     return Box(sum)
 }
 
 
 // Register the sum filter in our template:
 
-let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
+let template = try! Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
 template.registerInBaseContext("sum", Box(sum))
 
 
 // 1 + 2 + 3 = 6
 
-template.render(Box(["a": 1, "b": 2, "c": 3]))!
+let rendering = try! template.render(Box(["a": 1, "b": 2, "c": 3]))
 ```
 
 
