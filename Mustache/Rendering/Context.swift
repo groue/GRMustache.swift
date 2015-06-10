@@ -98,6 +98,7 @@ final public class Context {
     - parameter box: The box pushed on the top of the context stack
     - returns: a new context
     */
+    @warn_unused_result(message="Context.extendedContext returns a new Context.")
     public func extendedContext(box: MustacheBox) -> Context {
         return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
@@ -110,6 +111,7 @@ final public class Context {
     - parameter box: The box registered for `key`
     - returns: a new context
     */
+    @warn_unused_result(message="Context.contextWithRegisteredKey returns a new Context.")
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
