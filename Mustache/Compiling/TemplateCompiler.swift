@@ -39,13 +39,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .Root:
                 return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.location): Unclosed Mustache tag"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             case .InvertedSection(openingToken: let openingToken, expression: _):
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.location): Unclosed Mustache tag"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             case .InheritedPartial(openingToken: let openingToken, partialName: _):
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.location): Unclosed Mustache tag"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             case .InheritableSection(openingToken: let openingToken, inheritableSectionName: _):
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.location): Unclosed Mustache tag"])
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             }
         case .Error(let compilationError):
             throw compilationError
@@ -82,14 +82,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.Text)
                         case .Locked(_):
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag."])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag."])
                         }
                     } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.HTML)
                         case .Locked(_):
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag."])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag."])
                         }
                     }
                     
@@ -103,7 +103,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                         compilationState.compilerContentType = .Locked(compilationState.contentType)
                     } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                     }
                     
                 case .UnescapedVariable(content: let content, tagDelimiterPair: _):
@@ -113,7 +113,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                         compilationState.compilerContentType = .Locked(compilationState.contentType)
                     } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                     }
                     
                 case .Section(content: let content, tagDelimiterPair: _):
@@ -123,7 +123,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                         compilationState.compilerContentType = .Locked(compilationState.contentType)
                     } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                     }
                     
                 case .InvertedSection(content: let content, tagDelimiterPair: _):
@@ -133,7 +133,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                         compilationState.compilerContentType = .Locked(compilationState.contentType)
                     } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                     }
                     
                 case .InheritableSection(content: let content):
@@ -151,7 +151,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .Close(content: let content):
                     switch compilationState.currentScope.type {
                     case .Root:
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Unmatched closing tag"])
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         
                     case .Section(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
@@ -160,11 +160,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             expression = try ExpressionParser().parse(content, empty: &empty)
                         } catch let error as NSError {
                             if empty == false {
-                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                             }
                         }
                         if expression != nil && expression != closedExpression {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Unmatched closing tag"])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -188,11 +188,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             expression = try ExpressionParser().parse(content, empty: &empty)
                         } catch let error as NSError {
                             if empty == false {
-                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): \(error.localizedDescription)"])
+                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
                             }
                         }
                         if expression != nil && expression != closedExpression {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Unmatched closing tag"])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -220,7 +220,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if partialName != nil && partialName != inheritedPartialName {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Unmatched closing tag"])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
                         let inheritedTemplateAST = try repository.templateAST(named: inheritedPartialName, relativeToTemplateID:templateID)
@@ -229,7 +229,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             break
                         case .Defined(nodes: _, contentType: let partialContentType):
                             if partialContentType != compilationState.contentType {
-                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Content type mismatch"])
+                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Content type mismatch"])
                             }
                         }
                         
@@ -250,7 +250,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if inheritableSectionName != nil && inheritableSectionName != closedInheritableSectionName {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Unmatched closing tag"])
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -347,10 +347,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
         let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if inheritableSectionName.characters.count == 0 {
             empty = true
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Missing inheritable section name"])
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Missing inheritable section name"])
         } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             empty = false
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Invalid inheritable section name"])
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Invalid inheritable section name"])
         }
         return inheritableSectionName
     }
@@ -360,10 +360,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if partialName.characters.count == 0 {
             empty = true
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Missing template name"])
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Missing template name"])
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             empty = false
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.location): Invalid template name"])
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Invalid template name"])
         }
         return partialName
     }

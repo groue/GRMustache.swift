@@ -26,7 +26,7 @@ import Mustache
 
 class RenderFunctionTests: XCTestCase {
 
-    enum CustomErrorType : ErrorType {
+    enum CustomError : ErrorType {
         case Error
     }
     
@@ -112,19 +112,17 @@ class RenderFunctionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
-        } catch {
-            XCTAssert(false)
         }
     }
     
     func testRenderFunctionCanThrowCustomErrorFromVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw CustomErrorType.Error
+            throw CustomError.Error
         }
         do {
             try Template(string: "\n\n{{.}}").render(Box(render))
             XCTAssert(false)
-        } catch CustomErrorType.Error {
+        } catch CustomError.Error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
@@ -141,19 +139,17 @@ class RenderFunctionTests: XCTestCase {
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
-        } catch {
-            XCTAssert(false)
         }
     }
     
     func testRenderFunctionCanThrowCustomErrorFromSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw CustomErrorType.Error
+            throw CustomError.Error
         }
         do {
             try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(Box(render))
             XCTAssert(false)
-        } catch CustomErrorType.Error {
+        } catch CustomError.Error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
@@ -493,8 +489,6 @@ class RenderFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
     }
     
@@ -512,8 +506,6 @@ class RenderFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
     }
     

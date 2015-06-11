@@ -26,7 +26,7 @@ import Mustache
 
 class TemplateRepositoryDataSourceTests: XCTestCase {
     
-    enum CustomErrorType : ErrorType {
+    enum CustomError : ErrorType {
         case Error
     }
     
@@ -44,8 +44,8 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                 switch templateID {
                 case "not_found":
                     fatalError("Unexpected")
-                case "CustomErrorType":
-                    throw CustomErrorType.Error
+                case "CustomError":
+                    throw CustomError.Error
                 case "CustomNSError":
                     throw NSError(domain: "CustomNSError", code: 0, userInfo: nil)
                 case "GRMustacheErrorCodeTemplateNotFound":
@@ -69,7 +69,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         XCTAssertEqual(rendering, "foo")
         
         do {
-            try repo.template(string: "\n\n{{>not_found}}")
+            try repo.template(string: "{{>not_found}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
@@ -84,16 +84,16 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         }
         
         do {
-            try repo.template(string: "{{>CustomErrorType}}")
+            try repo.template(string: "{{>CustomError}}")
             XCTAssert(false)
-        } catch CustomErrorType.Error {
+        } catch CustomError.Error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
         }
         
         do {
-            try repo.template(string: "\n\n{{>GRMustacheErrorCodeTemplateNotFound}}")
+            try repo.template(string: "{{>GRMustacheErrorCodeTemplateNotFound}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)

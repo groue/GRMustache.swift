@@ -21,25 +21,6 @@
 // THE SOFTWARE.
 
 
-struct TemplateLocation {
-    /// The line numer
-    let lineNumber: Int
-    
-    /// The ID of the template
-    let templateID: TemplateID?
-}
-
-extension TemplateLocation : CustomStringConvertible {
-    /// A textual representation of `self`.
-    var description: String {
-        if let templateID = templateID {
-            return "line \(lineNumber) of template \(templateID)"
-        } else {
-            return "line \(lineNumber)"
-        }
-    }
-}
-
 struct TemplateToken {
     enum Type {
         case Text(text: String)
@@ -57,7 +38,8 @@ struct TemplateToken {
     }
     
     let type: Type
-    let location: TemplateLocation
+    let lineNumber: Int
+    let templateID: TemplateID?
     let templateString: String
     let range: Range<String.Index>
     
@@ -75,6 +57,14 @@ struct TemplateToken {
             return tagDelimiterPair
         default:
             return nil
+        }
+    }
+    
+    var locationDescription: String {
+        if let templateID = templateID {
+            return "line \(lineNumber) of template \(templateID)"
+        } else {
+            return "line \(lineNumber)"
         }
     }
 }

@@ -26,6 +26,10 @@ import Mustache
 
 class FilterTests: XCTestCase {
     
+    enum CustomError : ErrorType {
+        case Error
+    }
+    
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
@@ -141,8 +145,6 @@ class FilterTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
         
         template = try! Template(string:"<{{missing(name)}}>")
@@ -152,8 +154,6 @@ class FilterTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
         
         template = try! Template(string:"<{{replace(missing(name))}}>")
@@ -163,8 +163,6 @@ class FilterTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
         
         template = try! Template(string:"<{{missing(replace(name))}}>")
@@ -174,8 +172,6 @@ class FilterTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
     }
     
@@ -192,8 +188,6 @@ class FilterTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-        } catch {
-            XCTAssert(false)
         }
     }
     
@@ -208,8 +202,6 @@ class FilterTests: XCTestCase {
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
             XCTAssertTrue(error.localizedDescription.rangeOfString("Missing filter") != nil)
             XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-        } catch {
-            XCTAssert(false)
         }
     }
     
@@ -229,8 +221,6 @@ class FilterTests: XCTestCase {
             XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
             XCTAssertTrue(error.localizedDescription.rangeOfString("Not a filter") != nil)
             XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
-        } catch {
-            XCTAssert(false)
         }
     }
     
@@ -295,4 +285,58 @@ class FilterTests: XCTestCase {
     }
     
     // TODO: import ValueTests.testCustomValueFilter(): testFilterOfOptionalXXX, testFilterOfXXX, etc. for all supported types
+    
+    func testFilterCanThrowGRMustacheError() {
+        let filter = Filter { (box: MustacheBox) in
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "CustomMessage"])
+        }
+        
+        let template = try! Template(string: "\n\n{{f(x)}}")
+        template.registerInBaseContext("f", Box(filter))
+        
+        do {
+            try template.render()
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("CustomMessage") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("line 3") != nil)
+            XCTAssertTrue(error.localizedDescription.rangeOfString("{{f(x)}}") != nil)
+        }
+    }
+    
+    func testFilterCanThrowCustomNSError() {
+        let filter = Filter { (box: MustacheBox) in
+            throw NSError(domain: "CustomErrorDomain", code: 0, userInfo: [NSLocalizedDescriptionKey: "CustomMessage"])
+        }
+        
+        let template = try! Template(string: "\n\n{{f(x)}}")
+        template.registerInBaseContext("f", Box(filter))
+        
+        do {
+            try template.render()
+            XCTAssert(false)
+        } catch let error as NSError {
+            XCTAssertEqual(error.domain, "CustomErrorDomain")
+            XCTAssertEqual(error.localizedDescription, "CustomMessage")
+        }
+    }
+    
+    func testFilterCanThrowCustomError() {
+        let filter = Filter { (box: MustacheBox) in
+            throw CustomError.Error
+        }
+        
+        let template = try! Template(string: "\n\n{{f(x)}}")
+        template.registerInBaseContext("f", Box(filter))
+        
+        do {
+            try template.render()
+            XCTAssert(false)
+        } catch CustomError.Error {
+            XCTAssert(true)
+        } catch {
+            XCTAssert(false)
+        }
+    }
 }

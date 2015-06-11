@@ -41,7 +41,7 @@ class VariableTag: Tag {
     from its public superclass Tag. Return a nice user-friendly description:
     */
     override var description: String {
-        return "\(token.templateSubstring) at \(token.location)"
+        return "\(token.templateSubstring) at \(token.locationDescription)"
     }
     
     /**

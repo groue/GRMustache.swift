@@ -42,7 +42,7 @@ class SectionTag: Tag {
     its public superclass Tag. Return a nice user-friendly description:
     */
     override var description: String {
-        return "\(openingToken.templateSubstring) at \(openingToken.location)"
+        return "\(openingToken.templateSubstring) at \(openingToken.locationDescription)"
     }
     
     /**

@@ -135,15 +135,21 @@ final class RenderingEngine {
 
         do {
             box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
-        } catch let error as NSError {
-            // Rewrite error with tag description & location
-            var userInfo = error.userInfo ?? [:]
-            if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
-                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag): \(originalLocalizedDescription)"
+        } catch {
+            let nserror = error as NSError
+            if nserror.domain == GRMustacheErrorDomain {
+                // Rewrite error with tag description & location
+                var userInfo = nserror.userInfo ?? [:]
+                if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
+                    userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag): \(originalLocalizedDescription)"
+                } else {
+                    userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag)"
+                }
+                throw NSError(domain: nserror.domain, code: nserror.code, userInfo: userInfo)
             } else {
-                userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag)"
+                // Rethrow custom error without any modification
+                throw error
             }
-            throw NSError(domain: error.domain, code: error.code, userInfo: userInfo)
         }
         
         

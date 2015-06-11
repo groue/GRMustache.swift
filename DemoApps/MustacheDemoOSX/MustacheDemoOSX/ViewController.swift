@@ -48,7 +48,7 @@ class ViewController: NSViewController {
             presentRenderingString(string)
         }
         catch let error as NSError {
-            presentRenderingString("\(error.domain): \(error)")
+            presentRenderingString("\(error.domain): \(error.localizedDescription)")
         }
     }
     

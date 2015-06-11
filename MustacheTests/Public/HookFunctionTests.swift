@@ -26,7 +26,7 @@ import Mustache
 
 class HookFunctionTests: XCTestCase {
     
-    enum CustomErrorType : ErrorType {
+    enum CustomError : ErrorType {
         case Error
     }
     
@@ -260,8 +260,6 @@ class HookFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "TagObserverError")
             XCTAssertEqual(error.code, 1)
-        } catch {
-            XCTAssert(false)
         }
         XCTAssertTrue(failedRendering)
     }
@@ -277,10 +275,10 @@ class HookFunctionTests: XCTestCase {
         failedRendering = false
         do {
             try template.render(Box({ (info: RenderingInfo) -> Rendering in
-                throw CustomErrorType.Error
+                throw CustomError.Error
             }))
             XCTAssert(false)
-        } catch CustomErrorType.Error {
+        } catch CustomError.Error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
