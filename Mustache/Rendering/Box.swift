@@ -134,11 +134,7 @@ templates.
 - returns: A MustacheBox that wraps *boxable*.
 */
 public func Box(boxable: MustacheBoxable?) -> MustacheBox {
-    if let boxable = boxable {
-        return boxable.mustacheBox
-    } else {
-        return Box()
-    }
+    return boxable?.mustacheBox ?? Box()
 }
 
 
@@ -445,80 +441,127 @@ extension String : MustacheBoxable {
 //
 // Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has revelead
 // that the generic function would not compile in Release configuration.
-private func renderBoxArray(boxes: [MustacheBox], var info: RenderingInfo) throws -> Rendering {
-    // Prepare the rendering. We don't known the contentType yet: it depends on items
-    var buffer = ""
-    var contentType: ContentType? = nil
-    
-    // Tell items they are rendered as an enumeration item.
-    //
-    // Some values don't render the same whenever they render as an enumeration
-    // item, or alone: {{# values }}...{{/ values }} vs.
-    // {{# value }}...{{/ value }}.
-    //
-    // This is the case of Int, UInt, Double, Bool: they enter the context
-    // stack when used in an iteration, and do not enter the context stack when
-    // used as a boolean.
-    //
-    // This is also the case of collections: they enter the context stack when
-    // used as an item of a collection, and enumerate their items when used as
-    // a collection.
-
-    info.enumerationItem = true
-    
-    for box in boxes {
-        let boxRendering = try box.render(info: info)
-        if contentType == nil
-        {
-            // First item: now we know our contentType
-            contentType = boxRendering.contentType
-            buffer += boxRendering.string
+extension CollectionType where Generator.Element: MustacheBoxable {
+    private func renderItems(var info: RenderingInfo) throws -> Rendering {
+        // Prepare the rendering. We don't known the contentType yet: it depends on items
+        var buffer = ""
+        var contentType: ContentType? = nil
+        
+        // Tell items they are rendered as an enumeration item.
+        //
+        // Some values don't render the same whenever they render as an enumeration
+        // item, or alone: {{# values }}...{{/ values }} vs.
+        // {{# value }}...{{/ value }}.
+        //
+        // This is the case of Int, UInt, Double, Bool: they enter the context
+        // stack when used in an iteration, and do not enter the context stack when
+        // used as a boolean.
+        //
+        // This is also the case of collections: they enter the context stack when
+        // used as an item of a collection, and enumerate their items when used as
+        // a collection.
+        
+        info.enumerationItem = true
+        
+        for boxable in self {
+            let boxRendering = try Box(boxable).render(info: info)
+            if contentType == nil
+            {
+                // First item: now we know our contentType
+                contentType = boxRendering.contentType
+                buffer += boxRendering.string
+            }
+            else if contentType == boxRendering.contentType
+            {
+                // Consistent content type: keep on buffering.
+                buffer += boxRendering.string
+            }
+            else
+            {
+                // Inconsistent content type: this is an error. How are we
+                // supposed to mix Text and HTML?
+                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+            }
         }
-        else if contentType == boxRendering.contentType
-        {
-            // Consistent content type: keep on buffering.
-            buffer += boxRendering.string
-        }
-        else
-        {
-            // Inconsistent content type: this is an error. How are we
-            // supposed to mix Text and HTML?
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+        
+        if let contentType = contentType {
+            // {{ collection }}
+            // {{# collection }}...{{/ collection }}
+            //
+            // We know our contentType, hence the collection is not empty and
+            // we render our buffer.
+            return Rendering(buffer, contentType)
+        } else {
+            // {{ collection }}
+            //
+            // We don't know our contentType, hence the collection is empty.
+            //
+            // Now this code is executed. This means that the collection is
+            // rendered, despite its emptiness.
+            //
+            // We are not rendering a regular {{# section }} tag, because empty
+            // collections have a false boolValue, and RenderingEngine would prevent
+            // us to render.
+            //
+            // We are not rendering an inverted {{^ section }} tag, because
+            // RenderingEngine takes care of the rendering of inverted sections.
+            //
+            // So we are rendering a {{ variable }} tag. As en empty collection, we
+            // must return an empty rendering.
+            //
+            // Renderings have a content type. In order to render an empty
+            // rendering that has the contentType of the tag, let's use the
+            // `render` method of the tag.
+            return try info.tag.render(info.context)
         }
     }
     
-    if let contentType = contentType {
-        // {{ collection }}
-        // {{# collection }}...{{/ collection }}
-        //
-        // We know our contentType, hence the collection is not empty and
-        // we render our buffer.
-        return Rendering(buffer, contentType)
-    } else {
-        // {{ collection }}
-        //
-        // We don't know our contentType, hence the collection is empty.
-        //
-        // Now this code is executed. This means that the collection is
-        // rendered, despite its emptiness.
-        //
-        // We are not rendering a regular {{# section }} tag, because empty
-        // collections have a false boolValue, and RenderingEngine would prevent
-        // us to render.
-        //
-        // We are not rendering an inverted {{^ section }} tag, because
-        // RenderingEngine takes care of the rendering of inverted sections.
-        //
-        // So we are rendering a {{ variable }} tag. As en empty collection, we
-        // must return an empty rendering.
-        //
-        // Renderings have a content type. In order to render an empty
-        // rendering that has the contentType of the tag, let's use the
-        // `render` method of the tag.
-        return try info.tag.render(info.context)
+    private func keyedSubscript(key: String) -> MustacheBox {
+        switch key {
+        case "first":
+            return Box(first)   // CollectionType
+        default:
+            return Box()
+        }
+    }
+    
+    private var boolValue: Bool {
+        // A collection is truthy iff it is not empty.
+        return !isEmpty
+    }
+    
+    private var arrayValue: [MustacheBox] {
+        return map({ Box($0) })
     }
 }
 
+extension CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int {
+    private func keyedSubscript(key: String) -> MustacheBox {
+        switch key {
+        case "first":
+            return Box(first)   // CollectionType
+        case "count":
+            return Box(count)   // Index.Distance == Int
+        default:
+            return Box()
+        }
+    }
+}
+
+extension CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int {
+    private func keyedSubscript(key: String) -> MustacheBox {
+        switch key {
+        case "first":
+            return Box(first)   // CollectionType
+        case "count":
+            return Box(count)   // Index.Distance == Int
+        case "last":
+            return Box(last)    // Index: BidirectionalIndexType
+        default:
+            return Box()
+        }
+    }
+}
 
 // IMPLEMENTATION NOTE
 //
@@ -584,39 +627,13 @@ type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *collection*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?, withValue value: Any?) -> MustacheBox {
     if let collection = collection {
-        let count = collection.count // C.Index.Distance == Int
         return MustacheBox(
-            boolValue: (count > 0),
-            value: collection,
-            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
-            keyedSubscript: { (key: String) in
-                switch key {
-                case "count":
-                    // Support for both Objective-C and Swift arrays.
-                    return Box(count)
-                    
-                case "firstObject", "first":
-                    // Support for both Objective-C and Swift arrays.
-                    if count > 0 {
-                        return Box(collection[collection.startIndex])
-                    } else {
-                        return Box()
-                    }
-                    
-                case "lastObject", "last":
-                    // Support for both Objective-C and Swift arrays.
-                    if count > 0 {
-                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
-                    } else {
-                        return Box()
-                    }
-                    
-                default:
-                    return Box()
-                }
-            },
+            boolValue: collection.boolValue,
+            value: value,
+            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
+            keyedSubscript: collection.keyedSubscript,
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
@@ -624,13 +641,71 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
+                    return try collection.renderItems(info)
                 }
             }
         )
     } else {
         return Box()
     }
+}
+
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?) -> MustacheBox {
+    return Box(collection, withValue: collection)
+}
+
+private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(collection: C?, withValue value: Any?) -> MustacheBox {
+    if let collection = collection {
+        return MustacheBox(
+            boolValue: collection.boolValue,
+            value: value,
+            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
+            keyedSubscript: collection.keyedSubscript,
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(Box(collection)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    return try collection.renderItems(info)
+                }
+            }
+        )
+    } else {
+        return Box()
+    }
+}
+
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+    return Box(collection, withValue: collection)
+}
+
+private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?, withValue value: Any?) -> MustacheBox {
+    if let collection = collection {
+        return MustacheBox(
+            boolValue: collection.boolValue,
+            value: value,
+            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
+            keyedSubscript: collection.keyedSubscript,
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(Box(collection)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    return try collection.renderItems(info)
+                }
+            }
+        )
+    } else {
+        return Box()
+    }
+}
+
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+    return Box(collection, withValue: collection)
 }
 
 // TODO Swift2: restore this function
@@ -725,7 +800,7 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 //                    // {{ collection }}
 //                    // {{# collection }}...{{/ collection }}
 //                    // {{^ collection }}...{{/ collection }}
-//                    return try renderBoxArray(collection.map({ Box($0) }), info: info)
+//                    return try renderCollection(collection.map({ Box($0) }), info: info)
 //                }
 //        })
 //    } else {
@@ -734,83 +809,83 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 //}
 
 
-/**
-A set of values that conform to the `MustacheBoxable` protocol can feed Mustache
-templates. It behaves exactly like Objective-C `NSSet`.
-
-    let set: Set<Int> = [1,2,3]
-
-    // Renders "213"
-    let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
-    try! template.render(Box(["set": Box(set)]))
-
-
-### Rendering
-
-- `{{set}}` renders the concatenation of the renderings of the set items, in
-any order.
-
-- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
-pushing each item on its turn on the top of the context stack.
-
-- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
-
-
-### Keys exposed to templates
-
-A set can be queried for the following keys:
-
-- `anyObject`: the first object in the set
-- `count`: number of elements in the set
-- `first`: the first object in the set
-
-Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
-if and only if `set` is not empty.
-
-
-### Unwrapping from MustacheBox
-
-Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
-property: it reliably returns an Array of MustacheBox, whatever the actual
-type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
-
-
-- parameter set: A set of values that conform to the `MustacheBoxable` protocol.
-
-- returns: A MustacheBox that wraps *set*.
-*/
-public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
-    if let set = set {
-        let count = set.count
-        return MustacheBox(
-            boolValue: (count > 0),
-            value: set,
-            converter: MustacheBox.Converter(arrayValue: set.map({ Box($0) })),
-            keyedSubscript: { (key: String) in
-                switch key {
-                case "count":
-                    return Box(count)
-                case "first", "anyObject":
-                    return Box(set.first)
-                default:
-                    return Box()
-                }
-            },
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# sets }}...{{/ sets }}
-                    return try info.tag.render(info.context.extendedContext(Box(set)))
-                } else {
-                    // {{ set }}
-                    // {{# set }}...{{/ set }}
-                    // {{^ set }}...{{/ set }}
-                    return try renderBoxArray(set.map({ Box($0) }), info: info)
-                }
-        })
-    } else {
-        return Box()
-    }
-}
+///**
+//A set of values that conform to the `MustacheBoxable` protocol can feed Mustache
+//templates. It behaves exactly like Objective-C `NSSet`.
+//
+//    let set: Set<Int> = [1,2,3]
+//
+//    // Renders "213"
+//    let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
+//    try! template.render(Box(["set": Box(set)]))
+//
+//
+//### Rendering
+//
+//- `{{set}}` renders the concatenation of the renderings of the set items, in
+//any order.
+//
+//- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+//pushing each item on its turn on the top of the context stack.
+//
+//- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
+//
+//
+//### Keys exposed to templates
+//
+//A set can be queried for the following keys:
+//
+//- `anyObject`: the first object in the set
+//- `count`: number of elements in the set
+//- `first`: the first object in the set
+//
+//Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
+//if and only if `set` is not empty.
+//
+//
+//### Unwrapping from MustacheBox
+//
+//Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
+//property: it reliably returns an Array of MustacheBox, whatever the actual
+//type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
+//
+//
+//- parameter set: A set of values that conform to the `MustacheBoxable` protocol.
+//
+//- returns: A MustacheBox that wraps *set*.
+//*/
+//public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
+//    if let set = set {
+//        let count = set.count
+//        return MustacheBox(
+//            boolValue: (count > 0),
+//            value: set,
+//            converter: MustacheBox.Converter(arrayValue: set.map({ Box($0) })),
+//            keyedSubscript: { (key: String) in
+//                switch key {
+//                case "count":
+//                    return Box(count)
+//                case "first", "anyObject":
+//                    return Box(set.first)
+//                default:
+//                    return Box()
+//                }
+//            },
+//            render: { (info: RenderingInfo) in
+//                if info.enumerationItem {
+//                    // {{# sets }}...{{/ sets }}
+//                    return try info.tag.render(info.context.extendedContext(Box(set)))
+//                } else {
+//                    // {{ set }}
+//                    // {{# set }}...{{/ set }}
+//                    // {{^ set }}...{{/ set }}
+//                    return try set.render(info)
+//                }
+//        })
+//    } else {
+//        return Box()
+//    }
+//}
 
 
 /**
@@ -980,11 +1055,7 @@ See the documentation of `NSObject.mustacheBox`.
 - returns: A MustacheBox that wraps *object*.
 */
 public func Box(object: NSObject?) -> MustacheBox {
-    if let object = object {
-        return object.mustacheBox
-    } else {
-        return Box()
-    }
+    return object?.mustacheBox ?? Box()
 }
 
 // IMPLEMENTATION NOTE
@@ -1098,7 +1169,7 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 */
 public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
-        return Box(boxable)
+        return boxable.mustacheBox
     } else if let object: AnyObject = object {
         
         // IMPLEMENTATION NOTE
@@ -1221,49 +1292,53 @@ extension NSObject : MustacheBoxable {
             // Enumerable
             
             // Turn enumerable into a Swift array of MustacheBoxes
-            let boxArray = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
-            let count = boxArray.count
-            
-            return MustacheBox(
-                boolValue: (count > 0),
-                value: self,
-                converter: MustacheBox.Converter(arrayValue: boxArray),
-                keyedSubscript: { (key: String) in
-                    switch key {
-                    case "count":
-                        // Support for both Objective-C and Swift arrays.
-                        return Box(count)
-                        
-                    case "firstObject", "first":
-                        // Support for both Objective-C and Swift arrays.
-                        if count > 0 {
-                            return boxArray[0]
-                        } else {
-                            return Box()
-                        }
-                        
-                    case "lastObject", "last":
-                        // Support for both Objective-C and Swift arrays.
-                        if count > 0 {
-                            return boxArray[count - 1]
-                        } else {
-                            return Box()
-                        }
-                        
-                    default:
-                        return Box()
-                    }
-                },
-                render: { (info: RenderingInfo) in
-                    if info.enumerationItem {
-                        // {{# collections }}...{{/ collections }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
-                    } else {
-                        // {{ collection }}
-                        // {{# collection }}...{{/ collection }}
-                        return try renderBoxArray(boxArray, info: info)
-                    }
+            let boxArray = GeneratorSequence(NSFastGenerator(enumerable)).map({ (object) in
+                return BoxAnyObject(object);
             })
+//            let count = boxArray.count
+            
+            return Box(boxArray, withValue: self)
+            
+//            return MustacheBox(
+//                boolValue: (count > 0),
+//                value: self,
+//                converter: MustacheBox.Converter(arrayValue: boxArray),
+//                keyedSubscript: { (key: String) in
+//                    switch key {
+//                    case "count":
+//                        // Support for both Objective-C and Swift arrays.
+//                        return Box(count)
+//                        
+//                    case "firstObject", "first":
+//                        // Support for both Objective-C and Swift arrays.
+//                        if count > 0 {
+//                            return boxArray[0]
+//                        } else {
+//                            return Box()
+//                        }
+//                        
+//                    case "lastObject", "last":
+//                        // Support for both Objective-C and Swift arrays.
+//                        if count > 0 {
+//                            return boxArray[count - 1]
+//                        } else {
+//                            return Box()
+//                        }
+//                        
+//                    default:
+//                        return Box()
+//                    }
+//                },
+//                render: { (info: RenderingInfo) in
+//                    if info.enumerationItem {
+//                        // {{# collections }}...{{/ collections }}
+//                        return try info.tag.render(info.context.extendedContext(Box(self)))
+//                    } else {
+//                        // {{ collection }}
+//                        // {{# collection }}...{{/ collection }}
+//                        return try boxArray.render(info)
+//                    }
+//            })
         } else {
             // Generic NSObject
             
@@ -1504,31 +1579,36 @@ extension NSSet {
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
     public override var mustacheBox: MustacheBox {
-        return MustacheBox(
-            boolValue: (self.count > 0),
-            value: self,
-            converter: MustacheBox.Converter(arrayValue: GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)),
-            keyedSubscript: { (key: String) in
-                switch key {
-                case "count":
-                    return Box(self.count)
-                case "anyObject":
-                    return BoxAnyObject(self.anyObject())
-                default:
-                    return Box()
-                }
-            },
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# sets }}...{{/ sets }}
-                    return try info.tag.render(info.context.extendedContext(Box(self)))
-                } else {
-                    // {{ set }}
-                    // {{# set }}...{{/ set }}
-                    let boxes = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
-                    return try renderBoxArray(boxes, info: info)
-                }
-        })
+        let set = reduce(Set<MustacheBox>()) { (var set, item) in
+            set.insert(BoxAnyObject(item))
+            return set
+        }
+        return Box(set, withValue: self)
+//        return MustacheBox(
+//            boolValue: (self.count > 0),
+//            value: self,
+//            converter: MustacheBox.Converter(arrayValue: GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)),
+//            keyedSubscript: { (key: String) in
+//                switch key {
+//                case "count":
+//                    return Box(self.count)
+//                case "anyObject":
+//                    return BoxAnyObject(self.anyObject())
+//                default:
+//                    return Box()
+//                }
+//            },
+//            render: { (info: RenderingInfo) in
+//                if info.enumerationItem {
+//                    // {{# sets }}...{{/ sets }}
+//                    return try info.tag.render(info.context.extendedContext(Box(self)))
+//                } else {
+//                    // {{ set }}
+//                    // {{# set }}...{{/ set }}
+//                    let boxes = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
+//                    return try boxes.render(info)
+//                }
+//        })
     }
 }
 

@@ -83,18 +83,18 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":NSArray(object: "foo")])), "Not empty")
     }
     
-    func testNSArrayCount() {
+    func testNSArrayCountKey() {
         let rendering = try! Template(string: "{{collection.count}}").render(boxedNSArray)
         XCTAssertEqual(rendering, "1")
     }
     
-    func testNSArrayFirstObject() {
-        let rendering = try! Template(string: "{{collection.firstObject.key}}").render(boxedNSArray)
+    func testNSArrayKeyFirst() {
+        let rendering = try! Template(string: "{{collection.first.key}}").render(boxedNSArray)
         XCTAssertEqual(rendering, "value")
     }
     
-    func testNSArrayLastObject() {
-        let rendering = try! Template(string: "{{collection.lastObject.key}}").render(boxedNSArray)
+    func testNSArrayLastKey() {
+        let rendering = try! Template(string: "{{collection.last.key}}").render(boxedNSArray)
         XCTAssertEqual(rendering, "value")
     }
     
@@ -122,18 +122,18 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":["foo"]])), "Not empty")
     }
     
-    func testArrayCount() {
+    func testArrayCountKey() {
         let rendering = try! Template(string: "{{collection.count}}").render(boxedArray)
         XCTAssertEqual(rendering, "1")
     }
     
-    func testArrayFirstObject() {
-        let rendering = try! Template(string: "{{collection.firstObject.key}}").render(boxedArray)
+    func testArrayKeyFirst() {
+        let rendering = try! Template(string: "{{collection.first.key}}").render(boxedArray)
         XCTAssertEqual(rendering, "value")
     }
     
-    func testArrayLastObject() {
-        let rendering = try! Template(string: "{{collection.lastObject.key}}").render(boxedArray)
+    func testArrayLastKey() {
+        let rendering = try! Template(string: "{{collection.last.key}}").render(boxedArray)
         XCTAssertEqual(rendering, "value")
     }
     
@@ -161,14 +161,20 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":NSSet(object: "foo")])), "Not empty")
     }
     
-    func testNSSetCount() {
+    func testNSSetCountKey() {
         let rendering = try! Template(string: "{{collection.count}}").render(boxedNSSet)
         XCTAssertEqual(rendering, "1")
     }
     
-    func testNSSetAnyObject() {
-        let rendering = try! Template(string: "{{collection.anyObject.key}}").render(boxedNSSet)
+    func testNSSetFirstKey() {
+        let rendering = try! Template(string: "{{collection.first.key}}").render(boxedNSSet)
         XCTAssertEqual(rendering, "value")
+    }
+    
+    func testNSSetLastKey() {
+        // There is no such thing as set.last
+        let rendering = try! Template(string: "{{collection.last.key}}").render(boxedNSSet)
+        XCTAssertEqual(rendering, "")
     }
     
     func testSetIsIterated() {
@@ -195,14 +201,20 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":Set(["foo"])])), "Not empty")
     }
     
-    func testSetCount() {
+    func testSetCountKey() {
         let rendering = try! Template(string: "{{collection.count}}").render(boxedSet)
         XCTAssertEqual(rendering, "1")
     }
     
-    func testSetAnyObject() {
-        let rendering = try! Template(string: "{{collection.anyObject.key}}").render(boxedSet)
+    func testSetFirstKey() {
+        let rendering = try! Template(string: "{{collection.first.key}}").render(boxedSet)
         XCTAssertEqual(rendering, "value")
+    }
+    
+    func testSetLastKey() {
+        // There is no such thing as set.last
+        let rendering = try! Template(string: "{{collection.last.key}}").render(boxedSet)
+        XCTAssertEqual(rendering, "")
     }
     
     func testNSOrderedSetIsIterated() {
@@ -215,18 +227,18 @@ class FoundationCollectionTests: XCTestCase {
         XCTAssertEqual(rendering, "")
     }
     
-    func testNSOrderedSetCount() {
+    func testNSOrderedSetCountKey() {
         let rendering = try! Template(string: "{{collection.count}}").render(boxedNSOrderedSet)
         XCTAssertEqual(rendering, "1")
     }
     
-    func testNSOrderedSetFirstObject() {
-        let rendering = try! Template(string: "{{collection.firstObject.key}}").render(boxedNSOrderedSet)
+    func testNSOrderedSetKeyFirst() {
+        let rendering = try! Template(string: "{{collection.first.key}}").render(boxedNSOrderedSet)
         XCTAssertEqual(rendering, "value")
     }
     
-    func testNSOrderedSetLastObject() {
-        let rendering = try! Template(string: "{{collection.lastObject.key}}").render(boxedNSOrderedSet)
+    func testNSOrderedSetLastKey() {
+        let rendering = try! Template(string: "{{collection.last.key}}").render(boxedNSOrderedSet)
         XCTAssertEqual(rendering, "value")
     }
     
