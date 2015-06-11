@@ -145,14 +145,14 @@ We describe below a few use cases of the library:
 
 ### Errors
 
-Not funny, but they happen. Whenever the library needs to access the file system or other system resources, you may get standard errors of domain like NSCocoaErrorDomain, etc. Mustache-specific errors are covered by the domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
 
 - Code `GRMustacheErrorCodeTemplateNotFound`:
     
     ```swift
     do {
         let template = try Template(named: "inexistant")
-    } catch let error {
+    } catch {
         // No such template: `inexistant`
     }
     ```
@@ -162,7 +162,7 @@ Not funny, but they happen. Whenever the library needs to access the file system
     ```swift
     do {
         let template = try Template(string: "Hello {{name")
-    } catch let error {
+    } catch {
         // Parse error at line 1: Unclosed Mustache tag
     }
     ```
@@ -173,7 +173,7 @@ Not funny, but they happen. Whenever the library needs to access the file system
     do {
         let template = try Template(string: "{{undefinedFilter(x)}}")
         let rendering = try template.render()
-    } catch let error {
+    } catch {
         // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
     }
     ```
