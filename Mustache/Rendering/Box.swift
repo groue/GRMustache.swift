@@ -412,59 +412,75 @@ extension String : MustacheBoxable {
 // MARK: - Boxing of Swift Collections and Dictionaries
 
 
-// IMPLEMENTATION NOTE 1
+// IMPLEMENTATION NOTE
 //
-// This function is a private helper for collection types CollectionType and
-// NSSet. Collections render as the concatenation of the rendering of their
-// items.
+// We don't provide any boxing function for `SequenceType`, because this type
+// makes no requirement on conforming types regarding whether they will be
+// destructively "consumed" by iteration (as stated by documentation).
 //
-// There are two tricks when rendering collections:
+// Now we need to consume a sequence several times:
 //
-// One, items can render as Text or HTML, and our collection should render with
-// the same type. It is an error to mix content types.
+// - for converting it to an array for the arrayValue property.
+// - for consuming the first element to know if the sequence is empty or not.
+// - for rendering it.
 //
-// Two, we have to tell items that they are rendered as an enumeration item.
-// This allows collections to avoid enumerating their items when they are part
-// of another collections:
-//
-//     {{# arrays }}  // Each array renders as an enumeration item, and has itself enter the context stack.
-//       {{#.}}       // Each array renders "normally", and enumerates its items
-//         ...
-//       {{/.}}
-//     {{/ arrays }}
-//
-//
-// IMPLEMENTATION NOTE 2
-//
-// This function used to consume a generic collection instead of an explicit
-// array. (See commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
-//
-// Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has revelead
-// that the generic function would not compile in Release configuration.
-extension CollectionType where Generator.Element: MustacheBoxable {
-    private func renderItems(var info: RenderingInfo) throws -> Rendering {
+// So we don't support boxing of sequences.
+
+extension CollectionType {
+    
+    /**
+    This method is a private helper which renders the concatenation of the
+    rendering of the collection items.
+    
+    There are two tricks when rendering collections:
+    
+    1. Items can render as Text or HTML, and our collection should render with
+       the same type. It is an error to mix content types.
+    
+    2. We have to tell items that they are rendered as an enumeration item.
+       This allows collections to avoid enumerating their items when they are
+       part of another collections:
+    
+            {{# arrays }}  // Each array renders as an enumeration item, and has itself enter the context stack.
+              {{#.}}       // Each array renders "normally", and enumerates its items
+                ...
+              {{/.}}
+            {{/ arrays }}
+    
+    
+    IMPLEMENTATION NOTE
+    
+    This method used to be a generic function.
+    
+    Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has
+    revelead that the generic function would not compile in Release
+    configuration (see commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
+    
+    For Swift 2, we use protocol extensions.
+    */
+    private func renderItems(var info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var buffer = ""
         var contentType: ContentType? = nil
         
         // Tell items they are rendered as an enumeration item.
         //
-        // Some values don't render the same whenever they render as an enumeration
-        // item, or alone: {{# values }}...{{/ values }} vs.
+        // Some values don't render the same whenever they render as an
+        // enumeration item, or alone: {{# values }}...{{/ values }} vs.
         // {{# value }}...{{/ value }}.
         //
         // This is the case of Int, UInt, Double, Bool: they enter the context
-        // stack when used in an iteration, and do not enter the context stack when
-        // used as a boolean.
+        // stack when used in an iteration, and do not enter the context stack
+        // when used as a boolean.
         //
-        // This is also the case of collections: they enter the context stack when
-        // used as an item of a collection, and enumerate their items when used as
-        // a collection.
+        // This is also the case of collections: they enter the context stack
+        // when used as an item of a collection, and enumerate their items when
+        // used as a collection.
         
         info.enumerationItem = true
         
-        for boxable in self {
-            let boxRendering = try Box(boxable).render(info: info)
+        for item in self {
+            let boxRendering = try box(item).render(info: info)
             if contentType == nil
             {
                 // First item: now we know our contentType
@@ -515,373 +531,314 @@ extension CollectionType where Generator.Element: MustacheBoxable {
             return try info.tag.render(info.context)
         }
     }
+}
+
+extension CollectionType where Index.Distance == Int {
+    /**
+    This function returns a MustacheBox that wraps the collection.
     
-    private func keyedSubscript(key: String) -> MustacheBox {
-        switch key {
-        case "first":
-            return Box(first)   // CollectionType
-        default:
-            return Box()
-        }
-    }
+    A CollectionType can be queried for the following keys:
     
-    private var boolValue: Bool {
-        // A collection is truthy iff it is not empty.
-        return !isEmpty
-    }
+    - `first`: the first object in the collection
+    - `count`: number of elements in the collection
     
-    private var arrayValue: [MustacheBox] {
-        return map({ Box($0) })
+    The most common type targeted by this method is Set. Array has its own
+    specialization of the mustacheBoxWithValue(value:box:) method.
+    
+    - parameter value: the value of the returned box.
+    - parameter box: a closure that turns collection items into a MustacheBox.
+    - returns: A MustacheBox that wraps the collection.
+    */
+    private func mustacheBoxWithValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+        return MustacheBox(
+            boolValue: !isEmpty,
+            value: value,
+            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            keyedSubscript: { (key) in
+                switch key {
+                case "first":   // C: CollectionType
+                    if let first = self.first {
+                        return box(first)
+                    } else {
+                        return Box()
+                    }
+                case "count":   // C.Index.Distance == Int
+                    return Box(self.count)
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithValue(value, box: box)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    return try self.renderItems(info, box: box)
+                }
+            }
+        )
     }
 }
 
-extension CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int {
-    private func keyedSubscript(key: String) -> MustacheBox {
-        switch key {
-        case "first":
-            return Box(first)   // CollectionType
-        case "count":
-            return Box(count)   // Index.Distance == Int
-        default:
-            return Box()
-        }
+extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexType {
+    /**
+    This function returns a MustacheBox that wraps the collection.
+    
+    A CollectionType can be queried for the following keys:
+    
+    - `first`: the first object in the collection
+    - `count`: number of elements in the collection
+    - `last`: the last object in the collection
+    
+    The most common type targeted by this method is Set. Set has its own
+    specialization of the mustacheBoxWithValue(value:box:) method.
+    
+    - parameter value: the value of the returned box.
+    - parameter box: a closure that turns collection items into a MustacheBox.
+    - returns: A MustacheBox that wraps the collection.
+    */
+    private func mustacheBoxWithValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+        return MustacheBox(
+            boolValue: !isEmpty,
+            value: value,
+            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            keyedSubscript: { (key) in
+                switch key {
+                case "first":   // C: CollectionType
+                    if let first = self.first {
+                        return box(first)
+                    } else {
+                        return Box()
+                    }
+                case "last":    // C.Index: BidirectionalIndexType
+                    if let last = self.last {
+                        return box(last)
+                    } else {
+                        return Box()
+                    }
+                case "count":   // C.Index.Distance == Int
+                    return Box(self.count)
+                default:
+                    return Box()
+                }
+            },
+            render: { (info: RenderingInfo) in
+                if info.enumerationItem {
+                    // {{# collections }}...{{/ collections }}
+                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithValue(value, box: box)))
+                } else {
+                    // {{ collection }}
+                    // {{# collection }}...{{/ collection }}
+                    return try self.renderItems(info, box: box)
+                }
+            }
+        )
     }
 }
-
-extension CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int {
-    private func keyedSubscript(key: String) -> MustacheBox {
-        switch key {
-        case "first":
-            return Box(first)   // CollectionType
-        case "count":
-            return Box(count)   // Index.Distance == Int
-        case "last":
-            return Box(last)    // Index: BidirectionalIndexType
-        default:
-            return Box()
-        }
-    }
-}
-
-// IMPLEMENTATION NOTE
-//
-// We don't provide any boxing function for `SequenceType`, because this type
-// makes no requirement on conforming types regarding whether they will be
-// destructively "consumed" by iteration (as stated by documentation).
-//
-// Now we need to consume a sequence several times:
-//
-// - for converting it to an array for the arrayValue property.
-// - for consuming the first element to know if the sequence is empty or not.
-// - for rendering it.
-//
-// So we only provide a boxing function for `CollectionType` which ensures
-// non-destructive iteration.
 
 /**
-A collection of values that conform to the `MustacheBoxable` protocol can feed
-Mustache templates. It behaves exactly like Objective-C `NSArray`.
+Sets of `MustacheBoxable` can feed Mustache templates.
 
-    let collection: [Int] = [1,2,3]
+    let set:Set<Int> = [1,2,3]
 
-    // Renders "123"
-    let template = try! Template(string: "{{#collection}}{{.}}{{/collection}}")
-    try! template.render(Box(["collection": Box(collection)]))
+    // Renders "132", or "231", etc.
+    let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
+    try! template.render(Box(["set": Box(set)]))
 
 
 ### Rendering
 
-- `{{collection}}` renders the concatenation of the collection items.
+- `{{set}}` renders the concatenation of the set items.
 
-- `{{#collection}}...{{/collection}}` renders as many times as there are items
-  in `collection`, pushing each item on its turn on the top of the context
-  stack.
+- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+  pushing each item on its turn on the top of the context stack.
 
-- `{{^collection}}...{{/collection}}` renders if and only if `collection` is
-  empty.
+- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
 
 
 ### Keys exposed to templates
 
-A collection can be queried for the following keys:
+A set can be queried for the following keys:
 
-- `count`: number of elements in the collection
-- `first`: the first object in the collection
-- `firstObject`: the first object in the collection
-- `last`: the last object in the collection
-- `lastObject`: the last object in the collection
+- `count`: number of elements in the set
+- `first`: the first object in the set
 
-Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
-renders once, if and only if `collection` is not empty.
+Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once, if
+and only if `set` is not empty.
 
 
 ### Unwrapping from MustacheBox
 
 Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
-property: it reliably returns an Array of MustacheBox, whatever the actual
-type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
+property: it returns an Array of MustacheBox, whatever the actual
+type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 
-- parameter collection: a collection of values that conform to the
-                        `MustacheBoxable` protocol.
+- parameter array: An array of boxable values.
 
-- returns: A MustacheBox that wraps *collection*.
+- returns: A MustacheBox that wraps *array*.
 */
-private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?, withValue value: Any?) -> MustacheBox {
-    if let collection = collection {
-        return MustacheBox(
-            boolValue: collection.boolValue,
-            value: value,
-            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
-            keyedSubscript: collection.keyedSubscript,
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-                } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return try collection.renderItems(info)
-                }
-            }
-        )
-    } else {
-        return Box()
-    }
-}
-
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?) -> MustacheBox {
-    return Box(collection, withValue: collection)
-}
-
-private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(collection: C?, withValue value: Any?) -> MustacheBox {
-    if let collection = collection {
-        return MustacheBox(
-            boolValue: collection.boolValue,
-            value: value,
-            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
-            keyedSubscript: collection.keyedSubscript,
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-                } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return try collection.renderItems(info)
-                }
-            }
-        )
-    } else {
-        return Box()
-    }
-}
-
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-    return Box(collection, withValue: collection)
-}
-
-private func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?, withValue value: Any?) -> MustacheBox {
     if let collection = collection {
-        return MustacheBox(
-            boolValue: collection.boolValue,
-            value: value,
-            converter: MustacheBox.Converter(arrayValue: collection.arrayValue),
-            keyedSubscript: collection.keyedSubscript,
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-                } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return try collection.renderItems(info)
-                }
-            }
-        )
+        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
     } else {
         return Box()
     }
 }
 
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-    return Box(collection, withValue: collection)
-}
+/**
+Sets of `MustacheBoxable?` can feed Mustache templates.
 
+    let set:Set<Int?> = [1,2,nil]
+
+    // Renders "<1><><2>", or "<><2><1>", etc.
+    let template = try! Template(string: "{{#set}}<{{.}}>{{/set}}")
+    try! template.render(Box(["set": Box(set)]))
+
+
+### Rendering
+
+- `{{set}}` renders the concatenation of the set items.
+
+- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+pushing each item on its turn on the top of the context stack.
+
+- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
+
+
+### Keys exposed to templates
+
+A set can be queried for the following keys:
+
+- `count`: number of elements in the set
+- `first`: the first object in the set
+
+Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once, if
+and only if `set` is not empty.
+
+
+### Unwrapping from MustacheBox
+
+Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
+property: it returns an Array of MustacheBox, whatever the actual
+type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
+
+
+- parameter array: An array of boxable values.
+
+- returns: A MustacheBox that wraps *array*.
+*/
 // TODO Swift2: restore this function
-
-///**
-//A collection of optional values that conform to the `MustacheBoxable` protocol
-//can feed Mustache templates. It behaves exactly like Objective-C `NSArray`.
 //
-//    let collection: [Int] = [1,2,3]
-//
-//    // Renders "123"
-//    let template = try! Template(string: "{{#collection}}{{.}}{{/collection}}")
-//    try! template.render(Box(["collection": Box(collection)]))
-//
-//
-//### Rendering
-//
-//- `{{collection}}` renders the concatenation of the collection items.
-//
-//- `{{#collection}}...{{/collection}}` renders as many times as there are items
-//  in `collection`, pushing each item on its turn on the top of the context
-//  stack.
-//
-//- `{{^collection}}...{{/collection}}` renders if and only if `collection` is
-//  empty.
-//
-//
-//### Keys exposed to templates
-//
-//A collection can be queried for the following keys:
-//
-//- `count`: number of elements in the collection
-//- `first`: the first object in the collection
-//- `firstObject`: the first object in the collection
-//- `last`: the last object in the collection
-//- `lastObject`: the last object in the collection
-//
-//Because 0 (zero) is falsey, `{{#collection.count}}...{{/collection.count}}`
-//renders once, if and only if `collection` is not empty.
-//
-//
-//### Unwrapping from MustacheBox
-//
-//Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
-//property: it reliably returns an Array of MustacheBox, whatever the actual
-//type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
-//
-//
-//- parameter collection: A collection of optional values that conform to the
-//                        `MustacheBoxable` protocol.
-//
-//- returns: A MustacheBox that wraps *collection*.
-//*/
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
 //    if let collection = collection {
-//        let count = collection.count // C.Index.Distance == Int
-//        return MustacheBox(
-//            boolValue: (count > 0),
-//            value: collection,
-//            converter: MustacheBox.Converter(arrayValue: collection.map({ Box($0) })),
-//            keyedSubscript: { (key: String) in
-//                switch key {
-//                case "count":
-//                    // Support for both Objective-C and Swift arrays.
-//                    return Box(count)
-//                    
-//                case "firstObject", "first":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.startIndex])
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                case "lastObject", "last":
-//                    // Support for both Objective-C and Swift arrays.
-//                    if count > 0 {
-//                        return Box(collection[collection.endIndex.predecessor()])   // C.Index: BidirectionalIndexType
-//                    } else {
-//                        return Box()
-//                    }
-//                    
-//                default:
-//                    return Box()
-//                }
-//            },
-//            render: { (info: RenderingInfo) in
-//                if info.enumerationItem {
-//                    // {{# collections }}...{{/ collections }}
-//                    return try info.tag.render(info.context.extendedContext(Box(collection)))
-//                } else {
-//                    // {{ collection }}
-//                    // {{# collection }}...{{/ collection }}
-//                    // {{^ collection }}...{{/ collection }}
-//                    return try renderCollection(collection.map({ Box($0) }), info: info)
-//                }
-//        })
+//        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
 //    } else {
 //        return Box()
 //    }
 //}
 
+/**
+Arrays of `MustacheBoxable` can feed Mustache templates.
 
-///**
-//A set of values that conform to the `MustacheBoxable` protocol can feed Mustache
-//templates. It behaves exactly like Objective-C `NSSet`.
+    let array = [1,2,3]
+
+    // Renders "123"
+    let template = try! Template(string: "{{#array}}{{.}}{{/array}}")
+    try! template.render(Box(["array": Box(array)]))
+
+
+### Rendering
+
+- `{{array}}` renders the concatenation of the array items.
+
+- `{{#array}}...{{/array}}` renders as many times as there are items in `array`,
+  pushing each item on its turn on the top of the context stack.
+
+- `{{^array}}...{{/array}}` renders if and only if `array` is empty.
+
+
+### Keys exposed to templates
+
+An array can be queried for the following keys:
+
+- `count`: number of elements in the array
+- `first`: the first object in the array
+- `last`: the last object in the array
+
+Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders once,
+if and only if `array` is not empty.
+
+
+### Unwrapping from MustacheBox
+
+Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
+property: it returns an Array of MustacheBox, whatever the actual
+type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
+
+
+- parameter array: An array of boxable values.
+
+- returns: A MustacheBox that wraps *array*.
+*/
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
+        return array.mustacheBoxWithValue(array, box: { Box($0) })
+    } else {
+        return Box()
+    }
+}
+
+/**
+Arrays of `MustacheBoxable?` can feed Mustache templates.
+
+    let array = [1,2,nil]
+
+    // Renders "<1><2><>"
+    let template = try! Template(string: "{{#array}}<{{.}}>{{/array}}")
+    try! template.render(Box(["array": Box(array)]))
+
+
+### Rendering
+
+- `{{array}}` renders the concatenation of the array items.
+
+- `{{#array}}...{{/array}}` renders as many times as there are items in `array`,
+  pushing each item on its turn on the top of the context stack.
+
+- `{{^array}}...{{/array}}` renders if and only if `array` is empty.
+
+
+### Keys exposed to templates
+
+An array can be queried for the following keys:
+
+- `count`: number of elements in the array
+- `first`: the first object in the array
+- `last`: the last object in the array
+
+Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders once,
+if and only if `array` is not empty.
+
+
+### Unwrapping from MustacheBox
+
+Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
+property: it returns an Array of MustacheBox, whatever the actual
+type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
+
+
+- parameter array: An array of boxable values.
+
+- returns: A MustacheBox that wraps *array*.
+*/
+// TODO Swift2: restore this function
 //
-//    let set: Set<Int> = [1,2,3]
-//
-//    // Renders "213"
-//    let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
-//    try! template.render(Box(["set": Box(set)]))
-//
-//
-//### Rendering
-//
-//- `{{set}}` renders the concatenation of the renderings of the set items, in
-//any order.
-//
-//- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
-//pushing each item on its turn on the top of the context stack.
-//
-//- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
-//
-//
-//### Keys exposed to templates
-//
-//A set can be queried for the following keys:
-//
-//- `anyObject`: the first object in the set
-//- `count`: number of elements in the set
-//- `first`: the first object in the set
-//
-//Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
-//if and only if `set` is not empty.
-//
-//
-//### Unwrapping from MustacheBox
-//
-//Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
-//property: it reliably returns an Array of MustacheBox, whatever the actual
-//type of the raw boxed value (Set, Array, NSArray, NSSet, ...).
-//
-//
-//- parameter set: A set of values that conform to the `MustacheBoxable` protocol.
-//
-//- returns: A MustacheBox that wraps *set*.
-//*/
-//public func Box<T: MustacheBoxable>(set: Set<T>?) -> MustacheBox {
-//    if let set = set {
-//        let count = set.count
-//        return MustacheBox(
-//            boolValue: (count > 0),
-//            value: set,
-//            converter: MustacheBox.Converter(arrayValue: set.map({ Box($0) })),
-//            keyedSubscript: { (key: String) in
-//                switch key {
-//                case "count":
-//                    return Box(count)
-//                case "first", "anyObject":
-//                    return Box(set.first)
-//                default:
-//                    return Box()
-//                }
-//            },
-//            render: { (info: RenderingInfo) in
-//                if info.enumerationItem {
-//                    // {{# sets }}...{{/ sets }}
-//                    return try info.tag.render(info.context.extendedContext(Box(set)))
-//                } else {
-//                    // {{ set }}
-//                    // {{# set }}...{{/ set }}
-//                    // {{^ set }}...{{/ set }}
-//                    return try set.render(info)
-//                }
-//        })
+//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
+//    if let collection = collection {
+//        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
 //    } else {
 //        return Box()
 //    }
@@ -892,10 +849,11 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 A dictionary of values that conform to the `MustacheBoxable` protocol can feed
 Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
 
-    // Renders "Freddy Mercury"
     let dictionary: [String: String] = [
         "firstName": "Freddy",
         "lastName": "Mercury"]
+
+    // Renders "Freddy Mercury"
     let template = try! Template(string: "{{firstName}} {{lastName}}")
     let rendering = try! template.render(Box(dictionary))
 
@@ -957,10 +915,11 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
 A dictionary of optional values that conform to the `MustacheBoxable` protocol
 can feed Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
 
-    // Renders "Freddy Mercury"
     let dictionary: [String: String?] = [
-        "firstName": "Freddy",
-        "lastName": "Mercury"]
+        "firstName": nil,
+        "lastName": "Zappa"]
+
+    // Renders " Zappa"
     let template = try! Template(string: "{{firstName}} {{lastName}}")
     let rendering = try! template.render(Box(dictionary))
 
@@ -1257,9 +1216,7 @@ extension NSObject : MustacheBoxable {
     
     - `count`: number of elements in the array
     - `first`: the first object in the array
-    - `firstObject`: the first object in the array
     - `last`: the last object in the array
-    - `lastObject`: the last object in the array
     
     Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders
     once, if and only if `array` is not empty.
@@ -1291,54 +1248,10 @@ extension NSObject : MustacheBoxable {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
-            // Turn enumerable into a Swift array of MustacheBoxes
-            let boxArray = GeneratorSequence(NSFastGenerator(enumerable)).map({ (object) in
-                return BoxAnyObject(object);
-            })
-//            let count = boxArray.count
+            // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
+            let boxArray = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
+            return boxArray.mustacheBoxWithValue(self, box: { $0 })
             
-            return Box(boxArray, withValue: self)
-            
-//            return MustacheBox(
-//                boolValue: (count > 0),
-//                value: self,
-//                converter: MustacheBox.Converter(arrayValue: boxArray),
-//                keyedSubscript: { (key: String) in
-//                    switch key {
-//                    case "count":
-//                        // Support for both Objective-C and Swift arrays.
-//                        return Box(count)
-//                        
-//                    case "firstObject", "first":
-//                        // Support for both Objective-C and Swift arrays.
-//                        if count > 0 {
-//                            return boxArray[0]
-//                        } else {
-//                            return Box()
-//                        }
-//                        
-//                    case "lastObject", "last":
-//                        // Support for both Objective-C and Swift arrays.
-//                        if count > 0 {
-//                            return boxArray[count - 1]
-//                        } else {
-//                            return Box()
-//                        }
-//                        
-//                    default:
-//                        return Box()
-//                    }
-//                },
-//                render: { (info: RenderingInfo) in
-//                    if info.enumerationItem {
-//                        // {{# collections }}...{{/ collections }}
-//                        return try info.tag.render(info.context.extendedContext(Box(self)))
-//                    } else {
-//                        // {{ collection }}
-//                        // {{# collection }}...{{/ collection }}
-//                        return try boxArray.render(info)
-//                    }
-//            })
         } else {
             // Generic NSObject
             
@@ -1579,36 +1492,12 @@ extension NSSet {
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
     public override var mustacheBox: MustacheBox {
-        let set = reduce(Set<MustacheBox>()) { (var set, item) in
+        // Turn NSSet into a Swift Set of MustacheBoxes that we know how to box
+        var set = Set<MustacheBox>()
+        for item in self {
             set.insert(BoxAnyObject(item))
-            return set
         }
-        return Box(set, withValue: self)
-//        return MustacheBox(
-//            boolValue: (self.count > 0),
-//            value: self,
-//            converter: MustacheBox.Converter(arrayValue: GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)),
-//            keyedSubscript: { (key: String) in
-//                switch key {
-//                case "count":
-//                    return Box(self.count)
-//                case "anyObject":
-//                    return BoxAnyObject(self.anyObject())
-//                default:
-//                    return Box()
-//                }
-//            },
-//            render: { (info: RenderingInfo) in
-//                if info.enumerationItem {
-//                    // {{# sets }}...{{/ sets }}
-//                    return try info.tag.render(info.context.extendedContext(Box(self)))
-//                } else {
-//                    // {{ set }}
-//                    // {{# set }}...{{/ set }}
-//                    let boxes = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
-//                    return try boxes.render(info)
-//                }
-//        })
+        return set.mustacheBoxWithValue(self, box: { $0 })
     }
 }
 
