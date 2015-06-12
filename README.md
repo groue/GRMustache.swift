@@ -208,7 +208,7 @@ let template = try! Template(string: "{{name}} has a mustache.")
 let rendering = try! template.render(Box(person))
 ```
 
-When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the "Boxing of NSObject" section in [Box.swift](Mustache/Rendering/Box.swift).
+When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the documentation of `NSObject.mustacheBox` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
 ### Rendering of AnyObject
@@ -224,6 +224,8 @@ let json: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options:
 let template = try! Template(string: "{{ name }} has a Mustache.")
 let rendering = try! template.render(BoxAnyObject(json))
 ```
+
+`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
 
 
 ### Rendering of pure Swift values
@@ -251,7 +253,7 @@ extension Person : MustacheBoxable {
 }
 ```
 
-Now we can box and render a user:
+Now we can box and render a user, array of users, dictionaries of users, etc:
 
 ```swift
 // Freddy Mercury has a mustache.
@@ -260,22 +262,12 @@ let template = try! Template(string: "{{name}} has a mustache.")
 let rendering = try! template.render(Box(person))
 ```
 
-For a more complete discussion, see the "Boxing of Swift types" section in [Box.swift](Mustache/Rendering/Box.swift)
+For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift)
 
 
 ### Lambdas
 
 "Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
-
-Quoting the [Mustache specification](https://github.com/mustache/spec/blob/master/specs/~lambdas.yml):
-
-> Lambdas are a special-cased data type for use in interpolations and sections.
-> 
-> When used as the data value for an Variable {{tag}}, the lambda MUST be treatable as an arity 0 function, and invoked as such.  The returned value MUST be rendered against the default delimiters, then interpolated in place of the lambda.
-> 
-> When used as the data value for a Section {{#tag}}...{{/tag}}, the lambda MUST be treatable as an arity 1 function, and invoked as such (passing a String containing the unprocessed section contents).  The returned value MUST be rendered against the current delimiters, then interpolated in place of the section.
-
-The `Lambda` function produces spec-compliant "Mustache lambdas":
 
 ```swift
 // `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
@@ -333,10 +325,6 @@ let rendering = try! template.render(Box(["n": 10]))
 
 `cats.mustache`:
 
-```mustache
-I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
-```
-
 ```swift
 // Define the `pluralize` filter.
 //
@@ -357,7 +345,8 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo) in
 
 // Register the pluralize filter in our template:
 
-let template = try! Template(named: "cats")
+let templateString = "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}."
+let template = try! Template(string: templateString)
 template.registerInBaseContext("pluralize", Box(pluralize))
 
 
