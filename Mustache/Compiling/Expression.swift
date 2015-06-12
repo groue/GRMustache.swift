@@ -26,12 +26,9 @@ import Foundation
 /**
 The type for expressions that appear in tags: `name`, `user.name`,
 `uppercase(user.name)`, etc.
-
-Expression conforms to Equatable so that the Compiler can check that section
-tags have matching openings and closings: {{# person }}...{{/ person }} is OK
-but {{# foo }}...{{/ bar }} is not.
 */
-enum Expression: Equatable {
+enum Expression {
+    
     // {{ . }}
     case ImplicitIterator
 
@@ -68,6 +65,14 @@ enum Expression: Equatable {
     static func filter(filterExpression filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) -> Expression {
         return .Filter(filterExpression: Wrapper(filterExpression), argumentExpression: Wrapper(argumentExpression), partialApplication: partialApplication)
     }
+}
+
+/**
+Expression conforms to Equatable so that the Compiler can check that section
+tags have matching openings and closings: {{# person }}...{{/ person }} is OK
+but {{# foo }}...{{/ bar }} is not.
+*/
+extension Expression: Equatable {
 }
 
 func ==(lhs: Expression, rhs: Expression) -> Bool {
