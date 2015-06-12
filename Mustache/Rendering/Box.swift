@@ -474,8 +474,8 @@ extension NSObject : MustacheBoxable {
             // Enumerable
             
             // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-            let boxArray = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
-            return boxArray.mustacheBoxWithValue(self, box: { $0 })
+            let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
+            return array.mustacheBoxWithArrayValue(self, box: { $0 })
             
         } else {
             // Generic NSObject
@@ -824,8 +824,7 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 extension CollectionType {
     
     /**
-    This method is a private helper which renders the concatenation of the
-    rendering of the collection items.
+    Concatenates the rendering of the collection items.
     
     There are two tricks when rendering collections:
     
@@ -842,16 +841,11 @@ extension CollectionType {
               {{/.}}
             {{/ arrays }}
     
-    
-    IMPLEMENTATION NOTE
-    
-    This method used to be a generic function.
-    
-    Unfortunately https://github.com/groue/GRMustache.swift/issues/1 has
-    revelead that the generic function would not compile in Release
-    configuration (see commit 9d6c37a9c3f95a4202dcafc4cc7df59e5b86cbc7).
-    
-    For Swift 2, we use protocol extensions.
+    - parameter info: A RenderingInfo
+    - parameter box: A closure that turns collection items into a MustacheBox.
+                     It makes us able to provide a single implementation
+                     whatever the type of the collection items.
+    - returns: A Rendering
     */
     private func renderItems(var info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
@@ -931,21 +925,20 @@ extension CollectionType {
 // Support for Set
 extension CollectionType where Index.Distance == Int {
     /**
-    This function returns a MustacheBox that wraps the collection.
+    This function returns a MustacheBox that wraps a set-like collection.
     
-    A CollectionType can be queried for the following keys:
+    The returned box can be queried for the following keys:
     
     - `first`: the first object in the collection
     - `count`: number of elements in the collection
     
-    The most common type targeted by this method is Set. Array has its own
-    specialization of the mustacheBoxWithValue(value:box:) method.
-    
     - parameter value: the value of the returned box.
-    - parameter box: a closure that turns collection items into a MustacheBox.
+    - parameter box:   A closure that turns collection items into a MustacheBox.
+                       It makes us able to provide a single implementation
+                       whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             boolValue: !isEmpty,
             value: value,
@@ -967,7 +960,7 @@ extension CollectionType where Index.Distance == Int {
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithValue(value, box: box)))
+                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithSetValue(value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -981,22 +974,21 @@ extension CollectionType where Index.Distance == Int {
 // Support for Array
 extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexType {
     /**
-    This function returns a MustacheBox that wraps the collection.
+    This function returns a MustacheBox that wraps an array-like collection.
     
-    A CollectionType can be queried for the following keys:
+    The returned box can be queried for the following keys:
     
     - `first`: the first object in the collection
     - `count`: number of elements in the collection
     - `last`: the last object in the collection
     
-    The most common type targeted by this method is Set. Set has its own
-    specialization of the mustacheBoxWithValue(value:box:) method.
-    
     - parameter value: the value of the returned box.
-    - parameter box: a closure that turns collection items into a MustacheBox.
+    - parameter box:   A closure that turns collection items into a MustacheBox.
+                       It makes us able to provide a single implementation
+                       whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             boolValue: !isEmpty,
             value: value,
@@ -1024,7 +1016,7 @@ extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexT
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithValue(value, box: box)))
+                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithArrayValue(value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -1067,7 +1059,6 @@ extension NSSet {
     
     A set can be queried for the following keys:
     
-    - `anyObject`: the first object in the set
     - `count`: number of elements in the set
     - `first`: the first object in the set
     
@@ -1087,7 +1078,7 @@ extension NSSet {
         for item in self {
             set.insert(BoxAnyObject(item))
         }
-        return set.mustacheBoxWithValue(self, box: { $0 })
+        return set.mustacheBoxWithSetValue(self, box: { $0 })
     }
 }
 
@@ -1134,9 +1125,9 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-    if let collection = collection {
-        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
+public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+    if let set = set {
+        return set.mustacheBoxWithSetValue(set, box: { Box($0) })
     } else {
         return Box()
     }
@@ -1186,9 +1177,9 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 // TODO Swift2: restore this function
 //
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-//    if let collection = collection {
-//        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
+//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+//    if let set = set {
+//        return set.mustacheBoxWithSetValue(set, box: { Box($0) })
 //    } else {
 //        return Box()
 //    }
@@ -1239,7 +1230,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
-        return array.mustacheBoxWithValue(array, box: { Box($0) })
+        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
         return Box()
     }
@@ -1290,9 +1281,9 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 // TODO Swift2: restore this function
 //
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(collection: C?) -> MustacheBox {
-//    if let collection = collection {
-//        return collection.mustacheBoxWithValue(collection, box: { Box($0) })
+//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+//    if let array = array {
+//        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
 //    } else {
 //        return Box()
 //    }
@@ -1356,7 +1347,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) -> [String: MustacheBox] in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) in
                     let (key, value) = pair
                     boxDictionary[key] = Box(value)
                     return boxDictionary
@@ -1422,7 +1413,7 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) -> [String: MustacheBox] in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) in
                     let (key, value) = pair
                     boxDictionary[key] = Box(value)
                     return boxDictionary
@@ -1494,14 +1485,13 @@ extension NSDictionary {
             converter: MustacheBox.Converter(
                 dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (var boxDictionary, key) in
                     if let key = key as? String {
-                        let item = (self as AnyObject)[key] // Cast to AnyObject so that we can use subscript notation.
-                        boxDictionary[key] = BoxAnyObject(item)
+                        boxDictionary[key] = BoxAnyObject(self[key])
+                    } else {
+                        NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
                     }
                     return boxDictionary
                 })),
-            keyedSubscript: { (key: String) in
-                let item = (self as AnyObject)[key] // Cast to AnyObject so that we can access subscript notation.
-                return BoxAnyObject(item)
+            keyedSubscript: { BoxAnyObject(self[$0])
         })
     }
 }
