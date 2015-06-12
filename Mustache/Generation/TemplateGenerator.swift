@@ -27,7 +27,7 @@ extension TemplateAST : CustomDebugStringConvertible {
         var string = TemplateGenerator().stringFromTemplateAST(self)
         string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
         string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
-        return "TemplateAST(\(string))"
+        return "TemplateAST(\"\(string)\")"
     }
 }
 
@@ -37,7 +37,7 @@ extension Template : CustomDebugStringConvertible {
         var string = TemplateGenerator().stringFromTemplateAST(templateAST)
         string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
         string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
-        return "Template(\(string))"
+        return "Template(\"\(string)\")"
     }
 }
 

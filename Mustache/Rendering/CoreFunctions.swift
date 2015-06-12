@@ -615,6 +615,25 @@ public struct Rendering {
     }
 }
 
+extension Rendering : CustomDebugStringConvertible {
+    /// A textual representation of `self`, suitable for debugging.
+    public var debugDescription: String {
+        var string = self.string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        
+        var contentTypeString: String
+        switch contentType {
+        case .HTML:
+            contentTypeString = "HTML"
+        case .Text:
+            contentTypeString = "Text"
+        }
+        
+        return "Rendering(\(contentTypeString):\"\(string)\")"
+    }
+}
+
+
 /**
 `RenderingInfo` provides information about a rendering.
 
