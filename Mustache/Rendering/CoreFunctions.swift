@@ -212,20 +212,28 @@ For example:
 - returns: A FilterFunction.
 */
 public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
-    return _VariadicFilter([], filter: filter)
-}
-
-private func _VariadicFilter(boxes: [MustacheBox], filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
-    return { (box: MustacheBox, partialApplication: Bool) in
-        let boxes = boxes + [box]
-        if partialApplication {
-            // Wait for another argument
-            return Box(_VariadicFilter(boxes, filter: filter))
-        } else {
-            // No more argument: compute final value
-            return try filter(boxes)
+    
+    // f(a,b,c) is implemented as f(a)(b)(c).
+    //
+    // f(a) returns another filter, which returns another filter, which
+    // eventually computes the final result.
+    //
+    // It is the partialApplication flag the tells when it's time to return the
+    // final result.
+    func partialFilter(filter: ([MustacheBox]) throws -> MustacheBox, arguments: [MustacheBox]) -> FilterFunction {
+        return { (nextArgument: MustacheBox, partialApplication: Bool) in
+            let arguments = arguments + [nextArgument]
+            if partialApplication {
+                // Wait for another argument
+                return Box(partialFilter(filter, arguments: arguments))
+            } else {
+                // No more argument: compute final value
+                return try filter(arguments)
+            }
         }
     }
+    
+    return partialFilter(filter, arguments: [])
 }
 
 
