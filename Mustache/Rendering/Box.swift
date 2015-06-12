@@ -547,18 +547,44 @@ extension NSNumber {
     
     */
     public override var mustacheBox: MustacheBox {
+        
+        // IMPLEMENTATION NOTE
+        //
+        // Don't event think about wrapping unsigned values in an Int, even if
+        // Int is large enough to store these values without information loss.
+        // This would make template rendering depend on the size of Int, and
+        // yield very weird platform-related issues. So keep it simple, stupid.
+        
         let objCType = String.fromCString(self.objCType)!
         switch objCType {
-        case "c", "i", "s", "l", "q":
-            return Box(Int(longLongValue))
-        case "C", "I", "S", "L", "Q":
-            return Box(UInt(unsignedLongLongValue))
-        case "f", "d":
+        case "c":
+            return Box(Int(charValue))
+        case "C":
+            return Box(UInt(unsignedCharValue))
+        case "s":
+            return Box(Int(shortValue))
+        case "S":
+            return Box(UInt(unsignedShortValue))
+        case "i":
+            return Box(Int(intValue))
+        case "I":
+            return Box(UInt(unsignedIntValue))
+        case "l":
+            return Box(Int(longValue))
+        case "L":
+            return Box(UInt(unsignedLongValue))
+        case "q":
+            return Box(Int(longLongValue))          // May fail on 32-bits architectures, right?
+        case "Q":
+            return Box(UInt(unsignedLongLongValue)) // May fail on 32-bits architectures, right?
+        case "f":
+            return Box(Double(floatValue))
+        case "d":
             return Box(doubleValue)
         case "B":
             return Box(boolValue)
         default:
-            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented yet: value is discarded.")
+            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
             return Box()
         }
     }
