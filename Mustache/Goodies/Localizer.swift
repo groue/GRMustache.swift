@@ -253,7 +253,7 @@ extension StandardLibrary {
         private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
             switch args.count {
             case 0:
-                return format
+                return String(format: format)
             case 1:
                 return String(format: format, args[0])
             case 2:
