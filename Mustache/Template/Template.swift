@@ -299,31 +299,40 @@ final public class Template {
 extension Template : MustacheBoxable {
 
     /**
-    `Template` conforms to the `MustacheBoxable` protocol so that it can feed
-    other Mustache templates. A template renders just like a partial tag:
+    `Template` adopts the `MustacheBoxable` protocol so that it can feed
+    Mustache templates.
     
-    - `{{partial}}` renders like an embedded partial tag `{{>name}}` that would
-      refer to the same template.
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
     
-    - `{{#partial}}...{{/partial}}` renders like an inherited partial tag
-      `{{<name}}...{{/name}}` that would refer to the same template.
+        template.mustacheBox   // Valid, but discouraged
+        Box(template)          // Preferred
+
     
-    The difference is that `name` is a hard-coded template name, when
-    `partial` is a template that is chosen at runtime.
+    A template renders just like a partial tag:
+    
+    - `{{template}}` renders like an embedded partial tag `{{>partial}}` that
+      would refer to the same template.
+    
+    - `{{#template}}...{{/template}}` renders like an inherited partial tag
+      `{{<partial}}...{{/partial}}` that would refer to the same template.
+    
+    The difference is that `{{>partial}}` is a hard-coded template name, when
+    `{{template}}` is a template that you can choose at runtime.
+    
     
     For example:
     
-        let partial = Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")!
+        let template = try! Template(string: "<a href='{{url}}'>{{firstName}} {{lastName}}</a>")
         let data = [
             "firstName": Box("Salvador"),
             "lastName": Box("Dali"),
             "url": Box("/people/123"),
-            "partial": Box(partial)
+            "template": Box(template)
         ]
     
         // <a href='/people/123'>Salvador Dali</a>
-        let template = Template(string: "{{partial}}")!
-        template.render(Box(data))!
+        try! Template(string: "{{template}}").render(Box(data))
     
     Note that templates whose contentType is Text are HTML-escaped when they are
     included in an HTML template.

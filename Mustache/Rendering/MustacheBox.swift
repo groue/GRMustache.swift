@@ -252,13 +252,13 @@ public class MustacheBox : NSObject {
     }
 }
 
-extension MustacheBox : CustomDebugStringConvertible {
-    /// A textual representation of `self`, suitable for debugging.
-    public override var debugDescription: String {
+extension MustacheBox {
+    /// A textual representation of `self`.
+    public override var description: String {
         if let value = value {
-            return "MustacheBox(\(value))"  // remove "Optional" from the output
+            return "MustacheBox(\(value))"
         } else {
-            return "MustacheBox(nil)"
+            return "MustacheBox"
         }
     }
 }

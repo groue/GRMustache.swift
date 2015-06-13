@@ -12,3 +12,4 @@ TODO
 - [ ] Use `do { ... }` to limit scopes.
 - [X] catch { error } no need for `let error`
 - [X] RELEASE_NOTES.md: mention dropped support for anyObject, firstObject, lastObject collection keys.
+- [X] Document that one should use `Box()` instead of `mustacheBox`.

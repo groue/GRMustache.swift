@@ -75,8 +75,14 @@ extension StandardLibrary {
         }
         
         /**
-        `Localizer` conforms to the `MustacheBoxable` protocol so that it can
-        feed Mustache templates.
+        `Localizer` adopts the `MustacheBoxable` protocol so that it can feed
+        Mustache templates.
+        
+        You should not directly call the `mustacheBox` property. Always use the
+        `Box()` function instead:
+        
+            localizer.mustacheBox   // Valid, but discouraged
+            Box(localizer)          // Preferred
         */
         public var mustacheBox: MustacheBox {
             // Return a multi-facetted box, because Localizer interacts in

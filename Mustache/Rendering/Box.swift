@@ -28,7 +28,10 @@ import Foundation
 // Mustache templates don't eat raw values: they eat boxed values.
 //
 // To box something, you use the `Box()` function. It comes in several variants
-// so that nearly anything can be boxed and feed templates.
+// so that nearly anything can be boxed and feed templates:
+//
+//     let value = ...
+//     template.render(Box(value))
 //
 // This file is organized in five sections with many examples. You can use the
 // Playground included in `Mustache.xcworkspace` to run those examples.
@@ -36,11 +39,11 @@ import Foundation
 //
 // - MustacheBoxable and the Boxing of Value Types
 //
-//   The `MustacheBoxable` protocol makes any value able to be boxed with the
-//   `Box()` function.
+//   The `MustacheBoxable` protocol lets any type describe how it interacts with
+//   the Mustache rendering engine.
 //
-//   Learn how Bool, Int, UInt, Double, and String, NSObject, NSNull, NSNumber,
-//   NSString and AnyObject are rendered.
+//   It is adopted by the standard types Bool, Int, UInt, Double, String, and
+//   NSObject.
 //
 //
 // - Boxing of Collections
@@ -71,8 +74,8 @@ import Foundation
 The MustacheBoxable protocol gives any type the ability to feed Mustache
 templates.
 
-GRMustache ships with built-in `MustacheBoxable` conformance for the following
-types: `Bool`, `Int`, `UInt`, `Double`, `String`, `NSObject`.
+It is adopted by the standard types Bool, Int, UInt, Double, String, and
+NSObject.
 
 Your own types can conform to it as well, so that they can feed templates:
 
@@ -85,17 +88,17 @@ Your own types can conform to it as well, so that they can feed templates:
 public protocol MustacheBoxable {
     
     /**
-    Returns a MustacheBox.
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
     
-    This method is invoked when a value of your conforming class is boxed with
-    the `Box()` function.
+        value.mustacheBox   // Valid, but discouraged
+        Box(value)          // Preferred
     
-    Don't return `Box(self)`: this would trigger an infinite loop! Instead, you
-    build a Box that explicitly describes how your type interacts with the
-    Mustache engine.
+    Return a `MustacheBox` that describes how your type interacts with the
+    rendering engine.
     
-    You can for example return a box that wraps another value that is already
-    boxable, such as Dictionaries. This is all good:
+    You can for example box another value that is already boxable, such as
+    dictionaries:
 
         struct Person {
             let firstName: String
@@ -103,6 +106,8 @@ public protocol MustacheBoxable {
         }
 
         extension Person : MustacheBoxable {
+            // Expose the `firstName`, `lastName` and `fullName` keys to
+            // Mustache templates:
             var mustacheBox: MustacheBox {
                 return Box([
                     "firstName": firstName,
@@ -112,9 +117,10 @@ public protocol MustacheBoxable {
             }
         }
 
+        let person = Person(firstName: "Tom", lastName: "Selleck")
+    
         // Renders "Tom Selleck"
         let template = try! Template(string: "{{person.fullName}}")
-        let person = Person(firstName: "Tom", lastName: "Selleck")
         try! template.render(Box(["person": Box(person)]))
 
     However, there are multiple ways to build a box, several `Box()` functions.
@@ -133,7 +139,7 @@ public protocol MustacheBoxable {
 extension MustacheBox {
     
     /**
-    `MustacheBox` conforms to the `MustacheBoxable` protocol so that it can feed
+    `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates. Its mustacheBox property returns itself.
     */
     public override var mustacheBox: MustacheBox {
@@ -149,9 +155,15 @@ GRMustache provides built-in support for rendering `Bool`.
 extension Bool : MustacheBoxable {
     
     /**
-    `Bool` conforms to the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. It behaves exactly like Objective-C booleans.
+    `Bool` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
     
+        true.mustacheBox   // Valid, but discouraged
+        Box(true)          // Preferred
+
     
     ### Rendering
     
@@ -198,8 +210,14 @@ GRMustache provides built-in support for rendering `Int`.
 extension Int : MustacheBoxable {
     
     /**
-    `Int` conforms to the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. It behaves exactly like Objective-C integers.
+    `Int` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        1.mustacheBox   // Valid, but discouraged
+        Box(1)          // Preferred
     
     
     ### Rendering
@@ -249,8 +267,14 @@ GRMustache provides built-in support for rendering `UInt`.
 extension UInt : MustacheBoxable {
     
     /**
-    `UInt` conforms to the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. It behaves exactly like Objective-C unsigned integers.
+    `UInt` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        1.mustacheBox   // Valid, but discouraged
+        Box(1)          // Preferred
     
     
     ### Rendering
@@ -300,8 +324,14 @@ GRMustache provides built-in support for rendering `Double`.
 extension Double : MustacheBoxable {
     
     /**
-    `Double` conforms to the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. It behaves exactly like Objective-C doubles.
+    `Double` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        3.14.mustacheBox   // Valid, but discouraged
+        Box(3.14)          // Preferred
     
     
     ### Rendering
@@ -351,8 +381,14 @@ GRMustache provides built-in support for rendering `String`.
 extension String : MustacheBoxable {
     
     /**
-    `String` conforms to the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. It behaves exactly like Objective-C NSString.
+    `String` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        "foo".mustacheBox   // Valid, but discouraged
+        Box("foo")          // Preferred
     
     
     ### Rendering
@@ -400,7 +436,15 @@ GRMustache provides built-in support for rendering `NSObject`.
 extension NSObject : MustacheBoxable {
     
     /**
-    `NSObject` can feed Mustache templates.
+    `NSObject` adopts the `MustacheBoxable` protocol so that it can feed
+    Mustache templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        object.mustacheBox   // Valid, but discouraged
+        Box(object)          // Preferred
+    
     
     NSObject's default implementation handles two general cases:
     
@@ -503,7 +547,14 @@ GRMustache provides built-in support for rendering `NSNull`.
 extension NSNull {
     
     /**
-    `NSNull` can feed Mustache templates.
+    `NSNull` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        NSNull().mustacheBox   // Valid, but discouraged
+        Box(NSNull())          // Preferred
     
     
     ### Rendering
@@ -530,12 +581,20 @@ GRMustache provides built-in support for rendering `NSNumber`.
 extension NSNumber {
     
     /**
-    `NSNumber` can feed Mustache templates. It behaves exactly like Swift
-    numbers: depending on its internal objCType, an NSNumber is rendered as a
-    Swift Bool, Int, UInt, or Double.
+    `NSNumber` adopts the `MustacheBoxable` protocol so that it can feed
+    Mustache templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        NSNumber(integer: 1).mustacheBox   // Valid, but discouraged
+        Box(NSNumber(integer: 1))          // Preferred
     
     
     ### Rendering
+    
+    NSNumber renders exactly like Swift numbers: depending on its internal
+    objCType, an NSNumber is rendered as a Swift Bool, Int, UInt, or Double.
     
     - `{{number}}` is rendered with built-in Swift String Interpolation.
       Custom formatting can be explicitly required with NSNumberFormatter, as in
@@ -598,8 +657,14 @@ GRMustache provides built-in support for rendering `NSString`.
 extension NSString {
     
     /**
-    `NSString` can feed Mustache templates. It behaves exactly like Swift
-    strings.
+    `NSString` adopts the `MustacheBoxable` protocol so that it can feed
+    Mustache templates.
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        "foo".mustacheBox   // Valid, but discouraged
+        Box("foo")          // Preferred
     
     
     ### Rendering
@@ -647,7 +712,7 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 // IMPLEMENTATION NOTE
 //
 // Why is there a Box(NSObject?) function, when Box(MustacheBoxable?) should be
-// enough, given NSObject conforms to MustacheBoxable?
+// enough, given NSObject adopts MustacheBoxable?
 //
 // Well, this is another Swift oddity.
 //
@@ -778,7 +843,7 @@ function. Instead, you use `BoxAnyObject`:
     let box = BoxAnyObject(object)
     box.value as String  // "Mario"
 
-The object is tested at runtime whether it conforms to the `MustacheBoxable`
+The object is tested at runtime whether it adopts the `MustacheBoxable`
 protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.
 
 Otherwise, GRMustache logs a warning, and returns the empty box.
@@ -797,8 +862,7 @@ public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
         // relevant MustacheBox.
         // 
         // Yet we can not prevent the user from trying to box it, because the
-        // Thing class conforms to the AnyObject protocol, just as all Swift
-        // classes.
+        // Thing class adopts the AnyObject protocol, just as all Swift classes.
         //
         //     class Thing { }
         //
@@ -1061,7 +1125,8 @@ GRMustache provides built-in support for rendering `NSSet`.
 extension NSSet {
     
     /**
-    `NSSet` can feed Mustache templates. It behaves exactly like Swift sets.
+    `NSSet` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    templates.
     
         let set: NSSet = [1,2,3]
         
@@ -1069,7 +1134,14 @@ extension NSSet {
         let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
         try! template.render(Box(["set": Box(set)]))
         
-        
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        set.mustacheBox   // Valid, but discouraged
+        Box(set)          // Preferred
+    
+    
     ### Rendering
     
     - `{{set}}` renders the concatenation of the renderings of the set items, in
@@ -1464,8 +1536,8 @@ GRMustache provides built-in support for rendering `NSDictionary`.
 extension NSDictionary {
     
     /**
-    `NSDictionary` can feed Mustache templates. It behaves exactly like Swift
-    dictionaries.
+    `NSDictionary` adopts the `MustacheBoxable` protocol so that it can feed
+    Mustache templates.
 
         // Renders "Freddy Mercury"
         let dictionary: NSDictionary = [
@@ -1473,8 +1545,15 @@ extension NSDictionary {
             "lastName": "Mercury"]
         let template = try! Template(string: "{{firstName}} {{lastName}}")
         let rendering = try! template.render(Box(dictionary))
-
-
+    
+    
+    You should not directly call the `mustacheBox` property. Always use the
+    `Box()` function instead:
+    
+        dictionary.mustacheBox   // Valid, but discouraged
+        Box(dictionary)          // Preferred
+    
+    
     ### Rendering
     
     - `{{dictionary}}` renders the result of the `description` method, HTML-escaped.
