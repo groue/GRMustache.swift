@@ -1445,9 +1445,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) in
-                    let (key, value) = pair
-                    boxDictionary[key] = Box(value)
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T)) in
+                    boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
             keyedSubscript: { (key: String) in
@@ -1511,9 +1510,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
         return MustacheBox(
             value: dictionary,
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, pair) in
-                    let (key, value) = pair
-                    boxDictionary[key] = Box(value)
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T?)) in
+                    boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
             keyedSubscript: { (key: String) in
