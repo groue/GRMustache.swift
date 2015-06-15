@@ -520,6 +520,49 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             let templateString = lambda(info.tag.innerTemplateString)
             let template = try templateRepository.template(string: templateString)
             return try template.render(info.context)
+            
+            // IMPLEMENTATION NOTE
+            //
+            // This lambda implementation is unable to process partial tags
+            // correctly: it uses a TemplateRepository that does not know how
+            // to load partials.
+            //
+            // This problem is a tricky one to solve. The `{{>partial}}` tag
+            // loads the "partial" template which is sibling of the currently
+            // rendered template.
+            //
+            // Imagine the following template hierarchy:
+            //
+            // - /a.mustache: {{#lambda}}...{{/lambda}}...{{>dir/b}}
+            // - /x.mustache: ...
+            // - /dir/b.mustache: {{#lambda}}...{{/lambda}}
+            // - /dir/x.mustache: ...
+            //
+            // If the lambda returns `{{>x}}` then rendering the `a.mustache`
+            // template should trigger the inclusion of both `/x.mustache` and
+            // `/dir/x.mustache`.
+            //
+            // Given the current state of GRMustache types, achieving this
+            // feature would require:
+            //
+            // - a template repository
+            // - a TemplateID
+            // - a method `TemplateRepository.template(string:tagDelimiterPair:baseTemplateID:)`
+            //
+            // Code would read something like:
+            //
+            //     let templateString = lambda(info.tag.innerTemplateString)
+            //     let templateRepository = info.tag.templateRepository
+            //     let templateID = info.tag.templateID
+            //     let template = try templateRepository.template(
+            //         string: templateString,
+            //         tagDelimiterPair: info.tag.tagDelimiterPair,
+            //         baseTemplateID: templateID)
+            //     return try template.render(info.context)
+            //
+            // Should we ever implement this, beware the retain cycle between
+            // tags and template repositories (which own tags through their
+            // cached templateASTs).
         }
     }
 }
@@ -581,6 +624,50 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             let templateString = lambda()
             let template = try templateRepository.template(string: templateString)
             return try template.render(info.context)
+            
+            // IMPLEMENTATION NOTE
+            //
+            // This lambda implementation is unable to process partial tags
+            // correctly: it uses a TemplateRepository that does not know how
+            // to load partials.
+            //
+            // This problem is a tricky one to solve. The `{{>partial}}` tag
+            // loads the "partial" template which is sibling of the currently
+            // rendered template.
+            //
+            // Imagine the following template hierarchy:
+            //
+            // - /a.mustache: {{lambda}}...{{>dir/b}}
+            // - /x.mustache: ...
+            // - /dir/b.mustache: {{lambda}}
+            // - /dir/x.mustache: ...
+            //
+            // If the lambda returns `{{>x}}` then rendering the `a.mustache`
+            // template should trigger the inclusion of both `/x.mustache` and
+            // `/dir/x.mustache`.
+            //
+            // Given the current state of GRMustache types, achieving this
+            // feature would require:
+            //
+            // - a template repository
+            // - a TemplateID
+            // - a method `TemplateRepository.template(string:contentType:tagDelimiterPair:baseTemplateID:)`
+            //
+            // Code would read something like:
+            //
+            //     let templateString = lambda(info.tag.innerTemplateString)
+            //     let templateRepository = info.tag.templateRepository
+            //     let templateID = info.tag.templateID
+            //     let template = try templateRepository.template(
+            //         string: templateString,
+            //         contentType: .Text,
+            //         tagDelimiterPair: ("{{", "}}),
+            //         baseTemplateID: templateID)
+            //     return try template.render(info.context)
+            //
+            // Should we ever implement this, beware the retain cycle between
+            // tags and template repositories (which own tags through their
+            // cached templateASTs).
         case .Section:
             // {{# lambda }}...{{/ lambda }}
             //
