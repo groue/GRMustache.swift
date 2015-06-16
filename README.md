@@ -149,6 +149,15 @@ The documentation contains many examples that you can run in the Playground incl
 
 We describe below a few use cases of the library:
 
+- [Errors](#error)
+- [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
+- [Rendering of AnyObject](#rendering-of-anyobject)
+- [Rendering of pure Swift values](#rendering-of-pure-swift-values)
+- [Lambdas](#lambdas)
+- [Filters](#filters)
+- [Template inheritance](#template-inheritance)
+- [Built-in goodies](#built-in-goodies)
+
 
 ### Errors
 
