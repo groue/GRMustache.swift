@@ -462,8 +462,6 @@ try! template.render(Box(["value": "<html>"]))
 
 An example will show how they can be used:
 
-`cats.mustache`:
-
 ```swift
 // Define the `pluralize` filter.
 //
