@@ -319,7 +319,7 @@ Generally speaking, using filters is a three-step process:
 
 ```swift
 // 1. Define the filter using the `Filter()` function:
-let filter= Filter(...)
+let filter = Filter(...)
 
 // 2. Assign a name to your filter, and register it in a template:
 template.registerInBaseContext("filterName", Box(filter))
@@ -375,13 +375,13 @@ let absFilter = Filter { (box: MustacheBox) in
     case let double as Double:
         return Box(abs(double))
     default:
-        // GRMustache does not support any other supported numeric types: give up.
+        // GRMustache does not support any other numeric types: give up.
         return Box()
     }
 }
 ```
 
-Multi-arguments filters are OK as well:
+Multi-arguments filters are OK as well, but you use the `VariadicFilter()` function, this time:
 
 ```swift
 // Define the `sum` filter.
@@ -440,7 +440,6 @@ let reverse = Filter { (rendering: Rendering) in
     let reversedString = String(rendering.string.characters.reverse())
     return Rendering(reversedString, rendering.contentType)
 }
-
 
 // Register the reverse filter in our template:
 let template = try! Template(string: "{{reverse(value)}}")
@@ -501,8 +500,8 @@ let rendering = try! template.render(Box(data))
 
 GRMustache ships with a few ready-made filters of this type. Go check their [documentation](Docs/Guides/goodies.md):
 
-- `each`: {{# each(items) }}...{{/}}
-- `zip`: {{# zip(array1, array2, ...) }}...{{/}}
+- `{{# each(items) }}...{{/}}`
+- `{{# zip(array1, array2, ...) }}...{{/}}`
 
 
 #### FilterFunction
