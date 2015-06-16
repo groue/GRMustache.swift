@@ -490,10 +490,7 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try! template.render(Box(data))
 ```
 
-GRMustache ships with a few ready-made filters of this type. Go check their [documentation](Docs/Guides/goodies.md):
-
-- `{{# each(items) }}...{{/}}`
-- `{{# zip(array1, array2, ...) }}...{{/}}`
+As those filters perform custom rendering, it is natural that they actually return boxed `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information.
 
 
 #### FilterFunction
