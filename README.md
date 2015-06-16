@@ -333,7 +333,7 @@ try! template.render(...)
 
 Value filters transform any type of input. They can return anything as well.
 
-For example, here is a `square` filter:
+For example, here is a `square` filter which squares integers:
 
 ```swift
 // Define the `square` filter.
