@@ -113,9 +113,9 @@ Documentation
 
 To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
 
-- [The Mustache Language](#http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
+- [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
 - [GRMustache.swift Reference](#reference): inline documentation
-- [Errors](#error)
+- [Errors](#errors)
 - [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
 - [Rendering of AnyObject](#rendering-of-anyobject)
 - [Rendering of pure Swift values](#rendering-of-pure-swift-values)
