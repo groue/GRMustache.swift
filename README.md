@@ -66,7 +66,7 @@ let data = [
     "late": true
 ]
 
-// The rendering
+// The rendering: "Hello Arthur..."
 let rendering = template.render(Box(data))!
 ```
 
