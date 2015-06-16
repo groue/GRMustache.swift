@@ -111,12 +111,18 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 Documentation
 -------------
 
-Mustache is a cross-platform templating system supported by [many languages](https://github.com/mustache/mustache/wiki/Other-Mustache-implementations). This documentation does not describe the Mustache language itself. So if you are not familiar with it, **start here**: http://mustache.github.io/mustache.5.html.
+To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
 
-
-### Playground & Sample Code
-
-You'll find in the repository a `Mustache.xcworkspace` workspace that contains a Playground and demo applications.
+- [The Mustache Language](#http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
+- [GRMustache.swift Reference](#reference): inline documentation
+- [Errors](#error)
+- [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
+- [Rendering of AnyObject](#rendering-of-anyobject)
+- [Rendering of pure Swift values](#rendering-of-pure-swift-values)
+- [Lambdas](#lambdas)
+- [Filters](#filters)
+- [Template inheritance](#template-inheritance)
+- [Built-in goodies](#built-in-goodies)
 
 
 ### Reference
@@ -146,17 +152,6 @@ The main entry points are:
     ```
 
 The documentation contains many examples that you can run in the Playground included in `Mustache.xcworkspace`.
-
-We describe below a few use cases of the library:
-
-- [Errors](#error)
-- [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
-- [Rendering of AnyObject](#rendering-of-anyobject)
-- [Rendering of pure Swift values](#rendering-of-pure-swift-values)
-- [Lambdas](#lambdas)
-- [Filters](#filters)
-- [Template inheritance](#template-inheritance)
-- [Built-in goodies](#built-in-goodies)
 
 
 ### Errors
