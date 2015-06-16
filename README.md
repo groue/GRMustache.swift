@@ -304,35 +304,168 @@ Those "lambdas" are a special case of custom rendering functions. The raw `Rende
 
 ### Filters
 
-**Filters process values:**
+Filters apply like functions, with parentheses: `{{ uppercase(name) }}`.
+
+It helps thinking about three kinds of filters:
+
+- [Value filters](#value-filters), as in `{{ square(radius) }}`
+- [Post-rendering filters](#post-rendering-filters), as in `{{ uppercase(...) }}`
+- [Custom rendering filters](#custom-rendering-filters), as in `{{# pluralize(cats.count) }}cat{{/}}`
+
+
+#### Usage
+
+Generally speaking, using filters is a three-step process:
+
+```swift
+// 1. Define the filter using the `Filter()` function:
+let filter= Filter(...)
+
+// 2. Assign a name to your filter, and register it in a template:
+template.registerInBaseContext("filterName", Box(filter))
+
+// 3. Render
+try! template.render(...)
+```
+
+
+#### Value Filters
+
+Value filters transform any type of input. They can return anything as well.
+
+For example, here is a `square` filter:
 
 ```swift
 // Define the `square` filter.
 //
 // square(n) evaluates to the square of the provided integer.
 let square = Filter { (n: Int?) in
-    return Box(n! * n!)
+    guard let n = n else {
+        // No value, or not an integer: return the empty box.
+        // We could throw an error as well.
+        return Box()
+    }
+    
+    // Results are returned boxed, as always:
+    return Box(n * n)
 }
 
 
 // Register the square filter in our template:
-
 let template = try! Template(string: "{{n}} × {{n}} = {{square(n)}}")
 template.registerInBaseContext("square", Box(square))
 
 
 // 10 × 10 = 100
-
 let rendering = try! template.render(Box(["n": 10]))
 ```
 
+Filters can accept a precisely typed argument as above. You may prefer managing the value type yourself:
 
-**Filters can chain and generally be part of more complex expressions:**
+```swift
+// Define the `abs` filter.
+//
+// abs(x) evaluates to the absolute value of x (Int, UInt or Double):
+let absFilter = Filter { (box: MustacheBox) in
+    switch box.value {
+    case let int as Int:
+        return Box(abs(int))
+    case let uint as UInt:
+        return Box(uint)
+    case let double as Double:
+        return Box(abs(double))
+    default:
+        // GRMustache does not support any other supported numeric types: give up.
+        return Box()
+    }
+}
+```
+
+Multi-arguments filters are OK as well:
+
+```swift
+// Define the `sum` filter.
+//
+// sum(x, ...) evaluates to the sum of provided integers
+let sum = VariadicFilter { (boxes: [MustacheBox]) in
+    var sum = 0
+    for box in boxes {
+        sum += (box.value as? Int) ?? 0
+    }
+    return Box(sum)
+}
+
+
+// Register the sum filter in our template:
+let template = try! Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
+template.registerInBaseContext("sum", Box(sum))
+
+
+// 1 + 2 + 3 = 6
+let rendering = try! template.render(Box(["a": 1, "b": 2, "c": 3]))
+```
+
+
+Filters can chain and generally be part of more complex expressions:
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
 
-**Filters can provide special rendering of mustache sections:**
+When you want to format values, just use NSNumberFormatter, NSDateFormatter, or any NSFormatter. They are ready-made filters:
+
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
+
+let template = try! Template(string: "{{ percent(x) }}")
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering: 50%
+let data = ["x": 0.5]
+let rendering = try! template.render(Box(data))
+```
+
+[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+
+
+#### Post-Rendering Filters
+
+Value filters as seen above process input values, which may be of any type (bools, ints, etc.). Post-rendering filters process *strings*, whatever the input value. Those strings are the rendering of the input ("123" for 123):
+
+```swift
+// Define the `reverse` filter.
+//
+// reverse(x) renders the reversed rendering of its argument:
+let reverse = Filter { (rendering: Rendering) in
+    let reversedString = String(rendering.string.characters.reverse())
+    return Rendering(reversedString, rendering.contentType)
+}
+
+
+// Register the reverse filter in our template:
+let template = try! Template(string: "{{reverse(value)}}")
+template.registerInBaseContext("reverse", Box(reverse))
+
+// ohcuorG
+try! template.render(Box(["value": "Groucho"]))
+
+// 321
+try! template.render(Box(["value": 123]))
+```
+
+Such filter does not quite process a raw string, as you have seen. It processes a `Rendering`, which is a flavored string, a string with its contentType (text or HTML).
+
+This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our `reverse` filter preserves this content-type, and does not mangle HTML entities:
+
+```swift
+// &gt;lmth&lt;
+try! template.render(Box(["value": "<html>"]))
+```
+
+
+### Custom rendering filters
+
+An example will show how they can be used:
 
 `cats.mustache`:
 
@@ -341,11 +474,12 @@ let rendering = try! template.render(Box(["n": 10]))
 //
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
-
 let pluralize = Filter { (count: Int?, info: RenderingInfo) in
     
-    // Pluralize the inner content of the section tag:
+    // The inner content of the section tag:
     var string = info.tag.innerTemplateString
+    
+    // Pluralize if needed:
     if count > 1 {
         string += "s"  // naive
     }
@@ -355,50 +489,25 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo) in
 
 
 // Register the pluralize filter in our template:
-
 let templateString = "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}."
 let template = try! Template(string: templateString)
 template.registerInBaseContext("pluralize", Box(pluralize))
 
 
 // I have 3 cats.
-
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try! template.render(Box(data))
 ```
 
+GRMustache ships with a few ready-made filters of this type. Go check their [documentation](Docs/Guides/goodies.md):
 
-**Filters can take several arguments:**
-
-```swift
-// Define the `sum` filter.
-//
-// sum(x, ...) evaluates to the sum of provided integers
-
-let sum = VariadicFilter { (boxes: [MustacheBox]) in
-    var sum = 0
-    for box in boxes {
-        sum += box.value as! Int
-    }
-    return Box(sum)
-}
+- `each`: {{# each(items) }}...{{/}}
+- `zip`: {{# zip(array1, array2, ...) }}...{{/}}
 
 
-// Register the sum filter in our template:
+#### FilterFunction
 
-let template = try! Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
-template.registerInBaseContext("sum", Box(sum))
-
-
-// 1 + 2 + 3 = 6
-
-let rendering = try! template.render(Box(["a": 1, "b": 2, "c": 3]))
-```
-
-
-Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
+All those filters are implemented on top of the versatile `FilterFunction` type which is documented in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
 ### Template inheritance
