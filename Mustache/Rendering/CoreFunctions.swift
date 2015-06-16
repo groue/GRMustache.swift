@@ -523,13 +523,15 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             
             // IMPLEMENTATION NOTE
             //
-            // This lambda implementation is unable to process partial tags
-            // correctly: it uses a TemplateRepository that does not know how
-            // to load partials.
+            // This lambda implementation is unable of two things:
             //
-            // This problem is a tricky one to solve. The `{{>partial}}` tag
-            // loads the "partial" template which is sibling of the currently
-            // rendered template.
+            // - process partial tags correctly, because it uses a
+            //   TemplateRepository that does not know how to load partials.
+            // - honor the current content type.
+            //
+            // This partial problem is a tricky one to solve. A `{{>partial}}`
+            // tag loads the "partial" template which is sibling of the
+            // currently rendered template.
             //
             // Imagine the following template hierarchy:
             //
@@ -542,20 +544,23 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             // template should trigger the inclusion of both `/x.mustache` and
             // `/dir/x.mustache`.
             //
-            // Given the current state of GRMustache types, achieving this
-            // feature would require:
+            // Given the current state of GRMustache types, achieving proper
+            // lambda would require:
             //
             // - a template repository
             // - a TemplateID
-            // - a method `TemplateRepository.template(string:tagDelimiterPair:baseTemplateID:)`
+            // - a property `Tag.contentType`
+            // - a method `TemplateRepository.template(string:contentType:tagDelimiterPair:baseTemplateID:)`
             //
             // Code would read something like:
             //
             //     let templateString = lambda(info.tag.innerTemplateString)
             //     let templateRepository = info.tag.templateRepository
             //     let templateID = info.tag.templateID
+            //     let contentType = info.tag.contentType
             //     let template = try templateRepository.template(
             //         string: templateString,
+            //         contentType: contentType
             //         tagDelimiterPair: info.tag.tagDelimiterPair,
             //         baseTemplateID: templateID)
             //     return try template.render(info.context)
