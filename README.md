@@ -458,7 +458,7 @@ try! template.render(Box(["value": "<html>"]))
 ```
 
 
-### Custom rendering filters
+#### Custom rendering filters
 
 An example will show how they can be used:
 
