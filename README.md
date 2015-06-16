@@ -48,18 +48,23 @@ Well, on {{format(real_date)}} because of a Martian attack.
 ```swift
 import Mustache
 
+// Load the `document.mustache` resource of the main bundle
 let template = try! Template(named: "document")
 
+// Let template format dates with `{{format(...)}}`
 let dateFormatter = NSDateFormatter()
 dateFormatter.dateStyle = .MediumStyle
 template.registerInBaseContext("format", Box(dateFormatter))
 
+// The rendered data
 let data = [
     "name": "Arthur",
     "date": NSDate(),
     "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
     "late": true
 ]
+
+// The rendering: "Hello Arthur..."
 let rendering = try! template.render(Box(data))
 ```
 
