@@ -350,11 +350,9 @@ let square = Filter { (n: Int?) in
     return Box(n * n)
 }
 
-
 // Register the square filter in our template:
 let template = try! Template(string: "{{n}} × {{n}} = {{square(n)}}")
 template.registerInBaseContext("square", Box(square))
-
 
 // 10 × 10 = 100
 let rendering = try! template.render(Box(["n": 10]))
@@ -395,11 +393,9 @@ let sum = VariadicFilter { (boxes: [MustacheBox]) in
     return Box(sum)
 }
 
-
 // Register the sum filter in our template:
 let template = try! Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
 template.registerInBaseContext("sum", Box(sum))
-
 
 // 1 + 2 + 3 = 6
 let rendering = try! template.render(Box(["a": 1, "b": 2, "c": 3]))
@@ -486,12 +482,10 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo) in
     return Rendering(string)
 }
 
-
 // Register the pluralize filter in our template:
 let templateString = "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}."
 let template = try! Template(string: templateString)
 template.registerInBaseContext("pluralize", Box(pluralize))
-
 
 // I have 3 cats.
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
