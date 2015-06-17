@@ -162,7 +162,7 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
     let template = try! Template(URL: templateURL)
     ```
 
-- A "repository of templates":
+- A *repository of templates*:
     
     These repositories represent a group of templates. They can be configured independently, and provide a few neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
     
