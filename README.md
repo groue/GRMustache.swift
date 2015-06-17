@@ -317,11 +317,12 @@ template.registerInBaseContext("uppercase", Box(uppercase))
 template.render(...)
 ```
 
-It helps thinking about three kinds of filters:
+It helps thinking about four kinds of filters:
 
 - [Value filters](#value-filters), as in `{{ square(radius) }}`
-- [Post-rendering filters](#post-rendering-filters), as in `{{ uppercase(...) }}`
+- [Pre-rendering filters](#pre-rendering-filters), as in `{{ uppercase(...) }}`
 - [Custom rendering filters](#custom-rendering-filters), as in `{{# pluralize(cats.count) }}cat{{/}}`
+- [Advanced filters](#advanced-filters)
 
 
 #### Usage
@@ -369,6 +370,7 @@ template.registerInBaseContext("square", Box(square))
 let rendering = try! template.render(Box(["n": 10]))
 ```
 
+
 Filters can accept a precisely typed argument as above. You may prefer managing the value type yourself:
 
 ```swift
@@ -390,7 +392,45 @@ let absFilter = Filter { (box: MustacheBox) in
 }
 ```
 
-Multi-arguments filters are OK as well, but you use the `VariadicFilter()` function, this time:
+
+You can process collections and dictionaries as well, and return new ones:
+
+```swift
+// Define the `oneEveryTwoItems` filter.
+//
+// oneEveryTwoItems(collection) returns the array of even items in the input
+// collection.
+let oneEveryTwoItems = Filter { (box: MustacheBox) in
+    // `box.arrayValue` returns a `Array<MustacheBox>` whatever the boxed Swift
+    // or Foundation collection (Array, Set, NSOrderedSet, etc.).
+    guard let boxes = box.arrayValue else {
+        // No value, or not a collection: return the empty box
+        return Box()
+    }
+    
+    // Rebuild another array with even indexes:
+    var result: [MustacheBox] = []
+    for case let (index, box) in boxes.enumerate() where index % 2 == 0 {
+        result.append(box)
+    }
+    
+    return Box(result)
+}
+
+// A template where the filter is used in a section, so that the items in the
+// filtered array are iterated:
+let templateString = "{{# oneEveryTwoItems(items) }}<{{.}}>{{/ oneEveryTwoItems(items) }}"
+let template = try! Template(string: templateString)
+
+// Register the oneEveryTwoItems filter in our template:
+template.registerInBaseContext("oneEveryTwoItems", Box(oneEveryTwoItems))
+
+// <1><3><5><7><9>
+let rendering = try! template.render(Box(["items": Box(1..<10)]))
+```
+
+
+Multi-arguments filters are OK as well. but you use the `VariadicFilter()` function, this time:
 
 ```swift
 // Define the `sum` filter.
@@ -435,9 +475,11 @@ let rendering = try! template.render(Box(data))
 [More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
 
 
-#### Post-Rendering Filters
+#### Pre-Rendering Filters
 
-Value filters as seen above process input values, which may be of any type (bools, ints, etc.). Post-rendering filters process *strings*, whatever the input value. Those strings are the rendering of the input ("123" for 123):
+Value filters as seen above process input values, which may be of any type (bools, ints, collections, etc.). Pre-rendering filters always process strings, whatever the input value. They have the opportunity to alter those strings before they get actually included in the final template rendering.
+
+You can, for example, reverse a rendering:
 
 ```swift
 // Define the `reverse` filter.
@@ -504,9 +546,12 @@ let rendering = try! template.render(Box(data))
 As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
 
 
-#### FilterFunction
+#### Advanced Filters
 
-All those filters are implemented on top of the versatile `FilterFunction` type which is documented in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
+
+Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+
 
 
 ### Template inheritance

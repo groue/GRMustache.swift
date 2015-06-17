@@ -170,7 +170,10 @@ class MustacheRenderableGuideTests: XCTestCase {
     
     func testExample8() {
         let listFilter = { (box: MustacheBox, info: RenderingInfo) -> Rendering in
-            let items = box.value as! [MustacheBox]
+            guard let items = box.arrayValue else {
+                return Rendering("")
+            }
+            
             var buffer = "<ul>"
             for item in items {
                 let itemContext = info.context.extendedContext(item)

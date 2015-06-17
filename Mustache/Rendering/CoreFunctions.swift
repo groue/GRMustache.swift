@@ -107,7 +107,7 @@ types of filters:
     - `(T?) throws -> MustacheBox` (Generic)
     - `([MustacheBox]) throws -> MustacheBox` (Multiple arguments)
 
-- Post-rendering filters:
+- Pre-rendering filters:
 
     - `(Rendering) throws -> Rendering`
 
@@ -238,7 +238,7 @@ public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> Fil
 
 
 // -----------------------------------------------------------------------------
-// MARK: - Post-Rendering Filters
+// MARK: - Pre-Rendering Filters
 
 /**
 Builds a filter that performs post rendering.
@@ -260,7 +260,7 @@ or Text). This filter turns a rendering in another one:
 
 When this filter is executed, eventual HTML-escaping performed by the rendering
 engine has not happened yet: the rendering argument may contain raw text. This
-allows you to chain post-rendering filters without mangling HTML entities.
+allows you to chain pre-rendering filters without mangling HTML entities.
 
 - parameter filter: A function `(Rendering) throws -> Rendering`.
 - returns: A FilterFunction.
