@@ -29,7 +29,7 @@ Requirements
 ------------
 
 - iOS 7.0+ / OSX 10.9+
-- Xcode 6.3
+- Xcode 7
 
 
 Usage
