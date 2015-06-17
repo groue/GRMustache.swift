@@ -158,11 +158,11 @@ final public class Context {
             context["name"].value
 
     If you want the value for a full Mustache expression such as `user.name` or
-    `uppercase(user.name)`, use the `boxForMustacheExpression` method.
+    `uppercase(user.name)`, use the `mustacheBoxForExpression` method.
     
     See also:
     
-    - boxForMustacheExpression
+    - mustacheBoxForExpression
     */
     public subscript (key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
@@ -194,7 +194,7 @@ final public class Context {
         let context = Context(Box(data))
 
         // "Albert Einstein"
-        try! context.boxForMustacheExpression("person.name").value
+        try! context.mustacheBoxForExpression("person.name").value
     
     - parameter string: The expression string.
     - parameter error:  If there is a problem parsing or evaluating the
@@ -202,7 +202,7 @@ final public class Context {
     
     - returns: The value of the expression.
     */
-    public func boxForMustacheExpression(string: String) throws -> MustacheBox {
+    public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
         let parser = ExpressionParser()
         var empty = false
         let expression = try parser.parse(string, empty: &empty)

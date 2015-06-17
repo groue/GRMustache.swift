@@ -10,6 +10,10 @@ Release Notes
 
 - Collections no longer expose Objective-C-compatible keys to templates: `{{ array.firstObject }}`, `{{ array.lastObject }}`, `{{ set.anyObject }}` no longer render anything. Focusing on Swift standard library, the only supported keys are now `first`, `count`, and `last` (the latter being undefined for sets).
 
+- `Context.BoxForMustacheExpression` has been renamed `Context.mustacheBoxForExpression`
+
+- `BoxAnyObject()` is removed. You must now explicit cast `AnyObject` to a boxable type that you can box with `Box()`.
+
 
 ## v0.9.3
 

@@ -92,7 +92,7 @@ class SuiteTestCase: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
         var templateString: String? { return dictionary["template"] as! String? }
         var templateName: String? { return dictionary["template_name"] as! String? }
-        var renderedValue: MustacheBox { return BoxAnyObject(dictionary["data"]) }
+        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
         var expectedRendering: String? { return dictionary["expected"] as! String? }
         var expectedError: String? { return dictionary["expected_error"] as! String? }
         

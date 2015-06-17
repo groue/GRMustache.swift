@@ -222,19 +222,26 @@ When extracting values from your NSObject subclasses, GRMustache.swift uses the 
 
 ### Rendering of AnyObject
 
-Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example. AnyObject can be turned into a Mustache box. However, due to constraints in the Swift language, you have to use the dedicated `BoxAnyObject()` function:
+Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example.
+
+When you box `AnyObject`, you get a compiler error:
 
 ```swift
-// Decode some JSON data
+let template = try! Template(string: "{{ name }} has a Mustache.")
+
 let data = "{ \"name\": \"Lionel Richie\" }".dataUsingEncoding(NSUTF8StringEncoding)!
 let json: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
 
-// Lionel Richie has a Mustache.
-let template = try! Template(string: "{{ name }} has a Mustache.")
-let rendering = try! template.render(BoxAnyObject(json))
+// Error: Ambiguous use of 'Box'
+let rendering = try! template.render(Box(json))
 ```
 
-`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
+The solution is to convert the value to its actual type:
+
+```swift
+// Lionel Richie has a Mustache.
+let rendering = try! template.render(Box(json as! NSDictionary))
+```
 
 
 ### Rendering of pure Swift values

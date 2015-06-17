@@ -294,8 +294,8 @@ class BoxTests: XCTestCase {
         let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
         XCTAssertEqual(extractedDictionary["key"]!.value as! String, "value")
     }
-        
-    func testBoxAnyObjectWithMustacheBoxable() {
+    
+    func testBoxNSArrayOfMustacheBoxable() {
         class Class: MustacheBoxable {
             var mustacheBox: MustacheBox {
                 return Box(keyedSubscript: { (key: String) in
@@ -304,7 +304,19 @@ class BoxTests: XCTestCase {
             }
         }
         
-        let box = BoxAnyObject(Class() as AnyObject)
-        XCTAssertEqual(box["foo"].value as! String, "foo")
+        let array = NSArray(object: Class())
+        let context = Context(Box(array))
+        let box = try! context.mustacheBoxForExpression("first.foo")
+        XCTAssertEqual(box.value as! String, "foo")
+    }
+    
+    func testBoxNSArrayOfNonMustacheBoxable() {
+        class Class {
+        }
+        
+        let array = NSArray(object: Class())
+        let context = Context(Box(array))
+        let box = context["first"]
+        XCTAssertTrue(box.value == nil)
     }
 }

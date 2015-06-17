@@ -28,21 +28,21 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
 
     func testImplicitIteratorExpression() {
         let context = Context(Box("success"))
-        let box = try! context.boxForMustacheExpression(".")
+        let box = try! context.mustacheBoxForExpression(".")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testIdentifierExpression() {
         let context = Context(Box(["name": "success"]))
-        let box = try! context.boxForMustacheExpression("name")
+        let box = try! context.mustacheBoxForExpression("name")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testScopedExpression() {
         let context = Context(Box(["a": ["name": "success"]]))
-        let box = try! context.boxForMustacheExpression("a.name")
+        let box = try! context.mustacheBoxForExpression("a.name")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
@@ -52,7 +52,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
             return Box(string!.uppercaseString)
         })
         let context = Context(Box(["name": Box("success"), "f": Box(filter)]))
-        let box = try! context.boxForMustacheExpression("f(name)")
+        let box = try! context.mustacheBoxForExpression("f(name)")
         let string = box.value as? String
         XCTAssertEqual(string!, "SUCCESS")
     }
@@ -60,7 +60,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     func testParseError() {
         let context = Context()
         do {
-            try context.boxForMustacheExpression("a.")
+            try context.mustacheBoxForExpression("a.")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)
@@ -71,7 +71,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     func testRenderingError() {
         let context = Context()
         do {
-            try context.boxForMustacheExpression("f(x)")
+            try context.mustacheBoxForExpression("f(x)")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, GRMustacheErrorDomain)

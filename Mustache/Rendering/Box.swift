@@ -832,6 +832,21 @@ public func Box(object: NSObject?) -> MustacheBox {
 // So let's avoid having any Box(AnyObject?) variant in the public API, and
 // let's expose the BoxAnyObject(object: AnyObject?) instead.
 
+// IMPLEMENTATION NOTE 2
+//
+// BoxAnyObject has been made private. Now users get a compiler error when they
+// try to box AnyObject.
+//
+// Reasons for this removal from the public API:
+//
+// - Users will try Box() first, which will fail. Since they may not know
+//   anything BoxAnyObject, BoxAnyObject is of little value anyway.
+// - BoxAnyObject is error-prone, since it accepts anything and fails at
+//   runtime.
+//
+// It still exists because we need it to box Foundation collections like
+// NSArray, NSSet, NSDictionary.
+
 /**
 `AnyObject` can feed Mustache templates.
 
@@ -851,7 +866,7 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 - parameter object: An object.
 - returns: A MustacheBox that wraps *object*.
 */
-public func BoxAnyObject(object: AnyObject?) -> MustacheBox {
+private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
         return boxable.mustacheBox
     } else if let object: AnyObject = object {
