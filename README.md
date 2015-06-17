@@ -278,7 +278,7 @@ let template = try! Template(string: "{{name}} has a mustache.")
 let rendering = try! template.render(Box(person))
 ```
 
-For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift)
+For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
 ### Lambdas
