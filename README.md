@@ -131,13 +131,13 @@ Generally speaking, rendering Mustache templates is a three step process:
 
 ```swift
 // 1. Load a template
-let template = try! Template(named: "document")
+let template = try! Template(named: "profile")
 
 // 2. Prepare the data that feeds the template:
-let data = ["firstName": "Salvador", "lastName": "Dali"]
+let profile = ...
 
 // 3. Render:
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(Box(profile))
 ```
 
 A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
