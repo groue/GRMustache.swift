@@ -107,96 +107,86 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 
 
 Documentation
--------------
+=============
 
 To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
 
 - [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](#reference): inline documentation
-- [Errors](#errors)
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
+- [Templates](#templates)
 - [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
 - [Rendering of AnyObject](#rendering-of-anyobject)
 - [Rendering of pure Swift values](#rendering-of-pure-swift-values)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
 - [Template inheritance](#template-inheritance)
+- [Errors](#errors)
 - [Built-in goodies](#built-in-goodies)
 
 
-### Reference
+Templates
+---------
 
-All public types, functions and methods of the library are documented in the source code, and available online on [cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/index.html).
-
-The main entry points are:
-
-- the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)):
-    
-    ```swift
-    let template = try! Template(named: "template")
-    ```
-
-- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Functions.html)):
-    
-    ```swift
-    let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
-    let rendering = try! template.render(Box(data))
-    ```
-
-- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)):
-    
-    ```swift
-    // Have all templates render text, and avoid HTML-escaping:
-    Mustache.DefaultConfiguration.contentType = .Text
-    ```
-
-The documentation contains many examples that you can run in the Playground included in `Mustache.xcworkspace`.
-
-
-### Errors
-
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
-
-- Code `GRMustacheErrorCodeTemplateNotFound`:
-    
-    ```swift
-    do {
-        let template = try Template(named: "inexistant")
-    } catch {
-        // No such template: `inexistant`
-    }
-    ```
-    
-- Code `GRMustacheErrorCodeParseError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "Hello {{name")
-    } catch {
-        // Parse error at line 1: Unclosed Mustache tag
-    }
-    ```
-    
-- Code `GRMustacheErrorCodeRenderingError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "{{undefinedFilter(x)}}")
-        let rendering = try template.render()
-    } catch {
-        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-    }
-    ```
-
-When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
+Generally speaking, rendering Mustache templates is a three step process:
 
 ```swift
-// Assume valid parsing and rendering
-let template = try! Template(string: "{{name}} has a Mustache.")
+// 1. Load a template
+let template = try! Template(named: "document")
+
+// 2. Prepare the data that feeds the template:
+let data = ["firstName": "Salvador", "lastName": "Dali"]
+
+// 3. Render:
 let rendering = try! template.render(Box(data))
 ```
 
+A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
 
-### Rendering of NSObject and its subclasses
+- Raw Swift strings:
+
+    ```swift
+    let template = try! Template(string: "Hello {{name}}")
+    ```
+
+- Bundle resources:
+
+    ```swift
+    // Loads the "document.mustache" resource of the main bundle:
+    let template = try! Template(named: "document")
+    ```
+
+- Files and URLs:
+
+    ```swift
+    let template = try! Template(path: "/path/to/document.mustache")
+    let template = try! Template(URL: templateURL)
+    ```
+
+- A "repository of templates":
+    
+    These repositories represent a group of templates. They can be configured independently, and provide a few neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
+    
+    ```swift
+    // The repository of Bash templates, with extension ".sh":
+    let repo = TemplateRepository(bundle: NSBundle.mainBundle(), templateExtension: "sh")
+    
+    // Disable HTML escaping for Bash scripts:
+    repo.configuration.contentType = .Text
+    
+    // Register the `quote` filter in the repository so that all templates can
+    // safely embed strings:
+    let quote = Filter { ... }
+    repo.configuration.registerInBaseContext("quote", Box(quote))
+    
+    // Load a template:
+    let template = try! repo.template(named: "script")
+    ```
+
+For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+
+
+Rendering of NSObject and its subclasses
+----------------------------------------
 
 NSObject subclasses can trivially feed your templates:
 
@@ -220,7 +210,8 @@ let rendering = try! template.render(Box(person))
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the documentation of `NSObject.mustacheBox` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
-### Rendering of AnyObject
+Rendering of AnyObject
+----------------------
 
 Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example.
 
@@ -244,7 +235,8 @@ let rendering = try! template.render(Box(json as! NSDictionary))
 ```
 
 
-### Rendering of pure Swift values
+Rendering of pure Swift values
+------------------------------
 
 Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though, with a little help.
 
@@ -281,7 +273,8 @@ let rendering = try! template.render(Box(person))
 For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
-### Lambdas
+Lambdas
+-------
 
 "Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
 
@@ -307,7 +300,8 @@ let rendering = try! template.render(Box(data))
 Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
-### Filters
+Filters
+-------
 
 Filters apply like functions, with parentheses: `{{ uppercase(name) }}`.
 
@@ -332,23 +326,7 @@ It helps thinking about four kinds of filters:
 - [Advanced filters](#advanced-filters)
 
 
-#### Usage
-
-Generally speaking, using filters is a three-step process:
-
-```swift
-// 1. Define the filter using the `Filter()` function:
-let filter = Filter(...)
-
-// 2. Assign a name to your filter, and register it in a template:
-template.registerInBaseContext("filterName", Box(filter))
-
-// 3. Render
-try! template.render(...)
-```
-
-
-#### Value Filters
+### Value Filters
 
 Value filters transform any type of input. They can return anything as well.
 
@@ -482,7 +460,7 @@ let rendering = try! template.render(Box(data))
 [More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
 
 
-#### Pre-Rendering Filters
+### Pre-Rendering Filters
 
 Value filters as seen above process input values, which may be of any type (bools, ints, collections, etc.). Pre-rendering filters always process strings, whatever the input value. They have the opportunity to alter those strings before they get actually included in the final template rendering.
 
@@ -518,7 +496,7 @@ try! template.render(Box(["value": "<html>"]))
 ```
 
 
-#### Custom Rendering Filters
+### Custom Rendering Filters
 
 An example will show how they can be used:
 
@@ -553,7 +531,7 @@ let rendering = try! template.render(Box(data))
 As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
 
 
-#### Advanced Filters
+### Advanced Filters
 
 All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
 
@@ -561,7 +539,8 @@ Yet the library ships with a few built-in filters that don't quite fit any of th
 
 
 
-### Template inheritance
+Template inheritance
+--------------------
 
 GRMustache template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
@@ -603,6 +582,52 @@ The `article.mustache` below inherits from `layout.mustache`, and overrides its 
 When you render `article.mustache`, you get a full HTML page.
 
 
-### Built-in goodies
+Errors
+------
+
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
+
+- Code `GRMustacheErrorCodeTemplateNotFound`:
+    
+    ```swift
+    do {
+        let template = try Template(named: "inexistant")
+    } catch {
+        // No such template: `inexistant`
+    }
+    ```
+    
+- Code `GRMustacheErrorCodeParseError`:
+    
+    ```swift
+    do {
+        let template = try Template(string: "Hello {{name")
+    } catch {
+        // Parse error at line 1: Unclosed Mustache tag
+    }
+    ```
+    
+- Code `GRMustacheErrorCodeRenderingError`:
+    
+    ```swift
+    do {
+        let template = try Template(string: "{{undefinedFilter(x)}}")
+        let rendering = try template.render()
+    } catch {
+        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+    }
+    ```
+
+When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
+
+```swift
+// Assume valid parsing and rendering
+let template = try! Template(string: "{{name}} has a Mustache.")
+let rendering = try! template.render(Box(data))
+```
+
+
+Built-in goodies
+----------------
 
 The library ships with built-in [goodies](Docs/Guides/goodies.md) that will help you render your templates: format values, render array indexes, localize templates, etc.
