@@ -151,8 +151,6 @@ The main entry points are:
 
 The documentation contains many examples that you can run in the Playground included in `Mustache.xcworkspace`.
 
-We describe below a few use cases of the library:
-
 
 ### Errors
 
@@ -264,7 +262,7 @@ extension Person : MustacheBoxable {
 }
 ```
 
-Now we can box and render a user, array of users, dictionaries of users, etc:
+Now we can box and render users, arrays of users, dictionaries of users, etc:
 
 ```swift
 // Freddy Mercury has a mustache.
