@@ -304,6 +304,19 @@ Those "lambdas" are a special case of custom rendering functions. The raw `Rende
 
 Filters apply like functions, with parentheses: `{{ uppercase(name) }}`.
 
+Generally speaking, using filters is a three-step process:
+
+```swift
+// 1. Define the filter using the `Filter()` function:
+let uppercase = Filter(...)
+
+// 2. Assign a name to your filter, and register it in a template:
+template.registerInBaseContext("uppercase", Box(uppercase))
+
+// 3. Render
+template.render(...)
+```
+
 It helps thinking about three kinds of filters:
 
 - [Value filters](#value-filters), as in `{{ square(radius) }}`
