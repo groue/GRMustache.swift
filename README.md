@@ -156,7 +156,7 @@ The documentation contains many examples that you can run in the Playground incl
 
 ### Errors
 
-Not funny, but they happen. Whenever the library needs to access the file system or other system resources, you may get standard errors of domain like NSCocoaErrorDomain, etc. Mustache-specific errors are covered by the domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be returned whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
 
 - Code `GRMustacheErrorCodeTemplateNotFound`:
     
@@ -231,6 +231,8 @@ let template = Template(string: "{{ name }} has a Mustache.")!
 let rendering = template.render(BoxAnyObject(json))
 ```
 
+`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
+
 
 ### Rendering of pure Swift values
 
@@ -257,7 +259,7 @@ extension Person : MustacheBoxable {
 }
 ```
 
-Now we can box and render a user:
+Now we can box and render users, arrays of users, dictionaries of users, etc:
 
 ```swift
 // Freddy Mercury has a mustache.
@@ -272,14 +274,6 @@ For a more complete discussion, see the "Boxing of Swift types" section in [Box.
 ### Lambdas
 
 "Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
-
-Quoting the [Mustache specification](https://github.com/mustache/spec/blob/master/specs/~lambdas.yml):
-
-> Lambdas are a special-cased data type for use in interpolations and sections.
-> 
-> When used as the data value for an Variable {{tag}}, the lambda MUST be treatable as an arity 0 function, and invoked as such.  The returned value MUST be rendered against the default delimiters, then interpolated in place of the lambda.
-> 
-> When used as the data value for a Section {{#tag}}...{{/tag}}, the lambda MUST be treatable as an arity 1 function, and invoked as such (passing a String containing the unprocessed section contents).  The returned value MUST be rendered against the current delimiters, then interpolated in place of the section.
 
 The `Lambda` function produces spec-compliant "Mustache lambdas":
 
@@ -307,52 +301,175 @@ Those "lambdas" are a special case of custom rendering functions. The raw `Rende
 
 ### Filters
 
-**Filters process values:**
+Filters apply like functions, with parentheses: `{{ uppercase(name) }}`.
+
+It helps thinking about three kinds of filters:
+
+- [Value filters](#value-filters), as in `{{ square(radius) }}`
+- [Post-rendering filters](#post-rendering-filters), as in `{{ uppercase(...) }}`
+- [Custom rendering filters](#custom-rendering-filters), as in `{{# pluralize(cats.count) }}cat{{/}}`
+
+
+#### Usage
+
+Generally speaking, using filters is a three-step process:
+
+```swift
+// 1. Define the filter using the `Filter()` function:
+let filter = Filter(...)
+
+// 2. Assign a name to your filter, and register it in a template:
+template.registerInBaseContext("filterName", Box(filter))
+
+// 3. Render
+template.render(...)
+```
+
+
+#### Value Filters
+
+Value filters transform any type of input. They can return anything as well.
+
+For example, here is a `square` filter which squares integers:
 
 ```swift
 // Define the `square` filter.
 //
 // square(n) evaluates to the square of the provided integer.
-let square = Filter { (n: Int?, _) in
-    return Box(n! * n!)
+let square = Filter { (n: Int?, error: NSErrorPointer) in
+    if let n = n {
+        // Results are returned boxed, as always:
+        return Box(n * n)
+    } else {
+        // No value, or not an integer: return the empty box.
+        // We could return an error as well.
+        return Box()
+    }
 }
 
-
 // Register the square filter in our template:
-
 let template = Template(string: "{{n}} × {{n}} = {{square(n)}}")!
 template.registerInBaseContext("square", Box(square))
 
-
 // 10 × 10 = 100
-
 let rendering = template.render(Box(["n": 10]))!
 ```
 
+Filters can accept a precisely typed argument as above. You may prefer managing the value type yourself:
 
-**Filters can chain and generally be part of more complex expressions:**
+```swift
+// Define the `abs` filter.
+//
+// abs(x) evaluates to the absolute value of x (Int, UInt or Double):
+let absFilter = Filter { (box: MustacheBox, _) in
+    switch box.value {
+    case let int as Int:
+        return Box(abs(int))
+    case let uint as UInt:
+        return Box(uint)
+    case let double as Double:
+        return Box(abs(double))
+    default:
+        // GRMustache does not support any other numeric types: give up.
+        return Box()
+    }
+}
+```
+
+Multi-arguments filters are OK as well, but you use the `VariadicFilter()` function, this time:
+
+```swift
+// Define the `sum` filter.
+//
+// sum(x, ...) evaluates to the sum of provided integers
+let sum = VariadicFilter { (boxes: [MustacheBox], _) in
+    var sum = 0
+    for box in boxes {
+        sum += (box.value as? Int) ?? 0
+    }
+    return Box(sum)
+}
+
+// Register the sum filter in our template:
+let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
+template.registerInBaseContext("sum", Box(sum))
+
+// 1 + 2 + 3 = 6
+let rendering = template.render(Box(["a": 1, "b": 2, "c": 3]))!
+```
+
+
+Filters can chain and generally be part of more complex expressions:
 
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
 
-**Filters can provide special rendering of mustache sections:**
+When you want to format values, just use NSNumberFormatter, NSDateFormatter, or any NSFormatter. They are ready-made filters:
 
-`cats.mustache`:
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
 
-```mustache
-I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}.
+let template = Template(string: "{{ percent(x) }}")!
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering: 50%
+let data = ["x": 0.5]
+let rendering = template.render(Box(data))!
 ```
+
+[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+
+
+#### Post-Rendering Filters
+
+Value filters as seen above process input values, which may be of any type (bools, ints, etc.). Post-rendering filters process *strings*, whatever the input value. Those strings are the rendering of the input ("123" for 123):
+
+```swift
+// Define the `reverse` filter.
+//
+// reverse(x) renders the reversed rendering of its argument:
+let reverseFilter = Filter { (rendering: Rendering, _) in
+    let reversedString = String(reverse(rendering.string))
+    return Rendering(reversedString, rendering.contentType)
+}
+
+// Register the reverse filter in our template:
+let template = Template(string: "{{reverse(value)}}")!
+template.registerInBaseContext("reverse", Box(reverseFilter))
+
+// ohcuorG
+template.render(Box(["value": "Groucho"]))!
+
+// 321
+template.render(Box(["value": 123]))!
+```
+
+Such filter does not quite process a raw string, as you have seen. It processes a `Rendering`, which is a flavored string, a string with its contentType (text or HTML).
+
+This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our `reverse` filter preserves this content-type, and does not mangle HTML entities:
+
+```swift
+// &gt;lmth&lt;
+template.render(Box(["value": "<html>"]))!
+```
+
+
+#### Custom Rendering Filters
+
+An example will show how they can be used:
 
 ```swift
 // Define the `pluralize` filter.
 //
 // {{# pluralize(count) }}...{{/ }} renders the plural form of the
 // section content if the `count` argument is greater than 1.
-
 let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
     
-    // Pluralize the inner content of the section tag:
+    // The inner content of the section tag:
     var string = info.tag.innerTemplateString
+    
+    // Pluralize if needed:
     if count > 1 {
         string += "s"  // naive
     }
@@ -360,50 +477,22 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo, _) in
     return Rendering(string)
 }
 
-
 // Register the pluralize filter in our template:
-
-let template = Template(named: "cats")!
+let templateString = "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}."
+let template = Template(string: templateString)!
 template.registerInBaseContext("pluralize", Box(pluralize))
 
-
 // I have 3 cats.
-
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
 
-
-**Filters can take several arguments:**
-
-```swift
-// Define the `sum` filter.
-//
-// sum(x, ...) evaluates to the sum of provided integers
-
-let sum = VariadicFilter { (boxes: [MustacheBox], _) in
-    // Extract integers out of input boxes, assuming zero for non integer values
-    let integers = map(boxes) { (box) in (box.value as? Int) ?? 0 }
-    let sum = reduce(integers, 0, +)
-    return Box(sum)
-}
+As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
 
 
-// Register the sum filter in our template:
+#### FilterFunction
 
-let template = Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")!
-template.registerInBaseContext("sum", Box(sum))
-
-
-// 1 + 2 + 3 = 6
-
-template.render(Box(["a": 1, "b": 2, "c": 3]))!
-```
-
-
-Filters are documented with the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-When you want to format values, you don't have to write your own filters: just use NSFormatter objects such as NSNumberFormatter and NSDateFormatter. [More info](Docs/Guides/goodies.md#nsformatter).
+All those filters are implemented on top of the versatile `FilterFunction` type which is documented in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
 ### Template inheritance
