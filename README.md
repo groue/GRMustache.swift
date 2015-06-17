@@ -458,7 +458,7 @@ try! template.render(Box(["value": "<html>"]))
 ```
 
 
-#### Custom rendering filters
+#### Custom Rendering Filters
 
 An example will show how they can be used:
 
@@ -490,7 +490,7 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try! template.render(Box(data))
 ```
 
-As those filters perform custom rendering, it is natural that they actually return boxed `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information.
+As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
 
 
 #### FilterFunction
