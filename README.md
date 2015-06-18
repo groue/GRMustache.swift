@@ -239,6 +239,8 @@ let data = ["x": 0.5]
 let rendering = try! template.render(Box(data))
 ```
 
+[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+
 
 ### String
 
