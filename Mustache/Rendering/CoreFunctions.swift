@@ -718,8 +718,12 @@ public struct Rendering {
 extension Rendering : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
-        var string = self.string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        var string = self.string
+        string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
+        string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
         string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
         
         var contentTypeString: String
         switch contentType {

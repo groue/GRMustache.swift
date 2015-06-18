@@ -40,7 +40,7 @@ extension StandardLibrary {
                 willRender: { (tag, box) in
                     if tag.type == .Section {
                         let prefix = String(count: self.indentationLevel * 2, repeatedValue: " " as Character)
-                        self.log("\(prefix)\(tag) will render \(self.boxDescription(box))")
+                        self.log("\(prefix)\(tag) will render \(box.valueDescription)")
                         self.indentationLevel++
                     }
                     return box
@@ -49,34 +49,17 @@ extension StandardLibrary {
                     if tag.type == .Section {
                         self.indentationLevel--
                     }
-                    if let string = string {
+                    if var string = string {
+                        string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
+                        string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+                        string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
+                        string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+                        string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
                         let prefix = String(count: self.indentationLevel * 2, repeatedValue: " " as Character)
-                        self.log("\(prefix)\(tag) did render \(self.boxDescription(box)) as \"\(string)\"")
+                        self.log("\(prefix)\(tag) did render \(box.valueDescription) as \"\(string)\"")
                     }
                 }
             )
-        }
-        
-        private func boxDescription(box: MustacheBox) -> String {
-            if box.isEmpty {
-                return "(missing)"
-            } else if let array = box.arrayValue {
-                let x = ",".join(array.map { self.boxDescription($0) })
-                return "[\(x)]"
-            } else if let dictionary = box.dictionaryValue {
-                if dictionary.isEmpty {
-                    return "[:]"
-                } else {
-                    let x = ",".join(dictionary.map { (key, box) in "\(key):\(self.boxDescription(box))" })
-                    return "[\(x)]"
-                }
-            } else if let string = box.value as? String {
-                return "\"\(string)\""
-            } else if let value = box.value {
-                return "\(value)"
-            } else {
-                return "(unknown)"
-            }
         }
     }
 }

@@ -196,6 +196,7 @@ public class MustacheBox : NSObject {
         self.willRender = willRender
         self.didRender = didRender
         if let render = render {
+            self.hasCustomRenderFunction = true
             self.render = render
             super.init()
         } else {
@@ -209,6 +210,7 @@ public class MustacheBox : NSObject {
             // error: "variable 'self.render' captured by a closure before being
             // initialized"
             self.render = { (_) in return Rendering("") }
+            self.hasCustomRenderFunction = false
             super.init()
             self.render = { (info: RenderingInfo) in
                 
@@ -236,6 +238,8 @@ public class MustacheBox : NSObject {
         }
     }
     
+    private let hasCustomRenderFunction: Bool
+    
     // Converter wraps all the conversion closures that help MustacheBox expose
     // its raw value (typed Any) as useful types.
     struct Converter {
@@ -255,10 +259,74 @@ public class MustacheBox : NSObject {
 extension MustacheBox {
     /// A textual representation of `self`.
     public override var description: String {
-        if let value = value {
-            return "MustacheBox(\(value))"
-        } else {
-            return "MustacheBox"
+        let facets = self.facetsDescriptions
+        switch facets.count {
+        case 0:
+            return "MustacheBox(Empty)"
+        default:
+            let content = ",".join(facets)
+            return "MustacheBox(\(content))"
         }
+    }
+}
+
+extension MustacheBox {
+    /// A textual representation of the boxed value. Useful for debugging.
+    public var valueDescription: String {
+        let facets = self.facetsDescriptions
+        switch facets.count {
+        case 0:
+            return "Empty"
+        case 1:
+            return facets.first!
+        default:
+            return "("+(",".join(facets))+")"
+        }
+    }
+    
+    var facetsDescriptions: [String] {
+        var facets = [String]()
+        if let array = arrayValue {
+            let items = ",".join(array.map { $0.valueDescription })
+            facets.append("[\(items)]")
+        } else if let dictionary = dictionaryValue {
+            if dictionary.isEmpty {
+                facets.append("[:]")
+            } else {
+                let items = ",".join(dictionary.map { (var key, box) in
+                    key = key.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
+                    key = key.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+                    key = key.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
+                    key = key.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+                    key = key.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+                    return "\"\(key)\":\(box.valueDescription)"
+                })
+                facets.append("[\(items)]")
+            }
+        } else if var string = value as? String {
+            string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
+            string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+            string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
+            string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+            string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+            facets.append("\"\(string)\"")
+        } else if let value = value {
+            facets.append("\(value)")
+        }
+        
+        if let _ = filter {
+            facets.append("FilterFunction")
+        }
+        if let _ = willRender {
+            facets.append("WillRenderFunction")
+        }
+        if let _ = didRender {
+            facets.append("DidRenderFunction")
+        }
+        if value == nil && hasCustomRenderFunction {
+            facets.append("RenderFunction")
+        }
+        
+        return facets
     }
 }

@@ -25,8 +25,11 @@ extension TemplateAST : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     var debugDescription: String {
         var string = TemplateGenerator().stringFromTemplateAST(self)
+        string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
         string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
         string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
         return "TemplateAST(\"\(string)\")"
     }
 }
@@ -35,8 +38,11 @@ extension Template : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         var string = TemplateGenerator().stringFromTemplateAST(templateAST)
+        string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
         string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+        string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
         string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+        string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
         return "Template(\"\(string)\")"
     }
 }
