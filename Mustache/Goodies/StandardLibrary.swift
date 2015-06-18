@@ -51,11 +51,6 @@ public struct StandardLibrary {
     
     ### Usage
     
-        // To make HTMLEscape available for all templates, execute once and
-        // early in your application:
-        Mustache.DefaultConfiguration.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-
-        // To make HTMLEscape available for a single template, only do:
         let template = ...
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
     */
@@ -82,11 +77,6 @@ public struct StandardLibrary {
     
     ### Usage
     
-        // To make URLEscape available for all templates, execute once and
-        // early in your application:
-        Mustache.DefaultConfiguration.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-
-        // To make URLEscape available for a single template, only do:
         let template = ...
         template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
     */
@@ -121,11 +111,6 @@ public struct StandardLibrary {
     
     ### Usage
     
-        // To make javascriptEscape available for all templates, execute once and
-        // early in your application:
-        Mustache.DefaultConfiguration.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
-
-        // To make javascriptEscape available for a single template, only do:
         let template = ...
         template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
     */
@@ -182,11 +167,6 @@ public struct StandardLibrary {
     
     ### Usage
     
-        // To make `each` available for all templates, execute once and
-        // early in your application:
-        Mustache.DefaultConfiguration.registerInBaseContext("each", Box(StandardLibrary.each))
-
-        // To make `each` available for a single template, only do:
         let template = ...
         template.registerInBaseContext("each", Box(StandardLibrary.each))
     */
@@ -234,11 +214,6 @@ public struct StandardLibrary {
     
     ### Usage
     
-        // To make `zip` available for all templates, execute once and
-        // early in your application:
-        Mustache.DefaultConfiguration.registerInBaseContext("zip", Box(StandardLibrary.zip))
-
-        // To make `zip` available for a single template, only do:
         let template = ...
         template.registerInBaseContext("zip", Box(StandardLibrary.zip))
     */

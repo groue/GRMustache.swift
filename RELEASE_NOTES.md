@@ -4,6 +4,11 @@ Release Notes
 
 ## Future release
 
+**New**
+
+- `StandardLibrary.Logger` is there to help debugging templates.
+
+
 **Breaking changes**
 
 - Swift 2, and especially error handling.
