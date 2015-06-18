@@ -44,7 +44,7 @@ class ViewController: NSViewController {
 
             let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
             let JSONObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
-            let string = try template.render(BoxAnyObject(JSONObject))
+            let string = try template.render(Box(JSONObject as? NSObject))
             presentRenderingString(string)
         }
         catch let error as NSError {
