@@ -225,6 +225,20 @@ GRMustache supports Int, UInt and Double:
 - `{{#double}}...{{/double}}` renders if and only if *double* is not 0.0 (zero).
 - `{{^double}}...{{/double}}` renders if and only if *double* is 0.0 (zero).
 
+To format numbers, use `NSNumberFormatter`:
+
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
+
+let template = try! Template(string: "{{ percent(x) }}")
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering: 50%
+let data = ["x": 0.5]
+let rendering = try! template.render(Box(data))
+```
+
 
 ### String
 
