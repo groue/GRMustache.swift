@@ -111,14 +111,24 @@ Documentation
 
 To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
 
+External links:
+
 - [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
 - [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
+
+Rendering templates:
+
 - [Templates](#templates)
-- [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
-- [Rendering of AnyObject](#rendering-of-anyobject)
-- [Rendering of pure Swift values](#rendering-of-pure-swift-values)
+
+Feeding templates:
+
+- [Rendering of Standard Swift Types](#rendering-of-standard-swift-types)
+- [Rendering of Custom Types](#rendering-of-custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
+
+Misc:
+
 - [Template inheritance](#template-inheritance)
 - [Errors](#errors)
 - [Built-in goodies](#built-in-goodies)
@@ -173,11 +183,6 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
     // Disable HTML escaping for Bash scripts:
     repo.configuration.contentType = .Text
     
-    // Register the `quote` filter in the repository so that all templates can
-    // safely embed strings:
-    let quote = Filter { ... }
-    repo.configuration.registerInBaseContext("quote", Box(quote))
-    
     // Load a template:
     let template = try! repo.template(named: "script")
     ```
@@ -185,10 +190,165 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
 For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
 
-Rendering of NSObject and its subclasses
-----------------------------------------
+Rendering of Standard Swift Types
+---------------------------------
 
-NSObject subclasses can trivially feed your templates:
+GRMustache.swift comes with built-in support for the following standard Swift types:
+
+
+### Bool
+
+- `{{bool}}` renders "0" or "1".
+- `{{#bool}}...{{/bool}}` renders if and only if `bool` is true.
+- `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
+
+
+### Numeric types
+
+GRMustache supports Int, UInt and Double:
+
+**Int**
+
+- `{{int}}` renders the standard Swift string interpolation of `int`.
+- `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
+- `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
+
+**UInt**
+
+- `{{uint}}` renders the standard Swift string interpolation of `uint`.
+- `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
+- `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
+
+**Double**
+
+- `{{double}}` renders the standard Swift string interpolation of `double`.
+- `{{#double}}...{{/double}}` renders if and only if `double` is not 0.0 (zero).
+- `{{^double}}...{{/double}}` renders if and only if `double` is 0.0 (zero).
+
+
+### String
+
+- `{{string}}` renders `string`, HTML-escaped.
+- `{{{string}}}` renders `string`, not HTML-escaped.
+- `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
+- `{{^string}}...{{/string}}` renders if and only if `string` is empty.
+
+Exposed keys:
+
+- `string.length`: the length of the string.
+
+
+### Set
+
+A set can be rendered as long as its elements are boxable.
+
+- `{{set}}` renders the concatenation of the renderings of set elements.
+- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the context stack.
+- `{{^set}}...{{/set}}` renders if and only if the set is empty.
+
+Exposed keys:
+
+- `set.first`: the first element.
+- `set.count`: the number of elements in the set.
+
+GRMustache.swift renders as `Set` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, and to the elements count.
+
+
+### Array
+
+An array can be rendered as long as its elements are boxable.
+
+- `{{array}}` renders the concatenation of the renderings of array elements.
+- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the context stack.
+- `{{^array}}...{{/array}}` renders if and only if the array is empty.
+
+Exposed keys:
+
+- `array.first`: the first element.
+- `array.last`: the last element.
+- `array.count`: the number of elements in the array.
+
+GRMustache.swift renders as `Array` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, last element, and to the elements count.
+
+
+### Dictionary
+
+A dictionary can be rendered as long as its keys are String, and its values are boxable.
+
+- `{{dictionary}}` renders the standard Swift string interpolation of `dictionary`.
+- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
+- `{{^dictionary}}...`{{/dictionary}}` does not render.
+
+
+### NSObject conforming to NSFastEnumeration
+
+The most common one is NSArray. Those objects render just like Swift Array.
+
+There are two exceptions: NSSet is rendered as a Swift Set, and NSDictionary, as a Swift dictionary.
+
+
+### NSNull
+
+- `{{null}}` does not render.
+- `{{#null}}...{{/null}}` does not render.
+- `{{^null}}...{{/null}}` renders.
+
+
+### NSNumber
+
+NSNumber is rendered as a Swift Bool, Int, or UInt, depending on its value.
+
+
+### NSString
+
+NSString is rendered as String
+
+
+### NSObject (other classes)
+
+- `{{object}}` renders the `description` method, HTML-escaped.
+- `{{{object}}}` renders the `description` method, not HTML-escaped.
+- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack.
+- `{{^object}}...{{/object}}` does not render.
+
+NSObject exposes all its properties to the templates.
+
+
+### AnyObject and Any
+
+When you try to render a value of type `Any` or `AnyObject`, you get a compiler error:
+
+```swift
+let any: Any = ...
+let anyObject: AnyObject = ...
+
+let rendering = try! template.render(Box(any))
+// Compiler Error
+
+let rendering = try! template.render(Box(anyObject))
+// Compiler Error
+```
+
+The solution is to convert the value to its actual type:
+
+```swift
+let json: AnyObject = ["name": "Lionel Richie"]
+
+// Convert to Dictionary:
+let dictionary = json as! [String: String]
+
+// Lionel Richie has a Mustache.
+let template = try! Template(string: "{{ name }} has a Mustache.")
+let rendering = try! template.render(Box(dictionary))
+```
+
+
+Rendering of Custom Types
+-------------------------
+
+### NSObject subclasses
+
+You NSObject subclass can trivially feed your templates:
 
 ```swift
 // An NSObject subclass
@@ -200,7 +360,6 @@ class Person : NSObject {
     }
 }
 
-
 // Charlie Chaplin has a mustache.
 let person = Person(name: "Charlie Chaplin")
 let template = try! Template(string: "{{name}} has a mustache.")
@@ -210,35 +369,9 @@ let rendering = try! template.render(Box(person))
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the documentation of `NSObject.mustacheBox` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
-Rendering of AnyObject
-----------------------
+### Pure Swift Values
 
-Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example.
-
-When you box `AnyObject`, you get a compiler error:
-
-```swift
-let template = try! Template(string: "{{ name }} has a Mustache.")
-
-let data = "{ \"name\": \"Lionel Richie\" }".dataUsingEncoding(NSUTF8StringEncoding)!
-let json: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
-
-// Error: Ambiguous use of 'Box'
-let rendering = try! template.render(Box(json))
-```
-
-The solution is to convert the value to its actual type:
-
-```swift
-// Lionel Richie has a Mustache.
-let rendering = try! template.render(Box(json as! NSDictionary))
-```
-
-
-Rendering of pure Swift values
-------------------------------
-
-Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though, with a little help.
+Key-Value Coding is not available for Swift enums, structs and classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift values can still feed templates, though, with a little help.
 
 ```swift
 // Define a pure Swift object:
@@ -247,9 +380,7 @@ struct Person {
 }
 ```
 
-Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
-
-Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
+To let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags, we need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
 extension Person : MustacheBoxable {
