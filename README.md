@@ -199,8 +199,8 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 ### Bool
 
 - `{{bool}}` renders "0" or "1".
-- `{{#bool}}...{{/bool}}` renders if and only if `bool` is true.
-- `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
+- `{{#bool}}...{{/bool}}` renders if and only if *bool* is true.
+- `{{^bool}}...{{/bool}}` renders if and only if *bool* is false.
 
 
 ### Numeric types
@@ -209,29 +209,29 @@ GRMustache supports Int, UInt and Double:
 
 **Int**
 
-- `{{int}}` renders the standard Swift string interpolation of `int`.
-- `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
-- `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
+- `{{int}}` renders the standard Swift string interpolation of *int*.
+- `{{#int}}...{{/int}}` renders if and only if *int* is not 0 (zero).
+- `{{^int}}...{{/int}}` renders if and only if *int* is 0 (zero).
 
 **UInt**
 
-- `{{uint}}` renders the standard Swift string interpolation of `uint`.
-- `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
-- `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
+- `{{uint}}` renders the standard Swift string interpolation of *uint*.
+- `{{#uint}}...{{/uint}}` renders if and only if *uint* is not 0 (zero).
+- `{{^uint}}...{{/uint}}` renders if and only if *uint* is 0 (zero).
 
 **Double**
 
-- `{{double}}` renders the standard Swift string interpolation of `double`.
-- `{{#double}}...{{/double}}` renders if and only if `double` is not 0.0 (zero).
-- `{{^double}}...{{/double}}` renders if and only if `double` is 0.0 (zero).
+- `{{double}}` renders the standard Swift string interpolation of *double*.
+- `{{#double}}...{{/double}}` renders if and only if *double* is not 0.0 (zero).
+- `{{^double}}...{{/double}}` renders if and only if *double* is 0.0 (zero).
 
 
 ### String
 
-- `{{string}}` renders `string`, HTML-escaped.
-- `{{{string}}}` renders `string`, not HTML-escaped.
-- `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
-- `{{^string}}...{{/string}}` renders if and only if `string` is empty.
+- `{{string}}` renders *string*, HTML-escaped.
+- `{{{string}}}` renders *string*, not HTML-escaped.
+- `{{#string}}...{{/string}}` renders if and only if *string* is not empty.
+- `{{^string}}...{{/string}}` renders if and only if *string* is empty.
 
 Exposed keys:
 
@@ -275,7 +275,7 @@ GRMustache.swift renders as `Array` all types conforming to `CollectionType wher
 
 A dictionary can be rendered as long as its keys are String, and its values are boxable.
 
-- `{{dictionary}}` renders the standard Swift string interpolation of `dictionary`.
+- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
 - `{{^dictionary}}...`{{/dictionary}}` does not render.
 
