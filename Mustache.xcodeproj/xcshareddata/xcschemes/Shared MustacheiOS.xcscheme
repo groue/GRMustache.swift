@@ -20,20 +20,6 @@
                ReferencedContainer = "container:Mustache.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "YES"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "YES">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "563AE1A119FBE47A0028C6C1"
-               BuildableName = "MustacheiOSTests.xctest"
-               BlueprintName = "MustacheiOSTests"
-               ReferencedContainer = "container:Mustache.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -43,16 +29,6 @@
       codeCoverageEnabled = "YES"
       buildConfiguration = "Debug">
       <Testables>
-         <TestableReference
-            skipped = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "563AE1A119FBE47A0028C6C1"
-               BuildableName = "MustacheiOSTests.xctest"
-               BlueprintName = "MustacheiOSTests"
-               ReferencedContainer = "container:Mustache.xcodeproj">
-            </BuildableReference>
-         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
