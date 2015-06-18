@@ -286,6 +286,14 @@ Exposed keys:
 
 GRMustache.swift renders as `Array` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, last element, and to the elements count.
 
+Especially, `Range<T>` is supported:
+
+```swift
+// 123456789
+let template = try! Template(string: "{{ numbers }}")
+let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
+```
+
 
 ### Dictionary
 
