@@ -349,7 +349,7 @@ Rendering:
 
 ### Partial Tags
 
-A *Partial tag* includes another template inside a template. The included template inherits the current context stack:
+A *Partial tag* includes another template inside a template. The included template is passed the current context stack:
 
 `document.mustache`:
 
@@ -496,7 +496,7 @@ try! template.render(Box(data2))
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< partial }}...{{/ partial }}` includes another template inside the rendered template. Just like regular `{{> partial }}` tags, the included template inherits the current context stack.
+An *Inherited Partial Tag* `{{< partial }}...{{/ partial }}` includes another template inside the rendered template. Just like regular `{{> partial }}` tags, the included template is passed the current context stack.
 
 However the included template can contain *inheritable sections*.
 
