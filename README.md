@@ -223,7 +223,7 @@ let template = try! Template(string:"<{{#value}}Truthy{{/value}}>")
 
 // "<Truthy>"
 try! template.render(Box(["value": true]))
-// ""
+// "<>"
 try! template.render(Box([:]))                  // missing value
 try! template.render(Box(["value": false]))     // false boolean
 try! template.render(Box(["value": 0]))         // zero number
