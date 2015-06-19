@@ -118,7 +118,9 @@ External links:
 
 Rendering templates:
 
-- [Templates](#templates)
+- [Loading Templates](#templates)
+- [Mustache Tags](#mustache-tags)
+- [The Context Stack and Expressions](#the-context-stack-and-expressions)
 
 Feeding templates:
 
@@ -134,21 +136,8 @@ Misc:
 - [Built-in goodies](#built-in-goodies)
 
 
-Templates
----------
-
-Generally speaking, rendering Mustache templates is a three step process:
-
-```swift
-// 1. Load a template
-let template = try! Template(named: "profile")
-
-// 2. Prepare the data that feeds the template:
-let profile = ...
-
-// 3. Render:
-let rendering = try! template.render(Box(profile))
-```
+Loading Templates
+-----------------
 
 A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
 
@@ -190,6 +179,313 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
 For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
 
+Mustache tags
+-------------
+
+### Variable tags
+
+A *Variable tag* `{{value}}` renders the value associated with the key `value`, HTML-escaped. To avoid HTML-escaping, use triple mustache tags `{{{value}}}`:
+
+```swift
+let template = try! Template(string: "{{value}} - {{{value}}}")
+
+// Mario &amp; Luigi - Mario & Luigi
+let data = ["value": "Mario & Luigi"]
+let rendering = try! template.render(Box(data))
+```
+
+### Section tags
+
+A *Section tag* `{{#value}}...{{/value}}` is a common syntax for three different usages:
+
+- conditionally render a section.
+- loop over a collection.
+- dig inside an object.
+
+Those behaviors are triggered by the value associated with `value`:
+
+
+#### Boolean values
+
+If the value is *falsey*, the section is not rendered. Falsey values are:
+
+- missing values
+- false boolean
+- zero numbers
+- empty strings
+- empty collections
+- NSNull
+
+For example:
+
+```swift
+let template = try! Template(string:"<{{#value}}Truthy{{/value}}>")
+
+// "<Truthy>"
+try! template.render(Box(["value": true]))
+// ""
+try! template.render(Box([:]))                  // missing value
+try! template.render(Box(["value": false]))     // false boolean
+try! template.render(Box(["value": 0]))         // zero number
+try! template.render(Box(["value": ""]))        // empty string
+try! template.render(Box(["value": []]))        // empty collection
+try! template.render(Box(["value": NSNull()]))  // NSNull
+```
+
+
+#### Collections
+
+If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the *context stack*. This makes their keys available for tags inside the section.
+
+Template:
+
+```mustache
+{{# friends }}
+- {{# name }}
+{{/ friends }}
+```
+
+Data:
+
+```swift
+[
+  "friends": [
+    [ "name": "Hulk Hogan" ],
+    [ "name": "Albert Einstein" ],
+    [ "name": "Tom Selleck" ],
+  ]
+]
+```
+
+Rendering:
+
+```
+- Hulk Hogan
+- Albert Einstein
+- Tom Selleck
+```
+
+Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
+
+
+#### Objects
+
+If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the *context stack*. This makes its keys available for tags inside the section.
+
+Template:
+
+```mustache
+{{# user }}
+- {{ name }}
+- {{ score }}
+{{/ user }}
+```
+
+Data:
+
+```swift
+[
+  "user": [
+    "name": "Mario"
+    "score": 1500
+  ]
+]
+```
+
+Rendering:
+
+```
+- Mario
+- 1500
+```
+
+
+#### Inverted section tags
+
+An *Inverted section tag* `{{^value}}...{{/value}}` renders when a regular section `{{#value}}...{{/value}}` would not. You can think of it as the Mustache "else" or "unless".
+
+Template:
+
+```
+{{# persons }}
+- {{name}} is {{#alive}}alive{{/alive}}{{^alive}}dead{{/alive}}.
+{{/ persons }}
+{{^ persons }}
+Nobody
+{{/ persons }}
+```
+
+Data:
+
+```swift
+[
+  "persons": []
+]
+```
+
+Rendering:
+
+```
+Nobody
+```
+
+Data:
+
+```swift
+[
+  "persons": [
+    ["name": "Errol Flynn", "alive": false],
+    ["name": "Sacha Baron Cohen", "alive": true]
+  ]
+]
+```
+
+Rendering:
+
+```
+- Errol Flynn is dead.
+- Sacha Baron Cohen is alive.
+```
+
+
+### Partial Tags
+
+A *Partial tag* includes another template inside a template. The included template inherits the current context stack:
+
+`document.mustache`:
+
+```mustache
+Guests:
+{{# guests }}
+  {{> person }}
+{{/ guests }}
+```
+
+`person.mustache`:
+
+```mustache
+{{ name }}
+```
+
+Data:
+
+```swift
+[
+  "guests": [
+    ["name": "Frank Zappa"],
+    ["name": "Lionel Richie"]
+  ]
+]
+```
+
+Rendering:
+
+```
+Guests:
+- Frank Zappa
+- Lionel Richie
+```
+
+Recursive partials are supported, but your data should avoid infinite loops.
+
+Partial lookup depends on the origin of the main template:
+
+
+#### File system
+
+Partial names are interpreted as relative paths when the template comes from the file system (via paths or URLs):
+
+```swift
+// Load /path/document.mustache
+let template = Template(path: "/path/document.mustache")
+```
+
+- `{{> partial }}` includes `/path/partial.mustache`.
+- `{{> shared/partial }}` includes `/path/shared/partial.mustache`.
+
+Partials have the same file extension as the main template.
+
+```swift
+// Loads /path/document.html
+let template = Template(path: "/path/document.html")
+```
+
+- `{{> partial }}` includes `/path/partial.html`.
+
+When your templates are stored in a hierarchy of directories, you can use absolute paths to partials:
+
+```swift
+// The template repository defines the root of absolute partial paths:
+let repository = TemplateRepository(directoryPath: "/path")
+
+// Load /path/documents/profile.mustache
+let template = repository.template(named: "documents/profile")
+```
+
+- `{{> /shared/partial }}` includes `/path/shared/partial.mustache`.
+
+
+#### Bundle resources
+    
+Partial names are interpreted as resource names when the template is a bundle resource:
+
+```swift
+// Load the document.mustache resource from the main bundle
+let template = Template(named: "document")
+```
+
+- `{{> partial }}` includes the `partial.mustache` resource.
+
+Partials have the same file extension as the main template.
+
+```swift
+// Load the document.html resource from the main bundle
+let template = Template(named: "document", templateExtension: "html")
+```
+
+- `{{> partial }}` includes the `partial.html` resource.
+
+
+#### General case
+
+Generally speaking, partial names are always interpreted by a *Template Repository*.
+
+- `Template(named:...)` uses a bundle-based template repository: partial names are resource names.
+- `Template(path:...)` uses a file-based template repository: partial names are relative paths.
+- `Template(URL:...)` uses a URL-based template repository: partial names are relative URLs.
+- `Template(string:...)` uses a template repository that can’t load any partial.
+- `templateRepository.template(named:...)` uses the partial loading mechanism of the template repository.
+
+Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)).
+
+
+### Inherited Partial Tags and Inheritable Section Tags
+
+TODO
+
+
+### Set Delimiters Tags
+
+TODO
+
+
+### Comment Tags
+
+TODO
+
+
+### Pragma Tags
+
+TODO
+
+
+
+The Context Stack and Expressions
+---------------------------------
+
+TODO
+
+
 Rendering of Standard Swift Types
 ---------------------------------
 
@@ -205,25 +501,13 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 
 ### Numeric types
 
-GRMustache supports Int, UInt and Double:
+GRMustache supports `Int`, `UInt` and `Double`:
 
-**Int**
+- `{{number}}` renders the standard Swift string interpolation of *number*.
+- `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
+- `{{^number}}...{{/number}}` renders if and only if *int* is 0 (zero).
 
-- `{{int}}` renders the standard Swift string interpolation of *int*.
-- `{{#int}}...{{/int}}` renders if and only if *int* is not 0 (zero).
-- `{{^int}}...{{/int}}` renders if and only if *int* is 0 (zero).
-
-**UInt**
-
-- `{{uint}}` renders the standard Swift string interpolation of *uint*.
-- `{{#uint}}...{{/uint}}` renders if and only if *uint* is not 0 (zero).
-- `{{^uint}}...{{/uint}}` renders if and only if *uint* is 0 (zero).
-
-**Double**
-
-- `{{double}}` renders the standard Swift string interpolation of *double*.
-- `{{#double}}...{{/double}}` renders if and only if *double* is not 0.0 (zero).
-- `{{^double}}...{{/double}}` renders if and only if *double* is 0.0 (zero).
+The Swift types `Float`, `Int8`, `UInt8`, etc. have no built-in support: turn them into one of the three general types before injecting them into templates.
 
 To format numbers, use `NSNumberFormatter`:
 

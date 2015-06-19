@@ -282,23 +282,23 @@ The zip filter iterates several lists all at once. On each step, one object from
 {{/}}
 ```
 
-`data.json`:
+Data:
 
-```json
-{
+```swift
+[
   "users": [
-    { "name": "Alice" },
-    { "name": "Bob" },
+    [ "name": "Alice" ],
+    [ "name": "Bob" ],
   ],
   "teams": [
-    { "team": "iOS" },
-    { "team": "Android" },
+    [ "team": "iOS" ],
+    [ "team": "Android" ],
   ],
   "scores": [
-    { "score": 100 },
-    { "score": 200 },
+    [ "score": 100 ],
+    [ "score": 200 ],
   ]
-}
+]
 ```
 
 Rendering:
