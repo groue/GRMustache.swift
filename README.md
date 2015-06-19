@@ -119,7 +119,7 @@ External links:
 Rendering templates:
 
 - [Loading Templates](#loading-templates)
-- [Mustache Tags Reference](#mustache-tags)
+- [Mustache Tags Reference](#mustache-tags-reference)
     - [Variable Tags](#variable-tags) `{{value}}`
     - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
     - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
