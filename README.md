@@ -643,18 +643,18 @@ The rendering is:
 The context stack is usually initialized with the data you render your template with:
 
 ```swift
-// The rendering starts with a context stack containing `value`
-template.render(Box(value))
+// The rendering starts with a context stack containing `data`
+template.render(Box(data))
 ```
 
 Precisely speaking, a template has a *base context stack* on top of which the rendered data is added. This base context is always available whatever the rendered data. For example:
 
 ```swift
-// The base context contains `baseValue`
-template.extendBaseContext(Box(baseValue))
+// The base context contains `baseData`
+template.extendBaseContext(Box(baseData))
 
-// The rendering starts with a context stack containing `baseValue` and `value`
-template.render(Box(value))
+// The rendering starts with a context stack containing `baseData` and `data`
+template.render(Box(data))
 ```
 
 The base context is usually a good place to register filters (see below).
