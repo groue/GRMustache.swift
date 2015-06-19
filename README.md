@@ -131,7 +131,6 @@ Feeding templates:
 
 Misc:
 
-- [Template inheritance](#template-inheritance)
 - [Errors](#errors)
 - [Built-in goodies](#built-in-goodies)
 
@@ -219,7 +218,7 @@ If the value is *falsey*, the section is not rendered. Falsey values are:
 For example:
 
 ```swift
-let template = try! Template(string:"<{{#value}}Truthy{{/value}}>")
+let template = try! Template(string: "<{{#value}}Truthy{{/value}}>")
 
 // "<Truthy>"
 try! template.render(Box(["value": true]))
@@ -459,9 +458,136 @@ Generally speaking, partial names are always interpreted by a *Template Reposito
 Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)).
 
 
+#### Dynamic partials
+
+A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+
+```swift
+let repo = TemplateRepository(bundle: NSBundle.mainBundle())
+let template = try! repo.template(string: "{{#user}}{{>partial}}{{/user}}")
+
+// Now the `partial.mustache` resource has been loaded. It will be used when
+// the template is rendered. Nothing can change that.
+```
+
+You can also include *dynamic partials*. To do so, use a regular variable tag `{{ partial }}` (without the leading ">" character), and provide a template in your rendered data:
+
+```swift
+// A template that delegates the rendering of a user to a partial.
+// No partial has been loaded yet.
+let template = try! Template(string: "{{#user}}{{partial}}{{/user}}")
+
+// The user
+let user = ["firstName": "Georges", "lastName": "Brassens", "occupation": "Singer"]
+
+// Render with a first partial -> "Georges Brassens"
+let partial1 = try! Template(string: "{{firstName}} {{lastName}}")
+let data1 = ["user": Box(user), "partial": Box(partial1) ]
+try! template.render(Box(data1))
+
+// Render with a second partial -> "Singer"
+let partial2 = try! Template(string: "{{occupation}}")
+let data2 = ["user": Box(user), "partial": Box(partial2) ]
+try! template.render(Box(data2))
+```
+
+
 ### Inherited Partial Tags and Inheritable Section Tags
 
-TODO
+GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
+
+An *Inherited Partial Tag* `{{< partial }}...{{/ partial }}` includes another template inside the rendered template. Just like regular `{{> partial }}` tags, the included template inherits the current context stack.
+
+However the included template can contain *inheritable sections*.
+
+The included template `layout.mustache` below has `title` and `content` inheritable sections that the rendered template can override:
+
+```mustache
+<html>
+<head>
+    <title>{{$ title }}Default title{{/ title }}</title>
+</head>
+<body>
+    <h1>{{$ title }}Default title{{/ title }}</h1>
+    {{$ content }}
+        Default content
+    {{/ content }}}
+</body>
+</html>
+```
+
+The rendered template `article.mustache`:
+
+```mustache
+{{< layout }}
+
+    {{$ title }}{{ article.title }}{{/ title }}
+    
+    {{$ content }}
+        {{{ article.html_body }}}
+        <p>by {{ article.author }}</p>
+    {{/ content }}
+    
+{{/ layout }}
+```
+
+```swift
+let template = try! Template(named: "article")
+let data = [
+    "article": [
+        "title": "The 10 most amazing handlebars",
+        "html_body": "<p>...</p>",
+        "author": "John Doe"
+    ]
+]
+let rendering = try! template.render(Box(data))
+```
+
+The rendering is a full HTML page:
+
+```HTML
+<html>
+<head>
+    <title>The 10 most amazing handlebars</title>
+</head>
+<body>
+    <h1>The 10 most amazing handlebars</h1>
+    <p>...</p>
+    <p>by John Doe</p>
+</body>
+</html>
+```
+
+
+#### Dynamic inherited partials
+
+A tag `{{< partial }}...{{/ partial }}` includes a template, the one that is named "partial". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+
+```swift
+let repo = TemplateRepository(bundle: NSBundle.mainBundle())
+let template = try! repo.template(string: "{{< partial }}{{$ content }}MUSTACHES{{/ content }}{{/ partial }}")
+
+// Now the `partial.mustache` resource has been loaded. It will be used when
+// the template is rendered. Nothing can change that.
+```
+
+You can also inherit from *dynamic partials*. To do so, use a regular section tag `{{# partial }}...{{/ partial }}`, and provide a template in your rendered data:
+
+```swift
+// A template that inherits from a partial.
+// No partial has been loaded yet.
+let template = try! Template(string: "{{# partial }}{{$ content }}MUSTACHES{{/ content }}{{/ partial }}")
+
+// Render with a first partial -> "*** MUSTACHES ***"
+let partial1 = try! Template(string: "*** {{$content}}{{/content}} ***")
+let data1 = ["partial": Box(partial1) ]
+try! template.render(Box(data1))
+
+// Render with a second partial -> "!!! MUSTACHES !!!"
+let partial2 = try! Template(string: "!!! {{$content}}{{/content}} !!!")
+let data2 = ["partial": Box(partial2) ]
+try! template.render(Box(data2))
+```
 
 
 ### Set Delimiters Tags
@@ -975,50 +1101,6 @@ As those filters perform custom rendering, they are based on `RenderFunction`, j
 All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
 
 Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-
-
-Template inheritance
---------------------
-
-GRMustache template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
-
-Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` sections may be overriden by other templates:
-
-`layout.mustache`:
-
-```mustache
-<html>
-<head>
-    <title>{{$ page_title }}Default title{{/ page_title }}</title>
-</head>
-<body>
-    <h1>{{$ page_title }}Default title{{/ page_title }}</h1>
-    {{$ page_content }}
-        Default content
-    {{/ page_content }}}
-</body>
-</html>
-```
-
-The `article.mustache` below inherits from `layout.mustache`, and overrides its sections:
-
-`article.mustache`:
-
-```mustache
-{{< layout }}
-
-    {{$ page_title }}{{ article.title }}{{/ page_title }}
-    
-    {{$ page_content }}
-        {{{ article.html_body }}}
-        by {{ article.author }}
-    {{/ page_content }}
-    
-{{/ layout }}
-```
-
-When you render `article.mustache`, you get a full HTML page.
 
 
 Errors
