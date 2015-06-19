@@ -504,9 +504,9 @@ try! template.render(Box(data2))
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template. The included template is passed the current context stack.
+An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular partial tag `{{> partial}}` (see above).
 
-However the included template can contain *inheritable sections*.
+However, this time, the included template can contain *inheritable sections*, and the rendered template can override them.
 
 The included template `layout.mustache` below has `title` and `content` inheritable sections that the rendered template can override:
 
