@@ -118,7 +118,7 @@ External links:
 
 Rendering templates:
 
-- [Loading Templates](#templates)
+- [Loading Templates](#loading-templates)
 - [Mustache Tags](#mustache-tags)
 - [The Context Stack and Expressions](#the-context-stack-and-expressions)
 
