@@ -609,8 +609,59 @@ TODO
 The Context Stack and Expressions
 ---------------------------------
 
-TODO
+Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
 
+That context stack grows as the rendering engine enters sections, and shrinks when it leaves. The tag `{{name}}` looks for the "name" identifier in the value pushed by the last entered section. If this top value does not provide the key, the evaluation digs further down the stack, until it finds some value that has a "name". A key is considered missed only after the stack has been exhausted.
+
+For example, given the template:
+
+```mustache
+{{#children}}
+- {{firstName}} {{lastName}}
+{{/child}}
+```
+
+Data:
+
+```swift
+[
+    "lastName": "Chaplin",
+    "children": [
+        ["firstName": "Geraldine"],
+        ["firstName": "Sydney"],
+    ]
+]
+```
+
+The rendering is:
+
+```
+- Geraldine Chaplin
+- Sydney Chaplin
+```
+
+The context stack is usually initialized with the data you render your template with:
+
+```
+// The context stack initially contains `value`:
+let rendering = try! template.render(Box(value))
+```
+
+Precisely speaking, a template has a *base context stack* on top of which the rendered data is added. This base context is always available whatever the rendered data. For example:
+
+```swift
+let template = try! Template(...)
+template.extendBaseContext(Box(baseValue))
+
+// The context stack initially contains `baseValue` and `value`:
+let rendering = try! template.render(Box(value))
+```
+
+The base context is usually a good place to register filters (see below).
+
+See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+
+TODO
 
 Rendering of Standard Swift Types
 ---------------------------------
