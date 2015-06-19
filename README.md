@@ -496,7 +496,7 @@ try! template.render(Box(data2))
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< partial }}...{{/ partial }}` includes another template inside the rendered template. Just like regular `{{> partial }}` tags, the included template is passed the current context stack.
+An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template. The included template is passed the current context stack.
 
 However the included template can contain *inheritable sections*.
 
@@ -561,31 +561,31 @@ The rendering is a full HTML page:
 
 #### Dynamic inherited partials
 
-A tag `{{< partial }}...{{/ partial }}` includes a template, the one that is named "partial". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+A tag `{{< layout }}...{{/ layout }}` includes a template, the one that is named "layout". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
 
 ```swift
 let repo = TemplateRepository(bundle: NSBundle.mainBundle())
-let template = try! repo.template(string: "{{< partial }}{{$ content }}MUSTACHES{{/ content }}{{/ partial }}")
+let template = try! repo.template(string: "{{< layout }}{{$ content }}MUSTACHES{{/ content }}{{/ layout }}")
 
-// Now the `partial.mustache` resource has been loaded. It will be used when
+// Now the `layout.mustache` resource has been loaded. It will be used when
 // the template is rendered. Nothing can change that.
 ```
 
-You can also inherit from *dynamic partials*. To do so, use a regular section tag `{{# partial }}...{{/ partial }}`, and provide a template in your rendered data:
+You can also inherit from *dynamic partials*. To do so, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template in your rendered data:
 
 ```swift
 // A template that inherits from a partial.
 // No partial has been loaded yet.
-let template = try! Template(string: "{{# partial }}{{$ content }}MUSTACHES{{/ content }}{{/ partial }}")
+let template = try! Template(string: "{{# layout }}{{$ content }}MUSTACHES{{/ content }}{{/ layout }}")
 
 // Render with a first partial -> "*** MUSTACHES ***"
 let partial1 = try! Template(string: "*** {{$content}}{{/content}} ***")
-let data1 = ["partial": Box(partial1) ]
+let data1 = ["layout": Box(partial1) ]
 try! template.render(Box(data1))
 
 // Render with a second partial -> "!!! MUSTACHES !!!"
 let partial2 = try! Template(string: "!!! {{$content}}{{/content}} !!!")
-let data2 = ["partial": Box(partial2) ]
+let data2 = ["layout": Box(partial2) ]
 try! template.render(Box(data2))
 ```
 
