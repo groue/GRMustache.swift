@@ -119,7 +119,15 @@ External links:
 Rendering templates:
 
 - [Loading Templates](#loading-templates)
-- [Mustache Tags](#mustache-tags)
+- [Mustache Tags Reference](#mustache-tags)
+    - [Variable Tags](#variable-tags) `{{value}}`
+    - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
+    - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
+    - [Partial Tags](#partial-tags) `{{>partial}}`
+    - [Inherited Partial Tags and Inheritable Section Tags](#inherited-partial-tags-and-inheritable-section-tags) aka Template Inheritance
+    - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
+    - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
+    - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
 - [The Context Stack and Expressions](#the-context-stack-and-expressions)
 
 Feeding templates:
@@ -178,10 +186,10 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
 For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
 
-Mustache tags
--------------
+Mustache Tags Reference
+-----------------------
 
-### Variable tags
+### Variable Tags
 
 A *Variable tag* `{{value}}` renders the value associated with the key `value`, HTML-escaped. To avoid HTML-escaping, use triple mustache tags `{{{value}}}`:
 
@@ -193,7 +201,7 @@ let data = ["value": "Mario & Luigi"]
 let rendering = try! template.render(Box(data))
 ```
 
-### Section tags
+### Section Tags
 
 A *Section tag* `{{#value}}...{{/value}}` is a common syntax for three different usages:
 
@@ -299,7 +307,7 @@ Rendering:
 ```
 
 
-#### Inverted section tags
+### Inverted Section Tags
 
 An *Inverted section tag* `{{^value}}...{{/value}}` renders when a regular section `{{#value}}...{{/value}}` would not. You can think of it as the Mustache "else" or "unless".
 
@@ -561,17 +569,9 @@ The rendering is a full HTML page:
 
 #### Dynamic inherited partials
 
-A tag `{{< layout }}...{{/ layout }}` includes a template, the one that is named "layout". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+Like a regular partial tag, an inherited partial tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
-```swift
-let repo = TemplateRepository(bundle: NSBundle.mainBundle())
-let template = try! repo.template(string: "{{< layout }}{{$ content }}MUSTACHES{{/ content }}{{/ layout }}")
-
-// Now the `layout.mustache` resource has been loaded. It will be used when
-// the template is rendered. Nothing can change that.
-```
-
-You can also inherit from *dynamic partials*. To do so, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template in your rendered data:
+To inherit from a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template in your rendered data:
 
 ```swift
 // A template that inherits from a partial.
