@@ -100,7 +100,7 @@ Feeding templates:
 
 - [Standard Swift Types Reference](#standard-swift-types-reference)
     - [Bool](#bool)
-    - [Numeric types](#numeric-types): Int, UInt and Double
+    - [Numeric Types](#numeric-types): Int, UInt and Double
     - [String](#string)
     - [Set](#set) (and similar collections)
     - [Array](#array) (and similar collections)
@@ -782,7 +782,7 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 - `{{^bool}}...{{/bool}}` renders if and only if *bool* is false.
 
 
-### Numeric types
+### Numeric Types
 
 GRMustache supports `Int`, `UInt` and `Double`:
 
