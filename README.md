@@ -97,8 +97,8 @@ Rendering templates:
 
 Feeding templates:
 
-- [Rendering of Standard Swift Types](#rendering-of-standard-swift-types)
-- [Rendering of Custom Types](#rendering-of-custom-types)
+- [Standard Swift Types Reference](#standard-swift-types-reference)
+- [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
 
@@ -716,8 +716,8 @@ There are four kinds of expressions:
     [Filters](#filters) are introduced below.
     
 
-Rendering of Standard Swift Types
----------------------------------
+Standard Swift Types Reference
+------------------------------
 
 GRMustache.swift comes with built-in support for the following standard Swift types:
 
@@ -849,7 +849,7 @@ NSString is rendered as String
 - `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack.
 - `{{^object}}...{{/object}}` does not render.
 
-For more information, check the [Rendering of Custom Types](#rendering-of-custom-types) below.
+For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
 ### AnyObject and Any
@@ -881,8 +881,8 @@ let rendering = try! template.render(Box(dictionary))
 ```
 
 
-Rendering of Custom Types
--------------------------
+Custom Types
+------------
 
 ### NSObject subclasses
 
