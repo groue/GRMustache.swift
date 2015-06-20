@@ -812,7 +812,7 @@ Exposed keys:
 
 ### Set
 
-A set can be rendered as long as its elements are boxable.
+A Swift Set can be rendered as long as its elements are boxable.
 
 - `{{set}}` renders the concatenation of the renderings of set elements.
 - `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the context stack.
@@ -822,8 +822,6 @@ Exposed keys:
 
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
-
-GRMustache.swift renders as `Set` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, and to the elements count.
 
 
 ### Array
