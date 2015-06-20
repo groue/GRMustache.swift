@@ -628,19 +628,20 @@ That context stack grows as the rendering engine enters sections, and shrinks wh
 For example, given the template:
 
 ```mustache
-{{#children}}
+{{#family}}
 - {{firstName}} {{lastName}}
-{{/child}}
+{{/family}}
 ```
 
 Data:
 
 ```swift
 [
-    "lastName": "Chaplin",
-    "children": [
-        ["firstName": "Geraldine"],
-        ["firstName": "Sydney"],
+    "lastName": "Johnson",
+    "family": [
+        ["firstName": "Peter"],
+        ["firstName": "Barbara"],
+        ["firstName": "Emily", "lastName": "Scott"],
     ]
 ]
 ```
@@ -648,8 +649,9 @@ Data:
 The rendering is:
 
 ```
-- Geraldine Chaplin
-- Sydney Chaplin
+- Peter Johnson
+- Barbara Johnson
+- Emily Scott
 ```
 
 The context stack is usually initialized with the data you render your template with:
