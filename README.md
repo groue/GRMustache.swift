@@ -619,6 +619,8 @@ For a more complete discussion, see the documentation of  `Configuration.content
 The Context Stack and Expressions
 ---------------------------------
 
+### Context Stack
+
 Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
 
 That context stack grows as the rendering engine enters sections, and shrinks when it leaves. The tag `{{name}}` looks for the "name" identifier in the value pushed by the last entered section. If this top value does not provide the key, the evaluation digs further down the stack, until it finds some value that has a "name". A key is considered missed only after the stack has been exhausted.
@@ -671,7 +673,43 @@ The base context is usually a good place to register filters (see below).
 
 See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
-TODO
+
+### Expressions
+
+Variable and section tags contain *Expressions*. `name` is an expression, but also `article.title`, and `format(article.modificationDate)`. When a tag renders, it evaluates its expression, and renders the result.
+
+There are four kinds of expressions:
+
+- **The dot** `.`, aka "Implicit Iterator" in the Mustache lingo:
+    
+    Dot evaluates to the top of the context stack. It lets you iterate over collection of strings, for example. `{{#items}}<{{.}}>{{/items}}` renders `<1><2><3>` when given [1,2,3].
+
+- **Identifiers** like `name`:
+    
+    Evaluation of identifiers like `name` go through the context stack until a value provides the `name` key.
+    
+    Identifiers can not contain white space, dots, parentheses and commas. They can not start with any of those characters: `{}&$#^/<>`.
+
+- **Compound expressions** like `article.title` and generally `<expression>.<identifier>`:
+    
+    This time there is no going through the context stack: `article.title` evaluates to the title of the article, regardless of `title` keys defined by enclosing contexts.
+    
+    `.title` (with a leading dot) is a compound expression based on the dot: it looks for `title` at the top of the context stack.
+    
+    Compare these three templates:
+    
+    - `...{{# article }}{{  title }}{{/ article }}...`
+    - `...{{# article }}{{ .title }}{{/ article }}...`
+    - `...{{ article.title }}...`
+    
+    The first will look for `title` anywhere in the context stack, starting with the `article` object.
+    
+    The two others are identical: they ensure the `title` key comes from the very `article` object.
+
+- **Filter expressions** like `format(date)` and generally `<expression>(<expression>, ...)`:
+    
+    [Filters](#filters) are introduced below.
+    
 
 Rendering of Standard Swift Types
 ---------------------------------
