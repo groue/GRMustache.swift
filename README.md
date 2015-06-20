@@ -90,7 +90,7 @@ Rendering templates:
     - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
     - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
     - [Partial Tags](#partial-tags) `{{>partial}}`
-    - [Inherited Partial Tags](#inherited-partial-tags) aka Template Inheritance
+    - [Inherited Partial Tags](#inherited-partial-tags) `{{<layout}}...{{/layout}}` (Template Inheritance)
     - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
     - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
     - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
