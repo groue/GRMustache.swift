@@ -1291,7 +1291,7 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{/ user }}
     ```
 
-- `Box(NSObject)` returns a box that exposes all the object properties
+- `Box(NSObject)` returns a box that exposes all the object properties:
     
     ```
     {{# user }}
@@ -1309,7 +1309,7 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{/ format }}
     ```
 
-- `Box(StandardLibrary.each)` returns a box that is able to define some extra key when iterating an array ([more information](Docs/Guides/goodies.md#localizer)):
+- `Box(StandardLibrary.each)` returns a box that is able to define some extra keys when iterating an array ([more information](Docs/Guides/goodies.md#localizer)):
     
     ```
     {{# each(items) }}
@@ -1319,9 +1319,9 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
 
 Before we dig into those fancy behaviors, let's describe in detail the rendering of the `{{ F(A) }}` tag:
 
-1. The `A` and `F` expressions are evaluated. The Mustache engine looks in the [context stack](#the-context-stack) for boxes who return a non-empty boxes for the keys "A" and "F". The key-extraction service is provided by a customizable `KeyedSubscriptFunction`.
+1. The `A` and `F` expressions are evaluated: the rendering engine looks in the [context stack](#the-context-stack) for boxes that return a non-empty box for the keys "A" and "F". The key-extraction service is provided by a customizable `KeyedSubscriptFunction`.
 
-2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument. The result may well depend on the customizable *value* of the A box. Yet the filter has access to all facets of the A box, and the value is only one of them. Anyway, the filter returns its Result box.
+2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument. The Result box may well depend on the customizable *value* of the A box, but all other facets of the A box may be involved.
 
 3. The rendering engine then looks in the context stack for all boxes that have a customized `WillRenderFunction`. Those functions have an opportunity to process the Result box, and eventually return another one. This is how, for example, a NSDateFormatter box can format all dates in a section: its `WillRenderFunction` turns dates into strings.
 
@@ -1389,7 +1389,7 @@ We'll below describe each of them individually, even though you can provide seve
 
 - `filter`
     
-    The optional filter parameter is a `FilterFunction` that lets the Mustache engine evaluate filtered expression that involve the box. The default value is nil, which means that the box can not be used as a filter.
+    The optional *filter* parameter is a `FilterFunction` that lets the Mustache engine evaluate filtered expression that involve the box. The default value is nil, which means that the box can not be used as a filter.
     
     Check the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
@@ -1405,7 +1405,7 @@ We'll below describe each of them individually, even though you can provide seve
 
 - `render`
     
-    The optional `render` parameter is a `RenderFunction` that is evaluated when the Box is rendered.
+    The optional *render* parameter is a `RenderFunction` that is evaluated when the Box is rendered.
     
     The default value is nil, which makes the box perform default Mustache rendering:
     
@@ -1428,7 +1428,7 @@ We'll below describe each of them individually, even though you can provide seve
 
 - `willRender` & `didRender`
     
-    The optional `willRender` and `didRender` parameters are a `WillRenderFunction` and `DidRenderFunction` that are evaluated for all tags as long as the box is in the context stack.
+    The optional *willRender* and *didRender* parameters are a `WillRenderFunction` and `DidRenderFunction` that are evaluated for all tags as long as the box is in the context stack.
     
     Check the `WillRenderFunction` and `DidRenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
