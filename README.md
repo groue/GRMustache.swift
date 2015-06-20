@@ -408,19 +408,19 @@ Partial names are interpreted as relative paths when the template comes from the
 ```swift
 // Load /path/document.mustache
 let template = Template(path: "/path/document.mustache")
-```
 
-- `{{> partial }}` includes `/path/partial.mustache`.
-- `{{> shared/partial }}` includes `/path/shared/partial.mustache`.
+// {{> partial }} includes /path/partial.mustache.
+// {{> shared/partial }} includes /path/shared/partial.mustache.
+```
 
 Partials have the same file extension as the main template.
 
 ```swift
 // Loads /path/document.html
 let template = Template(path: "/path/document.html")
-```
 
-- `{{> partial }}` includes `/path/partial.html`.
+// {{> partial }} includes /path/partial.html.
+```
 
 When your templates are stored in a hierarchy of directories, you can use absolute paths to partials:
 
@@ -430,9 +430,9 @@ let repository = TemplateRepository(directoryPath: "/path")
 
 // Load /path/documents/profile.mustache
 let template = repository.template(named: "documents/profile")
-```
 
-- `{{> /shared/partial }}` includes `/path/shared/partial.mustache`.
+// {{> /shared/partial }} includes /path/shared/partial.mustache.
+```
 
 
 #### Bundle resources
@@ -442,18 +442,18 @@ Partial names are interpreted as resource names when the template is a bundle re
 ```swift
 // Load the document.mustache resource from the main bundle
 let template = Template(named: "document")
-```
 
-- `{{> partial }}` includes the `partial.mustache` resource.
+// {{> partial }} includes the partial.mustache resource.
+```
 
 Partials have the same file extension as the main template.
 
 ```swift
 // Load the document.html resource from the main bundle
 let template = Template(named: "document", templateExtension: "html")
-```
 
-- `{{> partial }}` includes the `partial.html` resource.
+// {{> partial }} includes the partial.html resource.
+```
 
 
 #### General case
