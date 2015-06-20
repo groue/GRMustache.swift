@@ -298,7 +298,7 @@ try! template.render(Box(["value": NSNull()]))  // NSNull
 
 #### Collections
 
-If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the *context stack*. This makes their keys available for tags inside the section.
+If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the [context stack](#the-context-stack). This makes their keys available for tags inside the section.
 
 Template:
 
@@ -333,7 +333,7 @@ Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
 
 #### Objects
 
-If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the *context stack*. This makes its keys available for tags inside the section.
+If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the [context stack](#the-context-stack). This makes its keys available for tags inside the section.
 
 Template:
 
@@ -413,7 +413,7 @@ Rendering:
 
 ### Partial Tags
 
-A *Partial tag* includes another template inside a template. The included template is passed the current context stack:
+A *Partial tag* includes another template inside a template. The included template is passed the current [context stack](#the-context-stack):
 
 `document.mustache`:
 
@@ -560,7 +560,7 @@ try! template.render(Box(data2))
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular tag `{{> partial}}` tag (see above).
+An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular [partial tag](#partial-tags) `{{> partial}}`.
 
 However, this time, the included template can contain *inheritable sections*, and the rendered template can override them.
 
@@ -675,7 +675,7 @@ For a more complete discussion, see the documentation of  `Configuration.content
 The Context Stack and Expressions
 ---------------------------------
 
-### Context Stack
+### The Context Stack
 
 Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
 
@@ -727,7 +727,7 @@ template.extendBaseContext(Box(baseData))
 template.render(Box(data))
 ```
 
-The base context is usually a good place to register filters (see below).
+The base context is usually a good place to register [filters](#filters).
 
 See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
@@ -826,7 +826,7 @@ Exposed keys:
 A set can be rendered as long as its elements are boxable.
 
 - `{{set}}` renders the concatenation of the renderings of set elements.
-- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the context stack.
+- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the [context stack](#the-context-stack).
 - `{{^set}}...{{/set}}` renders if and only if the set is empty.
 
 Exposed keys:
@@ -844,7 +844,7 @@ If all you have is a set `Set<Any>` or `Set<AnyObject>`, you will get a compiler
 An array can be rendered as long as its elements are boxable.
 
 - `{{array}}` renders the concatenation of the renderings of array elements.
-- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the context stack.
+- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the [context stack](#the-context-stack).
 - `{{^array}}...{{/array}}` renders if and only if the array is empty.
 
 Exposed keys:
@@ -871,7 +871,7 @@ If all you have is an array `[Any]` or `[AnyObject]`, you will get a compiler er
 A dictionary can be rendered as long as its keys are String, and its values are boxable.
 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
-- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
+- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
 
 If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you will get a compiler error when you try to box it. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
@@ -895,7 +895,7 @@ For other NSObject, those default rules apply:
 
 - `{{object}}` renders the `description` method, HTML-escaped.
 - `{{{object}}}` renders the `description` method, not HTML-escaped.
-- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack. Keys exposed to templates are the names of properties.
+- `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack). Keys exposed to templates are the names of properties.
 - `{{^object}}...{{/object}}` does not render.
 
 Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
@@ -1250,7 +1250,7 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try! template.render(Box(data))
 ```
 
-As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
+As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
 
 
 ### Advanced Filters
