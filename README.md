@@ -403,7 +403,7 @@ Partial lookup depends on the origin of the main template:
 
 #### File system
 
-Partial names are interpreted as *relative paths* when the template comes from the file system (via paths or URLs):
+Partial names are relative paths when the template comes from the file system (via paths or URLs):
 
 ```swift
 // Load /path/document.mustache
@@ -422,7 +422,7 @@ let template = Template(path: "/path/document.html")
 // {{> partial }} includes /path/partial.html.
 ```
 
-When your templates are stored in a hierarchy of directories, you can use *absolute paths* to partials:
+When your templates are stored in a hierarchy of directories, you can use absolute paths to partials:
 
 ```swift
 // The template repository defines the root of absolute partial paths:
