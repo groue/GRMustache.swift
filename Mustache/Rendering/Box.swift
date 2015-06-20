@@ -143,7 +143,7 @@ extension MustacheBox : MustacheBoxable {
     `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates. Its mustacheBox property returns itself.
     */
-    public override var mustacheBox: MustacheBox {
+    public var mustacheBox: MustacheBox {
         return self
     }
 }

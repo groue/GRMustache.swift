@@ -54,7 +54,7 @@ Warning: the fact that `MustacheBox` is a subclass of NSObject is an
 implementation detail that is enforced by the Swift 1.2 language itself. This
 may change in the future: do not rely on it.
 */
-public class MustacheBox : NSObject {
+@objc public class MustacheBox {
     
     // IMPLEMENTATION NOTE
     //
@@ -197,7 +197,6 @@ public class MustacheBox : NSObject {
         self.didRender = didRender
         if let render = render {
             self.render = render
-            super.init()
         } else {
             // The default render function: it renders {{variable}} tags as the
             // boxed value, and {{#section}}...{{/}} tags by adding the box to
@@ -213,7 +212,6 @@ public class MustacheBox : NSObject {
             // is the one whose `render` property contains that same second
             // closure: everything works as if no value was actually captured.
             self.render = { (_, _) in return nil }
-            super.init()
             self.render = { (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
@@ -303,7 +301,7 @@ public class MustacheBox : NSObject {
 
 extension MustacheBox : DebugPrintable {
     /// A textual representation of `self`, suitable for debugging.
-    public override var debugDescription: String {
+    public var debugDescription: String {
         if let value = value {
             return "MustacheBox(\(value))"  // remove "Optional" from the output
         } else {
