@@ -308,7 +308,7 @@ public struct Configuration {
     
         // Locally, using a TemplateRepository:
     
-        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        let repository = TemplateRepository()
         repository.configuration.tagDelimiterPair = ("[[", "]]")
         let HTMLTemplate = try! repository.template(string: "[[ name ]]")
     

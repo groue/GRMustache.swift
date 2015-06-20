@@ -478,7 +478,7 @@ let template = try! repo.template(string: "{{#user}}{{>partial}}{{/user}}")
 // the template is rendered. Nothing can change that.
 ```
 
-You can also include *dynamic partials*. To do so, use a regular variable tag `{{ partial }}` (without the leading ">" character), and provide a template in your rendered data:
+You can also include *dynamic partials*. To do so, use a regular variable tag `{{ partial }}`, and provide a template for the key "partial" in your rendered data:
 
 ```swift
 // A template that delegates the rendering of a user to a partial.
@@ -504,7 +504,7 @@ try! template.render(Box(data2))
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular partial tag `{{> partial}}` (see above).
+An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular tag `{{> partial}}` tag (see above).
 
 However, this time, the included template can contain *inheritable sections*, and the rendered template can override them.
 
@@ -571,39 +571,41 @@ The rendering is a full HTML page:
 
 Like a regular partial tag, an inherited partial tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
-To inherit from a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template in your rendered data:
-
-```swift
-// A template that inherits from a partial.
-// No partial has been loaded yet.
-let template = try! Template(string: "{{# layout }}{{$ content }}MUSTACHES{{/ content }}{{/ layout }}")
-
-// Render with a first partial -> "*** MUSTACHES ***"
-let partial1 = try! Template(string: "*** {{$content}}{{/content}} ***")
-let data1 = ["layout": Box(partial1) ]
-try! template.render(Box(data1))
-
-// Render with a second partial -> "!!! MUSTACHES !!!"
-let partial2 = try! Template(string: "!!! {{$content}}{{/content}} !!!")
-let data2 = ["layout": Box(partial2) ]
-try! template.render(Box(data2))
-```
+To inherit from a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
 
 
 ### Set Delimiters Tags
 
-TODO
+Mustache tags are generally enclosed by "mustaches" `{{` and `}}`. A *Set Delimiters Tag* can change that, right inside a template.
+
+```
+Default tags: {{ name }}
+{{=<% %>=}}
+ERB-styled tags: <% name %>
+<%={{ }}=%>
+Default tags again: {{ name }}
+```
+
+There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
 
 
 ### Comment Tags
 
-TODO
+`{{! Comment tags }}` are simply not rendered at all.
 
 
 ### Pragma Tags
 
-TODO
+Several Mustache implementations use *Pragma tags*. They start with a percent `%` and are not rendered at all. Instead, they trigger implementation-specific features.
 
+GRMustache.swift interprets two pragma tags that set the *content type* of the template:
+
+- `{{% CONTENT_TYPE:TEXT }}`
+- `{{% CONTENT_TYPE:HTML }}`
+
+In a text template, there is no HTML-escaping, and both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
+
+For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
 
 
 The Context Stack and Expressions
