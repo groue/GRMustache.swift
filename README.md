@@ -99,6 +99,14 @@ Rendering templates:
 Feeding templates:
 
 - [Standard Swift Types Reference](#standard-swift-types-reference)
+    - [Bool](#bool)
+    - [Numeric types](#numeric-types): Int, UInt and Double
+    - [String](#string)
+    - [Set](#set) (and similar collections)
+    - [Array](#array) (and similar collections)
+    - [Dictionary](#dictionary)
+    - [NSObject](#nsobject)
+    - [AnyObject and Any](#anyobject-and-any)
 - [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
@@ -869,38 +877,28 @@ A dictionary can be rendered as long as its keys are String, and its values are 
 If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you will get a compiler error when you try to box it. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
-### NSObject conforming to NSFastEnumeration
+### NSObject
 
-The most common one is NSArray. Those objects render just like Swift Array.
+When an object conforms to the NSFastEnumeration protocol, like NSArray, it renders just like Swift [Array](#array). NSSet is an exception, rendered as a Swift [Set](#set). NSDictionary, another exception, renders as a Swift [Dictionary](#dictionary).
 
-There are two exceptions: NSSet is rendered as a Swift Set, and NSDictionary, as a Swift dictionary.
+NSNumber is rendered as a Swift [Bool](#bool), [Int, UInt or Double](#numeric-types), depending on its value.
 
+NSString is rendered as [String](#string)
 
-### NSNull
+NSNull renders as:
 
 - `{{null}}` does not render.
 - `{{#null}}...{{/null}}` does not render.
 - `{{^null}}...{{/null}}` renders.
 
-
-### NSNumber
-
-NSNumber is rendered as a Swift Bool, Int, or UInt, depending on its value.
-
-
-### NSString
-
-NSString is rendered as String
-
-
-### NSObject (other classes)
+For other NSObject, those default rules apply:
 
 - `{{object}}` renders the `description` method, HTML-escaped.
 - `{{{object}}}` renders the `description` method, not HTML-escaped.
-- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack.
+- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack. Keys exposed to templates are the names of properties.
 - `{{^object}}...{{/object}}` does not render.
 
-For more information, check the rendering of [Custom Types](#custom-types) below.
+Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
 ### AnyObject and Any
@@ -957,10 +955,12 @@ let template = try! Template(string: "{{name}} has a mustache.")
 let rendering = try! template.render(Box(person))
 ```
 
-When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the documentation of `NSObject.mustacheBox` in [Box.swift](Mustache/Rendering/Box.swift).
+When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, including NSManagedObject attributes).
+
+Subclasses can alter this default behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol, described below:
 
 
-### Pure Swift Values
+### Pure Swift Values and MustacheBoxable
 
 Key-Value Coding is not available for Swift enums, structs and classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift values can still feed templates, though, with a little help.
 
