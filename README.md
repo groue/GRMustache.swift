@@ -84,6 +84,7 @@ Installing GRMustache.swift:
 Rendering templates:
 
 - [Loading Templates](#loading-templates)
+- [Errors](#errors)
 - [Mustache Tags Reference](#mustache-tags-reference)
     - [Variable Tags](#variable-tags) `{{value}}`
     - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
@@ -104,7 +105,6 @@ Feeding templates:
 
 Misc:
 
-- [Errors](#errors)
 - [Built-in goodies](#built-in-goodies)
 
 
@@ -187,6 +187,51 @@ A template is defined by a string such as `Hello {{name}}`. Those strings may co
     ```
 
 For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+
+
+Errors
+------
+
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
+
+- Code `GRMustacheErrorCodeTemplateNotFound`:
+    
+    ```swift
+    do {
+        let template = try Template(named: "inexistant")
+    } catch {
+        // No such template: `inexistant`
+    }
+    ```
+    
+- Code `GRMustacheErrorCodeParseError`:
+    
+    ```swift
+    do {
+        let template = try Template(string: "Hello {{name")
+    } catch {
+        // Parse error at line 1: Unclosed Mustache tag
+    }
+    ```
+    
+- Code `GRMustacheErrorCodeRenderingError`:
+    
+    ```swift
+    do {
+        let template = try Template(string: "{{undefinedFilter(x)}}")
+        let rendering = try template.render()
+    } catch {
+        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
+    }
+    ```
+
+When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
+
+```swift
+// Assume valid parsing and rendering
+let template = try! Template(string: "{{name}} has a Mustache.")
+let rendering = try! template.render(Box(data))
+```
 
 
 Mustache Tags Reference
@@ -1205,51 +1250,6 @@ As those filters perform custom rendering, they are based on `RenderFunction`, j
 All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
 
 Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
-
-
-Errors
-------
-
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
-
-- Code `GRMustacheErrorCodeTemplateNotFound`:
-    
-    ```swift
-    do {
-        let template = try Template(named: "inexistant")
-    } catch {
-        // No such template: `inexistant`
-    }
-    ```
-    
-- Code `GRMustacheErrorCodeParseError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "Hello {{name")
-    } catch {
-        // Parse error at line 1: Unclosed Mustache tag
-    }
-    ```
-    
-- Code `GRMustacheErrorCodeRenderingError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "{{undefinedFilter(x)}}")
-        let rendering = try template.render()
-    } catch {
-        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-    }
-    ```
-
-When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
-
-```swift
-// Assume valid parsing and rendering
-let template = try! Template(string: "{{name}} has a Mustache.")
-let rendering = try! template.render(Box(data))
-```
 
 
 Built-in goodies
