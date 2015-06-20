@@ -53,7 +53,7 @@ extension StandardLibrary {
     both title and name, with `String(format:...)`, to build the final
     rendering.
     */
-    public class Localizer : MustacheBoxable {
+    public final class Localizer : MustacheBoxable {
         /// The bundle
         public let bundle: NSBundle
         

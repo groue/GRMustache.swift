@@ -44,7 +44,7 @@ enum Expression {
     
     // Recursive enums need wrapper class
     
-    class Wrapper {
+    final class Wrapper {
         let expression: Expression
         init(_ expression: Expression) {
             self.expression = expression

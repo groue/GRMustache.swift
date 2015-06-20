@@ -47,7 +47,7 @@ extension Template : CustomDebugStringConvertible {
     }
 }
 
-class TemplateGenerator {
+final class TemplateGenerator {
     let configuration: Configuration
     
     init(configuration: Configuration? = nil) {

@@ -29,7 +29,7 @@ extension Expression : CustomDebugStringConvertible {
     }
 }
 
-class ExpressionGenerator {
+final class ExpressionGenerator {
     let configuration: Configuration
     
     init(configuration: Configuration? = nil) {

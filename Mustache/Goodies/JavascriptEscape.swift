@@ -23,7 +23,7 @@
 
 import Foundation
 
-class JavascriptEscape : MustacheBoxable {
+final class JavascriptEscape : MustacheBoxable {
     
     var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because JavascriptEscape interacts in

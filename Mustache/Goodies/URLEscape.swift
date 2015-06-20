@@ -23,7 +23,7 @@
 
 import Foundation
 
-class URLEscape : MustacheBoxable {
+final class URLEscape : MustacheBoxable {
     
     var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because URLEscape interacts in

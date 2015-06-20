@@ -54,7 +54,7 @@ feed templates:
 implementation detail that is enforced by the Swift 2 language itself. This may
 change in the future: do not rely on it.
 */
-@objc public class MustacheBox {
+@objc final public class MustacheBox {
     
     // IMPLEMENTATION NOTE
     //

@@ -45,7 +45,7 @@ extension StandardLibrary {
         // {{name}} at line 1 did render "Freddy Mercury" as "Freddy Mercury"
         // {{age}} at line 1 did render 45 as "45"
     */
-    public class Logger : MustacheBoxable {
+    public final class Logger : MustacheBoxable {
         
         /**
         Returns a Logger.
