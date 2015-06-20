@@ -1235,6 +1235,188 @@ All the filters seen above are particular cases of `FilterFunction`. "Value filt
 Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
+Advanced Boxes
+--------------
+
+The `MustacheBox` type that feeds templates is able to wrap many different behaviors. Let's review some of them:
+
+- `Box(Bool)` returns a box that can trigger or prevent the rendering of sections:
+
+    ```
+    {{# verified }}VERIFIED{{/ verified }}
+    {{^ verified }}NOT VERIFIED{{/ verified }}
+    ```
+
+- `Box(Array)` returns a box that is renders a section as many times as there are elements in the array, and which exposes the `count`, `first`, and `last` keys:
+    
+    ```
+    You see {{ objects.count }} objects:
+    {{# objects }}
+    - {{ name }}
+    {{/ objects }}
+    ```
+
+- `Box(Dictionary)` returns a box that exposes all the dictionary keys:
+    
+    ```
+    {{# user }}
+    - {{ name }}
+    - {{ age }}
+    {{/ user }}
+    ```
+
+- `Box(NSObject)` returns a box that exposes all the object properties:
+    
+    ```
+    {{# user }}
+    - {{ name }}
+    - {{ age }}
+    {{/ user }}
+    ```
+
+- `Box(NSFormatter)` returns a box that is able to format a single value, or all values inside a section ([more information](Docs/Guides/goodies.md#nsformatter)):
+    
+    ```
+    {{ format(date) }}
+    {{# format }}
+    From {{ startDate }} to {{ endDate }}
+    {{/ format }}
+    ```
+
+- `Box(StandardLibrary.each)` returns a box that is able to define some extra keys when iterating an array ([more information](Docs/Guides/goodies.md#localizer)):
+    
+    ```
+    {{# each(items) }}
+    - {{ @indexPlusOne }}: {{ name }}
+    {{/}}
+    ```
+
+Before we dig into those fancy behaviors, let's describe in detail the rendering of the `{{ F(A) }}` tag:
+
+1. The `A` and `F` expressions are evaluated: the rendering engine looks in the [context stack](#the-context-stack) for boxes that return a non-empty box for the keys "A" and "F". The key-extraction service is provided by a customizable `KeyedSubscriptFunction`.
+
+2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument. The Result box may well depend on the customizable *value* of the A box, but all other facets of the A box may be involved.
+
+3. The rendering engine then looks in the context stack for all boxes that have a customized `WillRenderFunction`. Those functions have an opportunity to process the Result box, and eventually return another one. This is how, for example, a NSDateFormatter box can format all dates in a section: its `WillRenderFunction` turns dates into strings.
+
+4. The resulting box is ready to be rendered. For regular and inverted section tags, the rendering engine queries the customizable *boolean value* of the box, so that `{{# F(A) }}...{{/}}` and `{{^ F(A) }}...{{/}}` can't be both rendered.
+
+5. The resulting box gets eventually rendered: its customizable `RenderFunction` is executed. Its `Rendering` result is eventually HTML-escaped, depending on its content type, and appended to the final template rendering.
+
+6. Finally the rendering engine looks in the context stack for all boxes that have a customized `DidRenderFunction`.
+
+All those customizable properties are gathered in the most low-level function that returns a Box:
+
+```swift
+public func Box(
+    value: Any? = nil,
+    boolValue: Bool? = nil,
+    keyedSubscript: KeyedSubscriptFunction? = nil,
+    filter: FilterFunction? = nil,
+    render: RenderFunction? = nil,
+    willRender: WillRenderFunction? = nil,
+    didRender: DidRenderFunction? = nil) -> MustacheBox
+```
+
+We'll below describe each of them individually, even though you can provide several ones at the same time:
+
+- `boolValue`
+    
+    The optional *boolValue* parameter tells whether the Box should trigger or prevent the rendering of regular `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}` tags. The default value is true, unless the function is called without argument to build the empty box: `Box()`.
+    
+    ```swift
+    // Render "true", "false"
+    let template = Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")!
+    template.render(Box(boolValue: true))!
+    template.render(Box(boolValue: false))!
+    ```
+
+- `value`
+    
+    The optional *value* parameter gives the boxed value. The value is used when the box is rendered (unless you provide a custom RenderFunction).
+    
+    ```swift
+    let aBox = Box(value: 1)
+    
+    // Renders "1"
+    let template = Template(string: "{{a}}")!
+    template.render(Box(["a": aBox]))!
+    ```
+
+- `keyedSubscript`
+    
+    The optional *keyedSubscript* parameter is a `KeyedSubscriptFunction` that lets the Mustache engine extract keys out of the box. For example, the `{{a}}` tag would call the subscript function with `"a"` as an argument, and render the returned box.
+    
+    The default value is nil, which means that no key can be extracted.
+    
+    Check the `KeyedSubscriptFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    
+    ```swift
+    let box = Box(keyedSubscript: { (key: String) in
+        return Box("key:\(key)")
+    })
+    
+    // Renders "key:a"
+    let template = Template(string:"{{a}}")!
+    template.render(box)!
+    ```
+
+- `filter`
+    
+    The optional *filter* parameter is a `FilterFunction` that lets the Mustache engine evaluate filtered expression that involve the box. The default value is nil, which means that the box can not be used as a filter.
+    
+    Check the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    
+    ```swift
+    let box = Box(filter: Filter { (x: Int?, _) in
+        return Box(x! * x!)
+    })
+    
+    // Renders "100"
+    let template = Template(string:"{{square(x)}}")!
+    template.render(Box(["square": box, "x": Box(10)]))!
+    ```
+
+- `render`
+    
+    The optional *render* parameter is a `RenderFunction` that is evaluated when the Box is rendered.
+    
+    The default value is nil, which makes the box perform default Mustache rendering:
+    
+    - `{{box}}` renders the built-in Swift String Interpolation of the value, HTML-escaped.
+    - `{{{box}}}` renders the built-in Swift String Interpolation of the value, not HTML-escaped.
+    - `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise, it pushes the box on the top of the context stack, and renders the section once.
+    - `{{^box}}...{{/box}}` renders once if `boolValue` is false. Otherwise, it does not render.
+    
+    Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    
+    ```swift
+    let box = Box(render: { (info: RenderingInfo, _) in
+        return Rendering("foo")
+    })
+    
+    // Renders "foo"
+    let template = Template(string:"{{.}}")!
+    template.render(box)!
+    ```
+
+- `willRender` & `didRender`
+    
+    The optional *willRender* and *didRender* parameters are a `WillRenderFunction` and `DidRenderFunction` that are evaluated for all tags as long as the box is in the context stack.
+    
+    Check the `WillRenderFunction` and `DidRenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    
+    ```swift
+    let box = Box(willRender: { (tag: Tag, box: MustacheBox) in
+        return Box("baz")
+    })
+    
+    // Renders "baz baz"
+    let template = Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")!
+    template.render(box)!
+    ```
+
+
 Built-in goodies
 ----------------
 
