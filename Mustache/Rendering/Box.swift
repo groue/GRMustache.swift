@@ -136,13 +136,13 @@ public protocol MustacheBoxable {
 // [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
 // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
 
-extension MustacheBox {
+extension MustacheBox : MustacheBoxable {
     
     /**
     `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates. Its mustacheBox property returns itself.
     */
-    public override var mustacheBox: MustacheBox {
+    public var mustacheBox: MustacheBox {
         return self
     }
 }
@@ -1186,12 +1186,9 @@ extension NSSet {
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
     public override var mustacheBox: MustacheBox {
-        // Turn NSSet into a Swift Set of MustacheBoxes that we know how to box
-        var set = Set<MustacheBox>()
-        for item in self {
-            set.insert(BoxAnyObject(item))
-        }
-        return set.mustacheBoxWithSetValue(self, box: { $0 })
+        // Turn NSSet into a Swift Array of MustacheBoxes that we know how to box
+        let array = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
+        return array.mustacheBoxWithSetValue(self, box: { $0 })
     }
 }
 

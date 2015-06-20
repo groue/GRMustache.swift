@@ -54,7 +54,7 @@ feed templates:
 implementation detail that is enforced by the Swift 2 language itself. This may
 change in the future: do not rely on it.
 */
-public class MustacheBox : NSObject {
+@objc public class MustacheBox {
     
     // IMPLEMENTATION NOTE
     //
@@ -198,7 +198,6 @@ public class MustacheBox : NSObject {
         if let render = render {
             self.hasCustomRenderFunction = true
             self.render = render
-            super.init()
         } else {
             // The default render function: it renders {{variable}} tags as the
             // boxed value, and {{#section}}...{{/}} tags by adding the box to
@@ -211,7 +210,6 @@ public class MustacheBox : NSObject {
             // initialized"
             self.render = { (_) in return Rendering("") }
             self.hasCustomRenderFunction = false
-            super.init()
             self.render = { (info: RenderingInfo) in
                 
                 // Default rendering depends on the tag type:
@@ -256,9 +254,9 @@ public class MustacheBox : NSObject {
     }
 }
 
-extension MustacheBox {
+extension MustacheBox: CustomStringConvertible {
     /// A textual representation of `self`.
-    public override var description: String {
+    public var description: String {
         let facets = self.facetsDescriptions
         switch facets.count {
         case 0:
