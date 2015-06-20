@@ -3,21 +3,21 @@
     {
       "name": "Template can embed an inherited partials",
       "data": { },
-      "template": "before {{<partial}}ignored{{/partial}} after",
+      "template": "before {{<partial}}{{!ignored}}{{/partial}} after",
       "partials": { "partial": "partial" },
       "expected": "before partial after"
     },
     {
       "name": "Template can embed several inherited partials",
       "data": { },
-      "template": "before1 {{<partial1}}ignored{{/partial1}} | {{<partial2}}ignored{{/partial2}} after2",
+      "template": "before1 {{<partial1}}{{!ignored}}{{/partial1}} | {{<partial2}}{{!ignored}}{{/partial2}} after2",
       "partials": { "partial1": "partial1", "partial2": "partial2" },
       "expected": "before1 partial1 | partial2 after2"
     },
     {
       "name": "Template can embed an inherited partial inside in a section",
       "data": { "items": [0,1,2,3] },
-      "template": "{{#items}}{{<partial}}ignored{{/partial}}{{/items}}",
+      "template": "{{#items}}{{<partial}}{{!ignored}}{{/partial}}{{/items}}",
       "partials": { "partial": "{{.}}" },
       "expected": "0123"
     },
@@ -156,13 +156,6 @@
       "expected": "success"
     },
     {
-      "name": "Templates sections can not override inheritable sections in inherited partial",
-      "data": { "section": true },
-      "template": "{{<partial}}{{#section}}inherited{{/section}}{{/partial}}",
-      "partials": { "partial": "{{$section}}success{{/section}}" },
-      "expected": "success"
-    },
-    {
       "name": "Recursive inherited partials should be rendered.",
       "data": { "content": "X", "nodes": [ { "content": "Y", "nodes": [] } ] },
       "template": "<{{<node}}{{/node}}>",
@@ -229,6 +222,34 @@
         "tweetbox": "<tweetbox classes=\"{{$tweetbox_classes}}{{/tweetbox_classes}}\" attrs=\"{{$tweetbox_attrs}}{{/tweetbox_attrs}}\"></tweetbox>"
       },
       "expected": "<box><main><box><tweetbox classes=\"tweetbox-largetweetbox-user-styled\" attrs=\"data-rich-text\"></tweetbox></box></main></box>"
+    },
+    {
+      "name": "Regular sections are invalid inside an inherited partial",
+      "data": { "section": true },
+      "template": "{{<partial}}{{#section}}...{{/section}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside an inherited partial tag"
+    },
+    {
+      "name": "Inverted sections are invalid inside an inherited partial",
+      "data": { "section": true },
+      "template": "{{<partial}}{{^section}}...{{/section}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside an inherited partial tag"
+    },
+    {
+      "name": "Variable tags are invalid inside an inherited partial",
+      "data": { "section": true },
+      "template": "{{<partial}}{{value}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside an inherited partial tag"
+    },
+    {
+      "name": "Unescaped variable tags are invalid inside an inherited partial",
+      "data": { "section": true },
+      "template": "{{<partial}}{{{value}}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside an inherited partial tag"
     }
   ]
 }

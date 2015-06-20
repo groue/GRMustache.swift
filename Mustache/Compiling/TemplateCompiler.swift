@@ -94,46 +94,80 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     }
                     
                 case .Text(text: let text):
-                    compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
+                    switch compilationState.currentScope.type {
+                    case .InheritedPartial:
+                        // Text inside an inherited partial is not rendered.
+                        //
+                        // We could throw an error, like we do for illegal tags
+                        // inside an inherited partial.
+                        //
+                        // But Hogan.js has an explicit test for "successfully"
+                        // ignored text. So let's not throw.
+                        //
+                        // Ignore text inside an inherited partial:
+                        break
+                    default:
+                        compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
+                    }
                     
                 case .EscapedVariable(content: let content, tagDelimiterPair: _):
-                    var empty = false
-                    do {
-                        let expression = try ExpressionParser().parse(content, empty: &empty)
-                        compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
-                        compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                    switch compilationState.currentScope.type {
+                    case .InheritedPartial:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    default:
+                        var empty = false
+                        do {
+                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
+                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                        } catch let error as NSError {
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        }
                     }
                     
                 case .UnescapedVariable(content: let content, tagDelimiterPair: _):
-                    var empty = false
-                    do {
-                        let expression = try ExpressionParser().parse(content, empty: &empty)
-                        compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
-                        compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                    switch compilationState.currentScope.type {
+                    case .InheritedPartial:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    default:
+                        var empty = false
+                        do {
+                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
+                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                        } catch let error as NSError {
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        }
                     }
                     
                 case .Section(content: let content, tagDelimiterPair: _):
-                    var empty = false
-                    do {
-                        let expression = try ExpressionParser().parse(content, empty: &empty)
-                        compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
-                        compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                    switch compilationState.currentScope.type {
+                    case .InheritedPartial:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    default:
+                        var empty = false
+                        do {
+                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
+                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                        } catch let error as NSError {
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        }
                     }
                     
                 case .InvertedSection(content: let content, tagDelimiterPair: _):
-                    var empty = false
-                    do {
-                        let expression = try ExpressionParser().parse(content, empty: &empty)
-                        compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
-                        compilationState.compilerContentType = .Locked(compilationState.contentType)
-                    } catch let error as NSError {
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                    switch compilationState.currentScope.type {
+                    case .InheritedPartial:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    default:
+                        var empty = false
+                        do {
+                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
+                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                        } catch let error as NSError {
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        }
                     }
                     
                 case .InheritableSection(content: let content):
