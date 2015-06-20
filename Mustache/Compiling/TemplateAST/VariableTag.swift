@@ -26,28 +26,27 @@ import Foundation
 /**
 VariableTag represents a variable tag such as {{name}} or {{{name}}}.
 */
-class VariableTag: Tag {
+final class VariableTag: Tag {
     let token: TemplateToken
     let contentType: ContentType
     
     init(contentType: ContentType, token: TemplateToken) {
         self.contentType = contentType
         self.token = token
-        super.init(type: .Variable, innerTemplateString: "", tagDelimiterPair: token.tagDelimiterPair!)
     }
     
-    /**
-    VariableTag is an internal class, but it inherits the Printable protocol
-    from its public superclass Tag. Return a nice user-friendly description:
-    */
-    override var description: String {
+    // Mark: - Tag protocol
+    
+    let type: TagType = .Variable
+    let innerTemplateString: String = ""
+    var tagDelimiterPair: TagDelimiterPair { return token.tagDelimiterPair! }
+    
+    var description: String {
         return "\(token.templateSubstring) at \(token.locationDescription)"
     }
     
-    /**
-    Inherited from the public super class Tag. Variable have no inner content.
-    */
-    override func render(context: Context) throws -> Rendering {
+    // Variable have no inner content.
+    func render(context: Context) throws -> Rendering {
         return Rendering("", contentType)
     }
 }

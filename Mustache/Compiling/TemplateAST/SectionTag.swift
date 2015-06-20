@@ -27,28 +27,27 @@ import Foundation
 A SectionTag represents a regular or inverted section tag such as
 {{#section}}...{{/section}} or {{^section}}...{{/section}}.
 */
-class SectionTag: Tag {
+final class SectionTag: Tag {
     let openingToken: TemplateToken
     let innerTemplateAST: TemplateAST
     
     init(innerTemplateAST: TemplateAST, openingToken: TemplateToken, innerTemplateString: String) {
         self.innerTemplateAST = innerTemplateAST
         self.openingToken = openingToken
-        super.init(type: .Section, innerTemplateString: innerTemplateString, tagDelimiterPair: openingToken.tagDelimiterPair!)
+        self.innerTemplateString = innerTemplateString
     }
     
-    /**
-    SectionTag is an internal class, but it inherits the Printable protocol from
-    its public superclass Tag. Return a nice user-friendly description:
-    */
-    override var description: String {
+    // Mark: - Tag protocol
+    
+    let type: TagType = .Section
+    let innerTemplateString: String
+    var tagDelimiterPair: TagDelimiterPair { return openingToken.tagDelimiterPair! }
+    
+    var description: String {
         return "\(openingToken.templateSubstring) at \(openingToken.locationDescription)"
     }
     
-    /**
-    Inherited from the public super class Tag.
-    */
-    override func render(context: Context) throws -> Rendering {
+    func render(context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
     }

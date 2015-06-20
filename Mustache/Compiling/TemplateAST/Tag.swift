@@ -59,7 +59,12 @@ See also:
 - WillRenderFunction
 - DidRenderFunction
 */
-public class Tag: CustomStringConvertible {
+public protocol Tag: class, CustomStringConvertible {
+    
+    // IMPLEMENTATION NOTE
+    //
+    // Tag is a class-only protocol so that the Swift compiler does not crash
+    // when compiling the `tag` property of RenderingInfo.
     
     /**
     The type of the tag: variable or section:
@@ -78,7 +83,7 @@ public class Tag: CustomStringConvertible {
         // Renders "variable, section"
         try! template.render(Box(["object": Box(render)]))
     */
-    public let type: TagType
+    var type: TagType { get }
     
     /**
     The literal and unprocessed inner content of the tag.
@@ -109,10 +114,10 @@ public class Tag: CustomStringConvertible {
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         try! template.render(Box(data))
     */
-    public let innerTemplateString: String
+    var innerTemplateString: String { get }
     
     /// The delimiters of the tag.
-    public let tagDelimiterPair: TagDelimiterPair
+    var tagDelimiterPair: TagDelimiterPair { get }
     
     /**
     Returns the rendering of the tag's inner content. All inner tags are
@@ -142,22 +147,5 @@ public class Tag: CustomStringConvertible {
     - returns: The rendering of the tag.
     
     */
-    public func render(context: Context) throws -> Rendering {
-        fatalError("Subclass must override")
-    }
-    
-    /// A human-readable description of the tag.
-    public var description: String {
-        fatalError("Subclass must override")
-    }
-    
-    
-    // =========================================================================
-    // MARK: - Not public
-    
-    init(type: TagType, innerTemplateString: String, tagDelimiterPair: TagDelimiterPair) {
-        self.type = type
-        self.innerTemplateString = innerTemplateString
-        self.tagDelimiterPair = tagDelimiterPair
-    }
+    func render(context: Context) throws -> Rendering
 }
