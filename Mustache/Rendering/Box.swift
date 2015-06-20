@@ -1781,8 +1781,8 @@ called without argument to build the empty box: `Box()`.
 
     // Render "true", "false"
     let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-    template.render(Box(boolValue: true))!
-    template.render(Box(boolValue: false))!
+    try! template.render(Box(boolValue: true))
+    try! template.render(Box(boolValue: false))
 
 
 ### value
@@ -1825,7 +1825,7 @@ nil, which means that the box can not be used as a filter.
 
 See `FilterFunction` for a full discussion of this type.
 
-    let box = Box(filter: Filter { (x: Int?, _) in
+    let box = Box(filter: Filter { (x: Int?) in
         return Box(x! * x!)
     })
 
