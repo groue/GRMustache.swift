@@ -855,7 +855,7 @@ A dictionary can be rendered as long as its keys are String, and its values are 
 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
-- `{{^dictionary}}...`{{/dictionary}}` does not render.
+- `{{^dictionary}}...{{/dictionary}}` does not render.
 
 
 ### NSObject conforming to NSFastEnumeration
