@@ -913,7 +913,7 @@ Custom Types
 
 ### NSObject subclasses
 
-You NSObject subclass can trivially feed your templates:
+Your NSObject subclass can trivially feed your templates:
 
 ```swift
 // An NSObject subclass
