@@ -124,7 +124,7 @@ Rendering templates:
     - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
     - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
     - [Partial Tags](#partial-tags) `{{>partial}}`
-    - [Inherited Partial Tags and Inheritable Section Tags](#inherited-partial-tags-and-inheritable-section-tags) aka Template Inheritance
+    - [Inherited Partial Tags](#inherited-partial-tags) aka Template Inheritance
     - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
     - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
     - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
@@ -500,7 +500,7 @@ try! template.render(Box(data2))
 ```
 
 
-### Inherited Partial Tags and Inheritable Section Tags
+### Inherited Partial Tags
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
@@ -565,6 +565,14 @@ The rendering is a full HTML page:
 </body>
 </html>
 ```
+
+An inheritable section `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override this section, not a key in your rendered data.
+
+A template can inherit from a partial which itself inherits from another one. Recursion is possible, but your data should avoid infinite loops.
+
+A template can contain several inherited partial tags.
+
+Generally speaking, any part of a template can be refactored with partials and inherited partials tags. And this does not require modifications in other templates that depend on it.
 
 
 #### Dynamic inherited partials
