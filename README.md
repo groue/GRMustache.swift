@@ -828,6 +828,8 @@ Exposed keys:
 
 GRMustache.swift renders as `Set` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, and to the elements count.
 
+If all you have is a set `Set<Any>` or `Set<AnyObject>`, you will get a compiler error when you try to box it. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+
 
 ### Array
 
@@ -853,6 +855,8 @@ let template = try! Template(string: "{{ numbers }}")
 let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
 ```
 
+If all you have is an array `[Any]` or `[AnyObject]`, you will get a compiler error when you try to box it. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+
 
 ### Dictionary
 
@@ -861,6 +865,8 @@ A dictionary can be rendered as long as its keys are String, and its values are 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
 - `{{^dictionary}}...{{/dictionary}}` does not render.
+
+If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you will get a compiler error when you try to box it. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
 ### NSObject conforming to NSFastEnumeration
@@ -924,6 +930,8 @@ let dictionary = json as! [String: String]
 let template = try! Template(string: "{{ name }} has a Mustache.")
 let rendering = try! template.render(Box(dictionary))
 ```
+
+The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
 Custom Types
