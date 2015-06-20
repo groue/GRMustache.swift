@@ -110,6 +110,7 @@ Feeding templates:
 - [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
+- [Advanced Boxes](#advanced-boxes)
 
 Misc:
 
