@@ -7,14 +7,13 @@ It ships with built-in goodies and extensibility hooks that let you avoid the st
 
 **June 9, 2015: GRMustache.swift 0.9.3 is out.** [Release notes](RELEASE_NOTES.md)
 
-**SWIFT 2 ALERT!** Check the [Swift2 branch](https://github.com/groue/GRMustache.swift/tree/Swift2).
+**SWIFT 2**: Check the [Swift2 branch](https://github.com/groue/GRMustache.swift/tree/Swift2).
 
 Get release announcements and usage tips: follow [@GRMustache on Twitter](http://twitter.com/GRMustache).
 
 Jump to:
 
 - [Usage](#usage)
-- [Installation](#installation)
 - [Documentation](#documentation)
 
 Features
@@ -70,6 +69,47 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
+Documentation
+=============
+
+To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
+
+External links:
+
+- [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
+
+Installing GRMustache.swift:
+
+- [Installation](#installation)
+
+Rendering templates:
+
+- [Loading Templates](#loading-templates)
+- [Errors](#errors)
+- [Mustache Tags Reference](#mustache-tags-reference)
+    - [Variable Tags](#variable-tags) `{{value}}`
+    - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
+    - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
+    - [Partial Tags](#partial-tags) `{{>partial}}`
+    - [Inherited Partial Tags](#inherited-partial-tags) aka Template Inheritance
+    - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
+    - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
+    - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
+- [The Context Stack and Expressions](#the-context-stack-and-expressions)
+
+Feeding templates:
+
+- [Standard Swift Types Reference](#standard-swift-types-reference)
+- [Custom Types](#custom-types)
+- [Lambdas](#lambdas)
+- [Filters](#filters)
+
+Misc:
+
+- [Built-in goodies](#built-in-goodies)
+
+
 Installation
 ------------
 
@@ -108,53 +148,51 @@ github "groue/GRMustache.swift" == 0.9.3
 Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
 
 
-Documentation
--------------
+Loading Templates
+-----------------
 
-To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
+A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
 
-- [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](#reference): inline documentation
-- [Errors](#errors)
-- [Rendering of NSObject and its subclasses](#rendering-of-nsobject-and-its-subclasses)
-- [Rendering of AnyObject](#rendering-of-anyobject)
-- [Rendering of pure Swift values](#rendering-of-pure-swift-values)
-- [Lambdas](#lambdas)
-- [Filters](#filters)
-- [Template inheritance](#template-inheritance)
-- [Built-in goodies](#built-in-goodies)
+- Raw Swift strings:
 
-
-### Reference
-
-All public types, functions and methods of the library are documented in the source code, and available online on [cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/index.html).
-
-The main entry points are:
-
-- the `Template` class, documented in [Template.swift](Mustache/Template/Template.swift), which loads and renders templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)):
-    
     ```swift
-    let template = Template(named: "template")!
+    let template = Template(string: "Hello {{name}}")!
     ```
 
-- the `Box()` functions, documented in [Box.swift](Mustache/Rendering/Box.swift), which provide data to templates ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Functions.html)):
-    
+- Bundle resources:
+
     ```swift
-    let data = ["mustaches": ["Charles Bronson", "Errol Flynn", "Clark Gable"]]
-    let rendering = template.render(Box(data))!
+    // Loads the "document.mustache" resource of the main bundle:
+    let template = Template(named: "document")!
     ```
 
-- The `Configuration` type, documented in [Configuration.swift](Mustache/Configuration/Configuration.swift), which describes how to tune Mustache rendering ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)):
-    
+- Files and URLs:
+
     ```swift
-    // Have all templates render text, and avoid HTML-escaping:
-    Mustache.DefaultConfiguration.contentType = .Text
+    let template = Template(path: "/path/to/document.mustache")!
+    let template = Template(URL: templateURL)!
     ```
 
-The documentation contains many examples that you can run in the Playground included in `Mustache.xcworkspace`.
+- A *repository of templates*:
+    
+    These repositories represent a group of templates. They can be configured independently, and provide a few neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
+    
+    ```swift
+    // The repository of Bash templates, with extension ".sh":
+    let repo = TemplateRepository(bundle: NSBundle.mainBundle(), templateExtension: "sh")
+    
+    // Disable HTML escaping for Bash scripts:
+    repo.configuration.contentType = .Text
+    
+    // Load a template:
+    let template = repo.template(named: "script")!
+    ```
+
+For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
 
-### Errors
+Errors
+------
 
 Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be returned whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
 
@@ -193,9 +231,691 @@ template.render(Box(data))!
 ```
 
 
-### Rendering of NSObject and its subclasses
+Mustache Tags Reference
+-----------------------
 
-NSObject subclasses can trivially feed your templates:
+### Variable Tags
+
+A *Variable tag* `{{value}}` renders the value associated with the key `value`, HTML-escaped. To avoid HTML-escaping, use triple mustache tags `{{{value}}}`:
+
+```swift
+let template = Template(string: "{{value}} - {{{value}}}")!
+
+// Mario &amp; Luigi - Mario & Luigi
+let data = ["value": "Mario & Luigi"]
+let rendering = template.render(Box(data))!
+```
+
+### Section Tags
+
+A *Section tag* `{{#value}}...{{/value}}` is a common syntax for three different usages:
+
+- conditionally render a section.
+- loop over a collection.
+- dig inside an object.
+
+Those behaviors are triggered by the value associated with `value`:
+
+
+#### Boolean values
+
+If the value is *falsey*, the section is not rendered. Falsey values are:
+
+- missing values
+- false boolean
+- zero numbers
+- empty strings
+- empty collections
+- NSNull
+
+For example:
+
+```swift
+let template = Template(string: "<{{#value}}Truthy{{/value}}>")!
+
+// "<Truthy>"
+template.render(Box(["value": true]))!
+// "<>"
+template.render(Box([:]))!                 // missing value
+template.render(Box(["value": false]))!    // false boolean
+template.render(Box(["value": 0]))!        // zero number
+template.render(Box(["value": ""]))!       // empty string
+template.render(Box(["value": []]))!       // empty collection
+template.render(Box(["value": NSNull()]))! // NSNull
+```
+
+
+#### Collections
+
+If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the *context stack*. This makes their keys available for tags inside the section.
+
+Template:
+
+```mustache
+{{# friends }}
+- {{# name }}
+{{/ friends }}
+```
+
+Data:
+
+```swift
+[
+  "friends": [
+    [ "name": "Hulk Hogan" ],
+    [ "name": "Albert Einstein" ],
+    [ "name": "Tom Selleck" ],
+  ]
+]
+```
+
+Rendering:
+
+```
+- Hulk Hogan
+- Albert Einstein
+- Tom Selleck
+```
+
+Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
+
+
+#### Objects
+
+If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the *context stack*. This makes its keys available for tags inside the section.
+
+Template:
+
+```mustache
+{{# user }}
+- {{ name }}
+- {{ score }}
+{{/ user }}
+```
+
+Data:
+
+```swift
+[
+  "user": [
+    "name": "Mario"
+    "score": 1500
+  ]
+]
+```
+
+Rendering:
+
+```
+- Mario
+- 1500
+```
+
+
+### Inverted Section Tags
+
+An *Inverted section tag* `{{^value}}...{{/value}}` renders when a regular section `{{#value}}...{{/value}}` would not. You can think of it as the Mustache "else" or "unless".
+
+Template:
+
+```
+{{# persons }}
+- {{name}} is {{#alive}}alive{{/alive}}{{^alive}}dead{{/alive}}.
+{{/ persons }}
+{{^ persons }}
+Nobody
+{{/ persons }}
+```
+
+Data:
+
+```swift
+[
+  "persons": []
+]
+```
+
+Rendering:
+
+```
+Nobody
+```
+
+Data:
+
+```swift
+[
+  "persons": [
+    ["name": "Errol Flynn", "alive": false],
+    ["name": "Sacha Baron Cohen", "alive": true]
+  ]
+]
+```
+
+Rendering:
+
+```
+- Errol Flynn is dead.
+- Sacha Baron Cohen is alive.
+```
+
+
+### Partial Tags
+
+A *Partial tag* includes another template inside a template. The included template is passed the current context stack:
+
+`document.mustache`:
+
+```mustache
+Guests:
+{{# guests }}
+  {{> person }}
+{{/ guests }}
+```
+
+`person.mustache`:
+
+```mustache
+{{ name }}
+```
+
+Data:
+
+```swift
+[
+  "guests": [
+    ["name": "Frank Zappa"],
+    ["name": "Lionel Richie"]
+  ]
+]
+```
+
+Rendering:
+
+```
+Guests:
+- Frank Zappa
+- Lionel Richie
+```
+
+Recursive partials are supported, but your data should avoid infinite loops.
+
+Partial lookup depends on the origin of the main template:
+
+
+#### File system
+
+Partial names are relative paths when the template comes from the file system (via paths or URLs):
+
+```swift
+// Load /path/document.mustache
+let template = Template(path: "/path/document.mustache")
+
+// {{> partial }} includes /path/partial.mustache.
+// {{> shared/partial }} includes /path/shared/partial.mustache.
+```
+
+Partials have the same file extension as the main template.
+
+```swift
+// Loads /path/document.html
+let template = Template(path: "/path/document.html")
+
+// {{> partial }} includes /path/partial.html.
+```
+
+When your templates are stored in a hierarchy of directories, you can use absolute paths to partials:
+
+```swift
+// The template repository defines the root of absolute partial paths:
+let repository = TemplateRepository(directoryPath: "/path")
+
+// Load /path/documents/profile.mustache
+let template = repository.template(named: "documents/profile")
+
+// {{> /shared/partial }} includes /path/shared/partial.mustache.
+```
+
+
+#### Bundle resources
+    
+Partial names are interpreted as resource names when the template is a bundle resource:
+
+```swift
+// Load the document.mustache resource from the main bundle
+let template = Template(named: "document")
+
+// {{> partial }} includes the partial.mustache resource.
+```
+
+Partials have the same file extension as the main template.
+
+```swift
+// Load the document.html resource from the main bundle
+let template = Template(named: "document", templateExtension: "html")
+
+// {{> partial }} includes the partial.html resource.
+```
+
+
+#### General case
+
+Generally speaking, partial names are always interpreted by a *Template Repository*.
+
+- `Template(named:...)` uses a bundle-based template repository: partial names are resource names.
+- `Template(path:...)` uses a file-based template repository: partial names are relative paths.
+- `Template(URL:...)` uses a URL-based template repository: partial names are relative URLs.
+- `Template(string:...)` uses a template repository that can’t load any partial.
+- `templateRepository.template(named:...)` uses the partial loading mechanism of the template repository.
+
+Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)).
+
+
+#### Dynamic partials
+
+A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+
+```swift
+let repo = TemplateRepository(bundle: NSBundle.mainBundle())
+let template = repo.template(string: "{{#user}}{{>partial}}{{/user}}")!
+
+// Now the `partial.mustache` resource has been loaded. It will be used when
+// the template is rendered. Nothing can change that.
+```
+
+You can also include *dynamic partials*. To do so, use a regular variable tag `{{ partial }}`, and provide a template for the key "partial" in your rendered data:
+
+```swift
+// A template that delegates the rendering of a user to a partial.
+// No partial has been loaded yet.
+let template = Template(string: "{{#user}}{{partial}}{{/user}}")!
+
+// The user
+let user = ["firstName": "Georges", "lastName": "Brassens", "occupation": "Singer"]
+
+// Render with a first partial -> "Georges Brassens"
+let partial1 = Template(string: "{{firstName}} {{lastName}}")!
+let data1 = ["user": Box(user), "partial": Box(partial1) ]
+template.render(Box(data1))!
+
+// Render with a second partial -> "Singer"
+let partial2 = Template(string: "{{occupation}}")!
+let data2 = ["user": Box(user), "partial": Box(partial2) ]
+template.render(Box(data2))!
+```
+
+
+### Inherited Partial Tags
+
+GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
+
+An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular tag `{{> partial}}` tag (see above).
+
+However, this time, the included template can contain *inheritable sections*, and the rendered template can override them.
+
+The included template `layout.mustache` below has `title` and `content` inheritable sections that the rendered template can override:
+
+```mustache
+<html>
+<head>
+    <title>{{$ title }}Default title{{/ title }}</title>
+</head>
+<body>
+    <h1>{{$ title }}Default title{{/ title }}</h1>
+    {{$ content }}
+        Default content
+    {{/ content }}}
+</body>
+</html>
+```
+
+The rendered template `article.mustache`:
+
+```mustache
+{{< layout }}
+
+    {{$ title }}{{ article.title }}{{/ title }}
+    
+    {{$ content }}
+        {{{ article.html_body }}}
+        <p>by {{ article.author }}</p>
+    {{/ content }}
+    
+{{/ layout }}
+```
+
+```swift
+let template = Template(named: "article")!
+let data = [
+    "article": [
+        "title": "The 10 most amazing handlebars",
+        "html_body": "<p>...</p>",
+        "author": "John Doe"
+    ]
+]
+let rendering = template.render(Box(data))!
+```
+
+The rendering is a full HTML page:
+
+```HTML
+<html>
+<head>
+    <title>The 10 most amazing handlebars</title>
+</head>
+<body>
+    <h1>The 10 most amazing handlebars</h1>
+    <p>...</p>
+    <p>by John Doe</p>
+</body>
+</html>
+```
+
+An inheritable section `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override this section, not a key in your rendered data.
+
+A template can inherit from a partial which itself inherits from another one. Recursion is possible, but your data should avoid infinite loops.
+
+A template can contain several inherited partial tags.
+
+Generally speaking, any part of a template can be refactored with partials and inherited partials tags. And this does not require modifications in other templates that depend on it.
+
+
+#### Dynamic inherited partials
+
+Like a regular partial tag, an inherited partial tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
+
+To inherit from a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
+
+
+### Set Delimiters Tags
+
+Mustache tags are generally enclosed by "mustaches" `{{` and `}}`. A *Set Delimiters Tag* can change that, right inside a template.
+
+```
+Default tags: {{ name }}
+{{=<% %>=}}
+ERB-styled tags: <% name %>
+<%={{ }}=%>
+Default tags again: {{ name }}
+```
+
+There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
+
+
+### Comment Tags
+
+`{{! Comment tags }}` are simply not rendered at all.
+
+
+### Pragma Tags
+
+Several Mustache implementations use *Pragma tags*. They start with a percent `%` and are not rendered at all. Instead, they trigger implementation-specific features.
+
+GRMustache.swift interprets two pragma tags that set the *content type* of the template:
+
+- `{{% CONTENT_TYPE:TEXT }}`
+- `{{% CONTENT_TYPE:HTML }}`
+
+In a text template, there is no HTML-escaping, and both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
+
+For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
+
+
+The Context Stack and Expressions
+---------------------------------
+
+### Context Stack
+
+Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
+
+That context stack grows as the rendering engine enters sections, and shrinks when it leaves. The tag `{{name}}` looks for the "name" identifier in the value pushed by the last entered section. If this top value does not provide the key, the evaluation digs further down the stack, until it finds some value that has a "name". A key is considered missed only after the stack has been exhausted.
+
+For example, given the template:
+
+```mustache
+{{#family}}
+- {{firstName}} {{lastName}}
+{{/family}}
+```
+
+Data:
+
+```swift
+[
+    "lastName": "Johnson",
+    "family": [
+        ["firstName": "Peter"],
+        ["firstName": "Barbara"],
+        ["firstName": "Emily", "lastName": "Scott"],
+    ]
+]
+```
+
+The rendering is:
+
+```
+- Peter Johnson
+- Barbara Johnson
+- Emily Scott
+```
+
+The context stack is usually initialized with the data you render your template with:
+
+```swift
+// The rendering starts with a context stack containing `data`
+template.render(Box(data))
+```
+
+Precisely speaking, a template has a *base context stack* on top of which the rendered data is added. This base context is always available whatever the rendered data. For example:
+
+```swift
+// The base context contains `baseData`
+template.extendBaseContext(Box(baseData))
+
+// The rendering starts with a context stack containing `baseData` and `data`
+template.render(Box(data))
+```
+
+The base context is usually a good place to register filters (see below).
+
+See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+
+
+### Expressions
+
+Variable and section tags contain *Expressions*. `name` is an expression, but also `article.title`, and `format(article.modificationDate)`. When a tag renders, it evaluates its expression, and renders the result.
+
+There are four kinds of expressions:
+
+- **The dot** `.` aka "Implicit Iterator" in the Mustache lingo:
+    
+    Dot evaluates to the top of the context stack. It lets you iterate over collection of strings, for example. `{{#items}}<{{.}}>{{/items}}` renders `<1><2><3>` when given [1,2,3].
+
+- **Identifiers** like `name`:
+    
+    Evaluation of identifiers like `name` go through the context stack until a value provides the `name` key.
+    
+    Identifiers can not contain white space, dots, parentheses and commas. They can not start with any of those characters: `{}&$#^/<>`.
+
+- **Compound expressions** like `article.title` and generally `<expression>.<identifier>`:
+    
+    This time there is no going through the context stack: `article.title` evaluates to the title of the article, regardless of `title` keys defined by enclosing contexts.
+    
+    `.title` (with a leading dot) is a compound expression based on the dot: it looks for `title` at the top of the context stack.
+    
+    Compare these three templates:
+    
+    - `...{{# article }}{{  title }}{{/ article }}...`
+    - `...{{# article }}{{ .title }}{{/ article }}...`
+    - `...{{ article.title }}...`
+    
+    The first will look for `title` anywhere in the context stack, starting with the `article` object.
+    
+    The two others are identical: they ensure the `title` key comes from the very `article` object.
+
+- **Filter expressions** like `format(date)` and generally `<expression>(<expression>, ...)`:
+    
+    [Filters](#filters) are introduced below.
+    
+
+Standard Swift Types Reference
+------------------------------
+
+GRMustache.swift comes with built-in support for the following standard Swift types:
+
+
+### Bool
+
+- `{{bool}}` renders "0" or "1".
+- `{{#bool}}...{{/bool}}` renders if and only if *bool* is true.
+- `{{^bool}}...{{/bool}}` renders if and only if *bool* is false.
+
+
+### Numeric types
+
+GRMustache supports `Int`, `UInt` and `Double`:
+
+- `{{number}}` renders the standard Swift string interpolation of *number*.
+- `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
+- `{{^number}}...{{/number}}` renders if and only if *int* is 0 (zero).
+
+The Swift types `Float`, `Int8`, `UInt8`, etc. have no built-in support: turn them into one of the three general types before injecting them into templates.
+
+To format numbers, use `NSNumberFormatter`:
+
+```swift
+let percentFormatter = NSNumberFormatter()
+percentFormatter.numberStyle = .PercentStyle
+
+let template = Template(string: "{{ percent(x) }}")!
+template.registerInBaseContext("percent", Box(percentFormatter))
+
+// Rendering: 50%
+let data = ["x": 0.5]
+let rendering = template.render(Box(data))!
+```
+
+[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+
+
+### String
+
+- `{{string}}` renders *string*, HTML-escaped.
+- `{{{string}}}` renders *string*, not HTML-escaped.
+- `{{#string}}...{{/string}}` renders if and only if *string* is not empty.
+- `{{^string}}...{{/string}}` renders if and only if *string* is empty.
+
+Exposed keys:
+
+- `string.length`: the length of the string.
+
+
+### Set
+
+A set can be rendered as long as its elements are boxable.
+
+- `{{set}}` renders the concatenation of the renderings of set elements.
+- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the context stack.
+- `{{^set}}...{{/set}}` renders if and only if the set is empty.
+
+Exposed keys:
+
+- `set.first`: the first element.
+- `set.count`: the number of elements in the set.
+
+GRMustache.swift renders as `Set` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, and to the elements count.
+
+
+### Array
+
+An array can be rendered as long as its elements are boxable.
+
+- `{{array}}` renders the concatenation of the renderings of array elements.
+- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the context stack.
+- `{{^array}}...{{/array}}` renders if and only if the array is empty.
+
+Exposed keys:
+
+- `array.first`: the first element.
+- `array.last`: the last element.
+- `array.count`: the number of elements in the array.
+
+GRMustache.swift renders as `Array` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, last element, and to the elements count.
+
+Especially, `Range<T>` is supported:
+
+```swift
+// 123456789
+let template = Template(string: "{{ numbers }}")!
+let rendering = template.render(Box(["numbers": Box(1..<10)]))!
+```
+
+
+### Dictionary
+
+A dictionary can be rendered as long as its keys are String, and its values are boxable.
+
+- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
+- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
+- `{{^dictionary}}...`{{/dictionary}}` does not render.
+
+
+### NSObject conforming to NSFastEnumeration
+
+The most common one is NSArray. Those objects render just like Swift Array.
+
+There are two exceptions: NSSet is rendered as a Swift Set, and NSDictionary, as a Swift dictionary.
+
+
+### NSNull
+
+- `{{null}}` does not render.
+- `{{#null}}...{{/null}}` does not render.
+- `{{^null}}...{{/null}}` renders.
+
+
+### NSNumber
+
+NSNumber is rendered as a Swift Bool, Int, or UInt, depending on its value.
+
+
+### NSString
+
+NSString is rendered as String
+
+
+### NSObject (other classes)
+
+- `{{object}}` renders the `description` method, HTML-escaped.
+- `{{{object}}}` renders the `description` method, not HTML-escaped.
+- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack.
+- `{{^object}}...{{/object}}` does not render.
+
+For more information, check the rendering of [Custom Types](#custom-types) below.
+
+
+### AnyObject
+
+Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example. AnyObject can be turned into a Mustache box. However, due to constraints in the Swift language, you have to use the dedicated `BoxAnyObject()` function:
+
+```swift
+// Some JSON data
+let json: AnyObject = ["name": "Lionel Richie"]
+
+// Lionel Richie has a Mustache.
+let template = Template(string: "{{ name }} has a Mustache.")!
+let rendering = template.render(BoxAnyObject(json))
+```
+
+`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
+
+
+Custom Types
+------------
+
+### NSObject subclasses
+
+You NSObject subclass can trivially feed your templates:
 
 ```swift
 // An NSObject subclass
@@ -207,7 +927,6 @@ class Person : NSObject {
     }
 }
 
-
 // Charlie Chaplin has a mustache.
 let person = Person(name: "Charlie Chaplin")
 let template = Template(string: "{{name}} has a mustache.")!
@@ -217,26 +936,9 @@ let rendering = template.render(Box(person))!
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, and the name of NSManagedObject attributes). For a full description of the rendering of NSObject, see the documentation of `NSObject.mustacheBox` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
-### Rendering of AnyObject
+### Pure Swift Values
 
-Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example. AnyObject can be turned into a Mustache box. However, due to constraints in the Swift language, you have to use the dedicated `BoxAnyObject()` function:
-
-```swift
-// Decode some JSON data
-let data = "{ \"name\": \"Lionel Richie\" }".dataUsingEncoding(NSUTF8StringEncoding)!
-let json: AnyObject = NSJSONSerialization.JSONObjectWithData(data, options: nil, error: nil)!
-
-// Lionel Richie has a Mustache.
-let template = Template(string: "{{ name }} has a Mustache.")!
-let rendering = template.render(BoxAnyObject(json))
-```
-
-`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
-
-
-### Rendering of pure Swift values
-
-Key-Value Coding is not available for Swift types, regardless of eventual `@objc` or `dynamic` modifiers. Swift types can still feed templates, though, with a little help.
+Key-Value Coding is not available for Swift enums, structs and classes, regardless of eventual `@objc` or `dynamic` modifiers. Swift values can still feed templates, though, with a little help.
 
 ```swift
 // Define a pure Swift object:
@@ -245,9 +947,7 @@ struct Person {
 }
 ```
 
-Now we want to let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags.
-
-Unlike the NSObject class, Swift types don't provide support for evaluating the `name` property given its name. We need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
+To let Mustache templates extract the `name` key out of a person so that they can render `{{ name }}` tags, we need to explicitly help the Mustache engine by conforming to the `MustacheBoxable` protocol:
 
 ```swift
 extension Person : MustacheBoxable {
@@ -271,11 +971,10 @@ let rendering = template.render(Box(person))!
 For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift).
 
 
-### Lambdas
+Lambdas
+-------
 
 "Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
-
-The `Lambda` function produces spec-compliant "Mustache lambdas":
 
 ```swift
 // `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
@@ -299,7 +998,8 @@ let rendering = template.render(Box(data))!
 Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
-### Filters
+Filters
+-------
 
 Filters apply like functions, with parentheses: `{{ uppercase(name) }}`.
 
@@ -324,7 +1024,7 @@ It helps thinking about four kinds of filters:
 - [Advanced filters](#advanced-filters)
 
 
-#### Value Filters
+### Value Filters
 
 Value filters transform any type of input. They can return anything as well.
 
@@ -352,6 +1052,7 @@ template.registerInBaseContext("square", Box(square))
 // 10 × 10 = 100
 let rendering = template.render(Box(["n": 10]))!
 ```
+
 
 Filters can accept a precisely typed argument as above. You may prefer managing the value type yourself:
 
@@ -388,8 +1089,10 @@ let oneEveryTwoItems = Filter { (box: MustacheBox, _) in
     if let boxes = box.arrayValue {
         // Rebuild another array with even indexes:
         var result: [MustacheBox] = []
-        for case let (index, box) in boxes.enumerate() where index % 2 == 0 {
-            result.append(box)
+        for (index, box) in enumerate(boxes) {
+            if index % 2 == 0 {
+                result.append(box)
+            }
         }
         return Box(result)
     } else {
@@ -456,9 +1159,11 @@ let rendering = template.render(Box(data))!
 [More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
 
 
-#### Pre-Rendering Filters
+### Pre-Rendering Filters
 
 Value filters as seen above process input values, which may be of any type (bools, ints, collections, etc.). Pre-rendering filters always process strings, whatever the input value. They have the opportunity to alter those strings before they get actually included in the final template rendering.
+
+You can, for example, reverse a rendering:
 
 ```swift
 // Define the `reverse` filter.
@@ -490,7 +1195,7 @@ template.render(Box(["value": "<html>"]))!
 ```
 
 
-#### Custom Rendering Filters
+### Custom Rendering Filters
 
 An example will show how they can be used:
 
@@ -532,48 +1237,7 @@ All the filters seen above are particular cases of `FilterFunction`. "Value filt
 Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
 
 
-### Template inheritance
-
-GRMustache template inheritance is compatible with [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
-
-Templates may contain *inheritable sections*. In the following `layout.mustache` template, the `page_title` and `page_content` sections may be overriden by other templates:
-
-`layout.mustache`:
-
-```mustache
-<html>
-<head>
-    <title>{{$ page_title }}Default title{{/ page_title }}</title>
-</head>
-<body>
-    <h1>{{$ page_title }}Default title{{/ page_title }}</h1>
-    {{$ page_content }}
-        Default content
-    {{/ page_content }}}
-</body>
-</html>
-```
-
-The `article.mustache` below inherits from `layout.mustache`, and overrides its sections:
-
-`article.mustache`:
-
-```mustache
-{{< layout }}
-
-    {{$ page_title }}{{ article.title }}{{/ page_title }}
-    
-    {{$ page_content }}
-        {{{ article.html_body }}}
-        by {{ article.author }}
-    {{/ page_content }}
-    
-{{/ layout }}
-```
-
-When you render `article.mustache`, you get a full HTML page.
-
-
-### Built-in goodies
+Built-in goodies
+----------------
 
 The library ships with built-in [goodies](Docs/Guides/goodies.md) that will help you render your templates: format values, render array indexes, localize templates, etc.
