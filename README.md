@@ -682,7 +682,7 @@ Variable and section tags contain *Expressions*. `name` is an expression, but al
 
 There are four kinds of expressions:
 
-- **The dot** `.`, aka "Implicit Iterator" in the Mustache lingo:
+- **The dot** `.` aka "Implicit Iterator" in the Mustache lingo:
     
     Dot evaluates to the top of the context stack. It lets you iterate over collection of strings, for example. `{{#items}}<{{.}}>{{/items}}` renders `<1><2><3>` when given [1,2,3].
 
@@ -846,7 +846,7 @@ NSString is rendered as String
 - `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack.
 - `{{^object}}...{{/object}}` does not render.
 
-NSObject exposes all its properties to the templates.
+For more information, check the [Rendering of Custom Types](#rendering-of-custom-types) below.
 
 
 ### AnyObject and Any
