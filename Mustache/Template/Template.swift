@@ -339,14 +339,8 @@ extension Template : MustacheBoxable {
     */
     public var mustacheBox: MustacheBox {
         return Box(value: self, render: { (info) in
-            switch info.tag.type {
-            case .Variable:
-                // {{ template }} behaves just like {{> partial }}
-                //
-                // Let's simply render the template:
-                return try self.render(info.context)
-                
-            case .Section:
+            switch info.tag {
+            case let sectionTag as SectionTag:
                 // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
                 //
                 // Let's render the template, overriding inheritable sections
@@ -354,7 +348,7 @@ extension Template : MustacheBoxable {
                 //
                 // Inheriting requires an InheritedPartialNode:
                 let inheritablePartialNode = TemplateASTNode.inheritedPartial(
-                    overridingTemplateAST: (info.tag as! SectionTag).innerTemplateAST,
+                    overridingTemplateAST: sectionTag.innerTemplateAST,
                     inheritedTemplateAST: self.templateAST)
                 
                 // Only RenderingEngine knows how to render InheritedPartialNode.
@@ -363,6 +357,13 @@ extension Template : MustacheBoxable {
                     templateAST: TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType),
                     context: info.context)
                 return try renderingEngine.render()
+            default:
+                // Assume Variable tag
+                //
+                // {{ template }} behaves just like {{> partial }}
+                //
+                // Let's simply render the template:
+                return try self.render(info.context)
             }
         })
     }
