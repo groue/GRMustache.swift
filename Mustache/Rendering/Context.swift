@@ -134,7 +134,7 @@ final public class Context {
             return Box()
         case .Box(box: let box, parent: _):
             return box
-        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+        case .PartialOverride(partialOverride: _, parent: let parent):
             return parent.topBox
         }
     }
@@ -182,7 +182,7 @@ final public class Context {
             } else {
                 return innerBox
             }
-        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+        case .PartialOverride(partialOverride: _, parent: let parent):
             return parent[key]
         }
     }
@@ -217,7 +217,7 @@ final public class Context {
     private enum Type {
         case Root
         case Box(box: MustacheBox, parent: Context)
-        case InheritedPartial(inheritedPartial: TemplateASTNode.InheritedPartial, parent: Context)
+        case PartialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
     }
     
     private var registeredKeysContext: Context?
@@ -233,7 +233,7 @@ final public class Context {
             } else {
                 return parent.willRenderStack
             }
-        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+        case .PartialOverride(partialOverride: _, parent: let parent):
             return parent.willRenderStack
         }
     }
@@ -248,19 +248,19 @@ final public class Context {
             } else {
                 return parent.didRenderStack
             }
-        case .InheritedPartial(inheritedPartial: _, parent: let parent):
+        case .PartialOverride(partialOverride: _, parent: let parent):
             return parent.didRenderStack
         }
     }
     
-    var inheritedPartialStack: [TemplateASTNode.InheritedPartial] {
+    var partialOverrideStack: [TemplateASTNode.PartialOverride] {
         switch type {
         case .Root:
             return []
         case .Box(box: _, parent: let parent):
-            return parent.inheritedPartialStack
-        case .InheritedPartial(inheritedPartial: let inheritedPartial, parent: let parent):
-            return [inheritedPartial] + parent.inheritedPartialStack
+            return parent.partialOverrideStack
+        case .PartialOverride(partialOverride: let partialOverride, parent: let parent):
+            return [partialOverride] + parent.partialOverrideStack
         }
     }
     
@@ -269,8 +269,8 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(inheritedPartial inheritedPartial: TemplateASTNode.InheritedPartial) -> Context {
-        return Context(type: .InheritedPartial(inheritedPartial: inheritedPartial, parent: self), registeredKeysContext: registeredKeysContext)
+    func extendedContext(partialOverride partialOverride: TemplateASTNode.PartialOverride) -> Context {
+        return Context(type: .PartialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
 
@@ -282,8 +282,8 @@ extension Context: CustomDebugStringConvertible {
             return "Context.Root"
         case .Box(box: let box, parent: let parent):
             return "Context.Box(\(box)):\(parent.debugDescription)"
-        case .InheritedPartial(inheritedPartial: _, parent: let parent):
-            return "Context.inheritedPartial:\(parent.debugDescription)"
+        case .PartialOverride(partialOverride: _, parent: let parent):
+            return "Context.PartialOverride:\(parent.debugDescription)"
         }
     }
 }

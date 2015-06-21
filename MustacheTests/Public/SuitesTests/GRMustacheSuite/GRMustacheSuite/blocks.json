@@ -1,0 +1,34 @@
+{
+  "tests": [
+    {
+      "name": "Blocks are not tied to rendered data: they render for missing values.",
+      "data": { },
+      "template": "{{$block}}rendered{{/block}}",
+      "expected": "rendered"
+    },
+    {
+      "name": "Blocks are not tied to rendered data: they render for false values.",
+      "data": { "block": false },
+      "template": "<{{$block}}rendered{{/block}}>",
+      "expected": "<rendered>"
+    },
+    {
+      "name": "Blocks are not tied to rendered data: they render for empty lists.",
+      "data": { "block": [] },
+      "template": "<{{$block}}rendered{{/block}}>",
+      "expected": "<rendered>"
+    },
+    {
+      "name": "Blocks are not tied to rendered data: they do not open new contexts.",
+      "data": { "subject": "rendered", "block": { "subject": "ignored" } },
+      "template": "<{{$block}}{{subject}}{{/block}}>",
+      "expected": "<rendered>"
+    },
+    {
+      "name": "Blocks are not tied to rendered data: they do not render multiple times.",
+      "data": { "block": [0,1,2,3] },
+      "template": "<{{$block}}rendered{{/block}}>",
+      "expected": "<rendered>"
+    }
+  ]
+}

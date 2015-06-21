@@ -29,7 +29,7 @@ class HoganSuite: SuiteTestCase {
     func testSuite() {
         // This suite contains template inheritance tests taken from
         // https://github.com/twitter/hogan.js/blob/master/test/index.js
-        runTestsFromResource("inheritable_partials.json", directory: "HoganSuite")
+        runTestsFromResource("template_inheritance.json", directory: "HoganSuite")
     }
     
     // TODO Swift2: restore this function

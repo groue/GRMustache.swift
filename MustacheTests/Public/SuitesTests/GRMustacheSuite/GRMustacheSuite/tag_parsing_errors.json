@@ -37,7 +37,7 @@
       "expected_error": "Parse error.*line 2\\b.*Unclosed Mustache tag"
     },
     {
-      "name": "Inheritable section tags must be closed.",
+      "name": "Block tags must be closed.",
       "data": null,
       "template": "\n{{$\n",
       "expected_error": "Parse error.*line 2\\b.*Unclosed Mustache tag"
@@ -127,22 +127,22 @@
       "expected_error": "Parse error.*line 2\\b.*Missing expression"
     },
     {
-      "name": "Inheritable section names can not be empty.",
+      "name": "Block names can not be empty.",
       "data": null,
       "template": "\n{{$}}\n{{/}}",
-      "expected_error": "Parse error.*line 2\\b.*Missing inheritable section name"
+      "expected_error": "Parse error.*line 2\\b.*Missing block name"
     },
     {
-      "name": "Inheritable section names can not contain white space.",
+      "name": "Block names can not contain white space.",
       "data": null,
       "template": "\n{{$ a b }}\n{{/ a b }}",
-      "expected_error": "Parse error.*line 2\\b.*Invalid inheritable section name"
+      "expected_error": "Parse error.*line 2\\b.*Invalid block name"
     },
     {
-      "name": "Inheritable section names can not be blank.",
+      "name": "Block names can not be blank.",
       "data": null,
       "template": "\n{{$ \n\t}}\n{{/ \n\t}}",
-      "expected_error": "Parse error.*line 2\\b.*Missing inheritable section name"
+      "expected_error": "Parse error.*line 2\\b.*Missing block name"
     },
     {
       "name": "Partial tags can not be empty.",

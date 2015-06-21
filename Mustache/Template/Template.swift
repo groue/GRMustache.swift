@@ -314,7 +314,7 @@ extension Template : MustacheBoxable {
     - `{{template}}` renders like an embedded partial tag `{{>partial}}` that
       would refer to the same template.
     
-    - `{{#template}}...{{/template}}` renders like an inherited partial tag
+    - `{{#template}}...{{/template}}` renders like a partial override tag
       `{{<partial}}...{{/partial}}` that would refer to the same template.
     
     The difference is that `{{>partial}}` is a hard-coded template name, when
@@ -343,18 +343,18 @@ extension Template : MustacheBoxable {
             case let sectionTag as SectionTag:
                 // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
                 //
-                // Let's render the template, overriding inheritable sections
-                // with the content of the rendered section.
+                // Let's render the template, overriding blocks with the content
+                // of the section.
                 //
-                // Inheriting requires an InheritedPartialNode:
-                let inheritablePartialNode = TemplateASTNode.inheritedPartial(
-                    overridingTemplateAST: sectionTag.innerTemplateAST,
-                    inheritedTemplateAST: self.templateAST)
+                // Overriding requires an PartialOverrideNode:
+                let partialOverrideNode = TemplateASTNode.partialOverride(
+                    childTemplateAST: sectionTag.innerTemplateAST,
+                    parentTemplateAST: self.templateAST)
                 
-                // Only RenderingEngine knows how to render InheritedPartialNode.
+                // Only RenderingEngine knows how to render PartialOverrideNode.
                 // So wrap the node into a TemplateAST, and render.
                 let renderingEngine = RenderingEngine(
-                    templateAST: TemplateAST(nodes: [inheritablePartialNode], contentType: self.templateAST.contentType),
+                    templateAST: TemplateAST(nodes: [partialOverrideNode], contentType: self.templateAST.contentType),
                     context: info.context)
                 return try renderingEngine.render()
             default:

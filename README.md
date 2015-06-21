@@ -90,7 +90,7 @@ Rendering templates:
     - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
     - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
     - [Partial Tags](#partial-tags) `{{>partial}}`
-    - [Inherited Partial Tags](#inherited-partial-tags) `{{<layout}}...{{/layout}}` (Template Inheritance)
+    - [Partial Override Tags](#partial-override-tags) `{{<layout}}...{{/layout}}` (Template Inheritance)
     - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
     - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
     - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
@@ -554,15 +554,15 @@ try! template.render(Box(data2))
 ```
 
 
-### Inherited Partial Tags
+### Partial Override Tags
 
 GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
-An *Inherited Partial Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular [partial tag](#partial-tags) `{{> partial}}`.
+A *Partial Override Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular [partial tag](#partial-tags) `{{> partial}}`.
 
-However, this time, the included template can contain *inheritable sections*, and the rendered template can override them.
+However, this time, the included template can contain *blocks*, and the rendered template can override them.
 
-The included template `layout.mustache` below has `title` and `content` inheritable sections that the rendered template can override:
+The included template `layout.mustache` below has `title` and `content` blocks that the rendered template can override:
 
 ```mustache
 <html>
@@ -620,20 +620,20 @@ The rendering is a full HTML page:
 </html>
 ```
 
-An inheritable section `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override this section, not a key in your rendered data.
+A block `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override the block, not a key in your rendered data.
 
-A template can inherit from a partial which itself inherits from another one. Recursion is possible, but your data should avoid infinite loops.
+A template can override a partial which itself overrides another one. Recursion is possible, but your data should avoid infinite loops.
 
-A template can contain several inherited partial tags.
+A template can contain several partial override tags.
 
-Generally speaking, any part of a template can be refactored with partials and inherited partials tags. And this does not require modifications in other templates that depend on it.
+Generally speaking, any part of a template can be refactored with partials and partial overrides tags. And this does not require modifications in other templates that depend on it.
 
 
-#### Dynamic inherited partials
+#### Dynamic partial overrides
 
-Like a regular partial tag, an inherited partial tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
+Like a regular partial tag, a partial override tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
-To inherit from a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
+To override a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
 
 
 ### Set Delimiters Tags

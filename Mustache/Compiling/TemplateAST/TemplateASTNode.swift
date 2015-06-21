@@ -24,25 +24,25 @@
 import Foundation
 
 enum TemplateASTNode {
-    case InheritableSectionNode(InheritableSection) // {{$ name }}...{{/ name }}
-    case InheritedPartialNode(InheritedPartial)     // {{< name }}...{{/ name }}
-    case PartialNode(Partial)                       // {{> name }}
-    case SectionNode(Section)                       // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
-    case TextNode(String)                           // text
-    case VariableNode(Variable)                     // {{ name }}, {{{ name }}}, {{& name }}
+    case BlockNode(Block)                       // {{$ name }}...{{/ name }}
+    case PartialOverrideNode(PartialOverride)   // {{< name }}...{{/ name }}
+    case PartialNode(Partial)                   // {{> name }}
+    case SectionNode(Section)                   // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
+    case TextNode(String)                       // text
+    case VariableNode(Variable)                 // {{ name }}, {{{ name }}}, {{& name }}
     
     
     // Define structs instead of long tuples
     
-    struct InheritableSection {
+    struct Block {
         // {{$ name }}innerTemplateAST{{/ name }}
         let innerTemplateAST: TemplateAST
         let name: String
     }
     
-    struct InheritedPartial {
-        // {{< parentPartial }}overridingTemplateAST{{/ parentPartial }}
-        let overridingTemplateAST: TemplateAST
+    struct PartialOverride {
+        // {{< parentPartial }}childTemplateAST{{/ parentPartial }}
+        let childTemplateAST: TemplateAST
         let parentPartial: Partial
     }
     
@@ -66,12 +66,12 @@ enum TemplateASTNode {
     
     // Factory methods
     
-    static func inheritableSection(innerTemplateAST innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
-        return .InheritableSectionNode(InheritableSection(innerTemplateAST: innerTemplateAST, name: name))
+    static func block(innerTemplateAST innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
+        return .BlockNode(Block(innerTemplateAST: innerTemplateAST, name: name))
     }
     
-    static func inheritedPartial(overridingTemplateAST overridingTemplateAST: TemplateAST, inheritedTemplateAST: TemplateAST, inheritedPartialName: String? = nil) -> TemplateASTNode {
-        return .InheritedPartialNode(InheritedPartial(overridingTemplateAST: overridingTemplateAST, parentPartial: Partial(templateAST: inheritedTemplateAST, name: inheritedPartialName)))
+    static func partialOverride(childTemplateAST childTemplateAST: TemplateAST, parentTemplateAST: TemplateAST, parentPartialName: String? = nil) -> TemplateASTNode {
+        return .PartialOverrideNode(PartialOverride(childTemplateAST: childTemplateAST, parentPartial: Partial(templateAST: parentTemplateAST, name: parentPartialName)))
     }
     
     static func partial(templateAST templateAST: TemplateAST, name: String?) -> TemplateASTNode {

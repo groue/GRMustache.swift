@@ -68,20 +68,20 @@ final class TemplateGenerator {
     
     func renderTemplateASTNode(node: TemplateASTNode) {
         switch node {
-        case .InheritableSectionNode(let inheritableSection):
+        case .BlockNode(let block):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let name = inheritableSection.name
+            let name = block.name
             buffer.extend("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
-            renderTemplateAST(inheritableSection.innerTemplateAST)
+            renderTemplateAST(block.innerTemplateAST)
             buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
-        case .InheritedPartialNode(let inheritedPartial):
+        case .PartialOverrideNode(let partialOverride):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let name = inheritedPartial.parentPartial.name ?? "<null>"
+            let name = partialOverride.parentPartial.name ?? "<null>"
             buffer.extend("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
-            renderTemplateAST(inheritedPartial.overridingTemplateAST)
+            renderTemplateAST(partialOverride.childTemplateAST)
             buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialNode(let partial):

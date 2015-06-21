@@ -42,9 +42,9 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             case .InvertedSection(openingToken: let openingToken, expression: _):
                 throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
-            case .InheritedPartial(openingToken: let openingToken, partialName: _):
+            case .PartialOverride(openingToken: let openingToken, parentPartialName: _):
                 throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
-            case .InheritableSection(openingToken: let openingToken, inheritableSectionName: _):
+            case .Block(openingToken: let openingToken, blockName: _):
                 throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(openingToken.locationDescription): Unclosed Mustache tag"])
             }
         case .Error(let compilationError):
@@ -95,16 +95,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .Text(text: let text):
                     switch compilationState.currentScope.type {
-                    case .InheritedPartial:
-                        // Text inside an inherited partial is not rendered.
+                    case .PartialOverride:
+                        // Text inside a partial override tag is not rendered.
                         //
                         // We could throw an error, like we do for illegal tags
-                        // inside an inherited partial.
+                        // inside a partial override tag.
                         //
                         // But Hogan.js has an explicit test for "successfully"
                         // ignored text. So let's not throw.
                         //
-                        // Ignore text inside an inherited partial:
+                        // Ignore text inside a partial override tag:
                         break
                     default:
                         compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
@@ -112,8 +112,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .EscapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .InheritedPartial:
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    case .PartialOverride:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside a partial override tag: \(token.templateSubstring)"])
                     default:
                         var empty = false
                         do {
@@ -127,8 +127,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .UnescapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .InheritedPartial:
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    case .PartialOverride:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside a partial override tag: \(token.templateSubstring)"])
                     default:
                         var empty = false
                         do {
@@ -142,8 +142,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .Section(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .InheritedPartial:
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    case .PartialOverride:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside a partial override tag: \(token.templateSubstring)"])
                     default:
                         var empty = false
                         do {
@@ -157,8 +157,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .InvertedSection(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .InheritedPartial:
-                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside an inherited partial tag: \(token.templateSubstring)"])
+                    case .PartialOverride:
+                        throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Illegal tag inside a partial override tag: \(token.templateSubstring)"])
                     default:
                         var empty = false
                         do {
@@ -170,16 +170,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         }
                     }
                     
-                case .InheritableSection(content: let content):
+                case .Block(content: let content):
                     var empty: Bool = false
-                    let inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
-                    compilationState.pushScope(Scope(type: .InheritableSection(openingToken: token, inheritableSectionName: inheritableSectionName)))
+                    let blockName = try blockNameFromString(content, inToken: token, empty: &empty)
+                    compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     
-                case .InheritedPartial(content: let content):
+                case .PartialOverride(content: let content):
                     var empty: Bool = false
-                    let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
-                    compilationState.pushScope(Scope(type: .InheritedPartial(openingToken: token, partialName: partialName)))
+                    let parentPartialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    compilationState.pushScope(Scope(type: .PartialOverride(openingToken: token, parentPartialName: parentPartialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     
                 case .Close(content: let content):
@@ -243,7 +243,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
                         
-                    case .InheritedPartial(openingToken: _, partialName: let inheritedPartialName):
+                    case .PartialOverride(openingToken: _, parentPartialName: let parentPartialName):
                         var empty: Bool = false
                         var partialName: String?
                         do {
@@ -253,12 +253,12 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw error
                             }
                         }
-                        if partialName != nil && partialName != inheritedPartialName {
+                        if partialName != nil && partialName != parentPartialName {
                             throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
-                        let inheritedTemplateAST = try repository.templateAST(named: inheritedPartialName, relativeToTemplateID:templateID)
-                        switch inheritedTemplateAST.type {
+                        let parentTemplateAST = try repository.templateAST(named: parentPartialName, relativeToTemplateID:templateID)
+                        switch parentTemplateAST.type {
                         case .Undefined:
                             break
                         case .Defined(nodes: _, contentType: let partialContentType):
@@ -269,29 +269,29 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let inheritedPartialNode = TemplateASTNode.inheritedPartial(overridingTemplateAST: templateAST, inheritedTemplateAST: inheritedTemplateAST, inheritedPartialName: inheritedPartialName)
+                        let partialOverrideNode = TemplateASTNode.partialOverride(childTemplateAST: templateAST, parentTemplateAST: parentTemplateAST, parentPartialName: parentPartialName)
                         compilationState.popCurrentScope()
-                        compilationState.currentScope.appendNode(inheritedPartialNode)
+                        compilationState.currentScope.appendNode(partialOverrideNode)
                         
-                    case .InheritableSection(openingToken: _, inheritableSectionName: let closedInheritableSectionName):
+                    case .Block(openingToken: _, blockName: let closedBlockName):
                         var empty: Bool = false
-                        var inheritableSectionName: String?
+                        var blockName: String?
                         do {
-                            inheritableSectionName = try inheritableSectionNameFromString(content, inToken: token, empty: &empty)
+                            blockName = try blockNameFromString(content, inToken: token, empty: &empty)
                         } catch {
                             if empty == false {
                                 throw error
                             }
                         }
-                        if inheritableSectionName != nil && inheritableSectionName != closedInheritableSectionName {
+                        if blockName != nil && blockName != closedBlockName {
                             throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Unmatched closing tag"])
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
                         let templateAST = TemplateAST(nodes: templateASTNodes, contentType: compilationState.contentType)
-                        let inheritableSectionTag = TemplateASTNode.inheritableSection(innerTemplateAST: templateAST, name: closedInheritableSectionName)
+                        let blockNode = TemplateASTNode.block(innerTemplateAST: templateAST, name: closedBlockName)
                         compilationState.popCurrentScope()
-                        compilationState.currentScope.appendNode(inheritableSectionTag)
+                        compilationState.currentScope.appendNode(blockNode)
                     }
                     
                 case .Partial(content: let content):
@@ -371,22 +371,22 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case Root
             case Section(openingToken: TemplateToken, expression: Expression)
             case InvertedSection(openingToken: TemplateToken, expression: Expression)
-            case InheritedPartial(openingToken: TemplateToken, partialName: String)
-            case InheritableSection(openingToken: TemplateToken, inheritableSectionName: String)
+            case PartialOverride(openingToken: TemplateToken, parentPartialName: String)
+            case Block(openingToken: TemplateToken, blockName: String)
         }
     }
     
-    private func inheritableSectionNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+    private func blockNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        let inheritableSectionName = string.stringByTrimmingCharactersInSet(whiteSpace)
-        if inheritableSectionName.characters.count == 0 {
+        let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
+        if blockName.characters.count == 0 {
             empty = true
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Missing inheritable section name"])
-        } else if (inheritableSectionName.rangeOfCharacterFromSet(whiteSpace) != nil) {
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Missing block name"])
+        } else if (blockName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             empty = false
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Invalid inheritable section name"])
+            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): Invalid block name"])
         }
-        return inheritableSectionName
+        return blockName
     }
     
     private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {

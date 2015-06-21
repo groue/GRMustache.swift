@@ -525,7 +525,7 @@ class RenderFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "<--->")
     }
     
-    func testDynamicInheritedPartial() {
+    func testDynamicPartialOverride() {
         let repository = TemplateRepository(templates: [
             "layout": "<{{$a}}Default{{subject}}{{/a}},{{$b}}Ignored{{/b}}>",
             "partial": "[{{#layout}}---{{$b}}Overriden{{subject}}{{/b}}---{{/layout}}]"])

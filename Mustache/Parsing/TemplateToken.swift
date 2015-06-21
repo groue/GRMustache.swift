@@ -23,18 +23,41 @@
 
 struct TemplateToken {
     enum Type {
+        /// text
         case Text(text: String)
+        
+        /// {{ content }}
         case EscapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
+        
+        /// {{{ content }}}
         case UnescapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
+        
+        /// {{! comment }}
         case Comment
+        
+        /// {{# content }}
         case Section(content: String, tagDelimiterPair: TagDelimiterPair)
+        
+        /// {{^ content }}
         case InvertedSection(content: String, tagDelimiterPair: TagDelimiterPair)
+        
+        /// {{/ content }}
         case Close(content: String)
+        
+        /// {{> content }}
         case Partial(content: String)
+        
+        /// {{= ... ... =}}
         case SetDelimiters
+        
+        /// {{% content }}
         case Pragma(content: String)
-        case InheritedPartial(content: String)
-        case InheritableSection(content: String)
+        
+        /// {{< content }}
+        case PartialOverride(content: String)
+        
+        /// {{$ content }}
+        case Block(content: String)
     }
     
     let type: Type

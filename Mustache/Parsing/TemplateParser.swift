@@ -182,7 +182,7 @@ final class TemplateParser {
                     case "$":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            type: .InheritableSection(content: content),
+                            type: .Block(content: content),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
@@ -215,7 +215,7 @@ final class TemplateParser {
                     case "<":
                         let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
-                            type: .InheritedPartial(content: content),
+                            type: .PartialOverride(content: content),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,

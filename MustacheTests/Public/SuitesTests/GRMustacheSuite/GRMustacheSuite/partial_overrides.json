@@ -1,0 +1,255 @@
+{
+  "tests": [
+    {
+      "name": "Template can embed a parent partial",
+      "data": { },
+      "template": "before {{<partial}}{{!ignored}}{{/partial}} after",
+      "partials": { "partial": "partial" },
+      "expected": "before partial after"
+    },
+    {
+      "name": "Template can embed several parent partials",
+      "data": { },
+      "template": "before1 {{<partial1}}{{!ignored}}{{/partial1}} | {{<partial2}}{{!ignored}}{{/partial2}} after2",
+      "partials": { "partial1": "partial1", "partial2": "partial2" },
+      "expected": "before1 partial1 | partial2 after2"
+    },
+    {
+      "name": "Template can embed a parent partial inside in a section",
+      "data": { "items": [0,1,2,3] },
+      "template": "{{#items}}{{<partial}}{{!ignored}}{{/partial}}{{/items}}",
+      "partials": { "partial": "{{.}}" },
+      "expected": "0123"
+    },
+    {
+      "name": "Parent partials can embed parent partials",
+      "data": { },
+      "template": "before1 {{<partial1}}{{/partial1}} after1",
+      "partials": {
+        "partial1": "before2 {{<partial2}}{{/partial2}} after2",
+        "partial2": "partial2" },
+      "expected": "before1 before2 partial2 after2 after1"
+    },
+    {
+      "name": "Partials can embed parent partials",
+      "data": { },
+      "template": "before1 {{>partial1}} after1",
+      "partials": {
+        "partial1": "before2 {{<partial2}}{{/partial2}} after2",
+        "partial2": "partial2" },
+      "expected": "before1 before2 partial2 after2 after1"
+    },
+    {
+      "name": "Parent partials can embed partials",
+      "data": { },
+      "template": "before1 {{<partial1}}{{/partial1}} after1",
+      "partials": {
+        "partial1": "before2 {{>partial2}} after2",
+        "partial2": "partial2" },
+      "expected": "before1 before2 partial2 after2 after1"
+    },
+    {
+      "name": "Templates can override top level blocks in parent partials",
+      "data": { },
+      "template": "{{<partial}}{{$block}}inherited{{/block}}{{/partial}}",
+      "partials": { "partial": "{{$block}}ignored{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Templates can override nested blocks in parent partials",
+      "data": { "items": [0,1,2,3] },
+      "template": "{{<partial}}{{$block}}{{.}}{{/block}}{{/partial}}",
+      "partials": { "partial": "{{#items}}{{$block}}ignored{{/block}}{{/items}}" },
+      "expected": "0123"
+    },
+    {
+      "name": "Templates can override duplicated blocks",
+      "data": { },
+      "template": "{{<partial}}{{$block}}inherited{{/block}}{{/partial}}",
+      "partials": { "partial": "{{$block}}ignored{{/block}} {{$block}}ignored{{/block}}" },
+      "expected": "inherited inherited"
+    },
+    {
+      "name": "The content of the last block is rendered in the inherited block",
+      "data": { },
+      "template": "{{<partial}}{{$block}}1{{/block}}{{$block}}2{{/block}}{{/partial}}",
+      "partials": { "partial": "{{$block}}ignored{{/block}}" },
+      "expected": "2"
+    },
+    {
+      "name": "The content of the last block in partials is rendered in the inherited block",
+      "data": { },
+      "template": "{{<partial1}}{{$block}}1{{/block}}{{>partial2}}{{$block}}4{{/block}}{{/partial1}}",
+      "partials": {
+        "partial1": "{{$block}}ignored{{/block}}",
+        "partial2": "{{$block}}2{{/block}}{{$block}}3{{/block}}" },
+      "expected": "4"
+    },
+    {
+      "name": "The content of the last block in partials is rendered in the inherited block",
+      "data": { },
+      "template": "{{<partial1}}{{$block}}1{{/block}}{{>partial2}}{{/partial1}}",
+      "partials": {
+        "partial1": "{{$block}}ignored{{/block}}",
+        "partial2": "{{$block}}2{{/block}}{{$block}}3{{/block}}" },
+      "expected": "3"
+    },
+    {
+      "name": "Parent partials can override blocks in their own parent partials",
+      "data": { },
+      "template": "{{<partial1}}{{/partial1}}",
+      "partials": {
+          "partial1": "{{<partial2}}{{$block}}partial1{{/block}}{{/partial2}}",
+          "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "partial1"
+    },
+    {
+      "name": "Partials in parent partials can override blocks",
+      "data": { },
+      "template": "{{<partial2}}{{>partial1}}{{/partial2}}",
+      "partials": {
+          "partial1": "{{$block}}partial1{{/block}}",
+          "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "partial1"
+    },
+    {
+      "name": "Partials can override blocks in their own parent partials",
+      "data": { },
+      "template": "{{>partial1}}",
+      "partials": {
+          "partial1": "{{<partial2}}{{$block}}partial1{{/block}}{{/partial2}}",
+          "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "partial1"
+    },
+    {
+      "name": "Templates and partials can both override the same parent partial",
+      "data": { },
+      "template": "{{<partial2}}{{$block}}base{{/block}}{{/partial2}} {{>partial1}}",
+      "partials": {
+          "partial1": "{{<partial2}}{{$block}}partial1{{/block}}{{/partial2}}",
+          "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "base partial1"
+    },
+    {
+      "name": "Templates can override blocks in partials embedded in parent partials",
+      "data": { },
+      "template": "{{<partial1}}{{$block}}inherited{{/block}}{{/partial1}}",
+      "partials": {
+        "partial1": "{{>partial2}}",
+        "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Templates can override blocks in parent partials embedded in parent partials",
+      "data": { },
+      "template": "{{<partial1}}{{$block}}inherited{{/block}}{{/partial1}}",
+      "partials": {
+        "partial1": "{{<partial2}}{{/partial2}}",
+        "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Templates can not override regular sections",
+      "data": { "name": true },
+      "template": "{{<partial}}{{$name}}inherited{{/name}}{{/partial}}",
+      "partials": { "partial": "{{#name}}success{{/name}}" },
+      "expected": "success"
+    },
+    {
+      "name": "Recursive parent partials should be rendered.",
+      "data": { "content": "X", "nodes": [ { "content": "Y", "nodes": [] } ] },
+      "template": "<{{<node}}{{/node}}>",
+      "partials": {
+        "node": "{{content}}<{{#nodes}}{{>node}}{{/nodes}}>"
+      },
+      "expected": "<X<Y<>>>"
+    },
+    {
+      "name": "Templates can override blocks in recursive partials",
+      "data": { "content": "X", "nodes": [ { "content": "Y", "nodes": [] } ] },
+      "template": "<{{<node}}{{$value}}{{>node}}{{/value}}{{/node}}>",
+      "partials": { "node": "{{content}}<{{#nodes}}{{$value}}overriden{{/value}}{{/nodes}}>" },
+      "expected": "<X<Y<>>>"
+    },
+    {
+      "name": "Block context is cleaned after parent partial rendering.",
+      "data": { },
+      "template": "{{$block}}rendered{{/block}}|{{<partial}}{{$block}}inherited{{/block}}{{/partial}}|{{$block}}rendered{{/block}}",
+      "partials": { "partial": "{{$block}}ignored{{/block}}" },
+      "expected": "rendered|inherited|rendered"
+    },
+    {
+      "name": "Two levels of inheritance: parent partial with overriding content containing a partial",
+      "data": { },
+      "template": "{{<partial}}{{>partial2}}{{/partial}}",
+      "partials": {
+          "partial": "{{$block}}ignored{{/block}}",
+          "partial2": "{{$block}}inherited{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Two levels of inheritance: parent partial with overriding content containing another parent partial",
+      "data": { },
+      "template": "{{<partial}}{{<partial2}}{{/partial2}}{{/partial}}",
+      "partials": {
+          "partial": "{{$block}}ignored{{/block}}",
+          "partial2": "{{$block}}inherited{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Two levels of inheritance: parent partial with overriding content containing another parent partial with overriding content containing a block",
+      "data": { },
+      "template": "{{<partial}}{{<partial2}}{{$block}}inherited{{/block}}{{/partial2}}{{/partial}}",
+      "partials": {
+          "partial": "{{$block}}ignored{{/block}}",
+          "partial2": "{{$block}}ignored{{/block}}" },
+      "expected": "inherited"
+    },
+    {
+      "name": "Recursion in parent templates (from twitter/hogan.hs)",
+      "template": "{{<include}}{{$foo}}override{{/foo}}{{/include}}",
+      "partials": {
+          "include": "{{$foo}}default content{{/foo}} {{$bar}}{{<include2}}{{/include2}}{{/bar}}",
+          "include2": "{{$foo}}include2 default content{{/foo}} {{<include}}{{$bar}}don't recurse{{/bar}}{{/include}}" },
+      "expected": "override override override don't recurse"
+    },
+    {
+      "name": "com.github.mustachejava.ExtensionTest.testNested",
+      "template": "{{<box}}{{$box_content}}{{<main}}{{$main_content}}{{<box}}{{$box_content}}{{<tweetbox}}{{$tweetbox_classes}}tweetbox-largetweetbox-user-styled{{/tweetbox_classes}}{{$tweetbox_attrs}}data-rich-text{{/tweetbox_attrs}}{{/tweetbox}}{{/box_content}}{{/box}}{{/main_content}}{{/main}}{{/box_content}}{{/box}}",
+      "partials": {
+        "box": "<box>{{$box_content}}{{/box_content}}</box>",
+        "main": "<main>{{$main_content}}{{/main_content}}</main>",
+        "tweetbox": "<tweetbox classes=\"{{$tweetbox_classes}}{{/tweetbox_classes}}\" attrs=\"{{$tweetbox_attrs}}{{/tweetbox_attrs}}\"></tweetbox>"
+      },
+      "expected": "<box><main><box><tweetbox classes=\"tweetbox-largetweetbox-user-styled\" attrs=\"data-rich-text\"></tweetbox></box></main></box>"
+    },
+    {
+      "name": "Regular sections are invalid inside a partial override tag",
+      "data": { "section": true },
+      "template": "{{<partial}}{{#section}}...{{/section}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside a partial override tag"
+    },
+    {
+      "name": "Inverted sections are invalid inside a partial override tag",
+      "data": { "section": true },
+      "template": "{{<partial}}{{^section}}...{{/section}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside a partial override tag"
+    },
+    {
+      "name": "Variable tags are invalid inside a partial override tag",
+      "data": { "section": true },
+      "template": "{{<partial}}{{value}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside a partial override tag"
+    },
+    {
+      "name": "Unescaped variable tags are invalid inside a partial override tag",
+      "data": { "section": true },
+      "template": "{{<partial}}{{{value}}}{{/partial}}",
+      "partials": { "partial": "" },
+      "expected_error": "Illegal tag inside a partial override tag"
+    }
+  ]
+}
