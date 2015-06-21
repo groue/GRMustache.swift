@@ -292,7 +292,7 @@ template.render(Box(["value": false]))!    // false boolean
 
 #### Collections
 
-If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the *context stack*. This makes their keys available for tags inside the section.
+If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the [context stack](#the-context-stack). This makes their keys available for tags inside the section.
 
 Template:
 
@@ -327,7 +327,7 @@ Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
 
 #### Objects
 
-If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the *context stack*. This makes its keys available for tags inside the section.
+If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the [context stack](#the-context-stack). This makes its keys available for tags inside the section.
 
 Template:
 
@@ -407,7 +407,7 @@ Rendering:
 
 ### Partial Tags
 
-A *Partial tag* includes another template inside a template. The included template is passed the current context stack:
+A *Partial tag* includes another template inside a template. The included template is passed the current [context stack](#the-context-stack):
 
 `document.mustache`:
 
@@ -669,7 +669,7 @@ For a more complete discussion, see the documentation of  `Configuration.content
 The Context Stack and Expressions
 ---------------------------------
 
-### Context Stack
+### The Context Stack
 
 Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
 
@@ -820,7 +820,7 @@ Exposed keys:
 A Swift Set can be rendered as long as its elements are boxable.
 
 - `{{set}}` renders the concatenation of the renderings of set elements.
-- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the context stack.
+- `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the [context stack](#the-context-stack).
 - `{{^set}}...{{/set}}` renders if and only if the set is empty.
 
 Exposed keys:
@@ -834,7 +834,7 @@ Exposed keys:
 An array can be rendered as long as its elements are boxable.
 
 - `{{array}}` renders the concatenation of the renderings of array elements.
-- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the context stack.
+- `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the [context stack](#the-context-stack).
 - `{{^array}}...{{/array}}` renders if and only if the array is empty.
 
 Exposed keys:
@@ -859,7 +859,7 @@ let rendering = template.render(Box(["numbers": Box(1..<10)]))!
 A dictionary can be rendered as long as its keys are String, and its values are boxable.
 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
-- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the context stack.
+- `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
 
 
@@ -881,7 +881,7 @@ For other NSObject, those default rules apply:
 
 - `{{object}}` renders the `description` method, HTML-escaped.
 - `{{{object}}}` renders the `description` method, not HTML-escaped.
-- `{{#object}}...{{/object}}` renders once, pushing the object on top of the context stack. Keys exposed to templates are the names of properties.
+- `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack). Keys exposed to templates are the names of properties.
 - `{{^object}}...{{/object}}` does not render.
 
 Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
