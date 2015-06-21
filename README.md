@@ -626,7 +626,7 @@ A template can override a partial which itself overrides another one. Recursion 
 
 A template can contain several partial override tags.
 
-Generally speaking, any part of a template can be refactored with partials and partial overrides tags. And this does not require modifications in other templates that depend on it.
+Generally speaking, any part of a template can be refactored with partials and partial override tags. And this does not require modifications in other templates that depend on it.
 
 
 #### Dynamic partial overrides
