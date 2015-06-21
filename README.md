@@ -290,10 +290,6 @@ try! template.render(Box(["value": true]))
 // "<>"
 try! template.render(Box([:]))                  // missing value
 try! template.render(Box(["value": false]))     // false boolean
-try! template.render(Box(["value": 0]))         // zero number
-try! template.render(Box(["value": ""]))        // empty string
-try! template.render(Box(["value": []]))        // empty collection
-try! template.render(Box(["value": NSNull()]))  // NSNull
 ```
 
 
