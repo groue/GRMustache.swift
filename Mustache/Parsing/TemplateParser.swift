@@ -32,9 +32,9 @@ final class TemplateParser {
     let tokenConsumer: TemplateTokenConsumer
     private let tagDelimiterPair: TagDelimiterPair
     
-    init(tokenConsumer: TemplateTokenConsumer, configuration: Configuration) {
+    init(tokenConsumer: TemplateTokenConsumer, tagDelimiterPair: TagDelimiterPair) {
         self.tokenConsumer = tokenConsumer
-        self.tagDelimiterPair = configuration.tagDelimiterPair
+        self.tagDelimiterPair = tagDelimiterPair
     }
     
     func parse(templateString:String, templateID: TemplateID?) {

@@ -371,9 +371,21 @@ final public class TemplateRepository {
     }
     
     func templateAST(string string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
-        let compiler = TemplateCompiler(contentType: lockedConfiguration.contentType, repository: self, templateID: templateID)
-        let parser = TemplateParser(tokenConsumer: compiler, configuration: lockedConfiguration)
+        // A Compiler
+        let compiler = TemplateCompiler(
+            contentType: lockedConfiguration.contentType,
+            repository: self,
+            templateID: templateID)
+        
+        // A Parser that feeds the compiler
+        let parser = TemplateParser(
+            tokenConsumer: compiler,
+            tagDelimiterPair: lockedConfiguration.tagDelimiterPair)
+        
+        // Parse...
         parser.parse(string, templateID: templateID)
+        
+        // ...and extract the result from the Compiler
         return try compiler.templateAST()
     }
     
