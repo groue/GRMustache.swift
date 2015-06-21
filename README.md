@@ -1351,21 +1351,33 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{/}}
     ```
 
-Before we dig into those fancy behaviors, let's describe in detail the rendering of the `{{ F(A) }}` tag:
+This variety of behaviors is available through public APIs. Before we dig into them, let's describe in detail the rendering of the `{{ F(A) }}` tag, and shed some light on the available customizations:
 
 1. The `A` and `F` expressions are evaluated: the rendering engine looks in the [context stack](#the-context-stack) for boxes that return a non-empty box for the keys "A" and "F". The key-extraction service is provided by a customizable `KeyedSubscriptFunction`.
+    
+    This is how NSObject exposes its properties, and Dictionary, its keys.
 
-2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument. The Result box may well depend on the customizable *value* of the A box, but all other facets of the A box may be involved.
+2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument.
+    
+    The Result box may well depend on the customizable value of the A box, but all other facets of the A box may be involved. This is why there are various types of [filters](#filters).
 
-3. The rendering engine then looks in the context stack for all boxes that have a customized `WillRenderFunction`. Those functions have an opportunity to process the Result box, and eventually return another one. This is how, for example, a NSDateFormatter box can format all dates in a section: its `WillRenderFunction` turns dates into strings.
+3. The rendering engine then looks in the context stack for all boxes that have a customized `WillRenderFunction`. Those functions have an opportunity to process the Result box, and eventually return another one.
+    
+    This is how, for example, a boxed [NSDateFormatter](Docs/Guides/goodies.md#nsformatter) can format all dates in a section: its `WillRenderFunction` formats dates into strings.
 
-4. The resulting box is ready to be rendered. For regular and inverted section tags, the rendering engine queries the customizable *boolean value* of the box, so that `{{# F(A) }}...{{/}}` and `{{^ F(A) }}...{{/}}` can't be both rendered.
+4. The resulting box is ready to be rendered. For regular and inverted section tags, the rendering engine queries the customizable boolean value of the box, so that `{{# F(A) }}...{{/}}` and `{{^ F(A) }}...{{/}}` can't be both rendered.
+    
+    The Bool type obviously have a boolean value, but so does String, so that empty strings are considered [falsey](#boolean-values).
 
 5. The resulting box gets eventually rendered: its customizable `RenderFunction` is executed. Its `Rendering` result is eventually HTML-escaped, depending on its content type, and appended to the final template rendering.
+    
+    [Lambdas](#lambdas) use such a `RenderFunction`, so do [pre-rendering filters](#pre-rendering-filters) and [custom rendering filters](#custom-rendering-filters).
 
 6. Finally the rendering engine looks in the context stack for all boxes that have a customized `DidRenderFunction`.
+    
+    This one is used by [Localizer](Docs/Guides/goodies.md#localizer) and [Logger](Docs/Guides/goodies.md#logger) goodies.
 
-All those customizable properties are gathered in the most low-level function that returns a Box:
+All those customizable properties are gathered in the most low-level function that returns a box:
 
 ```swift
 public func Box(
