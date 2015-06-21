@@ -1351,7 +1351,7 @@ This variety of behaviors is available through public APIs. Before we dig into t
 
 1. The `A` and `F` expressions are evaluated: the rendering engine looks in the [context stack](#the-context-stack) for boxes that return a non-empty box for the keys "A" and "F". The key-extraction service is provided by a customizable `KeyedSubscriptFunction`.
     
-    This is own NSObject exposes its properties, and Dictionary, its keys.
+    This is how NSObject exposes its properties, and Dictionary, its keys.
 
 2. The customizable `FilterFunction` of the F box is evaluated with the A box as an argument.
     
