@@ -159,7 +159,7 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 Loading Templates
 -----------------
 
-A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
+Templates may come from various sources:
 
 - Raw Swift strings:
 
