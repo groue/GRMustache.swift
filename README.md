@@ -866,6 +866,8 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
+If all you have is a set `Set<Any>` or `Set<AnyObject>`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) for more information.
+
 
 ### Array
 
@@ -891,6 +893,8 @@ let template = Template(string: "{{ numbers }}")!
 let rendering = template.render(Box(["numbers": Box(1..<10)]))!
 ```
 
+If all you have is an array `[Any]` or `[AnyObject]`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) for more information.
+
 
 ### Dictionary
 
@@ -899,6 +903,8 @@ A dictionary can be rendered as long as its keys are String, and its values are 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
+
+If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) for more information.
 
 
 ### NSObject
