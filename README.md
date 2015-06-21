@@ -98,6 +98,7 @@ Rendering templates:
 
 Feeding templates:
 
+- [Templates Eat Boxed Values](#templates-eat-boxed-values)
 - [Standard Swift Types Reference](#standard-swift-types-reference)
     - [Bool](#bool)
     - [Numeric Types](#numeric-types): Int, UInt and Double
@@ -764,7 +765,44 @@ There are four kinds of expressions:
 - **Filter expressions** like `format(date)` and generally `<expression>(<expression>, ...)`:
     
     [Filters](#filters) are introduced below.
-    
+
+
+Templates Eat Boxed Values
+--------------------------
+
+In all examples above, all values rendered by templates were wrapped by the `Box()` function:
+
+```swift
+template.render(Box(["name": "Luigi"]))
+template.render(Box(profile))
+```
+
+Some types can be boxed and rendered, some can not, and some require some help.
+
+
+### Boxable Types
+
+The types that can feed templates are:
+
+- `NSObject` and all its subclasses.
+- All types conforming to `MustacheBoxable` such as `String`, `Int`.
+- Collections and dictionaries of such types: `[Int]`, `[String: String]`.
+- A few function types such as `FilterFunction` (that we will see later).
+
+Check the rendering of [Custom Types](#custom-types) below for more information about `MustacheBoxable`.
+
+
+### Non Boxable Types
+
+Some types can not be boxed, because the rendering engine does not know what do to with them. This is the case of tuples, most function types. When you try to box them, you get a compiler error.
+
+
+### Imprecise Types
+
+`Any`, `AnyObject`, `[String: Any]`, `[AnyObject]` et al. can not be directly boxed. There is no way for GRMustache.swift to render values it does not know anything about. Worse: those types may hide values that are not boxable at all.
+
+They must be turned into a known boxable type before they can feed templates. And that should not be a problem for you, since you do not feed your templates with random data, do you? See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+
 
 Standard Swift Types Reference
 ------------------------------
@@ -926,7 +964,7 @@ let template = try! Template(string: "{{ name }} has a Mustache.")
 let rendering = try! template.render(Box(dictionary))
 ```
 
-The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter.
 
 
 Custom Types
