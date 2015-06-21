@@ -100,6 +100,7 @@ Rendering templates:
 
 Feeding templates:
 
+- [Templates Eat Boxed Values](#templates-eat-boxed-values)
 - [Standard Swift Types Reference](#standard-swift-types-reference)
     - [Bool](#bool)
     - [Numeric Types](#numeric-types): Int, UInt and Double
@@ -108,7 +109,7 @@ Feeding templates:
     - [Array](#array) (and similar collections)
     - [Dictionary](#dictionary)
     - [NSObject](#nsobject)
-    - [AnyObject](#anyobject)
+    - [AnyObject and Any](#anyobject-and-any)
 - [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
@@ -160,7 +161,7 @@ Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in y
 Loading Templates
 -----------------
 
-A template is defined by a string such as `Hello {{name}}`. Those strings may come from various sources:
+Templates may come from various sources:
 
 - Raw Swift strings:
 
@@ -761,7 +762,44 @@ There are four kinds of expressions:
 - **Filter expressions** like `format(date)` and generally `<expression>(<expression>, ...)`:
     
     [Filters](#filters) are introduced below.
-    
+
+
+Templates Eat Boxed Values
+--------------------------
+
+In all examples above, all values rendered by templates were wrapped by the `Box()` function:
+
+```swift
+template.render(Box(["name": "Luigi"]))
+template.render(Box(profile))
+```
+
+Some types can be boxed and rendered, some can not, and some require some help.
+
+
+### Boxable Types
+
+The types that can feed templates are:
+
+- `NSObject` and all its subclasses.
+- All types conforming to `MustacheBoxable` such as `String`, `Int`.
+- Collections and dictionaries of such types: `[Int]`, `[String: String]`.
+- A few function types such as `FilterFunction` (that we will see later).
+
+Check the rendering of [Custom Types](#custom-types) below for more information about `MustacheBoxable`.
+
+
+### Non Boxable Types
+
+Some types can not be boxed, because the rendering engine does not know what do to with them. This is the case of tuples, most function types. When you try to box them, you get a compiler error.
+
+
+### Imprecise Types
+
+`Any`, `AnyObject`, `[String: Any]`, `[AnyObject]` et al. can not be directly boxed. There is no way for GRMustache.swift to render values it does not know anything about. Worse: those types may hide values that are not boxable at all.
+
+They must be turned into a known boxable type before they can feed templates. And that should not be a problem for you, since you do not feed your templates with random data, do you? See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+
 
 Standard Swift Types Reference
 ------------------------------
@@ -887,20 +925,35 @@ For other NSObject, those default rules apply:
 Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
-### AnyObject
+### AnyObject and Any
 
-Many standard APIs return values of type `AnyObject`. You get AnyObject when you deserialize JSON data, or when you extract a value out of an NSArray, for example. AnyObject can be turned into a Mustache box. However, due to constraints in the Swift language, you have to use the dedicated `BoxAnyObject()` function:
+When you try to render a value of type `Any` or `AnyObject`, you get a compiler error:
 
 ```swift
-// Some JSON data
+let any: Any = ...
+let anyObject: AnyObject = ...
+
+let rendering = template.render(Box(any))!
+// Compiler Error
+
+let rendering = template.render(Box(anyObject))!
+// Compiler Error
+```
+
+The solution is to convert the value to its actual type:
+
+```swift
 let json: AnyObject = ["name": "Lionel Richie"]
+
+// Convert to Dictionary:
+let dictionary = json as! [String: String]
 
 // Lionel Richie has a Mustache.
 let template = Template(string: "{{ name }} has a Mustache.")!
-let rendering = template.render(BoxAnyObject(json))
+let rendering = template.render(Box(dictionary))!
 ```
 
-`BoxAnyObject` is documented in [Box.swift](Mustache/Rendering/Box.swift).
+The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter.
 
 
 Custom Types
