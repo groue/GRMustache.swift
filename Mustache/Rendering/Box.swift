@@ -1186,7 +1186,15 @@ extension NSSet {
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
     public override var mustacheBox: MustacheBox {
-        // Turn NSSet into a Swift Array of MustacheBoxes that we know how to box
+        // DRY principle won't let us provide all the code for boxing NSSet when
+        // we already have it for Set.
+        //
+        // However, we can't turn NSSet into Set, because the only type we could
+        // build is Set<MustacheBox>, which we can't do because MustacheBox is
+        // not Hashable.
+        //
+        // So turn NSSet into a Swift Array of MustacheBoxes, and ask the array
+        // to return a set-like box:
         let array = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
         return array.mustacheBoxWithSetValue(self, box: { $0 })
     }
