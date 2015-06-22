@@ -902,7 +902,7 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
-Sets must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Sets must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Array
@@ -927,7 +927,7 @@ let template = try! Template(string: "{{ numbers }}")
 let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
 ```
 
-Arrays must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Arrays must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Dictionary
