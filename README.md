@@ -905,7 +905,7 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
-GRMustache.swift renders as `Set` all types that provide iteration, access to the first element, and to the elements count. Precisely: `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`.
+GRMustache.swift renders as `Set` all types that provide iteration, access to the first element, and to the elements count. Precisely: `CollectionType where Index.Distance == Int`.
 
 Sets must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
@@ -922,7 +922,7 @@ Exposed keys:
 - `array.last`: the last element.
 - `array.count`: the number of elements in the array.
 
-GRMustache.swift renders as `Array` all types that provide iteration, access to the first and last elements, and to the elements count. Precisely: `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`.
+GRMustache.swift renders as `Array` all types that provide iteration, access to the first and last elements, and to the elements count. Precisely: `CollectionType where Index: BidirectionalIndexType, Index.Distance == Int`.
 
 `Range` is such a type:
 
