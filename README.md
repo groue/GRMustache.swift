@@ -833,7 +833,7 @@ Pick the best of those three options:
 
 1. For boxable types and homogeneous collections of such types, perform a simple conversion with the `as!` operator: `Box(value as! [String:Int])`.
 
-2. For mixed collections of values compatible with Objective-C, a conversion to NSArray or NSDictionary will make it: `Box(value as! NSDictionary)`.
+2. For mixed collections of values that are compatible with Objective-C, a conversion to NSArray or NSDictionary will make it: `Box(value as! NSDictionary)`.
 
 3. For data soups, no conversions will work. You'll have to create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. This will be just as hairy as your data. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
