@@ -41,29 +41,46 @@ Usage
 Hello {{name}}
 Your beard trimmer will arrive on {{format(date)}}.
 {{#late}}
-Well, on {{format(real_date)}} because of a Martian attack.
+Well, on {{format(realDate)}} because of a Martian attack.
 {{/late}}
 ```
 
+1: Import the Mustache module
+
 ```swift
 import Mustache
+```
 
+2: Load the template
+
+```swift
 // Load the `document.mustache` resource of the main bundle
 let template = try! Template(named: "document")
+```
 
+3: Configure the template if needed
+
+```swift
 // Let template format dates with `{{format(...)}}`
 let dateFormatter = NSDateFormatter()
 dateFormatter.dateStyle = .MediumStyle
 template.registerInBaseContext("format", Box(dateFormatter))
+```
 
-// The rendered data
+4: Set up the rendered data
+
+```swift
 let data = [
     "name": "Arthur",
     "date": NSDate(),
-    "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
+    "realDate": NSDate().dateByAddingTimeInterval(60*60*24*3),
     "late": true
 ]
+```
 
+5: Render
+
+```swift
 // The rendering: "Hello Arthur..."
 let rendering = try! template.render(Box(data))
 ```
@@ -1043,7 +1060,7 @@ For a more complete discussion, check the documentation of `MustacheBoxable` in 
 Lambdas
 -------
 
-"Mustache lambdas" are functions that let you perform custom rendering. There are two kinds of Mustache lambdas: those that process section tags, and those that render variable tags.
+Mustache lambdas are functions that let you perform custom rendering. There are two kinds of lambdas: those that process section tags, and those that render variable tags.
 
 ```swift
 // `{{fullName}}` renders just as `{{firstName}} {{lastName}}.`
@@ -1064,7 +1081,7 @@ let data = [
 let rendering = try! template.render(Box(data))
 ```
 
-Those "lambdas" are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
 
 
 Filters
