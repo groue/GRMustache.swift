@@ -145,7 +145,7 @@ Rendering templates:
 
 Feeding templates:
 
-- [Templates Eat Boxed Values](#templates-eat-boxed-values)
+- [Boxing Values](#boxing-values)
 - [Standard Swift Types Reference](#standard-swift-types-reference)
 - [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
@@ -786,8 +786,8 @@ There are four kinds of expressions:
     [Filters](#filters) are introduced below.
 
 
-Templates Eat Boxed Values
---------------------------
+Boxing Values
+-------------
 
 In all examples above, all values rendered by templates were wrapped by the `Box()` function:
 
@@ -915,7 +915,7 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
-Sets must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Sets must contain boxable values. Check the [Boxing Values](#boxing-values) chapter for more information.
 
 
 ### Array
@@ -940,7 +940,7 @@ let template = try! Template(string: "{{ numbers }}")
 let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
 ```
 
-Arrays must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Arrays must contain boxable values. Check the [Boxing Values](#boxing-values) chapter for more information.
 
 
 ### Dictionary
@@ -949,7 +949,7 @@ Arrays must contain boxable values. Check the [Templates Eat Boxed Values](#temp
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
 
-Dictionary keys must be String, and its values must be boxable. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Dictionary keys must be String, and its values must be boxable. Check the [Boxing Values](#boxing-values) chapter for more information.
 
 
 ### NSObject
@@ -1012,7 +1012,7 @@ let template = Template(string: "{{ name }} has a Mustache.")!
 let rendering = template.render(Box(dictionary))!
 ```
 
-The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter.
+The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Boxing Values](#boxing-values) chapter.
 
 
 Custom Types
