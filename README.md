@@ -182,20 +182,25 @@ Templates may come from various sources:
 
 - Template Repositories:
     
-    Template repositories represent a group of templates. They can be configured independently, and provide neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
+    Template repositories represent a group of templates. They can be configured independently, and provide neat features like template caching. For example:
     
     ```swift
     // The repository of Bash templates, with extension ".sh":
-    let repo = TemplateRepository(bundle: NSBundle.mainBundle(), templateExtension: "sh")
+    let repo = TemplateRepository(
+        bundle: NSBundle.mainBundle(),
+        templateExtension: "sh")
     
     // Disable HTML escaping for Bash scripts:
     repo.configuration.contentType = .Text
     
     // Load a template:
-    let template = try! repo.template(named: "script")
+    let template = repo.template(named: "script")!
     ```
 
-For more information, check [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+For more information, check:
+
+- [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html))
+- [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html))
 
 
 Errors
