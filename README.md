@@ -907,7 +907,7 @@ Exposed keys:
 
 GRMustache.swift renders as `Set` all types that provide iteration, access to the first element, and to the elements count. Precisely: `CollectionType where Index.Distance == Int`.
 
-Sets must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Sets must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Array
@@ -932,7 +932,7 @@ let template = try! Template(string: "{{ numbers }}")
 let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
 ```
 
-Arrays must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Arrays must contain boxable values. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Dictionary
