@@ -835,7 +835,7 @@ Pick the best of those three options:
 
 2. For mixed collections of values that are compatible with Objective-C, a conversion to NSArray or NSDictionary will make it: `Box(value as! NSDictionary)`.
 
-3. For data soups, no conversions will work. You'll have to create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. This will be just as hairy as your data. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+3. For data soups, no conversions will work. We suggest you create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
 Standard Swift Types Reference
