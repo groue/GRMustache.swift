@@ -281,7 +281,7 @@ A *Section tag* `{{#value}}...{{/value}}` is a common syntax for three different
 Those behaviors are triggered by the value associated with `value`:
 
 
-#### Boolean values
+#### Falsey values
 
 If the value is *falsey*, the section is not rendered. Falsey values are:
 
