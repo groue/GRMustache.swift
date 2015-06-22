@@ -14,6 +14,7 @@ Get release announcements and usage tips: follow [@GRMustache on Twitter](http:/
 Jump to:
 
 - [Usage](#usage)
+- [Installation](#installation)
 - [Documentation](#documentation)
 
 Features
@@ -69,56 +70,6 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
-Documentation
-=============
-
-To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
-
-External links:
-
-- [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
-
-Installing GRMustache.swift:
-
-- [Installation](#installation)
-
-Rendering templates:
-
-- [Loading Templates](#loading-templates)
-- [Errors](#errors)
-- [Mustache Tags Reference](#mustache-tags-reference)
-    - [Variable Tags](#variable-tags) `{{value}}`
-    - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
-    - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
-    - [Partial Tags](#partial-tags) `{{>partial}}`
-    - [Inherited Partial Tags](#inherited-partial-tags) aka Template Inheritance
-    - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
-    - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
-    - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
-- [The Context Stack and Expressions](#the-context-stack-and-expressions)
-
-Feeding templates:
-
-- [Templates Eat Boxed Values](#templates-eat-boxed-values)
-- [Standard Swift Types Reference](#standard-swift-types-reference)
-    - [Bool](#bool)
-    - [Numeric Types](#numeric-types): Int, UInt and Double
-    - [String](#string)
-    - [Set](#set) (and similar collections)
-    - [Array](#array) (and similar collections)
-    - [Dictionary](#dictionary)
-    - [NSObject](#nsobject)
-    - [AnyObject and Any](#anyobject-and-any)
-- [Custom Types](#custom-types)
-- [Lambdas](#lambdas)
-- [Filters](#filters)
-- [Advanced Boxes](#advanced-boxes)
-
-Misc:
-
-- [Built-in goodies](#built-in-goodies)
-
 
 Installation
 ------------
@@ -156,6 +107,53 @@ github "groue/GRMustache.swift" == 0.9.3
 ### Manually
 
 Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
+
+
+Documentation
+=============
+
+To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
+
+External links:
+
+- [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
+
+Rendering templates:
+
+- [Loading Templates](#loading-templates)
+- [Errors](#errors)
+- [Mustache Tags Reference](#mustache-tags-reference)
+    - [Variable Tags](#variable-tags) `{{value}}`
+    - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
+    - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
+    - [Partial Tags](#partial-tags) `{{>partial}}`
+    - [Inherited Partial Tags](#inherited-partial-tags) aka Template Inheritance
+    - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
+    - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
+    - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
+- [The Context Stack and Expressions](#the-context-stack-and-expressions)
+
+Feeding templates:
+
+- [Templates Eat Boxed Values](#templates-eat-boxed-values)
+- [Standard Swift Types Reference](#standard-swift-types-reference)
+    - [Bool](#bool)
+    - [Numeric Types](#numeric-types): Int, UInt and Double
+    - [String](#string)
+    - [Set](#set) (and similar collections)
+    - [Array](#array) (and similar collections)
+    - [Dictionary](#dictionary)
+    - [NSObject](#nsobject)
+    - [AnyObject and Any](#anyobject-and-any)
+- [Custom Types](#custom-types)
+- [Lambdas](#lambdas)
+- [Filters](#filters)
+- [Advanced Boxes](#advanced-boxes)
+
+Misc:
+
+- [Built-in goodies](#built-in-goodies)
 
 
 Loading Templates
