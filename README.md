@@ -920,26 +920,30 @@ If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you wi
 
 ### NSObject
 
-When an object conforms to the NSFastEnumeration protocol, like NSArray, it renders just like Swift [Array](#array). NSSet is an exception, rendered as a Swift [Set](#set). NSDictionary, another exception, renders as a Swift [Dictionary](#dictionary).
+The rendering of NSObject depends on the actual class:
 
-NSNumber is rendered as a Swift [Bool](#bool), [Int, UInt or Double](#numeric-types), depending on its value.
+- **NSFastEnumeration**
+    
+    When an object conforms to the NSFastEnumeration protocol, like **NSArray**, it renders just like Swift [Array](#array). **NSSet** is an exception, rendered as a Swift [Set](#set). **NSDictionary**, the other exception, renders as a Swift [Dictionary](#dictionary).
 
-NSString is rendered as [String](#string)
+- **NSNumber** is rendered as a Swift [Bool](#bool), [Int, UInt or Double](#numeric-types), depending on its value.
 
-NSNull renders as:
+- **NSString** is rendered as [String](#string)
 
-- `{{null}}` does not render.
-- `{{#null}}...{{/null}}` does not render.
-- `{{^null}}...{{/null}}` renders.
+- **NSNull** renders as:
 
-For other NSObject, those default rules apply:
+    - `{{null}}` does not render.
+    - `{{#null}}...{{/null}}` does not render.
+    - `{{^null}}...{{/null}}` renders.
 
-- `{{object}}` renders the `description` method, HTML-escaped.
-- `{{{object}}}` renders the `description` method, not HTML-escaped.
-- `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack). Keys exposed to templates are the names of properties.
-- `{{^object}}...{{/object}}` does not render.
+- For other NSObject, those default rules apply:
 
-Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
+    - `{{object}}` renders the `description` method, HTML-escaped.
+    - `{{{object}}}` renders the `description` method, not HTML-escaped.
+    - `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack). Keys exposed to templates are the names of properties.
+    - `{{^object}}...{{/object}}` does not render.
+
+    Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
 ### AnyObject and Any
