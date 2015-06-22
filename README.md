@@ -312,7 +312,7 @@ template.render(Box(["value": false]))!    // false boolean
 
 #### Collections
 
-If the value is a *collection*, the section is rendered as many times as there are elements in the collection. Each element on its turn in pushed on the top of the [context stack](#the-context-stack). This makes their keys available for tags inside the section.
+If the value is a *collection*, the section is rendered as many times as there are elements in the collection, and inner tags have direct access to the keys of elements:
 
 Template:
 
@@ -345,9 +345,9 @@ Rendering:
 Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
 
 
-#### Objects
+#### Other Values
 
-If the value is not falsey, and not a collection, then the section is rendered once, and the value is pushed on the top of the [context stack](#the-context-stack). This means that its keys are available for tags inside the section.
+If the value is not falsey, and not a collection, then the section is rendered once, and inner tags have direct access to the value's keys:
 
 Template:
 
@@ -427,7 +427,7 @@ Rendering:
 
 ### Partial Tags
 
-A *Partial tag* includes another template inside a template. The included template is passed the current [context stack](#the-context-stack):
+A *Partial tag* `{{> partial }}` includes another template, identified by its name. The included template has access to the currently available data:
 
 `document.mustache`:
 
