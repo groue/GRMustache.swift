@@ -830,7 +830,15 @@ Some types can not be boxed, because the rendering engine does not know what do 
 
 `Any`, `AnyObject`, `[String: Any]`, `[AnyObject]` et al. can not be directly boxed. There is no way for GRMustache.swift to render values it does not know anything about. Worse: those types may hide values that are not boxable at all.
 
-They must be turned into a known boxable type before they can feed templates. And that should not be a problem for you, since you do not feed your templates with random data, do you? See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
+You must turn them into a known boxable type before they can feed templates. And that should not be a problem for you, since you do not feed your templates with random data, do you?
+
+Pick the best of those three options:
+
+1. For boxable types and homogeneous collections of such types, perform a simple conversion with the `as!` operator: `Box(value as! [String:Int])`.
+
+2. For mixed collections of values compatible with Objective-C, a conversion to NSArray or NSDictionary will make it: `Box(value as! NSDictionary)`.
+
+3. For data soups, no conversions will work. You'll have to create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. This will be just as hairy as your data. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
 Standard Swift Types Reference
