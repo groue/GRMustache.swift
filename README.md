@@ -692,7 +692,7 @@ The Context Stack and Expressions
 
 Variable and section tags fetch values in the data you feed your templates with: `{{name}}` looks for the key "name" in your input data, or, more precisely, in the *context stack*.
 
-That context stack grows as the rendering engine enters sections, and shrinks when it leaves. The tag `{{name}}` looks for the "name" identifier in the value pushed by the last entered section. If this top value does not provide the key, the evaluation digs further down the stack, until it finds some value that has a "name". A key is considered missed only after the stack has been exhausted.
+That context stack grows as the rendering engine enters sections, and shrinks when it leaves. Its top value, pushed by the last entered section, is where a `{{name}}` tag starts looking for the "name" identifier. If this top value does not provide the key, the tag digs further down the stack, until it finds the name it looks for.
 
 For example, given the template:
 
