@@ -1403,9 +1403,9 @@ This variety of behaviors is available through public APIs. Before we dig into t
 
 4. The resulting box is ready to be rendered. For regular and inverted section tags, the rendering engine queries the customizable boolean value of the box, so that `{{# F(A) }}...{{/}}` and `{{^ F(A) }}...{{/}}` can't be both rendered.
     
-    The Bool type obviously have a boolean value, but so does String, so that empty strings are considered [falsey](#falsey-values).
+    The Bool type obviously has a boolean value, but so does String, so that empty strings are considered [falsey](#falsey-values).
 
-5. The resulting box gets eventually rendered: its customizable `RenderFunction` is executed. Its `Rendering` result is eventually HTML-escaped, depending on its content type, and appended to the final template rendering.
+5. The resulting box gets eventually rendered: its customizable `RenderFunction` is executed. Its `Rendering` result is HTML-escaped, depending on its content type, and appended to the final template rendering.
     
     [Lambdas](#lambdas) use such a `RenderFunction`, so do [pre-rendering filters](#pre-rendering-filters) and [custom rendering filters](#custom-rendering-filters).
 
