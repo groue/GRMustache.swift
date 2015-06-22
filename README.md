@@ -969,9 +969,11 @@ The rendering of NSObject depends on the actual class:
 
     - `{{object}}` renders the `description` method, HTML-escaped.
     - `{{{object}}}` renders the `description` method, not HTML-escaped.
-    - `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack). Keys exposed to templates are the names of properties.
+    - `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack).
     - `{{^object}}...{{/object}}` does not render.
-
+    
+    Templates can render object properties: `{{ user.name }}`.
+    
     Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
