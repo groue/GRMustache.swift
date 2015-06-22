@@ -122,28 +122,12 @@ Rendering templates:
 - [Loading Templates](#loading-templates)
 - [Errors](#errors)
 - [Mustache Tags Reference](#mustache-tags-reference)
-    - [Variable Tags](#variable-tags) `{{value}}`
-    - [Section Tags](#section-tags) `{{#value}}...{{/value}}`
-    - [Inverted Section Tags](#inverted-section-tags) `{{^value}}...{{/value}}`
-    - [Partial Tags](#partial-tags) `{{>partial}}`
-    - [Partial Override Tags](#partial-override-tags) `{{<layout}}...{{/layout}}` (Template Inheritance)
-    - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}`
-    - [Comment Tags](#comment-tags) `{{! Wow. Such comment. }}`
-    - [Pragma Tags](#pragma-tags) `{{% CONTENT_TYPE:TEXT }}`
 - [The Context Stack and Expressions](#the-context-stack-and-expressions)
 
 Feeding templates:
 
 - [Templates Eat Boxed Values](#templates-eat-boxed-values)
 - [Standard Swift Types Reference](#standard-swift-types-reference)
-    - [Bool](#bool)
-    - [Numeric Types](#numeric-types): Int, UInt and Double
-    - [String](#string)
-    - [Set](#set) (and similar collections)
-    - [Array](#array) (and similar collections)
-    - [Dictionary](#dictionary)
-    - [NSObject](#nsobject)
-    - [AnyObject and Any](#anyobject-and-any)
 - [Custom Types](#custom-types)
 - [Lambdas](#lambdas)
 - [Filters](#filters)
@@ -251,12 +235,12 @@ Each one of them performs its own little task:
 
 - [Variable Tags](#variable-tags) like `{{name}}` render values.
 - [Section Tags](#section-tags) like `{{#items}}...{{/items}}` perform conditionals, loops, and object scoping.
-- [Inverted Section Tags](#inverted-section-tags) like `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other does not.
+- [Inverted Section Tags](#inverted-section-tags) like `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other one does not.
 - [Partial Tags](#partial-tags) like `{{>partial}}` let you include a template in another one.
 - [Partial Override Tags](#partial-override-tags) like `{{<layout}}...{{/layout}}` provide *template inheritance*.
 - [Set Delimiters Tags](#set-delimiters-tags) like `{{=<% %>=}}` let you change the tag delimiters.
 - [Comment Tags](#comment-tags) let you comment: `{{! Wow. Such comment. }}`
-- [Pragma Tags](#pragma-tags): trigger implementation-specific features.
+- [Pragma Tags](#pragma-tags) trigger implementation-specific features.
 
 
 ### Variable Tags
@@ -821,6 +805,15 @@ Standard Swift Types Reference
 ------------------------------
 
 GRMustache.swift comes with built-in support for the following standard Swift types:
+
+- [Bool](#bool)
+- [Numeric Types](#numeric-types): Int, UInt and Double
+- [String](#string)
+- [Set](#set) (and similar collections)
+- [Array](#array) (and similar collections)
+- [Dictionary](#dictionary)
+- [NSObject](#nsobject)
+- [AnyObject and Any](#anyobject-and-any)
 
 
 ### Bool
