@@ -543,7 +543,7 @@ let template = try! repo.template(string: "{{#user}}{{>partial}}{{/user}}")
 // the template is rendered. Nothing can change that.
 ```
 
-You can also include **dynamic partials**. To do so, use a regular variable tag `{{ partial }}`, and provide a template for the key "partial" in your rendered data:
+You can also include **dynamic partials**. To do so, use a regular variable tag `{{ partial }}`, and provide the template of your choice for the key "partial" in your rendered data:
 
 ```swift
 // A template that delegates the rendering of a user to a partial.
@@ -646,7 +646,7 @@ A few things to know:
 
 Like a regular partial tag, a partial override tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
-To override a dynamic partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
+To override a dynamic partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide the template of your choice for the key "layout" in your rendered data.
 
 
 ### Set Delimiters Tags
