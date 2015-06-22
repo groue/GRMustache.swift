@@ -630,7 +630,7 @@ The rendering is a full HTML page:
 
 A few things to know:
 
-- A block `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override the block, not a key in your rendered data.
+- A block `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. The "title" identifier is a name that allows other templates to override the block, not a key in your rendered data.
 
 - A template can contain several partial override tags.
 
