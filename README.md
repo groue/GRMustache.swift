@@ -245,6 +245,20 @@ let rendering = try! template.render(Box(data))
 Mustache Tags Reference
 -----------------------
 
+Mustache is based on tags: `{{name}}`, `{{#registered}}...{{/registered}}`, `{{>include}}`, etc.
+
+Each one of them performs its own little task:
+
+- [Variable Tags](#variable-tags) like `{{name}}` render values.
+- [Section Tags](#section-tags) like `{{#items}}...{{/items}}` perform conditionals, loops, and object scoping.
+- [Inverted Section Tags](#inverted-section-tags) like `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other does not.
+- [Partial Tags](#partial-tags) like `{{>partial}}` let you include a template in another one.
+- [Partial Override Tags](#partial-override-tags) like `{{<layout}}...{{/layout}}` provide *template inheritance*.
+- [Set Delimiters Tags](#set-delimiters-tags) like `{{=<% %>=}}` let you change the tag delimiters.
+- [Comment Tags](#comment-tags) let you comment: `{{! Wow. Such comment. }}`
+- [Pragma Tags](#pragma-tags): trigger implementation-specific features.
+
+
 ### Variable Tags
 
 A *Variable tag* `{{value}}` renders the value associated with the key `value`, HTML-escaped. To avoid HTML-escaping, use triple mustache tags `{{{value}}}`:
@@ -256,6 +270,7 @@ let template = try! Template(string: "{{value}} - {{{value}}}")
 let data = ["value": "Mario & Luigi"]
 let rendering = try! template.render(Box(data))
 ```
+
 
 ### Section Tags
 
