@@ -180,9 +180,9 @@ Templates may come from various sources:
     let template = try! Template(URL: templateURL)
     ```
 
-- A *repository of templates*:
+- Template Repositories:
     
-    These repositories represent a group of templates. They can be configured independently, and provide a few neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
+    Template repositories represent a group of templates. They can be configured independently, and provide neat features like template caching. Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)). For example:
     
     ```swift
     // The repository of Bash templates, with extension ".sh":
@@ -250,12 +250,12 @@ Mustache is based on tags: `{{name}}`, `{{#registered}}...{{/registered}}`, `{{>
 
 Each one of them performs its own little task:
 
-- [Variable Tags](#variable-tags) like `{{name}}` render values.
-- [Section Tags](#section-tags) like `{{#items}}...{{/items}}` perform conditionals, loops, and object scoping.
-- [Inverted Section Tags](#inverted-section-tags) like `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other one does not.
-- [Partial Tags](#partial-tags) like `{{>partial}}` let you include a template in another one.
-- [Partial Override Tags](#partial-override-tags) like `{{<layout}}...{{/layout}}` provide *template inheritance*.
-- [Set Delimiters Tags](#set-delimiters-tags) like `{{=<% %>=}}` let you change the tag delimiters.
+- [Variable Tags](#variable-tags) `{{name}}` render values.
+- [Section Tags](#section-tags) `{{#items}}...{{/items}}` perform conditionals, loops, and object scoping.
+- [Inverted Section Tags](#inverted-section-tags) `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other one does not.
+- [Partial Tags](#partial-tags) `{{>partial}}` let you include a template in another one.
+- [Partial Override Tags](#partial-override-tags) `{{<layout}}...{{/layout}}` provide *template inheritance*.
+- [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}` let you change the tag delimiters.
 - [Comment Tags](#comment-tags) let you comment: `{{! Wow. Such comment. }}`
 - [Pragma Tags](#pragma-tags) trigger implementation-specific features.
 
@@ -345,7 +345,7 @@ Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
 
 #### Objects
 
-If the value is not falsey, and not a collection, the section is rendered once, and the value is pushed on the top of the [context stack](#the-context-stack). This makes its keys available for tags inside the section.
+If the value is not falsey, and not a collection, then the section is rendered once, and the value is pushed on the top of the [context stack](#the-context-stack). This means that its keys are available for tags inside the section:
 
 Template:
 
@@ -468,7 +468,7 @@ Partial lookup depends on the origin of the main template:
 
 #### File system
 
-Partial names are relative paths when the template comes from the file system (via paths or URLs):
+Partial names are **relative paths** when the template comes from the file system (via paths or URLs):
 
 ```swift
 // Load /path/document.mustache
@@ -487,13 +487,10 @@ let template = Template(path: "/path/document.html")
 // {{> partial }} includes /path/partial.html.
 ```
 
-When your templates are stored in a hierarchy of directories, you can use absolute paths to partials:
+When your templates are stored in a hierarchy of directories, you can use **absolute paths** to partials, with a leading slash. For that, you need a *template repository* which will define the root of absolute partial paths:
 
 ```swift
-// The template repository defines the root of absolute partial paths:
 let repository = TemplateRepository(directoryPath: "/path")
-
-// Load /path/documents/profile.mustache
 let template = repository.template(named: "documents/profile")
 
 // {{> /shared/partial }} includes /path/shared/partial.mustache.
@@ -502,7 +499,7 @@ let template = repository.template(named: "documents/profile")
 
 #### Bundle resources
     
-Partial names are interpreted as resource names when the template is a bundle resource:
+Partial names are interpreted as **resource names** when the template is a bundle resource:
 
 ```swift
 // Load the document.mustache resource from the main bundle
@@ -523,7 +520,7 @@ let template = Template(named: "document", templateExtension: "html")
 
 #### General case
 
-Generally speaking, partial names are always interpreted by a *Template Repository*.
+Generally speaking, partial names are always interpreted by a **Template Repository**:
 
 - `Template(named:...)` uses a bundle-based template repository: partial names are resource names.
 - `Template(path:...)` uses a file-based template repository: partial names are relative paths.
@@ -536,7 +533,7 @@ Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for
 
 #### Dynamic partials
 
-A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is *statically* determined, since that partial has already been loaded before the template is rendered:
+A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is **statically** determined, since that partial has already been loaded before the template is rendered:
 
 ```swift
 let repo = TemplateRepository(bundle: NSBundle.mainBundle())
@@ -546,7 +543,7 @@ let template = try! repo.template(string: "{{#user}}{{>partial}}{{/user}}")
 // the template is rendered. Nothing can change that.
 ```
 
-You can also include *dynamic partials*. To do so, use a regular variable tag `{{ partial }}`, and provide a template for the key "partial" in your rendered data:
+You can also include **dynamic partials**. To do so, use a regular variable tag `{{ partial }}`, and provide a template for the key "partial" in your rendered data:
 
 ```swift
 // A template that delegates the rendering of a user to a partial.
@@ -556,12 +553,12 @@ let template = try! Template(string: "{{#user}}{{partial}}{{/user}}")
 // The user
 let user = ["firstName": "Georges", "lastName": "Brassens", "occupation": "Singer"]
 
-// Render with a first partial -> "Georges Brassens"
+// First rendering -> "Georges Brassens"
 let partial1 = try! Template(string: "{{firstName}} {{lastName}}")
 let data1 = ["user": Box(user), "partial": Box(partial1) ]
 try! template.render(Box(data1))
 
-// Render with a second partial -> "Singer"
+// Second rendering -> "Singer"
 let partial2 = try! Template(string: "{{occupation}}")
 let data2 = ["user": Box(user), "partial": Box(partial2) ]
 try! template.render(Box(data2))
@@ -570,11 +567,11 @@ try! template.render(Box(data2))
 
 ### Partial Override Tags
 
-GRMustache.swift supports *Template Inheritance*, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
+GRMustache.swift supports **Template Inheritance**, like [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 
 A *Partial Override Tag* `{{< layout }}...{{/ layout }}` includes another template inside the rendered template, just like a regular [partial tag](#partial-tags) `{{> partial}}`.
 
-However, this time, the included template can contain *blocks*, and the rendered template can override them.
+However, this time, the included template can contain *blocks*, and the rendered template can override them. Blocks look like sections, but use a dollar sign: `{{$ overrideMe }}...{{/ overrideMe }}`.
 
 The included template `layout.mustache` below has `title` and `content` blocks that the rendered template can override:
 
@@ -634,20 +631,22 @@ The rendering is a full HTML page:
 </html>
 ```
 
-A block `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override the block, not a key in your rendered data.
+A few things to know:
 
-A template can override a partial which itself overrides another one. Recursion is possible, but your data should avoid infinite loops.
+- A block `{{$ title }}...{{/ title }}` is always rendered, and rendered once. There is no boolean checks, no collection iteration. It is a name that allows other templates to override the block, not a key in your rendered data.
 
-A template can contain several partial override tags.
+- A template can contain several partial override tags.
 
-Generally speaking, any part of a template can be refactored with partials and partial override tags. And this does not require modifications in other templates that depend on it.
+- A template can override a partial which itself overrides another one. Recursion is possible, but your data should avoid infinite loops.
+
+- Generally speaking, any part of a template can be refactored with partials and partial override tags, without requiring any modification anywhere else (in other templates that depend on it, or in your code).
 
 
 #### Dynamic partial overrides
 
 Like a regular partial tag, a partial override tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
-To override a *dynamic* partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
+To override a dynamic partial, use a regular section tag `{{# layout }}...{{/ layout }}`, and provide a template for the key "layout" in your rendered data.
 
 
 ### Set Delimiters Tags
@@ -674,12 +673,14 @@ There are also APIs for setting those delimiters. Check `Configuration.tagDelimi
 
 Several Mustache implementations use *Pragma tags*. They start with a percent `%` and are not rendered at all. Instead, they trigger implementation-specific features.
 
-GRMustache.swift interprets two pragma tags that set the *content type* of the template:
+GRMustache.swift interprets two pragma tags that set the content type of the template:
 
 - `{{% CONTENT_TYPE:TEXT }}`
 - `{{% CONTENT_TYPE:HTML }}`
 
-In a text template, there is no HTML-escaping, and both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
+**HTML templates** is the default. They HTML-escape values rendered by variable tags `{{name}}`.
+
+In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
 For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
 
@@ -752,7 +753,9 @@ There are four kinds of expressions:
 
 - **The dot** `.` aka "Implicit Iterator" in the Mustache lingo:
     
-    Dot evaluates to the top of the context stack. It lets you iterate over collection of strings, for example. `{{#items}}<{{.}}>{{/items}}` renders `<1><2><3>` when given [1,2,3].
+    Implicit iterator evaluates to the top of the context stack, the value pushed by the last entered section.
+    
+    It lets you iterate over collection of strings, for example. `{{#items}}<{{.}}>{{/items}}` renders `<1><2><3>` when given [1,2,3].
 
 - **Identifiers** like `name`:
     
@@ -764,7 +767,7 @@ There are four kinds of expressions:
     
     This time there is no going through the context stack: `article.title` evaluates to the title of the article, regardless of `title` keys defined by enclosing contexts.
     
-    `.title` (with a leading dot) is a compound expression based on the dot: it looks for `title` at the top of the context stack.
+    `.title` (with a leading dot) is a compound expression based on the implicit iterator: it looks for `title` at the top of the context stack.
     
     Compare these three templates:
     
@@ -791,7 +794,7 @@ template.render(Box(["name": "Luigi"]))
 template.render(Box(profile))
 ```
 
-Some types can be boxed and rendered, some can not, and some require some help.
+This boxing is required by the rendering engine. Some types can be boxed and rendered, some can not, and some require some help.
 
 
 ### Boxable Types
@@ -800,15 +803,27 @@ The types that can feed templates are:
 
 - `NSObject` and all its subclasses.
 - All types conforming to `MustacheBoxable` such as `String`, `Int`.
-- Collections and dictionaries of such types: `[Int]`, `[String: String]`.
+- Collections and dictionaries of `MustacheBoxable`: `[Int]`, `[String: String]`, `Set<NSObject>`.
 - A few function types such as `FilterFunction` (that we will see later).
 
 Check the rendering of [Custom Types](#custom-types) below for more information about `MustacheBoxable`.
 
+**Caveat**: You may experience boxing issues with nested collections, such as dictionaries of arrays, arrays of dictionaries, etc. Even though they only contain granted boxable values, the compiler complains:
+
+```Swift
+Box(["numbers": 1..<10])      // Compiler error
+```
+
+Well, Swift won't help us here. When this happens, you have to box further:
+
+```Swift
+Box(["numbers": Box(1..<10)]) // Fine
+```
+
 
 ### Non Boxable Types
 
-Some types can not be boxed, because the rendering engine does not know what do to with them. This is the case of tuples, most function types. When you try to box them, you get a compiler error.
+Some types can not be boxed, because the rendering engine does not know what do to with them. Think of tuples, and most function types. When you try to box them, you get a compiler error.
 
 
 ### Imprecise Types
@@ -881,8 +896,6 @@ Exposed keys:
 
 ### Set
 
-A set can be rendered as long as its elements are boxable.
-
 - `{{set}}` renders the concatenation of the renderings of set elements.
 - `{{#set}}...{{/set}}` renders as many times as there are elements in the set, pushing them on top of the [context stack](#the-context-stack).
 - `{{^set}}...{{/set}}` renders if and only if the set is empty.
@@ -892,14 +905,12 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
-GRMustache.swift renders as `Set` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, and to the elements count.
+GRMustache.swift renders as `Set` all types that provide iteration, access to the first element, and to the elements count. Precisely: `CollectionType where Generator.Element: MustacheBoxable, Index.Distance == Int`.
 
-If all you have is a set `Set<Any>` or `Set<AnyObject>`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Sets must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Array
-
-An array can be rendered as long as its elements are boxable.
 
 - `{{array}}` renders the concatenation of the renderings of array elements.
 - `{{#array}}...{{/array}}` renders as many times as there are elements in the array, pushing them on top of the [context stack](#the-context-stack).
@@ -911,9 +922,9 @@ Exposed keys:
 - `array.last`: the last element.
 - `array.count`: the number of elements in the array.
 
-GRMustache.swift renders as `Array` all types conforming to `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`. This is the minimal type which allows iteration, access to the first element, last element, and to the elements count.
+GRMustache.swift renders as `Array` all types that provide iteration, access to the first and last elements, and to the elements count. Precisely: `CollectionType where Generator.Element: MustacheBoxable, Index: BidirectionalIndexType, Index.Distance == Int`.
 
-Especially, `Range<T>` is supported:
+`Range` is such a type:
 
 ```swift
 // 123456789
@@ -921,18 +932,16 @@ let template = try! Template(string: "{{ numbers }}")
 let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
 ```
 
-If all you have is an array `[Any]` or `[AnyObject]`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Arrays must contain boxable value. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### Dictionary
 
-A dictionary can be rendered as long as its keys are String, and its values are boxable.
-
-- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
+- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary* (not very useful).
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
 
-If all you have is a dictionary `[String: Any]` or `[String: AnyObject]`, you will get a compiler error when you try to box it. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
+Dictionary keys must be String, and its values must be boxable. Check the [Templates Eat Boxed Values](#templates-eat-boxed-values) chapter for more information.
 
 
 ### NSObject
