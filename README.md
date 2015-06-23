@@ -37,6 +37,13 @@ Requirements
 Usage
 -----
 
+The library is built around **three main APIs**:
+
+- The `Template(...)` constructor that loads a template.
+- The `Box(...)` function that makes your data able to feed templates.
+- The `Template.render(...)` method that renders.
+
+
 `document.mustache`:
 
 ```mustache
