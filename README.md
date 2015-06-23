@@ -274,7 +274,7 @@ Those behaviors are triggered by the value associated with `value`:
 
 #### Falsey values
 
-If the value is *falsey*, the section is not rendered. The only falsey values are:
+If the value is *falsey*, the section is not rendered. Falsey values are:
 
 - missing values
 - false boolean
@@ -1134,7 +1134,7 @@ let square = Filter { (n: Int?) in
         return Box()
     }
     
-    // Results are returned boxed, as always:
+    // Return a boxed result:
     return Box(n * n)
 }
 
@@ -1177,7 +1177,7 @@ You can process collections and dictionaries as well, and return new ones:
 // oneEveryTwoItems(collection) returns the array of even items in the input
 // collection.
 let oneEveryTwoItems = Filter { (box: MustacheBox) in
-    // `box.arrayValue` returns a `Array<MustacheBox>` whatever the boxed Swift
+    // `box.arrayValue` returns a `[MustacheBox]` whatever the boxed Swift
     // or Foundation collection (Array, Set, NSOrderedSet, etc.).
     guard let boxes = box.arrayValue else {
         // No value, or not a collection: return the empty box
@@ -1279,7 +1279,7 @@ try! template.render(Box(["value": 123]))
 
 Such filter does not quite process a raw string, as you have seen. It processes a `Rendering`, which is a flavored string, a string with its contentType (text or HTML).
 
-This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our `reverse` filter preserves this content-type, and does not mangle HTML entities:
+This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our reversing filter preserves this content-type, and does not mangle HTML entities:
 
 ```swift
 // &gt;lmth&lt;
