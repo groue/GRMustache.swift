@@ -725,7 +725,7 @@ template.extendBaseContext(Box(baseData))
 template.render(Box(data))
 ```
 
-The base context is usually a good place to register filters (see below).
+The base context is usually a good place to register [filters](#filters).
 
 See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
 
@@ -928,7 +928,7 @@ Arrays must contain boxable values. Check the [Boxing Values](#boxing-values) ch
 
 ### Dictionary
 
-- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary*.
+- `{{dictionary}}` renders the standard Swift string interpolation of *dictionary* (not very useful).
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
 
@@ -963,8 +963,6 @@ The rendering of NSObject depends on the actual class:
     Templates can render object properties: `{{ user.name }}`.
     
     Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
-
-
 
 
 ### AnyObject and Any
@@ -1126,7 +1124,7 @@ For example, here is a `square` filter which squares integers:
 // square(n) evaluates to the square of the provided integer.
 let square = Filter { (n: Int?, error: NSErrorPointer) in
     if let n = n {
-        // Results are returned boxed, as always:
+        // Return a boxed result:
         return Box(n * n)
     } else {
         // No value, or not an integer: return the empty box.
@@ -1174,7 +1172,7 @@ You can process collections and dictionaries as well, and return new ones:
 // oneEveryTwoItems(collection) returns the array of even items in the input
 // collection.
 let oneEveryTwoItems = Filter { (box: MustacheBox, _) in
-    // `box.arrayValue` returns a `Array<MustacheBox>` whatever the boxed Swift
+    // `box.arrayValue` returns a `[MustacheBox]` whatever the boxed Swift
     // or Foundation collection (Array, Set, NSOrderedSet, etc.).
     if let boxes = box.arrayValue {
         // Rebuild another array with even indexes:
@@ -1277,7 +1275,7 @@ template.render(Box(["value": 123]))!
 
 Such filter does not quite process a raw string, as you have seen. It processes a `Rendering`, which is a flavored string, a string with its contentType (text or HTML).
 
-This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our `reverse` filter preserves this content-type, and does not mangle HTML entities:
+This rendering will usually be text: simple values (ints, strings, etc.) render as text. Our reversing filter preserves this content-type, and does not mangle HTML entities:
 
 ```swift
 // &gt;lmth&lt;
@@ -1317,14 +1315,14 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
 
-As those filters perform custom rendering, they are based on `RenderFunction`, just like lambdas. Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types.
+As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
 
 
 ### Advanced Filters
 
 All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
 
-Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift).
+Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
 
 
 Advanced Boxes
