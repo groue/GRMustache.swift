@@ -1186,7 +1186,7 @@ let oneEveryTwoItems = Filter { (box: MustacheBox) in
     
     // Rebuild another array with even indexes:
     var result: [MustacheBox] = []
-    for case let (index, box) in boxes.enumerate() where index % 2 == 0 {
+    for (index, box) in boxes.enumerate() where index % 2 == 0 {
         result.append(box)
     }
     
