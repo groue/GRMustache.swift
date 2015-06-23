@@ -835,30 +835,31 @@ Pick the best of those three options:
 
 ### Note to Library Developers
 
-If you intend to use GRMustache.swift as an internal rendering engine, and wrap it around your own APIs, you will be facing with a dilemna as soon as you'll want to let your library users provide rendered data.
+If you intend to use GRMustache.swift as an internal rendering engine, and wrap it around your own APIs, you will be facing with a dilemna as soon as you'll want to let your own library users provide rendered data.
 
-Say you want to provide an API to build a HTTP Response body while hiding the template house-keeping:
+Say you want to provide an API to build a HTTP Response while hiding the template house-keeping:
 
 ```swift
-struct HTTPResponseBody {
-    init(templateName: String, data: ???) {
-        let template = myPrivateRepository.template(named: templateName)!
-        init(string: template.render(Box(data))!)
+class HTTPController {
+    func responseWithTemplateNamed(templateName: String, data: ???) -> HTTPResponse {
+        let template = templateRepository.template(named: templateName)!
+        let rendering = template.render(Box(data))!
+        return HTTPResponse(string: rendering)
     }
 }
 ```
 
 You'll wonder what type the `data` parameter should be.
 
-- `Any` or `AnyObject`? GRMustache.swift won't help you with them. We have seen above that they may hide non-boxable values. You will have do deal with them.
+- `Any` or `AnyObject`? We have seen above that they may hide non-boxable values. GRMustache.swift won't help you, because Swift won't help either: it makes it impossible to write a general `func Box(Any?) -> Box?` function that covers everything (it fails both on collections, and nested collections like arrays of dictionaries).
 
 - `MustacheBox`? This would sure work, but now your library has married GRMustache.swift for good, and your library users are exposed to an alien library.
 
-- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. Forget Dictionary, Array, Set, etc. BTW, this is due to a Swift limitation, which won't let any specialization of a generic type adopt a protocol.
+- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. No Swift collection of boxable values can adopt any protocol, actually, because Swift won't let any specialization of a generic type adopt a protocol. Forget Dictionary, Array, Set, etc. 
 
-- `NSDictionary`? This would sure work as well, but now your users have no way to use the extra features of GRMustache.swift such as [filters](#filters), [lambdas](#lambdas), etc. Consider that lambdas are part of the Mustache specification, and your users may expect them to be available.
+- `NSObject` or `NSDictionary`? This one would sure work. But now your users have no way to use the extra features of GRMustache.swift such as [filters](#filters) and [lambdas](#lambdas), etc. Consider that lambdas are part of the Mustache specification: your users may expect them to be available as soon as you claim to use a Mustache back end.
 
-There is no silver bullet here.
+There is no silver bullet here: marry me, or live a dull life. [Suggestions are welcome](https://github.com/groue/GRMustache.swift/issues).
 
 
 Standard Swift Types Reference
