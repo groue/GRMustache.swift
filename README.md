@@ -1056,7 +1056,7 @@ let template = Template(string: "{{name}} has a mustache.")!
 let rendering = template.render(Box(person))!
 ```
 
-For a more complete discussion, check the documentation of `MustacheBoxable` in [Box.swift](Mustache/Rendering/Box.swift).
+Boxing a dictionary is an easy way to build a box. However there are many kinds of boxes: check the rest of this documentation.
 
 
 Lambdas
