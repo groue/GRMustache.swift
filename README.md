@@ -833,6 +833,34 @@ Pick the best of those three options:
 3. For data soups, no conversions will work. We suggest you create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
 
 
+### Note to Library Developers
+
+If you intend to use GRMustache.swift as an internal rendering engine, and wrap it around your own APIs, you will be facing with a dilemna as soon as you'll want to let your library users provide rendered data.
+
+Say you want to provide an API to build a HTTP Response body while hiding the template house-keeping:
+
+```swift
+struct HTTPResponseBody {
+    init(templateName: String, data: ???) {
+        let template = try! myPrivateRepository.template(named: templateName)
+        return try! template.render(Box(data))
+    }
+}
+```
+
+You'll wonder what type the `data` parameter should be.
+
+- `Any` or `AnyObject`? GRMustache.swift won't help you with them. We have seen above that they may hide non-boxable values. You will have do deal with them.
+
+- `MustacheBox`? This would sure work, but now your library has married GRMustache.swift for good, and your library users are exposed to an alien library.
+
+- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. Forget Dictionary, Array, Set, etc. BTW, this is due to a Swift limitation, which won't let any specialization of a generic type adopt a protocol.
+
+- `NSDictionary`? This would sure work as well, but now your users have no way to use the extra features of GRMustache.swift such as [filters](#filters), [lambdas](#lambdas), etc. Consider that lambdas are part of the Mustache specification, and your users may expect them to be available.
+
+There is no silver bullet here.
+
+
 Standard Swift Types Reference
 ------------------------------
 
