@@ -788,6 +788,11 @@ template.render(Box(profile))
 
 This boxing is required by the rendering engine. Some types can be boxed and rendered, some can not, and some require some help.
 
+- [Boxable Types](#boxable-types)
+- [Non Boxable Types](#non-boxable-types)
+- [Imprecise Types](#imprecise-types)
+- [Note to Library Developers](#note-to-library-developers)
+
 
 ### Boxable Types
 
