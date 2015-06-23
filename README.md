@@ -856,7 +856,7 @@ class HTTPController {
 
 You'll wonder what type the `data` parameter should be.
 
-- `Any` or `AnyObject`? We have seen above that they may hide non-boxable values. GRMustache.swift won't help you, because Swift won't help either: it makes it impossible to write a general `func Box(Any?) -> Box?` function that covers everything (it fails both on collections, and nested collections like arrays of dictionaries).
+- `Any` or `AnyObject`? We have seen above that they may hide non-boxable values. GRMustache.swift won't help you, because Swift won't help either: it makes it impossible to write a general `func Box(Any?) -> MustacheBox?` function that covers everything (especially, Swift can't recognize collections of boxable values).
 
 - `MustacheBox`? This would sure work, but now your library has married GRMustache.swift for good, and your library users are exposed to an alien library.
 
