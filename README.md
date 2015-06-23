@@ -842,8 +842,8 @@ Say you want to provide an API to build a HTTP Response body while hiding the te
 ```swift
 struct HTTPResponseBody {
     init(templateName: String, data: ???) {
-        let template = try! myPrivateRepository.template(named: templateName)
-        return try! template.render(Box(data))
+        let template = myPrivateRepository.template(named: templateName)!
+        init(string: template.render(Box(data))!)
     }
 }
 ```
