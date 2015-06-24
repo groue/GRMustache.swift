@@ -51,11 +51,7 @@ That said, let's have `Box()` box as many types as we can.
 
 We can acheive a reasonably good result through a long series of Swift features and work arounds.
 
-By "reasonably good", we mean:
-
-- Library user does not have to think about it too much: boxing usually work.
-- When boxing fails, it is because of a few, understandable reasons, that are
-  not too difficult to fix.
+By "reasonably good", we mean that library user does not have to think about it too much: boxing usually work. And when boxing fails, it is because of a few, understandable reasons, that are not too difficult to fix.
 
 1. We start with the MustacheBoxable protocol, and `func Box(boxable: MustacheBoxable?) -> MustacheBox`
     
