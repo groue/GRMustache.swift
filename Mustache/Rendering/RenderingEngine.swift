@@ -131,10 +131,10 @@ final class RenderingEngine {
         
         // 1. Evaluate expression
         
-        var box: MustacheBox
+        var value: MustacheValue
 
         do {
-            box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
+            value = try ExpressionInvocation(expression: expression).invokeWithContext(context)
         } catch {
             let nserror = error as NSError
             if nserror.domain == GRMustacheErrorDomain {
@@ -153,28 +153,27 @@ final class RenderingEngine {
         }
         
         
-        // 2. Let willRender functions alter the box
+        // 2. Let willRender functions /* TODO */ alter the value
         
-        for willRender in context.willRenderStack {
-            box = willRender(tag: tag, box: box)
+        for willRenderValue in context.willRenderStack {
+            value = willRenderValue.mustacheWillRender(tag: tag, value: value)
         }
         
         
-        // 3. Render the box
+        // 3. Render the value
         
         let rendering: Rendering
         do {
             switch tag.type {
             case .Variable:
                 let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                rendering = try box.render(info: info)
+                rendering = try value.mustacheRender(info: info)
             case .Section:
-                switch (inverted, box.boolValue) {
+                switch (inverted, value.mustacheBoolValue) {
                 case (false, true):
                     // {{# true }}...{{/ true }}
-                    // Only case where we trigger the RenderFunction of the Box
                     let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                    rendering = try box.render(info: info)
+                    rendering = try value.mustacheRender(info: info)
                 case (true, false):
                     // {{^ false }}...{{/ false }}
                     rendering = try tag.render(context)
@@ -185,8 +184,8 @@ final class RenderingEngine {
                 }
             }
         } catch {
-            for didRender in context.didRenderStack {
-                didRender(tag: tag, box: box, string: nil)
+            for didRenderValue in context.didRenderStack {
+                didRenderValue.mustacheDidRender(tag: tag, value: value, string: nil)
             }
             // TODO? Inject location in error
             throw error
@@ -206,8 +205,8 @@ final class RenderingEngine {
         
         // 5. Let didRender functions do their job
         
-        for didRender in context.didRenderStack {
-            didRender(tag: tag, box: box, string: string)
+        for didRenderValue in context.didRenderStack {
+            didRenderValue.mustacheDidRender(tag: tag, value: value, string: nil)
         }
     }
     

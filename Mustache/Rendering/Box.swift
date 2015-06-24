@@ -23,182 +23,36 @@
 import Foundation
 
 
-// "It's all boxes all the way down."
-//
-// Mustache templates don't eat raw values: they eat boxed values.
-//
-// To box something, you use the `Box()` function. It comes in several variants
-// so that nearly anything can be boxed and feed templates:
-//
-//     let value = ...
-//     template.render(Box(value))
-//
-// This file is organized in five sections with many examples. You can use the
-// Playground included in `Mustache.xcworkspace` to run those examples.
-//
-//
-// - MustacheBoxable and the Boxing of Value Types
-//
-//   The `MustacheBoxable` protocol lets any type describe how it interacts with
-//   the Mustache rendering engine.
-//
-//   It is adopted by the standard types Bool, Int, UInt, Double, String, and
-//   NSObject.
-//
-//
-// - Boxing of Collections
-//
-//   Learn how Array and Set are rendered.
-//
-//
-// - Boxing of Dictionaries
-//
-//   Learn how Dictionary and NSDictionary are rendered.
-//
-//
-// - Boxing of Core Mustache functions
-//
-//   The "core Mustache functions" are raw filters, Mustache lambdas, etc. Those
-//   can be boxed as well so that you can feed templates with them.
-//
-//
-// - Boxing of multi-facetted values
-//
-//   Describes the most advanced `Box()` function.
-
-
-// =============================================================================
-// MARK: - MustacheBoxable and the Boxing of Value Types
-
-/**
-The MustacheBoxable protocol gives any type the ability to feed Mustache
-templates.
-
-It is adopted by the standard types Bool, Int, UInt, Double, String, and
-NSObject.
-
-Your own types can conform to it as well, so that they can feed templates:
-
-    extension Profile: MustacheBoxable { ... }
-
-    let profile = ...
-    let template = try! Template(named: "Profile")
-    let rendering = try! template.render(Box(profile))
-*/
-public protocol MustacheBoxable {
+extension Bool : MustacheValue {
     
-    /**
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        value.mustacheBox   // Valid, but discouraged
-        Box(value)          // Preferred
-    
-    Return a `MustacheBox` that describes how your type interacts with the
-    rendering engine.
-    
-    You can for example box another value that is already boxable, such as
-    dictionaries:
-
-        struct Person {
-            let firstName: String
-            let lastName: String
-        }
-
-        extension Person : MustacheBoxable {
-            // Expose the `firstName`, `lastName` and `fullName` keys to
-            // Mustache templates:
-            var mustacheBox: MustacheBox {
-                return Box([
-                    "firstName": firstName,
-                    "lastName": lastName,
-                    "fullName": "\(self.firstName) \(self.lastName)",
-                ])
-            }
-        }
-
-        let person = Person(firstName: "Tom", lastName: "Selleck")
-    
-        // Renders "Tom Selleck"
-        let template = try! Template(string: "{{person.fullName}}")
-        try! template.render(Box(["person": Box(person)]))
-
-    However, there are multiple ways to build a box, several `Box()` functions.
-    See their documentations.
-    */
-    var mustacheBox: MustacheBox { get }
-}
-
-// IMPLEMENTATION NOTE
-//
-// This protocol conformance is not only a matter of consistency. It is also
-// a convenience for the library implementation: it makes arrays
-// [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
-// and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
-
-extension MustacheBox : MustacheBoxable {
-    
-    /**
-    `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. Its mustacheBox property returns itself.
-    */
-    public var mustacheBox: MustacheBox {
+    public var mustacheInnerValue: Any? {
         return self
     }
-}
-
-
-/**
-GRMustache provides built-in support for rendering `Bool`.
-*/
-
-extension Bool : MustacheBoxable {
     
-    /**
-    `Bool` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
+    public var mustacheBoolValue: Bool {
+        return self
+    }
     
-        true.mustacheBox   // Valid, but discouraged
-        Box(true)          // Preferred
-
-    
-    ### Rendering
-    
-    - `{{bool}}` renders as `0` or `1`.
-    
-    - `{{#bool}}...{{/bool}}` renders if and only if `bool` is true.
-    
-    - `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
-    
-    */
-    public var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
-            boolValue: self,
-            render: { (info: RenderingInfo) in
-                switch info.tag.type {
-                case .Variable:
-                    // {{ bool }}
-                    return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
-                case .Section:
-                    if info.enumerationItem {
-                        // {{# bools }}...{{/ bools }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
-                    } else {
-                        // {{# bool }}...{{/ bool }}
-                        //
-                        // Bools do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
-                    }
-                }
-        })
+    public func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        switch info.tag.type {
+        case .Variable:
+            // {{ bool }}
+            return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
+        case .Section:
+            if info.enumerationItem {
+                // {{# bools }}...{{/ bools }}
+                return try info.tag.render(info.context.extendedContext(self))
+            } else {
+                // {{# bool }}...{{/ bool }}
+                //
+                // Bools do not enter the context stack when used in a
+                // boolean section.
+                //
+                // This behavior must not change:
+                // https://github.com/groue/GRMustache/issues/83
+                return try info.tag.render(info.context)
+            }
+        }
     }
 }
 
@@ -207,55 +61,36 @@ extension Bool : MustacheBoxable {
 GRMustache provides built-in support for rendering `Int`.
 */
 
-extension Int : MustacheBoxable {
+extension Int : MustacheValue {
     
-    /**
-    `Int` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
+    public var mustacheInnerValue: Any? {
+        return self
+    }
     
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
+    public var mustacheBoolValue: Bool {
+        return (self != 0)
+    }
     
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{int}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
-    
-    - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
-    
-    */
-    public var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
-            boolValue: (self != 0),
-            render: { (info: RenderingInfo) in
-                switch info.tag.type {
-                case .Variable:
-                    // {{ int }}
-                    return Rendering("\(self)")
-                case .Section:
-                    if info.enumerationItem {
-                        // {{# ints }}...{{/ ints }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
-                    } else {
-                        // {{# int }}...{{/ int }}
-                        //
-                        // Ints do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
-                    }
-                }
-        })
+    public func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        switch info.tag.type {
+        case .Variable:
+            // {{ int }}
+            return Rendering("\(self)")
+        case .Section:
+            if info.enumerationItem {
+                // {{# ints }}...{{/ ints }}
+                return try info.tag.render(info.context.extendedContext(self))
+            } else {
+                // {{# int }}...{{/ int }}
+                //
+                // Ints do not enter the context stack when used in a
+                // boolean section.
+                //
+                // This behavior must not change:
+                // https://github.com/groue/GRMustache/issues/83
+                return try info.tag.render(info.context)
+            }
+        }
     }
 }
 
@@ -264,55 +99,36 @@ extension Int : MustacheBoxable {
 GRMustache provides built-in support for rendering `UInt`.
 */
 
-extension UInt : MustacheBoxable {
+extension UInt : MustacheValue {
     
-    /**
-    `UInt` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
+    public var mustacheInnerValue: Any? {
+        return self
+    }
     
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
+    public var mustacheBoolValue: Bool {
+        return (self != 0)
+    }
     
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{uint}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
-    
-    - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
-    
-    */
-    public var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
-            boolValue: (self != 0),
-            render: { (info: RenderingInfo) in
-                switch info.tag.type {
-                case .Variable:
-                    // {{ uint }}
-                    return Rendering("\(self)")
-                case .Section:
-                    if info.enumerationItem {
-                        // {{# uints }}...{{/ uints }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
-                    } else {
-                        // {{# uint }}...{{/ uint }}
-                        //
-                        // Uints do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
-                    }
-                }
-        })
+    public func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        switch info.tag.type {
+        case .Variable:
+            // {{ uint }}
+            return Rendering("\(self)")
+        case .Section:
+            if info.enumerationItem {
+                // {{# uints }}...{{/ uints }}
+                return try info.tag.render(info.context.extendedContext(self))
+            } else {
+                // {{# uint }}...{{/ uint }}
+                //
+                // Uints do not enter the context stack when used in a
+                // boolean section.
+                //
+                // This behavior must not change:
+                // https://github.com/groue/GRMustache/issues/83
+                return try info.tag.render(info.context)
+            }
+        }
     }
 }
 
@@ -321,55 +137,36 @@ extension UInt : MustacheBoxable {
 GRMustache provides built-in support for rendering `Double`.
 */
 
-extension Double : MustacheBoxable {
+extension Double : MustacheValue {
     
-    /**
-    `Double` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
+    public var mustacheInnerValue: Any? {
+        return self
+    }
     
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
+    public var mustacheBoolValue: Bool {
+        return (self != 0.0)
+    }
     
-        3.14.mustacheBox   // Valid, but discouraged
-        Box(3.14)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{double}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#double}}...{{/double}}` renders if and only if `double` is not 0 (zero).
-    
-    - `{{^double}}...{{/double}}` renders if and only if `double` is 0 (zero).
-    
-    */
-    public var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
-            boolValue: (self != 0.0),
-            render: { (info: RenderingInfo) in
-                switch info.tag.type {
-                case .Variable:
-                    // {{ double }}
-                    return Rendering("\(self)")
-                case .Section:
-                    if info.enumerationItem {
-                        // {{# doubles }}...{{/ doubles }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
-                    } else {
-                        // {{# double }}...{{/ double }}
-                        //
-                        // Doubles do not enter the context stack when used in a
-                        // boolean section.
-                        //
-                        // This behavior must not change:
-                        // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
-                    }
-                }
-        })
+    public func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        switch info.tag.type {
+        case .Variable:
+            // {{ double }}
+            return Rendering("\(self)")
+        case .Section:
+            if info.enumerationItem {
+                // {{# doubles }}...{{/ doubles }}
+                return try info.tag.render(info.context.extendedContext(self))
+            } else {
+                // {{# double }}...{{/ double }}
+                //
+                // Doubles do not enter the context stack when used in a
+                // boolean section.
+                //
+                // This behavior must not change:
+                // https://github.com/groue/GRMustache/issues/83
+                return try info.tag.render(info.context)
+            }
+        }
     }
 }
 
@@ -378,53 +175,23 @@ extension Double : MustacheBoxable {
 GRMustache provides built-in support for rendering `String`.
 */
 
-extension String : MustacheBoxable {
+extension String : MustacheValue {
     
-    /**
-    `String` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
+    public var mustacheInnerValue: Any? {
+        return self
+    }
     
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        "foo".mustacheBox   // Valid, but discouraged
-        Box("foo")          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{string}}` renders the string, HTML-escaped.
-    
-    - `{{{string}}}` renders the string, *not* HTML-escaped.
-    
-    - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
-    
-    - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
-    
-    HTML-escaping of `{{string}}` tags is disabled for Text templates: see
-    `Configuration.contentType` for a full discussion of the content type of
-    templates.
-    
-    
-    ### Keys exposed to templates
+    public var mustacheBoolValue: Bool {
+        return self.characters.count > 0
+    }
 
-    A string can be queried for the following keys:
-    
-    - `length`: the number of characters in the string.
-    
-    */
-    public var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
-            boolValue: (self.characters.count > 0),
-            keyedSubscript: { (key: String) in
-                switch key {
-                case "length":
-                    return Box(self.characters.count)
-                default:
-                    return Box()
-                }
-            })
+    public func mustacheSubscript(key: String) -> MustacheValue {
+        switch key {
+        case "length":
+            return self.characters.count
+        default:
+            return MissingMustacheKey
+        }
     }
 }
 
@@ -433,478 +200,86 @@ extension String : MustacheBoxable {
 GRMustache provides built-in support for rendering `NSObject`.
 */
 
-extension NSObject : MustacheBoxable {
+extension NSObject {
     
-    /**
-    `NSObject` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        object.mustacheBox   // Valid, but discouraged
-        Box(object)          // Preferred
-    
-    
-    NSObject's default implementation handles two general cases:
-    
-    - Enumerable objects that conform to the `NSFastEnumeration` protocol, such
-      as `NSArray` and `NSOrderedSet`.
-    - All other objects
-    
-    GRMustache ships with a few specific classes that escape the general cases
-    and provide their own rendering behavior: `NSDictionary`, `NSFormatter`,
-    `NSNull`, `NSNumber`, `NSString`, and `NSSet` (see the documentation for
-    those classes).
-    
-    Your own subclasses of NSObject can also override the `mustacheBox` method
-    and provide their own custom behavior.
-    
-    
-    ## Arrays
-    
-    An object is treated as an array if it conforms to `NSFastEnumeration`. This
-    is the case of `NSArray` and `NSOrderedSet`, for example. `NSDictionary` and
-    `NSSet` have their own custom Mustache rendering: see their documentation
-    for more information.
-    
-    
-    ### Rendering
-    
-    - `{{array}}` renders the concatenation of the renderings of the array items.
-    
-    - `{{#array}}...{{/array}}` renders as many times as there are items in
-      `array`, pushing each item on its turn on the top of the context stack.
-    
-    - `{{^array}}...{{/array}}` renders if and only if `array` is empty.
-    
-    
-    ### Keys exposed to templates
-    
-    An array can be queried for the following keys:
-    
-    - `count`: number of elements in the array
-    - `first`: the first object in the array
-    - `last`: the last object in the array
-    
-    Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders
-    once, if and only if `array` is not empty.
-    
-    
-    ## Other objects
-    
-    Other objects fall in the general case.
-    
-    Their keys are extracted with the `valueForKey:` method, as long as the key
-    is a property name, a custom property getter, or the name of a
-    `NSManagedObject` attribute.
-    
-    
-    ### Rendering
-    
-    - `{{object}}` renders the result of the `description` method, HTML-escaped.
-    
-    - `{{{object}}}` renders the result of the `description` method, *not*
-      HTML-escaped.
-    
-    - `{{#object}}...{{/object}}` renders once, pushing `object` on the top of
-      the context stack.
-    
-    - `{{^object}}...{{/object}}` does not render.
-    
-    */
-    public var mustacheBox: MustacheBox {
-        if let enumerable = self as? NSFastEnumeration {
-            // Enumerable
-            
-            // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-            let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
-            return array.mustacheBoxWithArrayValue(self, box: { $0 })
-            
-        } else {
-            // Generic NSObject
-            
-            return MustacheBox(
-                value: self,
-                keyedSubscript: { (key: String) in
-                    if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
-                        // Use valueForKey: for safe keys
-                        return BoxAnyObject(self.valueForKey(key))
-                    } else {
-                        // Missing key
-                        return Box()
-                    }
-                })
+    private class MustacheNSObject: MustacheValue {
+        private let object: NSObject
+        
+        init(object: NSObject) {
+            self.object = object
+        }
+        
+        var mustacheValue: Any? {
+            return object
+        }
+        
+        func mustacheSubscript(key: String) -> MustacheValue {
+            if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: object) {
+                // Use valueForKey: for safe keys
+                return (object.valueForKey(key) as? NSObject)?.mustacheValue ?? MissingMustacheValue
+            } else {
+                // Missing key
+                return MissingMustacheKey
+            }
         }
     }
-}
-
-
-/**
-GRMustache provides built-in support for rendering `NSNull`.
-*/
-
-extension NSNull {
     
-    /**
-    `NSNull` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        NSNull().mustacheBox   // Valid, but discouraged
-        Box(NSNull())          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{null}}` does not render.
-    
-    - `{{#null}}...{{/null}}` does not render (NSNull is falsey).
-    
-    - `{{^null}}...{{/null}}` does render (NSNull is falsey).
-    */
-    public override var mustacheBox: MustacheBox {
-        return MustacheBox(
-            boolValue: false,
-            value: self,
-            render: { (info: RenderingInfo) in return Rendering("") })
-    }
-}
-
-
-/**
-GRMustache provides built-in support for rendering `NSNumber`.
-*/
-
-extension NSNumber {
-    
-    /**
-    `NSNumber` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        NSNumber(integer: 1).mustacheBox   // Valid, but discouraged
-        Box(NSNumber(integer: 1))          // Preferred
-    
-    
-    ### Rendering
-    
-    NSNumber renders exactly like Swift numbers: depending on its internal
-    objCType, an NSNumber is rendered as a Swift Bool, Int, UInt, or Double.
-    
-    - `{{number}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#number}}...{{/number}}` renders if and only if `number` is not 0 (zero).
-    
-    - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
-    
-    */
-    public override var mustacheBox: MustacheBox {
+    var mustacheValue: MustacheValue {
         
-        // IMPLEMENTATION NOTE
-        //
-        // Don't event think about wrapping unsigned values in an Int, even if
-        // Int is large enough to store these values without information loss.
-        // This would make template rendering depend on the size of Int, and
-        // yield very weird platform-related issues. So keep it simple, stupid.
+        switch self {
+        case let set as NSSet:
+            return MustacheSet(GeneratorSequence(NSFastGenerator(set)).map(BoxAnyObject), mustacheInnerValue: set)
+
+        case let enumerable as NSFastEnumeration:
+            return MustacheArray(GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject), mustacheInnerValue: set)
         
-        let objCType = String.fromCString(self.objCType)!
-        switch objCType {
-        case "c":
-            return Box(Int(charValue))
-        case "C":
-            return Box(UInt(unsignedCharValue))
-        case "s":
-            return Box(Int(shortValue))
-        case "S":
-            return Box(UInt(unsignedShortValue))
-        case "i":
-            return Box(Int(intValue))
-        case "I":
-            return Box(UInt(unsignedIntValue))
-        case "l":
-            return Box(Int(longValue))
-        case "L":
-            return Box(UInt(unsignedLongValue))
-        case "q":
-            return Box(Int(longLongValue))          // May fail on 32-bits architectures, right?
-        case "Q":
-            return Box(UInt(unsignedLongLongValue)) // May fail on 32-bits architectures, right?
-        case "f":
-            return Box(Double(floatValue))
-        case "d":
-            return Box(doubleValue)
-        case "B":
-            return Box(boolValue)
+        case  _ as NSNull:
+            return MissingMustacheValue
+            
+        case let number as NSNumber:
+            let objCType = String.fromCString(number.objCType)!
+            switch objCType {
+            case "c":
+                return Int(charValue)
+            case "C":
+                return UInt(unsignedCharValue)
+            case "s":
+                return Int(shortValue)
+            case "S":
+                return UInt(unsignedShortValue)
+            case "i":
+                return Int(intValue)
+            case "I":
+                return UInt(unsignedIntValue)
+            case "l":
+                return Int(longValue)
+            case "L":
+                return UInt(unsignedLongValue)
+            case "q":
+                return Int(longLongValue)          // May fail on 32-bits architectures, right?
+            case "Q":
+                return UInt(unsignedLongLongValue) // May fail on 32-bits architectures, right?
+            case "f":
+                return Double(floatValue)
+            case "d":
+                return doubleValue
+            case "B":
+                return boolValue
+            default:
+                NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
+                return MissingMustacheValue
+            }
+        
+        case let string as NSString:
+            return string as String
+            
         default:
-            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
-            return Box()
+            // Generic NSObject
+            return MustacheNSObject(object: self)
         }
     }
 }
 
-
-/**
-GRMustache provides built-in support for rendering `NSString`.
-*/
-
-extension NSString {
-    
-    /**
-    `NSString` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        "foo".mustacheBox   // Valid, but discouraged
-        Box("foo")          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{string}}` renders the string, HTML-escaped.
-    
-    - `{{{string}}}` renders the string, *not* HTML-escaped.
-    
-    - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
-    
-    - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
-    
-    HTML-escaping of `{{string}}` tags is disabled for Text templates: see
-    `Configuration.contentType` for a full discussion of the content type of
-    templates.
-    
-    
-    ### Keys exposed to templates
-
-    A string can be queried for the following keys:
-    
-    - `length`: the number of characters in the string (using Swift method).
-    
-    */
-    public override var mustacheBox: MustacheBox {
-        return Box(self as String)
-    }
-}
-
-
-/**
-Values that conform to the `MustacheBoxable` protocol can feed Mustache
-templates.
-
-- parameter boxable: An optional value that conform to the `MustacheBoxable`
-                     protocol.
-
-- returns: A MustacheBox that wraps *boxable*.
-*/
-public func Box(boxable: MustacheBoxable?) -> MustacheBox {
-    return boxable?.mustacheBox ?? Box()
-}
-
-
-// IMPLEMENTATION NOTE
-//
-// Why is there a Box(NSObject?) function, when Box(MustacheBoxable?) should be
-// enough, given NSObject adopts MustacheBoxable?
-//
-// Well, this is another Swift oddity.
-//
-// Without this explicit NSObject support, many compound values like the ones
-// below could not be boxed:
-//
-// - ["cats": ["Kitty", "Pussy", "Melba"]]
-// - [[0,1],[2,3]]
-//
-// It looks like Box(object: NSObject?) triggers the silent conversion of those
-// values to NSArray and NSDictionary.
-//
-// It's an extra commodity we want to keep, in order to prevent the user to
-// rewrite them as:
-//
-// - ["cats": Box([Box("Kitty"), Box("Pussy"), Box("Melba")])]
-// - [Box([0,1]), Box([2,3])]
-
-/**
-See the documentation of `NSObject.mustacheBox`.
-
-- parameter object: An NSObject.
-- returns: A MustacheBox that wraps *object*.
-*/
-public func Box(object: NSObject?) -> MustacheBox {
-    return object?.mustacheBox ?? Box()
-}
-
-
-// IMPLEMENTATION NOTE
-//
-// Why is there a BoxAnyObject(AnyObject?) function, but no Box(AnyObject?)
-//
-// GRMustache aims at having a single boxing function: Box(), with many
-// overloaded variants. This lets the user box anything, standard Swift types
-// (Bool, String, etc.), custom types, as well as opaque types (such as
-// StandardLibrary.javascriptEscape).
-//
-// For example:
-//
-//      public func Box(boxable: MustacheBoxable?) -> MustacheBox
-//      public func Box(filter: FilterFunction) -> MustacheBox
-//
-// Sometimes values come out of Foundation objects:
-//
-//     class NSDictionary {
-//         subscript (key: NSCopying) -> AnyObject? { get }
-//     }
-//
-// So we need a Box(AnyObject?) function, right?
-//
-// Unfortunately, this will not work:
-//
-//     protocol MustacheBoxable {}
-//     class Thing: MustacheBoxable {}
-//
-//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box(x: AnyObject?) -> String { return "AnyObject" }
-//
-//     // error: ambiguous use of 'Box'
-//     Box(Thing())
-//
-// Maybe if we turn the func Box(x: MustacheBoxable?) into a generic one? Well,
-// it does not make the job either:
-//
-//     protocol MustacheBoxable {}
-//     class Thing: MustacheBoxable {}
-//
-//     func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
-//     func Box(x: AnyObject?) -> String { return "AnyObject" }
-//
-//     // Wrong: uses the AnyObject variant
-//     Box(Thing())
-//
-//     // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
-//     Box(Thing() as MustacheBoxable)
-//
-//     // Error: Crash the compiler
-//     Box(Thing() as MustacheBoxable?)
-//
-// And if we turn the func Box(x: AnyObject) into a generic one? Well, it gets
-// better:
-//
-//     protocol MustacheBoxable {}
-//     class Thing: MustacheBoxable {}
-//
-//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box<T:AnyObject>(object: T?) -> String { return "AnyObject" }
-//
-//     // OK: uses the MustacheBox variant
-//     Box(Thing())
-//
-//     // OK: uses the MustacheBox variant
-//     Box(Thing() as MustacheBoxable)
-//
-//     // OK: uses the MustacheBox variant
-//     Box(Thing() as MustacheBoxable?)
-//
-//     // OK: uses the AnyObject variant
-//     Box(Thing() as AnyObject)
-//
-//     // OK: uses the AnyObject variant
-//     Box(Thing() as AnyObject?)
-//
-// This looks OK, doesn't it? Well, it's not satisfying yet.
-//
-// According to http://airspeedvelocity.net/2015/03/26/protocols-and-generics-2/
-// there are reasons for preferring func Box<T: MustacheBoxable>(x: T?) over
-// func Box(x: MustacheBoxable?). The example above have shown that the boxing
-// of AnyObject with an overloaded version of Box() would make this choice for
-// us.
-//
-// It's better not to make any choice right now, until we have a better
-// knowledge of Swift performances and optimization, and of the way Swift
-// resolves overloaded functions.
-// 
-// So let's avoid having any Box(AnyObject?) variant in the public API, and
-// let's expose the BoxAnyObject(object: AnyObject?) instead.
-
-// IMPLEMENTATION NOTE 2
-//
-// BoxAnyObject has been made private. Now users get a compiler error when they
-// try to box AnyObject.
-//
-// Reasons for this removal from the public API:
-//
-// - Users will try Box() first, which will fail. Since they may not know
-//   anything BoxAnyObject, BoxAnyObject is of little value anyway.
-// - BoxAnyObject is error-prone, since it accepts anything and fails at
-//   runtime.
-//
-// It still exists because we need it to box Foundation collections like
-// NSArray, NSSet, NSDictionary.
-
-/**
-`AnyObject` can feed Mustache templates.
-
-Yet, due to constraints in the Swift language, there is no `Box(AnyObject)`
-function. Instead, you use `BoxAnyObject`:
-
-    let set = NSSet(object: "Mario")
-    let object: AnyObject = set.anyObject()
-    let box = BoxAnyObject(object)
-    box.value as String  // "Mario"
-
-The object is tested at runtime whether it adopts the `MustacheBoxable`
-protocol. In this case, this function behaves just like `Box(MustacheBoxable)`.
-
-Otherwise, GRMustache logs a warning, and returns the empty box.
-
-- parameter object: An object.
-- returns: A MustacheBox that wraps *object*.
-*/
-private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
-    if let boxable = object as? MustacheBoxable {
-        return boxable.mustacheBox
-    } else if let object: AnyObject = object {
-        
-        // IMPLEMENTATION NOTE
-        //
-        // In the example below, the Thing class can not be turned into any
-        // relevant MustacheBox.
-        // 
-        // Yet we can not prevent the user from trying to box it, because the
-        // Thing class adopts the AnyObject protocol, just as all Swift classes.
-        //
-        //     class Thing { }
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
-        //     Box(Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(Thing())
-        //
-        //     // Foundation collections can also contain unsupported classes:
-        //     let array = NSArray(object: Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     Box(array)
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
-        //     Box(array[0])
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(array[0])
-        
-        NSLog("Mustache.BoxAnyObject(): value `\(object)` is does not conform to MustacheBoxable: it is discarded.")
-        return Box()
-    } else {
-        return Box()
-    }
-}
 
 
 // =============================================================================
@@ -926,7 +301,7 @@ private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 // So we don't support boxing of sequences.
 
 // Support for all collections
-extension CollectionType {
+extension Array where Element: MustacheValue {
     
     /**
     Concatenates the rendering of the collection items.
@@ -952,7 +327,7 @@ extension CollectionType {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(var info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
+    private func mustacheRenderItems(var info: RenderingInfo) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var buffer = ""
         var contentType: ContentType? = nil
@@ -974,17 +349,17 @@ extension CollectionType {
         info.enumerationItem = true
         
         for item in self {
-            let boxRendering = try box(item).render(info: info)
+            let rendering = try item.mustacheRender(info)
             if contentType == nil
             {
                 // First item: now we know our contentType
-                contentType = boxRendering.contentType
-                buffer += boxRendering.string
+                contentType = rendering.contentType
+                buffer += rendering.string
             }
-            else if contentType == boxRendering.contentType
+            else if contentType == rendering.contentType
             {
                 // Consistent content type: keep on buffering.
-                buffer += boxRendering.string
+                buffer += rendering.string
             }
             else
             {
@@ -1028,107 +403,94 @@ extension CollectionType {
 }
 
 // Support for Set
-extension CollectionType where Index.Distance == Int {
-    /**
-    This function returns a MustacheBox that wraps a set-like collection.
+private class MustacheSet: MustacheValue {
+    var mustacheInnerValue: Any?
+    let array: [MustacheValue]
     
-    The returned box can be queried for the following keys:
+    init<C: CollectionType where C.Element: MustacheValue, C.Index.Distance == Int>(collection: C, mustacheInnerValue: Any?) {
+        mustacheInnerValue = mustacheInnerValue
+        self.array = collection.map { $0 }
+    }
     
-    - `first`: the first object in the collection
-    - `count`: number of elements in the collection
-    
-    - parameter value: the value of the returned box.
-    - parameter box:   A closure that turns collection items into a MustacheBox.
-                       It makes us able to provide a single implementation
-                       whatever the type of the collection items.
-    - returns: A MustacheBox that wraps the collection.
-    */
-    private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
-        return MustacheBox(
-            boolValue: !isEmpty,
-            value: value,
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
-            keyedSubscript: { (key) in
-                switch key {
-                case "first":   // C: CollectionType
-                    if let first = self.first {
-                        return box(first)
-                    } else {
-                        return Box()
-                    }
-                case "count":   // C.Index.Distance == Int
-                    return Box(self.count)
-                default:
-                    return Box()
-                }
-            },
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithSetValue(value, box: box)))
-                } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return try self.renderItems(info, box: box)
-                }
+    func mustacheSubscript(key: String) -> MustacheValue {
+        switch key {
+        case "first":
+            if let first = array.first {
+                return first
+            } else {
+                return MissingMustacheValue
             }
-        )
+        case "count":
+            return array.count
+        default:
+            return MissingMustacheKey
+        }
+    }
+    
+    func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        if info.enumerationItem {
+            // {{# collections }}...{{/ collections }}
+            return try info.tag.render(info.context.extendedContext(self))
+        } else {
+            // {{ collection }}
+            // {{# collection }}...{{/ collection }}
+            return try array.mustacheRenderItems(info)
+        }
+    }
+}
+
+extension CollectionType where Element: MustacheValue, Index.Distance == Int {
+    public var mustacheValue: MustacheValue {
+        return MustacheSet(self, mustacheInnerValue: self)
     }
 }
 
 // Support for Array
-extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexType {
-    /**
-    This function returns a MustacheBox that wraps an array-like collection.
+private class MustacheArray: MustacheValue {
+    var mustacheInnerValue: Any?
+    let array: [MustacheValue]
     
-    The returned box can be queried for the following keys:
+    init<C: CollectionType where C.Element: MustacheValue, C.Index.Distance == Int, C.Index: BidirectionalIndexType>(collection: C, mustacheInnerValue: Any?) {
+        self.mustacheInnerValue = collection
+        self.array = collection.map { $0 }
+    }
     
-    - `first`: the first object in the collection
-    - `count`: number of elements in the collection
-    - `last`: the last object in the collection
-    
-    - parameter value: the value of the returned box.
-    - parameter box:   A closure that turns collection items into a MustacheBox.
-                       It makes us able to provide a single implementation
-                       whatever the type of the collection items.
-    - returns: A MustacheBox that wraps the collection.
-    */
-    private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
-        return MustacheBox(
-            boolValue: !isEmpty,
-            value: value,
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
-            keyedSubscript: { (key) in
-                switch key {
-                case "first":   // C: CollectionType
-                    if let first = self.first {
-                        return box(first)
-                    } else {
-                        return Box()
-                    }
-                case "last":    // C.Index: BidirectionalIndexType
-                    if let last = self.last {
-                        return box(last)
-                    } else {
-                        return Box()
-                    }
-                case "count":   // C.Index.Distance == Int
-                    return Box(self.count)
-                default:
-                    return Box()
-                }
-            },
-            render: { (info: RenderingInfo) in
-                if info.enumerationItem {
-                    // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithArrayValue(value, box: box)))
-                } else {
-                    // {{ collection }}
-                    // {{# collection }}...{{/ collection }}
-                    return try self.renderItems(info, box: box)
-                }
+    func mustacheSubscript(key: String) -> MustacheValue {
+        switch key {
+        case "first":
+            if let first = array.first {
+                return first
+            } else {
+                return MissingMustacheValue
             }
-        )
+        case "last":
+            if let last = array.last {
+                return last
+            } else {
+                return MissingMustacheValue
+            }
+        case "count":
+            return array.count
+        default:
+            return MissingMustacheKey
+        }
+    }
+    
+    func mustacheRender(info: RenderingInfo) throws -> Rendering {
+        if info.enumerationItem {
+            // {{# collections }}...{{/ collections }}
+            return try info.tag.render(info.context.extendedContext(self))
+        } else {
+            // {{ collection }}
+            // {{# collection }}...{{/ collection }}
+            return try array.mustacheRenderItems(info)
+        }
+    }
+}
+
+extension CollectionType where Element: MustacheValue, Index.Distance == Int, Index: BidirectionalIndexType {
+    public var mustacheValue: MustacheValue {
+        return MustacheArray(self, mustacheInnerValue: self)
     }
 }
 

@@ -26,16 +26,16 @@ import Foundation
 struct ExpressionInvocation {
     let expression: Expression
     
-    func invokeWithContext(context: Context) throws -> MustacheBox {
+    func invokeWithContext(context: Context) throws -> MustacheValue {
         return try evaluate(context: context, expression: expression)
     }
     
-    private func evaluate(context context: Context, expression: Expression) throws -> MustacheBox {
+    private func evaluate(context context: Context, expression: Expression) throws -> MustacheValue {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
             
-            return context.topBox
+            return context.topMustacheValue
             
         case .Identifier(let identifier):
             // {{ identifier }}
@@ -50,18 +50,9 @@ struct ExpressionInvocation {
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
-            let filterBox = try evaluate(context: context, expression: filterExpression.expression)
-            
-            guard let filter = filterBox.filter else {
-                if filterBox.isEmpty {
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
-                } else {
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
-                }
-            }
-            
-            let argumentBox = try evaluate(context: context, expression: argumentExpression.expression)
-            return try filter(box: argumentBox, partialApplication: partialApplication)
+            let filterValue = try evaluate(context: context, expression: filterExpression.expression)
+            let argumentValue = try evaluate(context: context, expression: argumentExpression.expression)
+            return filterValue.filter(argumentValue, partialApplication: partialApplication)
         }
     }
 }

@@ -69,13 +69,13 @@ final public class Context {
     }
     
     /**
-    Builds a context that contains the provided box.
+    Builds a context that contains the provided value.
     
-    - parameter box: A box.
-    - returns: A new context that contains *box*.
+    - parameter value: A MustacheValue.
+    - returns: A new context that contains *value*.
     */
-    public convenience init(_ box: MustacheBox) {
-        self.init(type: .Box(box: box, parent: Context()))
+    public convenience init(_ value: MustacheValue) {
+        self.init(type: .Value(value: value, parent: Context()))
     }
     
     /**
@@ -83,11 +83,11 @@ final public class Context {
     when evaluating Mustache tags.
     
     - parameter key: An identifier.
-    - parameter box: A box.
-    - returns: A new context with *box* registered for *key*.
+    - parameter value: A MustacheValue.
+    - returns: A new context with *value* registered for *key*.
     */
-    public convenience init(registeredKey key: String, box: MustacheBox) {
-        self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
+    public convenience init(registeredKey key: String, value: MustacheValue) {
+        self.init(type: .Root, registeredKeysContext: Context([key: value]))
     }
     
     
@@ -95,28 +95,28 @@ final public class Context {
     // MARK: - Deriving New Contexts
     
     /**
-    Returns a new context with the provided box pushed at the top of the context
-    stack.
+    Returns a new context with the provided value pushed at the top of the
+    context stack.
     
-    - parameter box: A box.
-    - returns: A new context with *box* pushed at the top of the stack.
+    - parameter value: A MustacheValue.
+    - returns: A new context with *value* pushed at the top of the stack.
     */
     @warn_unused_result(message="Context.extendedContext returns a new Context.")
-    public func extendedContext(box: MustacheBox) -> Context {
-        return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
+    public func extendedContext(value: MustacheValue) -> Context {
+        return Context(type: .Value(value: value, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     /**
-    Returns a new context with the provided box at the top of the context stack.
-    Registered keys are looked up first when evaluating Mustache tags.
+    Returns a new context with the provided value at the top of the context
+    stack. Registered keys are looked up first when evaluating Mustache tags.
     
     - parameter key: An identifier.
-    - parameter box: A box.
-    - returns: A new context with *box* registered for *key*.
+    - parameter value: A MustacheValue.
+    - returns: A new context with *value* registered for *key*.
     */
     @warn_unused_result(message="Context.contextWithRegisteredKey returns a new Context.")
-    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
-        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
+    public func contextWithRegisteredKey(key: String, value: MustacheValue) -> Context {
+        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext([key: value])
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     
@@ -125,31 +125,31 @@ final public class Context {
     // MARK: - Fetching Values from the Context Stack
     
     /**
-    Returns the top box of the context stack, the one that would be rendered by
-    the `{{.}}` tag.
+    Returns the top value of the context stack, the one that would be rendered
+    by the `{{.}}` tag.
     */
-    public var topBox: MustacheBox {
+    public var topMustacheValue: MustacheValue {
         switch type {
         case .Root:
-            return Box()
-        case .Box(box: let box, parent: _):
-            return box
+            return MissingMustacheValue
+        case .Value(value: let value, parent: _):
+            return value
         case .PartialOverride(partialOverride: _, parent: let parent):
-            return parent.topBox
+            return parent.topMustacheValue
         }
     }
     
     /**
-    Returns the boxed value stored in the context stack for the given key.
+    Returns the value stored in the context stack for the given key.
     
     The following search pattern is used:
     
-    1. If the key is "registered", returns the registered box for that key.
+    1. If the key is "registered", returns the registered value for that key.
     
-    2. Otherwise, searches the context stack for a box that has a non-empty
-       box for the key (see `InspectFunction`).
+    2. Otherwise, searches the context stack for a value that has a non-empty
+       value for the key (see `InspectFunction`).
     
-    3. If none of the above situations occurs, returns the empty box.
+    3. If none of the above situations occurs, returns the empty value.
     
             let data = ["name": "Groucho Marx"]
             let context = Context(Box(data))
@@ -162,25 +162,25 @@ final public class Context {
     
     See also:
     
-    - mustacheBoxForExpression
+    - mustacheValueForExpression
     */
-    public subscript (key: String) -> MustacheBox {
+    public subscript(key: String) -> MustacheValue {
         if let registeredKeysContext = registeredKeysContext {
-            let box = registeredKeysContext[key]
-            if !box.isEmpty {
+            let mustacheValue = registeredKeysContext[key]
+            if !mustacheValue is _MissingMustacheKey {
                 return box
             }
         }
         
         switch type {
         case .Root:
-            return Box()
-        case .Box(box: let box, parent: let parent):
-            let innerBox = box[key]
-            if innerBox.isEmpty {
+            return MissingMustacheKey
+        case .Value(value: let value, parent: let parent):
+            let innerValue = value.mustacheSubscript(key)
+            if innerValue is _MissingMustacheKey {
                 return parent[key]
             } else {
-                return innerBox
+                return innerValue
             }
         case .PartialOverride(partialOverride: _, parent: let parent):
             return parent[key]
@@ -202,7 +202,7 @@ final public class Context {
     
     - returns: The value of the expression.
     */
-    public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
+    public func mustacheValueForExpression(string: String) throws -> MustacheValue {
         let parser = ExpressionParser()
         var empty = false
         let expression = try parser.parse(string, empty: &empty)
@@ -216,38 +216,32 @@ final public class Context {
     
     private enum Type {
         case Root
-        case Box(box: MustacheBox, parent: Context)
+        case Value(value: MustacheValue, parent: Context)
         case PartialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
     }
     
     private var registeredKeysContext: Context?
     private let type: Type
     
-    var willRenderStack: [WillRenderFunction] {
+    // TODO: make this efficient. Here we return all values from the context stack.
+    var willRenderStack: [MustacheValue] {
         switch type {
         case .Root:
             return []
-        case .Box(box: let box, parent: let parent):
-            if let willRender = box.willRender {
-                return [willRender] + parent.willRenderStack
-            } else {
-                return parent.willRenderStack
-            }
+        case .Value(value: let value, parent: let parent):
+            return [value] + parent.willRenderStack
         case .PartialOverride(partialOverride: _, parent: let parent):
             return parent.willRenderStack
         }
     }
     
-    var didRenderStack: [DidRenderFunction] {
+    // TODO: make this efficient. Here we return all values from the context stack.
+    var didRenderStack: [MustacheValue] {
         switch type {
         case .Root:
             return []
-        case .Box(box: let box, parent: let parent):
-            if let didRender = box.didRender {
-                return parent.didRenderStack + [didRender]
-            } else {
-                return parent.didRenderStack
-            }
+        case .Value(value: let value, parent: let parent):
+            return parent.didRenderStack + [didRender]
         case .PartialOverride(partialOverride: _, parent: let parent):
             return parent.didRenderStack
         }
@@ -257,7 +251,7 @@ final public class Context {
         switch type {
         case .Root:
             return []
-        case .Box(box: _, parent: let parent):
+        case .Value(value: _, parent: let parent):
             return parent.partialOverrideStack
         case .PartialOverride(partialOverride: let partialOverride, parent: let parent):
             return [partialOverride] + parent.partialOverrideStack
@@ -280,8 +274,8 @@ extension Context: CustomDebugStringConvertible {
         switch type {
         case .Root:
             return "Context.Root"
-        case .Box(box: let box, parent: let parent):
-            return "Context.Box(\(box)):\(parent.debugDescription)"
+        case .Value(value: let value, parent: let parent):
+            return "Context.Value(\(value)):\(parent.debugDescription)"
         case .PartialOverride(partialOverride: _, parent: let parent):
             return "Context.PartialOverride:\(parent.debugDescription)"
         }
