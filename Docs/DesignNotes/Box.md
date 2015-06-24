@@ -107,7 +107,7 @@ By "reasonably good", we mean that library user does not have to think about it 
     - `Array<MustacheBox>`
     - `Array<UserType>` as long as UserType conforms to MustacheBoxable.
     
-    Swift2 currently won't support collections of optional MustacheBoxable because of a compiler crash. Swift1.2 supports it, though: we can expect support for those collectionsto come back sooner or later.
+    Swift2 currently won't support collections of optional MustacheBoxable because of a compiler crash. Swift1.2 supports it, though: we can expect support for those collections to come back sooner or later.
 
 6. We box dictionaries with `func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox` and `func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox`
     
