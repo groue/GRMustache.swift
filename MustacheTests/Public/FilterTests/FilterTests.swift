@@ -197,11 +197,14 @@ class FilterTests: XCTestCase {
         do {
             try template.render()
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("Missing filter") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+        } catch {
+            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+            // Workaround: let nserror = error as NSError
+            let nserror = error as NSError
+            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(nserror.code, GRMustacheErrorCodeRenderingError)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("Missing filter") != nil)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
         }
     }
     
@@ -216,11 +219,14 @@ class FilterTests: XCTestCase {
         do {
             try template.render(Box(["f": "foo"]))
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("Not a filter") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 2") != nil)
+        } catch {
+            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+            // Workaround: let nserror = error as NSError
+            let nserror = error as NSError
+            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
+            XCTAssertEqual(nserror.code, GRMustacheErrorCodeRenderingError)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("Not a filter") != nil)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
         }
     }
     
@@ -297,11 +303,14 @@ class FilterTests: XCTestCase {
         do {
             try template.render()
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("CustomMessage") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("line 3") != nil)
-            XCTAssertTrue(error.localizedDescription.rangeOfString("{{f(x)}}") != nil)
+        } catch {
+            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+            // Workaround: let nserror = error as NSError
+            let nserror = error as NSError
+            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("CustomMessage") != nil)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 3") != nil)
+            XCTAssertTrue(nserror.localizedDescription.rangeOfString("{{f(x)}}") != nil)
         }
     }
     
@@ -316,9 +325,12 @@ class FilterTests: XCTestCase {
         do {
             try template.render()
             XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, "CustomErrorDomain")
-            XCTAssertEqual(error.localizedDescription, "CustomMessage")
+        } catch {
+            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+            // Workaround: let nserror = error as NSError
+            let nserror = error as NSError
+            XCTAssertEqual(nserror.domain, "CustomErrorDomain")
+            XCTAssertEqual(nserror.localizedDescription, "CustomMessage")
         }
     }
     

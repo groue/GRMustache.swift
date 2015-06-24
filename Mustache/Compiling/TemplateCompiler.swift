@@ -120,8 +120,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as NSError {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        } catch {
+                            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                            // Workaround: let nserror = error as NSError
+                            let nserror = error as NSError
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                         }
                     }
                     
@@ -135,8 +138,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as NSError {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        } catch {
+                            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                            // Workaround: let nserror = error as NSError
+                            let nserror = error as NSError
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                         }
                     }
                     
@@ -150,8 +156,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as NSError {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        } catch {
+                            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                            // Workaround: let nserror = error as NSError
+                            let nserror = error as NSError
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                         }
                     }
                     
@@ -165,8 +174,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as NSError {
-                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                        } catch {
+                            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                            // Workaround: let nserror = error as NSError
+                            let nserror = error as NSError
+                            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                         }
                     }
                     
@@ -192,9 +204,12 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var expression: Expression?
                         do {
                             expression = try ExpressionParser().parse(content, empty: &empty)
-                        } catch let error as NSError {
+                        } catch {
                             if empty == false {
-                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                                // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                                // Workaround: let nserror = error as NSError
+                                let nserror = error as NSError
+                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                             }
                         }
                         if expression != nil && expression != closedExpression {
@@ -220,9 +235,12 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var expression: Expression?
                         do {
                             expression = try ExpressionParser().parse(content, empty: &empty)
-                        } catch let error as NSError {
+                        } catch {
                             if empty == false {
-                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(error.localizedDescription)"])
+                                // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
+                                // Workaround: let nserror = error as NSError
+                                let nserror = error as NSError
+                                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(token.locationDescription): \(nserror.localizedDescription)"])
                             }
                         }
                         if expression != nil && expression != closedExpression {
