@@ -26,15 +26,15 @@ Well, the `Box()` function allows us to do that, with some reasonable limitation
     
     With Swift, this is impossible, because is it impossible to define a single type (the argument to `Template.render()`) that does the job. Let's review some candidates for this unicorn type:
     
-    `Any` is not an option: there is no dynamic dispatch behind it, and Swift makes it impossible to perform a runtime check for some boxable types, like collections of boxable types.
+    - **Any** is not an option: there is no dynamic dispatch behind it, and Swift makes it impossible to perform a runtime check for some boxable types, like collections of boxable types.
     
-    `AnyObject` is not an option: structs and enums are not classes, and we want GRMustache.swift to eat structs and enums. If it would not, the library would need to refactor his code, and this a key requirement of GRMustache.swift that it eats user types without refactoring.
+    - **AnyObject** is not an option: structs and enums are not classes, and we want GRMustache.swift to eat structs and enums. If it would not, the library would need to refactor his code, and this a key requirement of GRMustache.swift that it eats user types without refactoring.
     
-    `NSObject` is not an option: this would again require the user to refactor his existing structs and enum models. And the Objective-C GRMustache already exists. What's the purpose of a Swift Mustache engine that can only render Objective-C objects?
+    - **NSObject** is not an option: this would again require the user to refactor his existing structs and enum models. And the Objective-C GRMustache already exists. What's the purpose of a Swift Mustache engine that can only render Objective-C objects?
     
-    Any kind of protocol extension is not an option, because protocol extensions are limited to static dispatch, unable to fulfill our needs.
+    - A **protocol** with a required function is a serious candidate, but Swift won't let specializations of generic types adopt a protocol. In other words, the type system can not make boxable a collection of boxable values. And we need to support collections and dictionaries.
     
-    A protocol with a required function is a serious candidate, but Swift won't let specializations of generic types adopt a protocol. In other words, the type system can not make boxable a collection of boxable values. And we need to support collections and dictionaries.
+    - A **protocol extension** is not an option, because protocol extensions are limited to static dispatch, unable to fulfill our needs.
     
     We have exhausted all general types of Swift, and none of them help us.
 
