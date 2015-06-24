@@ -81,8 +81,6 @@ class SuiteTestCase: XCTestCase {
                     return Box(string?.capitalizedString)
                 })))
                 
-                template.extendBaseContext(Box(StandardLibrary.Logger()))
-                
                 testRendering(template)
             }
         }
