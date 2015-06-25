@@ -7,3 +7,4 @@ TODO
 - [ ] `extension P where Self: ... { }` can we use this?
 - [ ] Is support for IntMax useful?
 - [ ] Experiment with replacing Box(value, boolValue, ...) by a protocol with default implementations.
+- [ ] Experiment with NSError.setUserInfoValueProviderForDomain
