@@ -40,18 +40,17 @@ final class TemplateParser {
     func parse(templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
         
-        var i = templateString.startIndex
-        let end = templateString.endIndex
+        let atString = { (index: String.Index, string: String?) -> Bool in
+            guard let string = string else {
+                return false
+            }
+            return templateString.substringFromIndex(index).hasPrefix(string)
+        }
         
         var state: State = .Start
-        var stateStart = i
-        
         var lineNumber = 1
-        var startLineNumber = lineNumber
-        
-        let atString = { (string: String?) -> Bool in
-            return string != nil && templateString.substringFromIndex(i).hasPrefix(string!)
-        }
+        var i = templateString.startIndex
+        let end = templateString.endIndex
         
         while i < end {
             let c = templateString[i]
@@ -59,93 +58,76 @@ final class TemplateParser {
             switch state {
             case .Start:
                 if c == "\n" {
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .Text
-                    
+                    state = .Text(startIndex: i, startLineNumber: lineNumber)
                     ++lineNumber
-                } else if atString(currentDelimiters.unescapedTagStart) {
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .UnescapedTag
+                } else if atString(i, currentDelimiters.unescapedTagStart) {
+                    state = .UnescapedTag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.unescapedTagStartLength).predecessor()
-                } else if atString(currentDelimiters.setDelimitersStart) {
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .SetDelimitersTag
+                } else if atString(i, currentDelimiters.setDelimitersStart) {
+                    state = .SetDelimitersTag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.setDelimitersStartLength).predecessor()
-                } else if atString(currentDelimiters.tagDelimiterPair.0) {
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .Tag
+                } else if atString(i, currentDelimiters.tagDelimiterPair.0) {
+                    state = .Tag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.tagStartLength).predecessor()
                 } else {
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .Text
+                    state = .Text(startIndex: i, startLineNumber: lineNumber)
                 }
-            case .Text:
+            case .Text(let startIndex, let startLineNumber):
                 if c == "\n" {
                     ++lineNumber
-                } else if atString(currentDelimiters.unescapedTagStart) {
-                    if stateStart != i {
-                        let range = stateStart..<i
+                } else if atString(i, currentDelimiters.unescapedTagStart) {
+                    if startIndex != i {
+                        let range = startIndex..<i
                         let token = TemplateToken(
                             type: .Text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
-                            range: stateStart..<i)
+                            range: startIndex..<i)
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     }
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .UnescapedTag
+                    state = .UnescapedTag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.unescapedTagStartLength).predecessor()
-                } else if atString(currentDelimiters.setDelimitersStart) {
-                    if stateStart != i {
-                        let range = stateStart..<i
+                } else if atString(i, currentDelimiters.setDelimitersStart) {
+                    if startIndex != i {
+                        let range = startIndex..<i
                         let token = TemplateToken(
                             type: .Text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
-                            range: stateStart..<i)
+                            range: startIndex..<i)
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     }
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .SetDelimitersTag
+                    state = .SetDelimitersTag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.setDelimitersStartLength).predecessor()
-                } else if atString(currentDelimiters.tagDelimiterPair.0) {
-                    if stateStart != i {
-                        let range = stateStart..<i
+                } else if atString(i, currentDelimiters.tagDelimiterPair.0) {
+                    if startIndex != i {
+                        let range = startIndex..<i
                         let token = TemplateToken(
                             type: .Text(text: templateString[range]),
                             lineNumber: startLineNumber,
                             templateID: templateID,
                             templateString: templateString,
-                            range: stateStart..<i)
+                            range: startIndex..<i)
                         if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                             return
                         }
                     }
-                    startLineNumber = lineNumber
-                    stateStart = i
-                    state = .Tag
+                    state = .Tag(startIndex: i, startLineNumber: lineNumber)
                     i = advance(i, currentDelimiters.tagStartLength).predecessor()
                 }
-            case .Tag:
+            case .Tag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     ++lineNumber
-                } else if atString(currentDelimiters.tagDelimiterPair.1) {
-                    let tagInitialIndex = advance(stateStart, currentDelimiters.tagStartLength)
+                } else if atString(i, currentDelimiters.tagDelimiterPair.1) {
+                    let tagInitialIndex = advance(startIndex, currentDelimiters.tagStartLength)
                     let tagInitial = templateString[tagInitialIndex]
-                    let tokenRange = stateStart..<advance(i, currentDelimiters.tagEndLength)
+                    let tokenRange = startIndex..<advance(i, currentDelimiters.tagEndLength)
                     switch tagInitial {
                     case "!":
                         let token = TemplateToken(
@@ -257,35 +239,33 @@ final class TemplateParser {
                             return
                         }
                     }
-                    stateStart = advance(i, currentDelimiters.tagEndLength)
                     state = .Start
                     i = advance(i, currentDelimiters.tagEndLength).predecessor()
                 }
                 break
-            case .UnescapedTag:
+            case .UnescapedTag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     ++lineNumber
-                } else if atString(currentDelimiters.unescapedTagEnd) {
-                    let tagInitialIndex = advance(stateStart, currentDelimiters.unescapedTagStartLength)
+                } else if atString(i, currentDelimiters.unescapedTagEnd) {
+                    let tagInitialIndex = advance(startIndex, currentDelimiters.unescapedTagStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let token = TemplateToken(
                         type: .UnescapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                         lineNumber: startLineNumber,
                         templateID: templateID,
                         templateString: templateString,
-                        range: stateStart..<advance(i, currentDelimiters.unescapedTagEndLength))
+                        range: startIndex..<advance(i, currentDelimiters.unescapedTagEndLength))
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
-                    stateStart = advance(i, currentDelimiters.unescapedTagEndLength)
                     state = .Start
                     i = advance(i, currentDelimiters.unescapedTagEndLength).predecessor()
                 }
-            case .SetDelimitersTag:
+            case .SetDelimitersTag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     ++lineNumber
-                } else if atString(currentDelimiters.setDelimitersEnd) {
-                    let tagInitialIndex = advance(stateStart, currentDelimiters.setDelimitersStartLength)
+                } else if atString(i, currentDelimiters.setDelimitersEnd) {
+                    let tagInitialIndex = advance(startIndex, currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
@@ -305,13 +285,12 @@ final class TemplateParser {
                         lineNumber: startLineNumber,
                         templateID: templateID,
                         templateString: templateString,
-                        range: stateStart..<advance(i, currentDelimiters.setDelimitersEndLength))
+                        range: startIndex..<advance(i, currentDelimiters.setDelimitersEndLength))
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
                     
-                    stateStart = advance(i, currentDelimiters.setDelimitersEndLength)
-                    state = .Start;
+                    state = .Start
                     i = advance(i, currentDelimiters.setDelimitersEndLength).predecessor()
                     
                     currentDelimiters = ParserTagDelimiters(tagDelimiterPair: (newDelimiters[0], newDelimiters[1]))
@@ -327,8 +306,8 @@ final class TemplateParser {
         switch state {
         case .Start:
             break
-        case .Text:
-            let range = stateStart..<end
+        case .Text(let startIndex, let startLineNumber):
+            let range = startIndex..<end
             let token = TemplateToken(
                 type: .Text(text: templateString[range]),
                 lineNumber: startLineNumber,
@@ -336,7 +315,25 @@ final class TemplateParser {
                 templateString: templateString,
                 range: range)
             tokenConsumer.parser(self, shouldContinueAfterParsingToken: token)
-        case .Tag, .UnescapedTag, .SetDelimitersTag:
+        case .Tag(_, let startLineNumber):
+            let locationDescription: String
+            if let templateID = templateID {
+                locationDescription = "line \(startLineNumber) of template \(templateID)"
+            } else {
+                locationDescription = "line \(startLineNumber)"
+            }
+            let error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(locationDescription): Unclosed Mustache tag"])
+            tokenConsumer.parser(self, didFailWithError: error)
+        case .UnescapedTag(_, let startLineNumber):
+            let locationDescription: String
+            if let templateID = templateID {
+                locationDescription = "line \(startLineNumber) of template \(templateID)"
+            } else {
+                locationDescription = "line \(startLineNumber)"
+            }
+            let error = NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeParseError, userInfo: [NSLocalizedDescriptionKey: "Parse error at \(locationDescription): Unclosed Mustache tag"])
+            tokenConsumer.parser(self, didFailWithError: error)
+        case .SetDelimitersTag(_, let startLineNumber):
             let locationDescription: String
             if let templateID = templateID {
                 locationDescription = "line \(startLineNumber) of template \(templateID)"
@@ -353,10 +350,10 @@ final class TemplateParser {
     
     private enum State {
         case Start
-        case Text
-        case Tag
-        case UnescapedTag
-        case SetDelimitersTag
+        case Text(startIndex: String.Index, startLineNumber: Int)
+        case Tag(startIndex: String.Index, startLineNumber: Int)
+        case UnescapedTag(startIndex: String.Index, startLineNumber: Int)
+        case SetDelimitersTag(startIndex: String.Index, startLineNumber: Int)
     }
     
     private struct ParserTagDelimiters {
