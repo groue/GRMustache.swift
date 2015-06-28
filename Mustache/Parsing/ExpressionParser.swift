@@ -70,13 +70,7 @@ final class ExpressionParser {
                     break
                 case ".":
                     state = .LeadingDot
-                case "(":
-                    state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
-                case ")":
-                    state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
-                case ",":
-                    state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
-                case "{", "}", "&", "$", "#", "^", "/", "<", ">":
+                case "(", ")", ",", "{", "}", "&", "$", "#", "^", "/", "<", ">":
                     state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                 default:
                     state = .Identifier(identifierStart: i)
@@ -238,11 +232,14 @@ final class ExpressionParser {
                 case " ", "\r", "\n", "\r\n", "\t":
                     break
                 case ".":
+                    // Prevent "a .b"
                     state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                 case "(":
+                    // Accept "a (b)"
                     filterExpressionStack.append(doneExpression)
                     state = .WaitingForAnyExpression
                 case ")":
+                    // Accept "a(b )"
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
@@ -251,6 +248,7 @@ final class ExpressionParser {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                     }
                 case ",":
+                    // Accept "a(b ,c)"
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
