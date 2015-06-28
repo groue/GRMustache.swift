@@ -41,6 +41,8 @@ enum Expression {
     // {{ <expression>(<expression>) }}
     case Filter(filterExpression: Wrapper, argumentExpression: Wrapper, partialApplication: Bool)
     
+    // {{ "foo" }}
+    case StringLiteral(string: String)
     
     // Recursive enums need wrapper class
     

@@ -1,0 +1,119 @@
+{
+  "tests": [
+
+    {
+      "name": "String literals are supported",
+      "data": { },
+      "template": "<{{\"foo\"}}>",
+      "expected": "<foo>"
+    },
+    {
+      "name": "Literal \\\" is rendered as \" when not HTML-escaped",
+      "data": { },
+      "template": "<{{{\"\\\"\"}}}><{{{\"\\\"a\"}}}><{{{\"a\\\"\"}}}><{{{\"a\\\"a\"}}}>",
+      "expected": "<\"><\"a><a\"><a\"a>"
+    },
+    {
+      "name": "Literal \\\" is rendered as &quot; when HTML-escaped",
+      "data": { },
+      "template": "<{{\"\\\"\"}}><{{\"\\\"a\"}}><{{\"a\\\"\"}}><{{\"a\\\"a\"}}>",
+      "expected": "<&quot;><&quot;a><a&quot;><a&quot;a>"
+    },
+    {
+      "name": "Literal \\\\ is rendered as \\",
+      "data": { },
+      "template": "<{{\"\\\\\"}}><{{\"\\\\a\"}}><{{\"a\\\\\"}}><{{\"a\\\\a\"}}>",
+      "expected": "<\\><\\a><a\\><a\\a>"
+    },
+    {
+      "name": "Literal \\/ is rendered as /",
+      "data": { },
+      "template": "<{{\"\\/\"}}><{{\"\\/a\"}}><{{\"a\\/\"}}><{{\"a\\/a\"}}>",
+      "expected": "</></a><a/><a/a>"
+    },
+    {
+      "name": "Literal \\b is rendered as backspace",
+      "data": { },
+      "template": "<{{\"\\b\"}}><{{\"\\ba\"}}><{{\"a\\b\"}}><{{\"a\\ba\"}}>",
+      "expected": "<\b><\ba><a\b><a\ba>"
+    },
+    {
+      "name": "Literal \\f is rendered as formfeed",
+      "data": { },
+      "template": "<{{\"\\f\"}}><{{\"\\fa\"}}><{{\"a\\f\"}}><{{\"a\\fa\"}}>",
+      "expected": "<\f><\fa><a\f><a\fa>"
+    },
+    {
+      "name": "Literal \\n is rendered as newline",
+      "data": { },
+      "template": "<{{\"\\n\"}}><{{\"\\na\"}}><{{\"a\\n\"}}><{{\"a\\na\"}}>",
+      "expected": "<\n><\na><a\n><a\na>"
+    },
+    {
+      "name": "Literal \\r is rendered as carriage return",
+      "data": { },
+      "template": "<{{\"\\r\"}}><{{\"\\ra\"}}><{{\"a\\r\"}}><{{\"a\\ra\"}}>",
+      "expected": "<\r><\ra><a\r><a\ra>"
+    },
+    {
+      "name": "Literal \\t is rendered as horizontal tab",
+      "data": { },
+      "template": "<{{\"\\t\"}}><{{\"\\ta\"}}><{{\"a\\t\"}}><{{\"a\\ta\"}}>",
+      "expected": "<\t><\ta><a\t><a\ta>"
+    },
+    {
+      "name": "Literal \\0 is rendered as null character",
+      "data": { },
+      "template": "<{{\"\\0\"}}><{{\"\\0a\"}}><{{\"a\\0\"}}><{{\"a\\0a\"}}>",
+      "expected": "<\u0000><\u0000a><a\u0000><a\u0000a>"
+    },
+    {
+      "name": "Literal \\' is rendered as ' when not HTML-escaped",
+      "data": { },
+      "template": "<{{{\"\\'\"}}}><{{{\"\\'a\"}}}><{{{\"a\\'\"}}}><{{{\"a\\'a\"}}}>",
+      "expected": "<'><'a><a'><a'a>"
+    },
+    {
+      "name": "Literal \\' is rendered as &apos; when HTML-escaped",
+      "data": { },
+      "template": "<{{\"\\'\"}}><{{\"\\'a\"}}><{{\"a\\'\"}}><{{\"a\\'a\"}}>",
+      "expected": "<&apos;><&apos;a><a&apos;><a&apos;a>"
+    },
+    {
+      "name": "String literals can contain tag delimiters",
+      "data": { },
+      "template": "{{\"foo}}{{bar\"}}",
+      "expected": "foo}}{{bar"
+    },
+    {
+      "name": "String literals can be the base of a scoped expression",
+      "data": { },
+      "template": "<{{\"foo\".length}}>",
+      "expected": "<3>"
+    },
+    {
+      "name": "String literals can be argument of filters",
+      "data": { },
+      "template": "<{{HTMLEscape(\"\\\"\")}}>",
+      "expected": "<&amp;quot;>"
+    },
+    {
+      "name": "String literals must be terminated.",
+      "data": { },
+      "template": "{{\"foo}}",
+      "expected_error": "string literal"
+    },
+    {
+      "name": "String literals are single line.",
+      "data": { },
+      "template": "{{\"foo\nbar\"}}",
+      "expected_error": "string literal"
+    },
+    {
+      "name": "String literals are single line.",
+      "data": { },
+      "template": "{{\"foo\r\nbar\"}}",
+      "expected_error": "string literal"
+    },
+  ]
+}

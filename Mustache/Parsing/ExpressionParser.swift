@@ -36,6 +36,12 @@ final class ExpressionParser {
             // Expression has started with a dot
             case LeadingDot
             
+            // Expression has started with a double quote
+            case StringLiteral(literalStart: String.Index, string: String)
+            
+            // Parsed a blackslash in a string literal
+            case WaitingForEscapedCharacter(literalStart: String.Index, string: String)
+            
             // Expression has started with an identifier
             case Identifier(identifierStart: String.Index)
             
@@ -72,6 +78,8 @@ final class ExpressionParser {
                     state = .LeadingDot
                 case "(", ")", ",", "{", "}", "&", "$", "#", "^", "/", "<", ">":
                     state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
+                case "\"":
+                    state = .StringLiteral(literalStart: i, string: "")
                 default:
                     state = .Identifier(identifierStart: i)
                 }
@@ -105,6 +113,46 @@ final class ExpressionParser {
                     state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
                 default:
                     state = .ScopingIdentifier(identifierStart: i, baseExpression: Expression.ImplicitIterator)
+                }
+                
+            case .StringLiteral(let literalStart, let string):
+                switch c {
+                case "\n", "\r\n":
+                    state = .Error("Invalid string literal character `\(c)`")
+                case "\"":
+                    state = .DoneExpression(expression: Expression.StringLiteral(string: string))
+                case "\\":
+                    state = .WaitingForEscapedCharacter(literalStart: literalStart, string: string)
+                default:
+                    state = .StringLiteral(literalStart: literalStart, string: string + String(c))
+                }
+                
+            case .WaitingForEscapedCharacter(let literalStart, let string):
+                switch c {
+                // JSON: \", \\, \/, \b, \b, \f, \n, \r, \t
+                // Swift: \0, \'
+                case "\"":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\"")
+                case "\\":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\\")
+                case "/":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "/")
+                case "b":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\u{8}")
+                case "f":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\u{c}")
+                case "n":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\n")
+                case "r":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\r")
+                case "t":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\t")
+                case "0":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "\0")
+                case "'":
+                    state = .StringLiteral(literalStart: literalStart, string: string + "'")
+                default:
+                    state = .Error("Invalid escape sequence `\\\(c)` at index \(distance(string.startIndex, i))")
                 }
                 
             case .Identifier(identifierStart: let identifierStart):
@@ -289,6 +337,12 @@ final class ExpressionParser {
             } else {
                 finalState = .Error("Missing `)` character at index \(distance(string.startIndex, string.endIndex))")
             }
+            
+        case .StringLiteral(let literalStart, let string):
+            finalState = .Error("Non terminated string literal at index \(distance(string.startIndex, literalStart))")
+            
+        case .WaitingForEscapedCharacter(let literalStart, let string):
+            finalState = .Error("Non terminated string literal at index \(distance(string.startIndex, literalStart))")
             
         case .Identifier(identifierStart: let identifierStart):
             if filterExpressionStack.isEmpty {

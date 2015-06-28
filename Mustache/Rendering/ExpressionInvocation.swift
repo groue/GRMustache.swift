@@ -62,6 +62,9 @@ struct ExpressionInvocation {
             
             let argumentBox = try evaluate(context: context, expression: argumentExpression.expression)
             return try filter(box: argumentBox, partialApplication: partialApplication)
+            
+        case .StringLiteral(let string):
+            return Box(string)
         }
     }
 }

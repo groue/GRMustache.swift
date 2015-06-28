@@ -71,6 +71,14 @@ final class ExpressionGenerator {
             buffer.extend("(")
             renderExpression(argumentExpression.expression)
             buffer.extend(")")
+            
+        case .StringLiteral(var string):
+            string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
+            string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
+            string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
+            string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
+            string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
+            buffer.extend(string)
         }
     }
     
