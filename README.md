@@ -1528,8 +1528,7 @@ We'll below describe each of them individually, even though you can provide seve
     
     - `{{box}}` renders the built-in Swift String Interpolation of the value, HTML-escaped.
     - `{{{box}}}` renders the built-in Swift String Interpolation of the value, not HTML-escaped.
-    - `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise, it pushes the box on the top of the context stack, and renders the section once.
-    - `{{^box}}...{{/box}}` renders once if `boolValue` is false. Otherwise, it does not render.
+    - `{{#box}}...{{/box}}` pushes the box on the top of the context stack, and renders the section once.
     
     Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
