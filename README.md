@@ -1378,7 +1378,7 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{^ verified }}NOT VERIFIED{{/ verified }}
     ```
 
-- `Box(Array)` returns a box that is renders a section as many times as there are elements in the array, and which exposes the `count`, `first`, and `last` keys:
+- `Box(Array)` returns a box that renders a section as many times as there are elements in the array, and exposes the `count`, `first`, and `last` keys:
     
     ```
     You see {{ objects.count }} objects:
