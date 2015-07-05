@@ -751,7 +751,7 @@ There are four kinds of expressions:
 
 - **Identifiers** like `name`:
     
-    Evaluation of identifiers like `name` go through the context stack until a value provides the `name` key.
+    Evaluation of identifiers like `name` goes through the context stack until a value provides the `name` key.
 
     Identifiers can not contain white space, dots, parentheses and commas. They can not start with any of those characters: `{}&$#^/<>`.
 
