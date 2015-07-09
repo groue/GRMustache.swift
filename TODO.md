@@ -9,4 +9,5 @@ TODO
 - [ ] Experiment with replacing Box(value, boolValue, ...) by a protocol with default implementations.
 - [ ] Experiment with NSError.setUserInfoValueProviderForDomain
 - [ ] Restore `Box([MustacheBoxable?]?)` as soon as Swift2 can
-- [ ] How to wrap errors thrown from user closures (TemplateRepositoryDataSource, FilterFunction, RenderFunction)?
+- [X] How to wrap errors thrown from user closures (TemplateRepositoryDataSource, FilterFunction, RenderFunction)?
+- [ ] Document the new Mustache.Error

@@ -27,7 +27,7 @@ import Foundation
 A SectionTag represents a regular or inverted section tag such as
 {{#section}}...{{/section}} or {{^section}}...{{/section}}.
 */
-final class SectionTag: Tag {
+final class SectionTag: LocatedTag {
     let openingToken: TemplateToken
     let innerTemplateAST: TemplateAST
     
@@ -51,4 +51,9 @@ final class SectionTag: Tag {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
     }
+    
+    // Mark: - LocatedTag
+    
+    var templateID: TemplateID? { return openingToken.templateID }
+    var lineNumber: Int { return openingToken.lineNumber }
 }

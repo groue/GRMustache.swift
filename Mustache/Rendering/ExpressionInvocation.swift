@@ -54,9 +54,9 @@ struct ExpressionInvocation {
             
             guard let filter = filterBox.filter else {
                 if filterBox.isEmpty {
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Missing filter"])
+                    throw Mustache.Error(type: .RenderingError, message: "Missing filter")
                 } else {
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Not a filter"])
+                    throw Mustache.Error(type: .RenderingError, message: "Not a filter")
                 }
             }
             

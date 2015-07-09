@@ -339,11 +339,12 @@ final public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            throw Mustache.Error(type: .TemplateNotFound, templateID: templateID)
         }
         
+        let originalTemplateID = templateID
         guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: templateID) else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            throw Mustache.Error(type: .TemplateNotFound, templateID: originalTemplateID)
         }
         
         if let templateAST = templateASTCache[templateID] {
@@ -421,7 +422,7 @@ final public class TemplateRepository {
             if let string = templates[templateID] {
                 return string
             } else {
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: \(templateID)"])
+                throw Mustache.Error(type: .TemplateNotFound, templateID: templateID)
             }
         }
     }

@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 47;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -22,6 +22,8 @@
 		560DE2641AC33D0D005C0312 /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE2621AC33D0D005C0312 /* Box.swift */; };
 		560FA5A21A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
 		560FA5A31A8F72CF00840A58 /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
+		56105B091B4E8618002CD224 /* LocatedTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56105B081B4E8618002CD224 /* LocatedTag.swift */; };
+		56105B0A1B4E8618002CD224 /* LocatedTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56105B081B4E8618002CD224 /* LocatedTag.swift */; };
 		5611BF981B333E1F005FA874 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5611BF971B333E1F005FA874 /* LoggerTests.swift */; };
 		5611BF991B333E1F005FA874 /* LoggerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5611BF971B333E1F005FA874 /* LoggerTests.swift */; };
 		561336061B21745A005BB0F7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561336051B21745A005BB0F7 /* Common.swift */; };
@@ -234,6 +236,7 @@
 		560ABB681A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 */ = {isa = PBXFileReference; lastKnownFileType = folder; path = TemplateRepositoryFileSystemTests_UTF8; sourceTree = "<group>"; };
 		560DE2621AC33D0D005C0312 /* Box.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Box.swift; sourceTree = "<group>"; };
 		560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxTests.swift; sourceTree = "<group>"; };
+		56105B081B4E8618002CD224 /* LocatedTag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocatedTag.swift; sourceTree = "<group>"; };
 		5611BF971B333E1F005FA874 /* LoggerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LoggerTests.swift; sourceTree = "<group>"; };
 		561336051B21745A005BB0F7 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		561646931A23C11400F8ADE0 /* Movie.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Movie.mustache; sourceTree = "<group>"; };
@@ -500,6 +503,7 @@
 		563AE1BE19FC29B30028C6C1 /* TemplateAST */ = {
 			isa = PBXGroup;
 			children = (
+				56105B081B4E8618002CD224 /* LocatedTag.swift */,
 				563AE1FA19FC5B860028C6C1 /* SectionTag.swift */,
 				563AE20019FC62330028C6C1 /* Tag.swift */,
 				563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */,
@@ -835,7 +839,7 @@
 				};
 			};
 			buildConfigurationList = 563AE19119FBE4790028C6C1 /* Build configuration list for PBXProject "Mustache" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 6.3";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -971,6 +975,7 @@
 				561E729A1A8BDC4D004ED48B /* TemplateRepository.swift in Sources */,
 				561E72991A8BDC4D004ED48B /* Template.swift in Sources */,
 				561336071B2174E2005BB0F7 /* Common.swift in Sources */,
+				56105B0A1B4E8618002CD224 /* LocatedTag.swift in Sources */,
 				566244581AEBC88C008BAD41 /* Expression.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1053,6 +1058,7 @@
 				569C42381A86824800748E98 /* ZipFilter.swift in Sources */,
 				563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */,
 				566244571AEBC88C008BAD41 /* Expression.swift in Sources */,
+				56105B091B4E8618002CD224 /* LocatedTag.swift in Sources */,
 				563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

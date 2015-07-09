@@ -127,7 +127,7 @@ final class RenderingEngine {
         }
     }
     
-    private func renderTag(tag: Tag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
+    private func renderTag(tag: LocatedTag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
         
         // 1. Evaluate expression
         
@@ -135,21 +135,16 @@ final class RenderingEngine {
 
         do {
             box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
-        } catch {
-            let nserror = error as NSError
-            if nserror.domain == GRMustacheErrorDomain {
-                // Rewrite error with tag description & location
-                var userInfo = nserror.userInfo ?? [:]
-                if let originalLocalizedDescription: AnyObject = userInfo[NSLocalizedDescriptionKey] {
-                    userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag): \(originalLocalizedDescription)"
-                } else {
-                    userInfo[NSLocalizedDescriptionKey] = "Error evaluating \(tag)"
-                }
-                throw NSError(domain: nserror.domain, code: nserror.code, userInfo: userInfo)
+        } catch let error as Mustache.Error {
+            let newMessage: String
+            if let oldMessage = error.message {
+                newMessage = "Could not evaluate \(tag): \(oldMessage)"
             } else {
-                // Rethrow custom error without any modification
-                throw error
+                newMessage = "Could not evaluate \(tag)"
             }
+            throw error.errorWith(message: newMessage, templateID: tag.templateID, lineNumber: tag.lineNumber)
+        } catch {
+            throw Mustache.Error(type: .RenderingError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
         }
         
         

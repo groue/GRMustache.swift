@@ -54,17 +54,89 @@ public enum ContentType {
 // =============================================================================
 // MARK: - Errors
 
-/// The domain of a Mustache-generated NSError
-public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
+public struct Error: ErrorType {
+    public let _domain = "Mustache.Error"
+    public var _code: Int { return type.rawValue }
+    
+    public enum Type : Int {
+        case TemplateNotFound
+        case ParseError
+        case RenderingError
+    }
+    
+    public let type: Type
+    public let message: String?
+    public let templateID: String?
+    public let lineNumber: Int?
+    public let underlyingError: ErrorType?
+    
+    public init(type: Type, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+        self.type = type
+        self.message = message
+        self.templateID = templateID
+        self.lineNumber = lineNumber
+        self.underlyingError = underlyingError
+    }
+    
+    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> Error {
+        return Error(
+            type: self.type,
+            message: message ?? self.message,
+            templateID: templateID ?? self.templateID,
+            lineNumber: lineNumber ?? self.lineNumber,
+            underlyingError: underlyingError ?? self.underlyingError)
+    }
+}
 
-/// The error code for parse errors
-public let GRMustacheErrorCodeParseError = 0
-
-/// The error code for missing templates and partials
-public let GRMustacheErrorCodeTemplateNotFound = 1
-
-/// The error code for rendering errors
-public let GRMustacheErrorCodeRenderingError = 2
+extension Error : CustomStringConvertible {
+    
+    var locationDescription: String? {
+        if let templateID = templateID {
+            if let lineNumber = lineNumber {
+                return "line \(lineNumber) of template \(templateID)"
+            } else {
+                return "template \(templateID)"
+            }
+        } else {
+            if let lineNumber = lineNumber {
+                return "line \(lineNumber)"
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    /// A textual representation of `self`.
+    public var description: String {
+        var description: String
+        switch type {
+        case .TemplateNotFound:
+            description = "No such template: \(templateID)"
+        case .ParseError:
+            if let locationDescription = locationDescription {
+                description = "Parse error at \(locationDescription)"
+            } else {
+                description = "Parse error"
+            }
+        case .RenderingError:
+            if let locationDescription = locationDescription {
+                description = "Rendering error at \(locationDescription)"
+            } else {
+                description = "Rendering error"
+            }
+        }
+        
+        if let message = message {
+            description += ": \(message)"
+        }
+        
+        if let underlyingError = underlyingError {
+            description += " (\(underlyingError))"
+        }
+        
+        return description
+    }
+}
 
 
 // =============================================================================
