@@ -57,6 +57,7 @@ Released on June 7, 2015
 
 - `Tag.renderInnerContent` has been renamed `Tag.render`.
 
+- Mustache-specific errors are now of type `Mustache.Error`.
 
 ## v0.9.1
 
