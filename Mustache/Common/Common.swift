@@ -54,21 +54,38 @@ public enum ContentType {
 // =============================================================================
 // MARK: - Errors
 
+/// The errors thrown by Mustache.swift
 public struct Error: ErrorType {
+    /// Required for ErrorType conformance.
     public let _domain = "Mustache.Error"
+    
+    /// Required for ErrorType conformance.
     public var _code: Int { return type.rawValue }
     
+    /// Mustache.Error types
     public enum Type : Int {
         case TemplateNotFound
         case ParseError
         case RenderError
     }
     
+    /// The error type
     public let type: Type
+    
+    /// Eventual error message
     public let message: String?
+    
+    /// TemplateID of the eventual template at the origin of the error
     public let templateID: String?
+    
+    /// Eventual line number where the error occurred.
     public let lineNumber: Int?
+    
+    /// Eventual underlying error
     public let underlyingError: ErrorType?
+    
+    
+    // Not public
     
     public init(type: Type, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
         self.type = type
