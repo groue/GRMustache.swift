@@ -196,38 +196,31 @@ For more information, check:
 Errors
 ------
 
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `Mustache.Error`:
 
-- Code `GRMustacheErrorCodeTemplateNotFound`:
+```swift
+do {
+    let template = try Template(named: "Document")
+    let rendering = template.render(Box(data))
+} catch let error as Mustache.Error {
+    // Parse error at line 2 of template /path/to/template.mustache:
+    // Unclosed Mustache tag.
+    error.description
     
-    ```swift
-    do {
-        let template = try Template(named: "inexistant")
-    } catch {
-        // No such template: `inexistant`
-    }
-    ```
+    // TemplateNotFound, ParseError, or RenderError
+    error.type
     
-- Code `GRMustacheErrorCodeParseError`:
+    // The eventual template at the source of the error. Can be a path, a URL,
+    // a resource name, depending on the repository data source.
+    error.templateID
     
-    ```swift
-    do {
-        let template = try Template(string: "Hello {{name")
-    } catch {
-        // Parse error at line 1: Unclosed Mustache tag
-    }
-    ```
+    // The eventual faulty line.
+    error.lineNumber
     
-- Code `GRMustacheErrorCodeRenderingError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "{{undefinedFilter(x)}}")
-        let rendering = try template.render()
-    } catch {
-        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-    }
-    ```
+    // The eventual underlying error.
+    error.underlyingError
+}
+```
 
 When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
 
