@@ -487,7 +487,7 @@ class RenderFunctionTests: XCTestCase {
             try Template(string: "{{items}}").render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderingError)
+            XCTAssertEqual(error.type, .RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -505,7 +505,7 @@ class RenderFunctionTests: XCTestCase {
             try Template(string: "{{#items}}{{/items}}").render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderingError)
+            XCTAssertEqual(error.type, .RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }

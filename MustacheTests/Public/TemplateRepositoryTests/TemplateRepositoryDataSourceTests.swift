@@ -48,7 +48,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                     throw CustomError.Error
                 case "CustomNSError":
                     throw NSError(domain: "CustomNSError", code: 0, userInfo: nil)
-                case "GRMustacheErrorCodeTemplateNotFound":
+                case "MustacheErrorCodeTemplateNotFound":
                     throw Mustache.Error(type: .TemplateNotFound, message: "Custom Not Found Error")
                 default:
                     return templateID
@@ -94,7 +94,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         }
         
         do {
-            try repo.template(string: "{{>GRMustacheErrorCodeTemplateNotFound}}")
+            try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
             XCTAssertEqual(error.type, .TemplateNotFound)

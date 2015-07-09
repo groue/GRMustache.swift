@@ -54,9 +54,9 @@ struct ExpressionInvocation {
             
             guard let filter = filterBox.filter else {
                 if filterBox.isEmpty {
-                    throw Mustache.Error(type: .RenderingError, message: "Missing filter")
+                    throw Mustache.Error(type: .RenderError, message: "Missing filter")
                 } else {
-                    throw Mustache.Error(type: .RenderingError, message: "Not a filter")
+                    throw Mustache.Error(type: .RenderError, message: "Not a filter")
                 }
             }
             

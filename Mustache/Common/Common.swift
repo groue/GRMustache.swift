@@ -61,7 +61,7 @@ public struct Error: ErrorType {
     public enum Type : Int {
         case TemplateNotFound
         case ParseError
-        case RenderingError
+        case RenderError
     }
     
     public let type: Type
@@ -111,14 +111,14 @@ extension Error : CustomStringConvertible {
         var description: String
         switch type {
         case .TemplateNotFound:
-            description = "No such template: \(templateID)"
+            description = ""
         case .ParseError:
             if let locationDescription = locationDescription {
                 description = "Parse error at \(locationDescription)"
             } else {
                 description = "Parse error"
             }
-        case .RenderingError:
+        case .RenderError:
             if let locationDescription = locationDescription {
                 description = "Rendering error at \(locationDescription)"
             } else {
@@ -127,7 +127,11 @@ extension Error : CustomStringConvertible {
         }
         
         if let message = message {
-            description += ": \(message)"
+            if description.characters.count > 0 {
+                description += ": \(message)"
+            } else {
+                description = message
+            }
         }
         
         if let underlyingError = underlyingError {

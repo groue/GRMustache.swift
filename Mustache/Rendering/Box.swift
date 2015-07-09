@@ -990,7 +990,7 @@ extension CollectionType {
             {
                 // Inconsistent content type: this is an error. How are we
                 // supposed to mix Text and HTML?
-                throw Mustache.Error(type: .RenderingError, message: "Content type mismatch")
+                throw Mustache.Error(type: .RenderError, message: "Content type mismatch")
             }
         }
         

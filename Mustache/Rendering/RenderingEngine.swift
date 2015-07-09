@@ -144,7 +144,7 @@ final class RenderingEngine {
             }
             throw error.errorWith(message: newMessage, templateID: tag.templateID, lineNumber: tag.lineNumber)
         } catch {
-            throw Mustache.Error(type: .RenderingError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
+            throw Mustache.Error(type: .RenderError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
         }
         
         
