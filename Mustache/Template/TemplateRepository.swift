@@ -337,13 +337,17 @@ final public class TemplateRepository {
     // =========================================================================
     // MARK: - Not public
     
-    func templateAST(named name: String, relativeToTemplateID templateID: TemplateID? = nil) throws -> TemplateAST {
+    func templateAST(named name: String, relativeToTemplateID baseTemplateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+            throw Mustache.Error(type: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
         }
         
-        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: templateID) else {
-            throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: `\(name)`"])
+        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
+            if let baseTemplateID = baseTemplateID {
+                throw Mustache.Error(type: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
+            } else {
+                throw Mustache.Error(type: .TemplateNotFound, message: "Template not found: \"\(name)\"")
+            }
         }
         
         if let templateAST = templateASTCache[templateID] {
@@ -421,7 +425,7 @@ final public class TemplateRepository {
             if let string = templates[templateID] {
                 return string
             } else {
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "No such template: \(templateID)"])
+                throw Mustache.Error(type: .TemplateNotFound, templateID: templateID)
             }
         }
     }

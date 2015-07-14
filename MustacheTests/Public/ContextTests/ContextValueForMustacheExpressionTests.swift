@@ -61,21 +61,23 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         let context = Context()
         do {
             try context.mustacheBoxForExpression("a.")
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeParseError)  // Invalid expression
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError) // Invalid expression
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
     }
     
-    func testRenderingError() {
+    func testRenderError() {
         let context = Context()
         do {
             try context.mustacheBoxForExpression("f(x)")
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)  // Missing filter
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .RenderError) // Missing filter
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
     }
 }

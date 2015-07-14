@@ -54,17 +54,110 @@ public enum ContentType {
 // =============================================================================
 // MARK: - Errors
 
-/// The domain of a Mustache-generated NSError
-public let GRMustacheErrorDomain = "GRMustacheErrorDomain"
+/// The errors thrown by Mustache.swift
+public struct Error: ErrorType {
+    /// Required for ErrorType conformance.
+    public let _domain = "Mustache.Error"
+    
+    /// Required for ErrorType conformance.
+    public var _code: Int { return type.rawValue }
+    
+    /// Mustache.Error types
+    public enum Type : Int {
+        case TemplateNotFound
+        case ParseError
+        case RenderError
+    }
+    
+    /// The error type
+    public let type: Type
+    
+    /// Eventual error message
+    public let message: String?
+    
+    /// TemplateID of the eventual template at the origin of the error
+    public let templateID: String?
+    
+    /// Eventual line number where the error occurred.
+    public let lineNumber: Int?
+    
+    /// Eventual underlying error
+    public let underlyingError: ErrorType?
+    
+    
+    // Not public
+    
+    public init(type: Type, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+        self.type = type
+        self.message = message
+        self.templateID = templateID
+        self.lineNumber = lineNumber
+        self.underlyingError = underlyingError
+    }
+    
+    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> Error {
+        return Error(
+            type: self.type,
+            message: message ?? self.message,
+            templateID: templateID ?? self.templateID,
+            lineNumber: lineNumber ?? self.lineNumber,
+            underlyingError: underlyingError ?? self.underlyingError)
+    }
+}
 
-/// The error code for parse errors
-public let GRMustacheErrorCodeParseError = 0
-
-/// The error code for missing templates and partials
-public let GRMustacheErrorCodeTemplateNotFound = 1
-
-/// The error code for rendering errors
-public let GRMustacheErrorCodeRenderingError = 2
+extension Error : CustomStringConvertible {
+    
+    var locationDescription: String? {
+        if let templateID = templateID {
+            if let lineNumber = lineNumber {
+                return "line \(lineNumber) of template \(templateID)"
+            } else {
+                return "template \(templateID)"
+            }
+        } else {
+            if let lineNumber = lineNumber {
+                return "line \(lineNumber)"
+            } else {
+                return nil
+            }
+        }
+    }
+    
+    /// A textual representation of `self`.
+    public var description: String {
+        var description: String
+        switch type {
+        case .TemplateNotFound:
+            description = ""
+        case .ParseError:
+            if let locationDescription = locationDescription {
+                description = "Parse error at \(locationDescription)"
+            } else {
+                description = "Parse error"
+            }
+        case .RenderError:
+            if let locationDescription = locationDescription {
+                description = "Rendering error at \(locationDescription)"
+            } else {
+                description = "Rendering error"
+            }
+        }
+        
+        if let message = message {
+            if description.characters.count > 0 {
+                description += ": \(message)"
+            } else {
+                description = message
+            }
+        }
+        
+        if let underlyingError = underlyingError {
+            description += " (\(underlyingError))"
+        }
+        
+        return description
+    }
+}
 
 
 // =============================================================================

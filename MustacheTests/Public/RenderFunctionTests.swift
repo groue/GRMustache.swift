@@ -485,10 +485,11 @@ class RenderFunctionTests: XCTestCase {
         let box = Box(["items": Box([Box(render1), Box(render2)])])
         do {
             try Template(string: "{{items}}").render(box)
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .RenderError)
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
     }
     
@@ -502,10 +503,11 @@ class RenderFunctionTests: XCTestCase {
         let box = Box(["items": Box([Box(render1), Box(render2)])])
         do {
             try Template(string: "{{#items}}{{/items}}").render(box)
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeRenderingError)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .RenderError)
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
     }
     

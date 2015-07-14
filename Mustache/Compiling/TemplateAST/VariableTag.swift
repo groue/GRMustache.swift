@@ -26,7 +26,7 @@ import Foundation
 /**
 VariableTag represents a variable tag such as {{name}} or {{{name}}}.
 */
-final class VariableTag: Tag {
+final class VariableTag: LocatedTag {
     let token: TemplateToken
     let contentType: ContentType
     
@@ -49,4 +49,9 @@ final class VariableTag: Tag {
     func render(context: Context) throws -> Rendering {
         return Rendering("", contentType)
     }
+    
+    // Mark: - LocatedTag
+    
+    var templateID: TemplateID? { return token.templateID }
+    var lineNumber: Int { return token.lineNumber }
 }

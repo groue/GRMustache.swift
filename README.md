@@ -196,38 +196,31 @@ For more information, check:
 Errors
 ------
 
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are NSErrors of domain `GRMustacheErrorDomain`:
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `Mustache.Error`:
 
-- Code `GRMustacheErrorCodeTemplateNotFound`:
+```swift
+do {
+    let template = try Template(named: "Document")
+    let rendering = template.render(Box(data))
+} catch let error as Mustache.Error {
+    // Parse error at line 2 of template /path/to/template.mustache:
+    // Unclosed Mustache tag.
+    error.description
     
-    ```swift
-    do {
-        let template = try Template(named: "inexistant")
-    } catch {
-        // No such template: `inexistant`
-    }
-    ```
+    // TemplateNotFound, ParseError, or RenderError
+    error.type
     
-- Code `GRMustacheErrorCodeParseError`:
+    // The eventual template at the source of the error. Can be a path, a URL,
+    // a resource name, depending on the repository data source.
+    error.templateID
     
-    ```swift
-    do {
-        let template = try Template(string: "Hello {{name")
-    } catch {
-        // Parse error at line 1: Unclosed Mustache tag
-    }
-    ```
+    // The eventual faulty line.
+    error.lineNumber
     
-- Code `GRMustacheErrorCodeRenderingError`:
-    
-    ```swift
-    do {
-        let template = try Template(string: "{{undefinedFilter(x)}}")
-        let rendering = try template.render()
-    } catch {
-        // Error evaluating {{undefinedFilter(x)}} at line 1: Missing filter
-    }
-    ```
+    // The eventual underlying error.
+    error.underlyingError
+}
+```
 
 When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
 
@@ -754,7 +747,7 @@ There are four kinds of expressions:
 
 - **Identifiers** like `name`:
     
-    Evaluation of identifiers like `name` go through the context stack until a value provides the `name` key.
+    Evaluation of identifiers like `name` goes through the context stack until a value provides the `name` key.
     
     Identifiers can not contain white space, dots, parentheses and commas. They can not start with any of those characters: `{}&$#^/<>`.
 
@@ -1382,7 +1375,7 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{^ verified }}NOT VERIFIED{{/ verified }}
     ```
 
-- `Box(Array)` returns a box that is renders a section as many times as there are elements in the array, and which exposes the `count`, `first`, and `last` keys:
+- `Box(Array)` returns a box that renders a section as many times as there are elements in the array, and exposes the `count`, `first`, and `last` keys:
     
     ```
     You see {{ objects.count }} objects:
@@ -1532,8 +1525,7 @@ We'll below describe each of them individually, even though you can provide seve
     
     - `{{box}}` renders the built-in Swift String Interpolation of the value, HTML-escaped.
     - `{{{box}}}` renders the built-in Swift String Interpolation of the value, not HTML-escaped.
-    - `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise, it pushes the box on the top of the context stack, and renders the section once.
-    - `{{^box}}...{{/box}}` renders once if `boolValue` is false. Otherwise, it does not render.
+    - `{{#box}}...{{/box}}` pushes the box on the top of the context stack, and renders the section once.
     
     Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     

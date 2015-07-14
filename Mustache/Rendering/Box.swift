@@ -990,7 +990,7 @@ extension CollectionType {
             {
                 // Inconsistent content type: this is an error. How are we
                 // supposed to mix Text and HTML?
-                throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeRenderingError, userInfo: [NSLocalizedDescriptionKey: "Content type mismatch"])
+                throw Mustache.Error(type: .RenderError, message: "Content type mismatch")
             }
         }
         

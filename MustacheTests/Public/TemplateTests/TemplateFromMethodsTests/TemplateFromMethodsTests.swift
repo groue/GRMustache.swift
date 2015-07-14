@@ -109,196 +109,168 @@ class TemplateFromMethodsTests: XCTestCase {
     func testParserErrorFromString() {
         do {
             let _ = try Template(string: parserErrorTemplateString)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testParserErrorFromPath() {
         do {
             let _ = try Template(path: parserErrorTemplatePath)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(path: parserErrorTemplateWrapperPath)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testParserErrorFromURL() {
         do {
             let _ = try Template(URL: parserErrorTemplateURL)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(URL: parserErrorTemplateWrapperURL)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testParserErrorFromResource() {
         do {
             let _ = try Template(named: parserErrorTemplateName, bundle: testBundle)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(named: parserErrorTemplateWrapperName, bundle: testBundle)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testCompilerErrorFromString() {
         do {
             let _ = try Template(string: compilerErrorTemplateString)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testCompilerErrorFromPath() {
         do {
             let _ = try Template(path: compilerErrorTemplatePath)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(path: compilerErrorTemplateWrapperPath)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testCompilerErrorFromURL() {
         do {
             let _ = try Template(URL: compilerErrorTemplateURL)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(URL: compilerErrorTemplateWrapperURL)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
     
     func testCompilerErrorFromResource() {
         do {
             let _ = try Template(named: compilerErrorTemplateName, bundle: testBundle)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
             let _ = try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle)
-            XCTAssert(false)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .ParseError)
+            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            // Xcode 7 beta 2 prevents `catch let error as NSError {` to preserve userInfo.
-            // Workaround: let nserror = error as NSError
-            let nserror = error as NSError
-            XCTAssertEqual(nserror.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(nserror.code, GRMustacheErrorCodeParseError)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString("line 2") != nil)
-            XCTAssertTrue(nserror.localizedDescription.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTFail("Expected Mustache.Error")
         }
     }
 }

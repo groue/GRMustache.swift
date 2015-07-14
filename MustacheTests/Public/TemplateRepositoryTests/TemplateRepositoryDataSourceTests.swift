@@ -48,8 +48,8 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                     throw CustomError.Error
                 case "CustomNSError":
                     throw NSError(domain: "CustomNSError", code: 0, userInfo: nil)
-                case "GRMustacheErrorCodeTemplateNotFound":
-                    throw NSError(domain: GRMustacheErrorDomain, code: GRMustacheErrorCodeTemplateNotFound, userInfo: [NSLocalizedDescriptionKey: "Custom Not Found Error"])
+                case "MustacheErrorCodeTemplateNotFound":
+                    throw Mustache.Error(type: .TemplateNotFound, message: "Custom Not Found Error")
                 default:
                     return templateID
                 }
@@ -70,10 +70,11 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         
         do {
             try repo.template(string: "{{>not_found}}")
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .TemplateNotFound)
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
         
         do {
@@ -93,11 +94,12 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         }
         
         do {
-            try repo.template(string: "{{>GRMustacheErrorCodeTemplateNotFound}}")
-            XCTAssert(false)
-        } catch let error as NSError {
-            XCTAssertEqual(error.domain, GRMustacheErrorDomain)
-            XCTAssertEqual(error.code, GRMustacheErrorCodeTemplateNotFound)
+            try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
+            XCTFail("Expected Mustache.Error")
+        } catch let error as Mustache.Error {
+            XCTAssertEqual(error.type, .TemplateNotFound)
+        } catch {
+            XCTFail("Expected Mustache.Error")
         }
     }
     
