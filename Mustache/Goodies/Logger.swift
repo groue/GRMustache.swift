@@ -85,13 +85,8 @@ extension StandardLibrary {
                     if tag.type == .Section {
                         self.indentationLevel--
                     }
-                    if var string = string {
-                        string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
-                        string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
-                        string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
-                        string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
-                        string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
-                        self.log("\(self.indentationPrefix)\(tag) did render \(box.valueDescription) as \"\(string)\"")
+                    if let string = string {
+                        self.log("\(self.indentationPrefix)\(tag) did render \(box.valueDescription) as \(string.debugDescription)")
                     }
                 }
             )

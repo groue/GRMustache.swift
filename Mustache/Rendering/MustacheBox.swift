@@ -291,25 +291,13 @@ extension MustacheBox {
             if dictionary.isEmpty {
                 facets.append("[:]")
             } else {
-                let items = ",".join(dictionary.map { (var key, box) in
-                    key = key.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
-                    key = key.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
-                    key = key.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
-                    key = key.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
-                    key = key.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
-                    return "\"\(key)\":\(box.valueDescription)"
+                let items = ",".join(dictionary.map { (key, box) in
+                    return "\(key.debugDescription):\(box.valueDescription)"
                 })
                 facets.append("[\(items)]")
             }
-        } else if var string = value as? String {
-            string = string.stringByReplacingOccurrencesOfString("\\", withString: "\\\\")
-            string = string.stringByReplacingOccurrencesOfString("\n", withString: "\\n")
-            string = string.stringByReplacingOccurrencesOfString("\r", withString: "\\r")
-            string = string.stringByReplacingOccurrencesOfString("\t", withString: "\\t")
-            string = string.stringByReplacingOccurrencesOfString("\"", withString: "\\\"")
-            facets.append("\"\(string)\"")
         } else if let value = value {
-            facets.append("\(value)")
+            facets.append(String(reflecting: value))
         }
         
         if let _ = filter {
