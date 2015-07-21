@@ -136,13 +136,13 @@ public protocol MustacheBoxable {
 // [MustacheBox] boxable via Box<C: CollectionType where C.Generator.Element: MustacheBoxable>(collection: C?)
 // and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
 
-extension MustacheBox : MustacheBoxable {
+extension MustacheBox {
     
     /**
     `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates. Its mustacheBox property returns itself.
     */
-    public var mustacheBox: MustacheBox {
+    public override var mustacheBox: MustacheBox {
         return self
     }
 }
@@ -1252,58 +1252,6 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
 }
 
 /**
-Sets of `MustacheBoxable?` can feed Mustache templates.
-
-    let set:Set<Int?> = [1,2,nil]
-
-    // Renders "<1><><2>", or "<><2><1>", etc.
-    let template = try! Template(string: "{{#set}}<{{.}}>{{/set}}")
-    try! template.render(Box(["set": Box(set)]))
-
-
-### Rendering
-
-- `{{set}}` renders the concatenation of the set items.
-
-- `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
-pushing each item on its turn on the top of the context stack.
-
-- `{{^set}}...{{/set}}` renders if and only if `set` is empty.
-
-
-### Keys exposed to templates
-
-A set can be queried for the following keys:
-
-- `count`: number of elements in the set
-- `first`: the first object in the set
-
-Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once, if
-and only if `set` is not empty.
-
-
-### Unwrapping from MustacheBox
-
-Whenever you want to extract a collection of a MustacheBox, use the `arrayValue`
-property: it returns an Array of MustacheBox, whatever the actual
-type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
-
-
-- parameter array: An array of boxable values.
-
-- returns: A MustacheBox that wraps *array*.
-*/
-// TODO Swift2: restore this function
-//
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
-//    if let set = set {
-//        return set.mustacheBoxWithSetValue(set, box: { Box($0) })
-//    } else {
-//        return Box()
-//    }
-//}
-
-/**
 Arrays of `MustacheBoxable` can feed Mustache templates.
 
     let array = [1,2,3]
@@ -1393,19 +1341,17 @@ property: it returns an Array of MustacheBox, whatever the actual
 type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 
-- parameter array: An array of boxable values.
+- parameter array: An array of optional boxable values.
 
 - returns: A MustacheBox that wraps *array*.
 */
-// TODO Swift2: restore this function
-//
-//public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
-//    if let array = array {
-//        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
-//    } else {
-//        return Box()
-//    }
-//}
+public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
+        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
+    } else {
+        return Box()
+    }
+}
 
 
 // =============================================================================

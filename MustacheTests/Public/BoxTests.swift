@@ -24,6 +24,16 @@
 import XCTest
 import Mustache
 
+struct HashableBoxable : MustacheBoxable, Hashable {
+    let int: Int
+    var hashValue: Int { return int }
+    var mustacheBox: MustacheBox { return Box(int) }
+}
+
+func ==(lhs: HashableBoxable, rhs: HashableBoxable) -> Bool {
+    return lhs.int == rhs.int
+}
+
 class BoxTests: XCTestCase {
     
     func testCustomValueExtraction() {
@@ -152,19 +162,13 @@ class BoxTests: XCTestCase {
         XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
     }
     
-    // TODO
-//    func testSetOfMustacheBoxable() {
-//        struct S : MustacheBoxable, Hashable {
-//            let int: Int
-//            var hash: Int { return int }
-//            var mustacheBox: MustacheBox { return Box(int) }
-//        }
-//        let value: Set<S> = [S(int:0),S(int:1),S(int:2)]
-//        let template = Template(string: "{{#.}}{{.}}{{/}}")!
-//        let box = Box(value)
-//        let rendering = template.render(box)!
-//        XCTAssertTrue(find(["012", "021", "102", "120", "201", "210"], rendering) != nil)
-//    }
+    func testSetOfMustacheBoxable() {
+        let value: Set<HashableBoxable> = [HashableBoxable(int:0),HashableBoxable(int:1),HashableBoxable(int:2)]
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+        let box = Box(value)
+        let rendering = try! template.render(box)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
+    }
     
     func testDictionaryOfInt() {
         let value: Dictionary<String, Int> = ["name": 1]
@@ -190,15 +194,13 @@ class BoxTests: XCTestCase {
         XCTAssertEqual(rendering, "0123")
     }
     
-    // TODO Swift2: restore this test
-    
-//    func testArrayOfOptionalInt() {
-//        let value: Array<Int?> = [0,1,2,3, nil]
-//        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-//        let box = Box(value)
-//        let rendering = try! template.render(box)
-//        XCTAssertEqual(rendering, "0123")
-//    }
+    func testArrayOfOptionalInt() {
+        let value: Array<Int?> = [0,1,2,3, nil]
+        let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+        let box = Box(value)
+        let rendering = try! template.render(box)
+        XCTAssertEqual(rendering, "0123")
+    }
     
     func testArrayOfArrayOfInt() {
         let value: Array<Array<Int>> = [[0,1],[2,3]]

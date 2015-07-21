@@ -486,8 +486,6 @@ In the example above, this is inefficient because the inner content of the
 bolded section has already been parsed with its template. You may prefer the raw
 `RenderFunction` type, capable of an equivalent and faster implementation:
 
-TODO: rewrite example below in Swift 2
-
     let bold: RenderFunction = { (info: RenderingInfo) in
         let rendering = try info.tag.render(info.context)
         return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
