@@ -36,35 +36,10 @@ enum Expression {
     case Identifier(identifier: String)
     
     // {{ <expression>.identifier }}
-    case Scoped(baseExpression: Wrapper, identifier: String)
+    indirect case Scoped(baseExpression: Expression, identifier: String)
     
     // {{ <expression>(<expression>) }}
-    case Filter(filterExpression: Wrapper, argumentExpression: Wrapper, partialApplication: Bool)
-    
-    
-    // Recursive enums need wrapper class
-    
-    final class Wrapper {
-        let expression: Expression
-        init(_ expression: Expression) {
-            self.expression = expression
-        }
-    }
-    
-    
-    // Factory methods
-    
-    static func identifier(identifier: String) -> Expression {
-        return .Identifier(identifier: identifier)
-    }
-    
-    static func scoped(baseExpression baseExpression: Expression, identifier: String) -> Expression {
-        return .Scoped(baseExpression: Wrapper(baseExpression), identifier: identifier)
-    }
-    
-    static func filter(filterExpression filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool) -> Expression {
-        return .Filter(filterExpression: Wrapper(filterExpression), argumentExpression: Wrapper(argumentExpression), partialApplication: partialApplication)
-    }
+    indirect case Filter(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool)
 }
 
 /**
@@ -84,10 +59,10 @@ func ==(lhs: Expression, rhs: Expression) -> Bool {
         return lIdentifier == rIdentifier
         
     case (.Scoped(let lBase, let lIdentifier), .Scoped(let rBase, let rIdentifier)):
-        return lBase.expression == rBase.expression && lIdentifier == rIdentifier
+        return lBase == rBase && lIdentifier == rIdentifier
         
     case (.Filter(let lFilter, let lArgument, let lPartialApplication), .Filter(let rFilter, let rArgument, let rPartialApplication)):
-        return lFilter.expression == rFilter.expression && lArgument.expression == rArgument.expression && lPartialApplication == rPartialApplication
+        return lFilter == rFilter && lArgument == rArgument && lPartialApplication == rPartialApplication
         
     default:
         return false

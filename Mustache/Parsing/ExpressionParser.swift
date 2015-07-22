@@ -88,7 +88,7 @@ final class ExpressionParser {
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.ImplicitIterator, partialApplication: false)
+                        let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.ImplicitIterator, partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -96,7 +96,7 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.ImplicitIterator, partialApplication: true))
+                        filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.ImplicitIterator, partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -111,19 +111,19 @@ final class ExpressionParser {
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    state = .DoneExpressionPlusWhiteSpace(expression: Expression.identifier(identifier))
+                    state = .DoneExpressionPlusWhiteSpace(expression: Expression.Identifier(identifier: identifier))
                 case ".":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    state = .WaitingForScopingIdentifier(baseExpression: Expression.identifier(identifier))
+                    state = .WaitingForScopingIdentifier(baseExpression: Expression.Identifier(identifier: identifier))
                 case "(":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    filterExpressionStack.append(Expression.identifier(identifier))
+                    filterExpressionStack.append(Expression.Identifier(identifier: identifier))
                     state = .WaitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         let identifier = string.substringWithRange(identifierStart..<i)
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier), partialApplication: false)
+                        let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.Identifier(identifier: identifier), partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -132,7 +132,7 @@ final class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         let identifier = string.substringWithRange(identifierStart..<i)
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier), partialApplication: true))
+                        filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: Expression.Identifier(identifier: identifier), partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -145,23 +145,23 @@ final class ExpressionParser {
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     state = .DoneExpressionPlusWhiteSpace(expression: scopedExpression)
                 case ".":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     state = .WaitingForScopingIdentifier(baseExpression: scopedExpression)
                 case "(":
                     let identifier = string.substringWithRange(identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                     filterExpressionStack.append(scopedExpression)
                     state = .WaitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         let identifier = string.substringWithRange(identifierStart..<i)
-                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: false)
+                        let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
+                        let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -170,8 +170,8 @@ final class ExpressionParser {
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
                         let identifier = string.substringWithRange(identifierStart..<i)
-                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: true))
+                        let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
+                        filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -210,7 +210,7 @@ final class ExpressionParser {
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
+                        let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -218,7 +218,7 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
+                        filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -242,7 +242,7 @@ final class ExpressionParser {
                     // Accept "a(b )"
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
+                        let expression = Expression.Filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
                         state = .DoneExpression(expression: expression)
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -251,7 +251,7 @@ final class ExpressionParser {
                     // Accept "a(b ,c)"
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
+                        filterExpressionStack.append(Expression.Filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
                         state = .WaitingForAnyExpression
                     } else {
                         state = .Error("Unexpected character `\(c)` at index \(distance(string.startIndex, i))")
@@ -293,7 +293,7 @@ final class ExpressionParser {
         case .Identifier(identifierStart: let identifierStart):
             if filterExpressionStack.isEmpty {
                 let identifier = string.substringFromIndex(identifierStart)
-                finalState = .Valid(expression: Expression.identifier(identifier))
+                finalState = .Valid(expression: Expression.Identifier(identifier: identifier))
             } else {
                 finalState = .Error("Missing `)` character at index \(distance(string.startIndex, string.endIndex))")
             }
@@ -301,7 +301,7 @@ final class ExpressionParser {
         case .ScopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
             if filterExpressionStack.isEmpty {
                 let identifier = string.substringFromIndex(identifierStart)
-                let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                 finalState = .Valid(expression: scopedExpression)
             } else {
                 finalState = .Error("Missing `)` character at index \(distance(string.startIndex, string.endIndex))")

@@ -57,7 +57,7 @@ final class ExpressionGenerator {
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            renderExpression(baseExpression.expression)
+            renderExpression(baseExpression)
             buffer.extend(".")
             buffer.extend(identifier)
             
@@ -67,9 +67,9 @@ final class ExpressionGenerator {
             // Support for variadic filters is not implemented:
             // `f(a,b)` is rendered `f(a)(b)`.
             
-            renderExpression(filterExpression.expression)
+            renderExpression(filterExpression)
             buffer.extend("(")
-            renderExpression(argumentExpression.expression)
+            renderExpression(argumentExpression)
             buffer.extend(")")
         }
     }

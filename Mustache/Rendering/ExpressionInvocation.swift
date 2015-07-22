@@ -45,12 +45,12 @@ struct ExpressionInvocation {
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            return try evaluate(context: context, expression: baseExpression.expression)[identifier]
+            return try evaluate(context: context, expression: baseExpression)[identifier]
             
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
-            let filterBox = try evaluate(context: context, expression: filterExpression.expression)
+            let filterBox = try evaluate(context: context, expression: filterExpression)
             
             guard let filter = filterBox.filter else {
                 if filterBox.isEmpty {
@@ -60,7 +60,7 @@ struct ExpressionInvocation {
                 }
             }
             
-            let argumentBox = try evaluate(context: context, expression: argumentExpression.expression)
+            let argumentBox = try evaluate(context: context, expression: argumentExpression)
             return try filter(box: argumentBox, partialApplication: partialApplication)
         }
     }
