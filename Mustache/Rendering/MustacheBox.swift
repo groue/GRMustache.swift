@@ -212,14 +212,14 @@ final public class MustacheBox : NSObject {
             self.render = { (_) in return Rendering("") }
             self.hasCustomRenderFunction = false
             super.init()
-            self.render = { (info: RenderingInfo) in
+            self.render = { [unowned self] (info: RenderingInfo) in
                 
                 // Default rendering depends on the tag type:
                 switch info.tag.type {
                 case .Variable:
                     // {{ box }} and {{{ box }}}
                     
-                    if let value = value {
+                    if let value = self.value {
                         // Use the built-in Swift String Interpolation:
                         return Rendering("\(value)", .Text)
                     } else {
