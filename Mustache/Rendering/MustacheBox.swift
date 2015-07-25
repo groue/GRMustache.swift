@@ -212,7 +212,7 @@ future: do not rely on it.
             // is the one whose `render` property contains that same second
             // closure: everything works as if no value was actually captured.
             self.render = { (_, _) in return nil }
-            self.render = { (info: RenderingInfo, error: NSErrorPointer) in
+            self.render = { [unowned self] (info: RenderingInfo, error: NSErrorPointer) in
                 switch info.tag.type {
                 case .Variable:
                     // {{ box }}
