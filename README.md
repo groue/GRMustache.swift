@@ -56,7 +56,7 @@ Well, on {{format(realDate)}} because of a Martian attack.
 import Mustache
 
 // Load the `document.mustache` resource of the main bundle
-let template = try! Template(named: "document")
+let template = try Template(named: "document")
 
 // Let template format dates with `{{format(...)}}`
 let dateFormatter = NSDateFormatter()
@@ -72,7 +72,7 @@ let data = [
 ]
 
 // The rendering: "Hello Arthur..."
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 
@@ -153,21 +153,21 @@ Templates may come from various sources:
 - Raw Swift strings:
 
     ```swift
-    let template = try! Template(string: "Hello {{name}}")
+    let template = try Template(string: "Hello {{name}}")
     ```
 
 - Bundle resources:
 
     ```swift
     // Loads the "document.mustache" resource of the main bundle:
-    let template = try! Template(named: "document")
+    let template = try Template(named: "document")
     ```
 
 - Files and URLs:
 
     ```swift
-    let template = try! Template(path: "/path/to/document.mustache")
-    let template = try! Template(URL: templateURL)
+    let template = try Template(path: "/path/to/document.mustache")
+    let template = try Template(URL: templateURL)
     ```
 
 - Template Repositories:
@@ -253,11 +253,11 @@ Each one of them performs its own little task:
 A *Variable tag* `{{value}}` renders the value associated with the key `value`, HTML-escaped. To avoid HTML-escaping, use triple mustache tags `{{{value}}}`:
 
 ```swift
-let template = try! Template(string: "{{value}} - {{{value}}}")
+let template = try Template(string: "{{value}} - {{{value}}}")
 
 // Mario &amp; Luigi - Mario & Luigi
 let data = ["value": "Mario & Luigi"]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 
@@ -286,13 +286,13 @@ If the value is *falsey*, the section is not rendered. Falsey values are:
 For example:
 
 ```swift
-let template = try! Template(string: "<{{#value}}Truthy{{/value}}>")
+let template = try Template(string: "<{{#value}}Truthy{{/value}}>")
 
 // "<Truthy>"
-try! template.render(Box(["value": true]))
+try template.render(Box(["value": true]))
 // "<>"
-try! template.render(Box([:]))                  // missing value
-try! template.render(Box(["value": false]))     // false boolean
+try template.render(Box([:]))                  // missing value
+try template.render(Box(["value": false]))     // false boolean
 ```
 
 
@@ -525,7 +525,7 @@ A tag `{{> partial }}` includes a template, the one that is named "partial". One
 
 ```swift
 let repo = TemplateRepository(bundle: NSBundle.mainBundle())
-let template = try! repo.template(string: "{{#user}}{{>partial}}{{/user}}")
+let template = try repo.template(string: "{{#user}}{{>partial}}{{/user}}")
 
 // Now the `partial.mustache` resource has been loaded. It will be used when
 // the template is rendered. Nothing can change that.
@@ -536,20 +536,20 @@ You can also include **dynamic partials**. To do so, use a regular variable tag 
 ```swift
 // A template that delegates the rendering of a user to a partial.
 // No partial has been loaded yet.
-let template = try! Template(string: "{{#user}}{{partial}}{{/user}}")
+let template = try Template(string: "{{#user}}{{partial}}{{/user}}")
 
 // The user
 let user = ["firstName": "Georges", "lastName": "Brassens", "occupation": "Singer"]
 
 // First rendering -> "Georges Brassens"
-let partial1 = try! Template(string: "{{firstName}} {{lastName}}")
+let partial1 = try Template(string: "{{firstName}} {{lastName}}")
 let data1 = ["user": Box(user), "partial": Box(partial1) ]
-try! template.render(Box(data1))
+try template.render(Box(data1))
 
 // Second rendering -> "Singer"
-let partial2 = try! Template(string: "{{occupation}}")
+let partial2 = try Template(string: "{{occupation}}")
 let data2 = ["user": Box(user), "partial": Box(partial2) ]
-try! template.render(Box(data2))
+try template.render(Box(data2))
 ```
 
 
@@ -593,7 +593,7 @@ The rendered template `article.mustache`:
 ```
 
 ```swift
-let template = try! Template(named: "article")
+let template = try Template(named: "article")
 let data = [
     "article": [
         "title": "The 10 most amazing handlebars",
@@ -601,7 +601,7 @@ let data = [
         "author": "John Doe"
     ]
 ]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 The rendering is a full HTML page:
@@ -843,8 +843,8 @@ Say you want to provide an API to build a HTTP Response while hiding the templat
 ```swift
 class HTTPController {
     func responseWithTemplateNamed(templateName: String, data: ???) -> HTTPResponse {
-        let template = try! templateRepository.template(named: templateName)
-        let rendering = try! template.render(Box(data))
+        let template = try templateRepository.template(named: templateName)
+        let rendering = try template.render(Box(data))
         return HTTPResponse(string: rendering)
     }
 }
@@ -901,12 +901,12 @@ To format numbers, use `NSNumberFormatter`:
 let percentFormatter = NSNumberFormatter()
 percentFormatter.numberStyle = .PercentStyle
 
-let template = try! Template(string: "{{ percent(x) }}")
+let template = try Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
 
 // Rendering: 50%
 let data = ["x": 0.5]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 [More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
@@ -958,8 +958,8 @@ GRMustache.swift renders as `Array` all types that provide iteration, access to 
 
 ```swift
 // 123456789
-let template = try! Template(string: "{{ numbers }}")
-let rendering = try! template.render(Box(["numbers": Box(1..<10)]))
+let template = try Template(string: "{{ numbers }}")
+let rendering = try template.render(Box(["numbers": Box(1..<10)]))
 ```
 
 Arrays must contain boxable values. Check the [Boxing Values](#boxing-values) chapter for more information.
@@ -1012,10 +1012,10 @@ When you try to render a value of type `Any` or `AnyObject`, you get a compiler 
 let any: Any = ...
 let anyObject: AnyObject = ...
 
-let rendering = try! template.render(Box(any))
+let rendering = try template.render(Box(any))
 // Compiler Error
 
-let rendering = try! template.render(Box(anyObject))
+let rendering = try template.render(Box(anyObject))
 // Compiler Error
 ```
 
@@ -1028,8 +1028,8 @@ let json: AnyObject = ["name": "Lionel Richie"]
 let dictionary = json as! [String: String]
 
 // Lionel Richie has a Mustache.
-let template = try! Template(string: "{{ name }} has a Mustache.")
-let rendering = try! template.render(Box(dictionary))
+let template = try Template(string: "{{ name }} has a Mustache.")
+let rendering = try template.render(Box(dictionary))
 ```
 
 The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Boxing Values](#boxing-values) chapter.
@@ -1054,8 +1054,8 @@ class Person : NSObject {
 
 // Charlie Chaplin has a mustache.
 let person = Person(name: "Charlie Chaplin")
-let template = try! Template(string: "{{name}} has a mustache.")
-let rendering = try! template.render(Box(person))
+let template = try Template(string: "{{name}} has a mustache.")
+let rendering = try template.render(Box(person))
 ```
 
 When extracting values from your NSObject subclasses, GRMustache.swift uses the [Key-Value Coding](https://developer.apple.com/library/mac/documentation/Cocoa/Conceptual/KeyValueCoding/Articles/KeyValueCoding.html) method `valueForKey:`, as long as the key is "safe" (safe keys are the names of declared properties, including NSManagedObject attributes).
@@ -1091,8 +1091,8 @@ Now we can box and render users, arrays of users, dictionaries of users, etc:
 ```swift
 // Freddy Mercury has a mustache.
 let person = Person(name: "Freddy Mercury")
-let template = try! Template(string: "{{name}} has a mustache.")
-let rendering = try! template.render(Box(person))
+let template = try Template(string: "{{name}} has a mustache.")
+let rendering = try template.render(Box(person))
 ```
 
 Boxing a dictionary is an easy way to build a box. However there are many kinds of boxes: check the rest of this documentation.
@@ -1113,13 +1113,13 @@ let wrapped = Lambda { (string) in "<b>\(string)</b>" }
 
 // <b>Frank Zappa is awesome.</b>
 let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
-let template = try! Template(string: templateString)
+let template = try Template(string: templateString)
 let data = [
     "firstName": Box("Frank"),
     "lastName": Box("Zappa"),
     "fullName": Box(fullName),
     "wrapped": Box(wrapped)]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
@@ -1173,11 +1173,11 @@ let square = Filter { (n: Int?) in
 }
 
 // Register the square filter in our template:
-let template = try! Template(string: "{{n}} × {{n}} = {{square(n)}}")
+let template = try Template(string: "{{n}} × {{n}} = {{square(n)}}")
 template.registerInBaseContext("square", Box(square))
 
 // 10 × 10 = 100
-let rendering = try! template.render(Box(["n": 10]))
+let rendering = try template.render(Box(["n": 10]))
 ```
 
 
@@ -1230,13 +1230,13 @@ let oneEveryTwoItems = Filter { (box: MustacheBox) in
 // A template where the filter is used in a section, so that the items in the
 // filtered array are iterated:
 let templateString = "{{# oneEveryTwoItems(items) }}<{{.}}>{{/ oneEveryTwoItems(items) }}"
-let template = try! Template(string: templateString)
+let template = try Template(string: templateString)
 
 // Register the oneEveryTwoItems filter in our template:
 template.registerInBaseContext("oneEveryTwoItems", Box(oneEveryTwoItems))
 
 // <1><3><5><7><9>
-let rendering = try! template.render(Box(["items": Box(1..<10)]))
+let rendering = try template.render(Box(["items": Box(1..<10)]))
 ```
 
 
@@ -1255,11 +1255,11 @@ let sum = VariadicFilter { (boxes: [MustacheBox]) in
 }
 
 // Register the sum filter in our template:
-let template = try! Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
+let template = try Template(string: "{{a}} + {{b}} + {{c}} = {{ sum(a,b,c) }}")
 template.registerInBaseContext("sum", Box(sum))
 
 // 1 + 2 + 3 = 6
-let rendering = try! template.render(Box(["a": 1, "b": 2, "c": 3]))
+let rendering = try template.render(Box(["a": 1, "b": 2, "c": 3]))
 ```
 
 
@@ -1274,12 +1274,12 @@ When you want to format values, just use NSNumberFormatter, NSDateFormatter, or 
 let percentFormatter = NSNumberFormatter()
 percentFormatter.numberStyle = .PercentStyle
 
-let template = try! Template(string: "{{ percent(x) }}")
+let template = try Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
 
 // Rendering: 50%
 let data = ["x": 0.5]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 [More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
@@ -1301,14 +1301,14 @@ let reverse = Filter { (rendering: Rendering) in
 }
 
 // Register the reverse filter in our template:
-let template = try! Template(string: "{{reverse(value)}}")
+let template = try Template(string: "{{reverse(value)}}")
 template.registerInBaseContext("reverse", Box(reverse))
 
 // ohcuorG
-try! template.render(Box(["value": "Groucho"]))
+try template.render(Box(["value": "Groucho"]))
 
 // 321
-try! template.render(Box(["value": 123]))
+try template.render(Box(["value": 123]))
 ```
 
 Such filter does not quite process a raw string, as you have seen. It processes a `Rendering`, which is a flavored string, a string with its contentType (text or HTML).
@@ -1317,7 +1317,7 @@ This rendering will usually be text: simple values (ints, strings, etc.) render 
 
 ```swift
 // &gt;lmth&lt;
-try! template.render(Box(["value": "<html>"]))
+try template.render(Box(["value": "<html>"]))
 ```
 
 
@@ -1345,12 +1345,12 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo) in
 
 // Register the pluralize filter in our template:
 let templateString = "I have {{ cats.count }} {{# pluralize(cats.count) }}cat{{/ }}."
-let template = try! Template(string: templateString)
+let template = try Template(string: templateString)
 template.registerInBaseContext("pluralize", Box(pluralize))
 
 // I have 3 cats.
 let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-let rendering = try! template.render(Box(data))
+let rendering = try template.render(Box(data))
 ```
 
 As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
@@ -1466,9 +1466,9 @@ We'll below describe each of them individually, even though you can provide seve
     
     ```swift
     // Render "true", "false"
-    let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-    try! template.render(Box(boolValue: true))
-    try! template.render(Box(boolValue: false))
+    let template = try Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
+    try template.render(Box(boolValue: true))
+    try template.render(Box(boolValue: false))
     ```
 
 - `value`
@@ -1479,8 +1479,8 @@ We'll below describe each of them individually, even though you can provide seve
     let aBox = Box(value: 1)
     
     // Renders "1"
-    let template = try! Template(string: "{{a}}")
-    try! template.render(Box(["a": aBox]))
+    let template = try Template(string: "{{a}}")
+    try template.render(Box(["a": aBox]))
     ```
 
 - `keyedSubscript`
@@ -1497,8 +1497,8 @@ We'll below describe each of them individually, even though you can provide seve
     })
     
     // Renders "key:a"
-    let template = try! Template(string:"{{a}}")
-    try! template.render(box)
+    let template = try Template(string:"{{a}}")
+    try template.render(box)
     ```
 
 - `filter`
@@ -1513,8 +1513,8 @@ We'll below describe each of them individually, even though you can provide seve
     })
     
     // Renders "100"
-    let template = try! Template(string:"{{square(x)}}")
-    try! template.render(Box(["square": box, "x": Box(10)]))
+    let template = try Template(string:"{{square(x)}}")
+    try template.render(Box(["square": box, "x": Box(10)]))
     ```
 
 - `render`
@@ -1535,8 +1535,8 @@ We'll below describe each of them individually, even though you can provide seve
     })
     
     // Renders "foo"
-    let template = try! Template(string:"{{.}}")
-    try! template.render(box)
+    let template = try Template(string:"{{.}}")
+    try template.render(box)
     ```
 
 - `willRender` & `didRender`
@@ -1551,8 +1551,8 @@ We'll below describe each of them individually, even though you can provide seve
     })
     
     // Renders "baz baz"
-    let template = try! Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")
-    try! template.render(box)
+    let template = try Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")
+    try template.render(box)
     ```
 
 
