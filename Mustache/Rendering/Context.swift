@@ -87,7 +87,8 @@ final public class Context {
     - returns: A new context with *box* registered for *key*.
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
-        self.init(type: .Root, registeredKeysContext: Context(Box([key: box])))
+        let d = [key: box]
+        self.init(type: .Root, registeredKeysContext: Context(Box(d)))
     }
     
     
@@ -116,7 +117,8 @@ final public class Context {
     */
     @warn_unused_result(message="Context.contextWithRegisteredKey returns a new Context.")
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
-        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box([key: box]))
+        let d = [key: box]
+        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(d))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     
