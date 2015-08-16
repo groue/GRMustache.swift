@@ -465,7 +465,7 @@ final public class TemplateRepository {
             
             let templateFilename: String
             if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
-                templateFilename = normalizedName.stringByAppendingPathExtension(templateExtension)!
+                templateFilename = (normalizedName as NSString).stringByAppendingPathExtension(templateExtension)!
             } else {
                 templateFilename = normalizedName
             }
@@ -525,7 +525,7 @@ final public class TemplateRepository {
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = normalizedBaseTemplateID.stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
+                let relativePath = (normalizedBaseTemplateID as NSString).stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
                 return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.pathForResource(normalizedName, ofType: templateExtension)

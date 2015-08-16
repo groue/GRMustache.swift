@@ -61,9 +61,10 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        let directoryPath = path.stringByDeletingLastPathComponent
-        let templateExtension = path.pathExtension
-        let templateName = path.lastPathComponent.stringByDeletingPathExtension
+        let nsPath = path as NSString
+        let directoryPath = nsPath.stringByDeletingLastPathComponent
+        let templateExtension = nsPath.pathExtension
+        let templateName = (nsPath.lastPathComponent as NSString).stringByDeletingPathExtension
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -87,7 +88,7 @@ final public class Template {
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let baseURL = URL.URLByDeletingLastPathComponent!
         let templateExtension = URL.pathExtension
-        let templateName = URL.lastPathComponent!.stringByDeletingPathExtension
+        let templateName = (URL.lastPathComponent! as NSString).stringByDeletingPathExtension
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
