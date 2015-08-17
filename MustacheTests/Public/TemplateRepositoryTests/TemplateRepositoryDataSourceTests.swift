@@ -72,7 +72,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
             try repo.template(string: "{{>not_found}}")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -97,7 +97,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
             try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }

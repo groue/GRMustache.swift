@@ -30,8 +30,8 @@ class MustacheBoxTests: XCTestCase {
     // each way to feed the Box(boolValue:value:etc.) function.
     func testBoolValue() {
         let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-        XCTAssertEqual(try! template.render(Box(boolValue: true)), "true")
-        XCTAssertEqual(try! template.render(Box(boolValue: false)), "false")
+        XCTAssertEqual(try! template.render(MustacheBox(boolValue: true)), "true")
+        XCTAssertEqual(try! template.render(MustacheBox(boolValue: false)), "false")
     }
     
     // This test should go elsewhere

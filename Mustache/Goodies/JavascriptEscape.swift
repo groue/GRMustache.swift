@@ -28,7 +28,7 @@ final class JavascriptEscape : MustacheBoxable {
     var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because JavascriptEscape interacts in
         // various ways with Mustache rendering.
-        return Box(
+        return MustacheBox(
             // It has a value:
             value: self,
             

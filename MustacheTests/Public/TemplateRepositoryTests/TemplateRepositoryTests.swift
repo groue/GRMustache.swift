@@ -33,7 +33,7 @@ class TemplateRepositoryTests: XCTestCase {
             try repo.template(named:"partial")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -42,7 +42,7 @@ class TemplateRepositoryTests: XCTestCase {
             try repo.template(string:"{{>partial}}")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }

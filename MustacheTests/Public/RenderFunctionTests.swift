@@ -271,7 +271,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return try Template(string:"key:{{key}}").render(info.context)
         }
-        let box = Box(["render": Box(keyedSubscript: keyedSubscript, render: render)])
+        let box = Box(["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)])
         let rendering = try! Template(string: "{{render}}").render(box)
         XCTAssertEqual(rendering, "key:")
     }
@@ -283,7 +283,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return try info.tag.render(info.context)
         }
-        let box = Box(["render": Box(keyedSubscript: keyedSubscript, render: render)])
+        let box = Box(["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)])
         let rendering = try! Template(string: "{{#render}}key:{{key}}{{/render}}").render(box)
         XCTAssertEqual(rendering, "key:")
     }
@@ -487,7 +487,7 @@ class RenderFunctionTests: XCTestCase {
             try Template(string: "{{items}}").render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -505,7 +505,7 @@ class RenderFunctionTests: XCTestCase {
             try Template(string: "{{#items}}{{/items}}").render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }

@@ -567,8 +567,8 @@ extension NSNull {
     */
     public override var mustacheBox: MustacheBox {
         return MustacheBox(
-            boolValue: false,
             value: self,
+            boolValue: false,
             render: { (info: RenderingInfo) in return Rendering("") })
     }
 }
@@ -1045,9 +1045,9 @@ extension CollectionType where Index.Distance == Int {
     */
     private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            boolValue: !isEmpty,
-            value: value,
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            value: value,
+            boolValue: !isEmpty,
             keyedSubscript: { (key) in
                 switch key {
                 case "first":   // C: CollectionType
@@ -1095,9 +1095,9 @@ extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexT
     */
     private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            boolValue: !isEmpty,
-            value: value,
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            value: value,
+            boolValue: !isEmpty,
             keyedSubscript: { (key) in
                 switch key {
                 case "first":   // C: CollectionType
@@ -1409,12 +1409,12 @@ dictionary, whatever the actual type of the raw boxed value.
 public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
-            value: dictionary,
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T)) in
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
+            value: dictionary,
             keyedSubscript: { (key: String) in
                 return Box(dictionary[key])
         })
@@ -1474,12 +1474,12 @@ dictionary, whatever the actual type of the raw boxed value.
 public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
-            value: dictionary,
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T?)) in
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
+            value: dictionary,
             keyedSubscript: { (key: String) in
                 if let value = dictionary[key] {
                     return Box(value)
@@ -1550,7 +1550,6 @@ extension NSDictionary {
     */
     public override var mustacheBox: MustacheBox {
         return MustacheBox(
-            value: self,
             converter: MustacheBox.Converter(
                 dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (var boxDictionary, key) in
                     if let key = key as? String {
@@ -1560,6 +1559,7 @@ extension NSDictionary {
                     }
                     return boxDictionary
                 })),
+            value: self,
             keyedSubscript: { BoxAnyObject(self[$0])
         })
     }
@@ -1680,265 +1680,9 @@ public func Box(didRender: DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)
 }
 
-
-// =============================================================================
-// MARK: - Boxing of multi-facetted values
-
-
 /**
-This function is the most low-level function that lets you build MustacheBox
-for feeding templates.
-
-It is suited for building "advanced" boxes. There are other simpler versions of
-the `Box` function that may well better suit your need: you should check them.
-
-It can take up to seven parameters, all optional, that define how the box
-interacts with the Mustache engine:
-
-- `boolValue`:      an optional boolean value for the Box.
-- `value`:          an optional boxed value
-- `keyedSubscript`: an optional KeyedSubscriptFunction
-- `filter`:         an optional FilterFunction
-- `render`:         an optional RenderFunction
-- `willRender`:     an optional WillRenderFunction
-- `didRender`:      an optional DidRenderFunction
-
-
-To illustrate the usage of all those parameters, let's look at how the
-`{{f(a)}}` tag is rendered.
-
-First the `a` and `f` expressions are evaluated. The Mustache engine looks in
-the context stack for boxes whose *keyedSubscript* return non-empty boxes for
-the keys "a" and "f". Let's call them aBox and fBox.
-
-Then the *filter* of the fBox is evaluated with aBox as an argument. It is
-likely that the result depends on the *value* of the aBox: it is the resultBox.
-
-Then the Mustache engine is ready to render resultBox. It looks in the context
-stack for boxes whose *willRender* function is defined. Those willRender
-functions have the opportunity to process the resultBox, and eventually provide
-the box that will be actually rendered: the renderedBox.
-
-The renderedBox has a *render* function: it is evaluated by the Mustache engine
-which appends its result to the final rendering.
-
-Finally the Mustache engine looks in the context stack for boxes whose
-*didRender* function is defined, and call them.
-
-
-### boolValue
-
-The optional `boolValue` parameter tells whether the Box should trigger or
-prevent the rendering of regular `{{#section}}...{{/}}` and inverted
-`{{^section}}...{{/}}` tags. The default value is true, unless the function is
-called without argument to build the empty box: `Box()`.
-
-    // Render "true", "false"
-    let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-    try! template.render(Box(boolValue: true))
-    try! template.render(Box(boolValue: false))
-
-
-### value
-
-The optional `value` parameter gives the boxed value. The value is used when the
-box is rendered (unless you provide a custom RenderFunction).
-
-    let aBox = Box(value: 1)
-
-    // Renders "1"
-    let template = try! Template(string: "{{a}}")
-    try! template.render(Box(["a": aBox]))
-
-
-### keyedSubscript
-
-The optional `keyedSubscript` parameter is a `KeyedSubscriptFunction` that lets
-the Mustache engine extract keys out of the box. For example, the `{{a}}` tag
-would call the subscript function with `"a"` as an argument, and render the
-returned box.
-
-The default value is nil, which means that no key can be extracted.
-
-See `KeyedSubscriptFunction` for a full discussion of this type.
-
-    let box = Box(keyedSubscript: { (key: String) in
-        return Box("key:\(key)")
-    })
-
-    // Renders "key:a"
-    let template = try! Template(string:"{{a}}")
-    try! template.render(box)
-
-
-### filter
-
-The optional `filter` parameter is a `FilterFunction` that lets the Mustache
-engine evaluate filtered expression that involve the box. The default value is
-nil, which means that the box can not be used as a filter.
-
-See `FilterFunction` for a full discussion of this type.
-
-    let box = Box(filter: Filter { (x: Int?) in
-        return Box(x! * x!)
-    })
-
-    // Renders "100"
-    let template = try! Template(string:"{{square(x)}}")
-    try! template.render(Box(["square": box, "x": Box(10)]))
-
-
-### render
-
-The optional `render` parameter is a `RenderFunction` that is evaluated when the
-Box is rendered.
-
-The default value is nil, which makes the box perform default Mustache
-rendering:
-
-- `{{box}}` renders the built-in Swift String Interpolation of the value,
-  HTML-escaped.
-
-- `{{{box}}}` renders the built-in Swift String Interpolation of the value,
-not HTML-escaped.
-
-- `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise, it
-  pushes the box on the top of the context stack, and renders the section once.
-
-- `{{^box}}...{{/box}}` renders once if `boolValue` is false. Otherwise, it
-  does not render.
-
-See `RenderFunction` for a full discussion of this type.
-
-    let box = Box(render: { (info: RenderingInfo) in
-        return Rendering("foo")
-    })
-
-    // Renders "foo"
-    let template = try! Template(string:"{{.}}")
-    try! template.render(box)
-
-
-### willRender, didRender
-
-The optional `willRender` and `didRender` parameters are a `WillRenderFunction`
-and `DidRenderFunction` that are evaluated for all tags as long as the box is in
-the context stack.
-
-See `WillRenderFunction` and `DidRenderFunction` for a full discussion of those
-types.
-
-    let box = Box(willRender: { (tag: Tag, box: MustacheBox) in
-        return Box("baz")
-    })
-
-    // Renders "baz baz"
-    let template = try! Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")
-    try! template.render(box)
-
-
-### Multi-facetted boxes
-
-By mixing all those parameters, you can finely tune the behavior of a box.
-
-GRMustache source code ships a few multi-facetted boxes, which may inspire you.
-See for example:
-
-- NSFormatter.mustacheBox
-- HTMLEscape.mustacheBox
-- StandardLibrary.Localizer.mustacheBox
-
-Let's give an example:
-
-    // A regular type:
-
-    struct Person {
-        let firstName: String
-        let lastName: String
-    }
-
-We want:
-
-1. `{{person.firstName}}` and `{{person.lastName}}` should render the matching
-   properties.
-2. `{{person}}` should render the concatenation of the first and last names.
-
-We'll provide a `KeyedSubscriptFunction` to implement 1, and a `RenderFunction`
-to implement 2:
-
-    // Have Person conform to MustacheBoxable so that we can box people, and
-    // render them:
-
-    extension Person : MustacheBoxable {
-        
-        // MustacheBoxable protocol requires objects to implement this property
-        // and return a MustacheBox:
-        
-        var mustacheBox: MustacheBox {
-            
-            // A person is a multi-facetted object:
-            return Box(
-                // It has a value:
-                value: self,
-                
-                // It lets Mustache extracts properties by name:
-                keyedSubscript: { (key: String) -> MustacheBox in
-                    switch key {
-                    case "firstName": return Box(self.firstName)
-                    case "lastName":  return Box(self.lastName)
-                    default:          return Box()
-                    }
-                },
-                
-                // It performs custom rendering:
-                render: { (info: RenderingInfo) -> Rendering in
-                    switch info.tag.type {
-                    case .Variable:
-                        // {{ person }}
-                        return Rendering("\(self.firstName) \(self.lastName)")
-                    case .Section:
-                        // {{# person }}...{{/}}
-                        //
-                        // Perform the default rendering: push self on the top
-                        // of the context stack, and render the section:
-                        let context = info.context.extendedContext(Box(self))
-                        return try info.tag.render(context)
-                    }
-                }
-            )
-        }
-    }
-
-    // Renders "The person is Errol Flynn"
-    let person = Person(firstName: "Errol", lastName: "Flynn")
-    let template = try! Template(string: "{{# person }}The person is {{.}}{{/ person }}")
-    try! template.render(Box(["person": person]))
-
-- parameter value:          An optional boxed value.
-- parameter boolValue:      An optional boolean value for the Box.
-- parameter keyedSubscript: An optional `KeyedSubscriptFunction`.
-- parameter filter:         An optional `FilterFunction`.
-- parameter render:         An optional `RenderFunction`.
-- parameter willRender:     An optional `WillRenderFunction`.
-- parameter didRender:      An optional `DidRenderFunction`.
-- returns: A MustacheBox.
+TODO
 */
-public func Box(
-    value value: Any? = nil,
-    boolValue: Bool? = nil,
-    keyedSubscript: KeyedSubscriptFunction? = nil,
-    filter: FilterFunction? = nil,
-    render: RenderFunction? = nil,
-    willRender: WillRenderFunction? = nil,
-    didRender: DidRenderFunction? = nil) -> MustacheBox
-{
-    return MustacheBox(
-        value: value,
-        boolValue: boolValue,
-        keyedSubscript: keyedSubscript,
-        filter: filter,
-        render: render,
-        willRender: willRender,
-        didRender: didRender)
+public func Box() -> MustacheBox {
+    return MustacheBox()
 }
-

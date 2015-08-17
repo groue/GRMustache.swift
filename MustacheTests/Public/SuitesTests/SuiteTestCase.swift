@@ -100,15 +100,15 @@ class SuiteTestCase: XCTestCase {
             if let partialsDictionary = partialsDictionary {
                 if let templateName = templateName {
                     var templates: [Template] = []
-                    let templateExtension = templateName.pathExtension
+                    let templateExtension = (templateName as NSString).pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         do {
-                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -116,12 +116,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.stringByDeletingPathExtension)
+                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -248,14 +248,14 @@ class SuiteTestCase: XCTestCase {
             let fm = NSFileManager.defaultManager()
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
-                let templatesPath = NSTemporaryDirectory().stringByAppendingPathComponent("GRMustacheTest").stringByAppendingPathComponent("encoding_\(encoding)")
+                let templatesPath = ((NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("GRMustacheTest") as NSString).stringByAppendingPathComponent("encoding_\(encoding)")
                 if fm.fileExistsAtPath(templatesPath) {
                     try! fm.removeItemAtPath(templatesPath)
                 }
                 for (partialName, partialString) in partialsDictionary {
-                    let partialPath = templatesPath.stringByAppendingPathComponent(partialName)
+                    let partialPath = (templatesPath as NSString).stringByAppendingPathComponent(partialName)
                     do {
-                        try fm.createDirectoryAtPath(partialPath.stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
+                        try fm.createDirectoryAtPath((partialPath as NSString).stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
                         if !fm.createFileAtPath(partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []

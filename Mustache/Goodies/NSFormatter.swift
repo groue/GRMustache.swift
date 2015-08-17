@@ -89,7 +89,7 @@ extension NSFormatter {
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering.
         
-        return Box(
+        return MustacheBox(
             // Let user extract the formatter out of the box:
             value: self,
             

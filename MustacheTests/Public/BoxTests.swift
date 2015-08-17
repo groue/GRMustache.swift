@@ -42,7 +42,7 @@ class BoxTests: XCTestCase {
         struct BoxableStruct {
             let name: String
             func mustacheBox() -> MustacheBox {
-                return Box(value: self)
+                return MustacheBox(value: self)
             }
         }
         
@@ -56,7 +56,7 @@ class BoxTests: XCTestCase {
                 self.name = name
             }
             func mustacheBox() -> MustacheBox {
-                return Box(value: self)
+                return MustacheBox(value: self)
             }
         }
         
@@ -73,10 +73,10 @@ class BoxTests: XCTestCase {
         let NSObject = NSDate()
         
         let boxedBoxableStruct = boxableStruct.mustacheBox()
-        let boxedStruct = Box(value: Struct(name: "Struct"))
+        let boxedStruct = MustacheBox(value: Struct(name: "Struct"))
         let boxedBoxableClass = boxableClass.mustacheBox()
         let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
-        let boxedClass = Box(value: Class(name: "Class"))
+        let boxedClass = MustacheBox(value: Class(name: "Class"))
         let boxedNSObject = Box(NSObject)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as! BoxableStruct
@@ -300,7 +300,7 @@ class BoxTests: XCTestCase {
     func testBoxNSArrayOfMustacheBoxable() {
         class Class: MustacheBoxable {
             var mustacheBox: MustacheBox {
-                return Box(keyedSubscript: { (key: String) in
+                return MustacheBox(keyedSubscript: { (key: String) in
                     return Box(key)
                 })
             }

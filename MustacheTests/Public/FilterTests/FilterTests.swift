@@ -143,7 +143,7 @@ class FilterTests: XCTestCase {
             try template.render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -153,7 +153,7 @@ class FilterTests: XCTestCase {
             try template.render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -163,7 +163,7 @@ class FilterTests: XCTestCase {
             try template.render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -173,7 +173,7 @@ class FilterTests: XCTestCase {
             try template.render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -190,7 +190,7 @@ class FilterTests: XCTestCase {
             try template.render(box)
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
@@ -203,7 +203,7 @@ class FilterTests: XCTestCase {
             try template.render()
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
             XCTAssertTrue(error.description.rangeOfString("Missing filter") != nil)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
@@ -223,7 +223,7 @@ class FilterTests: XCTestCase {
             try template.render(Box(["f": "foo"]))
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
             XCTAssertTrue(error.description.rangeOfString("Not a filter") != nil)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
@@ -305,7 +305,7 @@ class FilterTests: XCTestCase {
             try template.render()
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
             XCTAssertTrue(error.description.rangeOfString("CustomMessage") != nil)
             XCTAssertTrue(error.description.rangeOfString("line 3") != nil)
             XCTAssertTrue(error.description.rangeOfString("{{f(x)}}") != nil)
@@ -326,7 +326,7 @@ class FilterTests: XCTestCase {
             try template.render()
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
             if let nserror = error.underlyingError as? NSError {
                 XCTAssertEqual(nserror.domain, "CustomErrorDomain")
             } else {
@@ -349,7 +349,7 @@ class FilterTests: XCTestCase {
             try template.render()
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .RenderError)
+            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError)
             if let _ = error.underlyingError as? CustomError {
             } else {
                 XCTFail("Expected NSError")

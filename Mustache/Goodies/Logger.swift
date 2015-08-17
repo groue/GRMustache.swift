@@ -73,7 +73,7 @@ extension StandardLibrary {
             Box(localizer)          // Preferred
         */
         public var mustacheBox: MustacheBox {
-            return Box(
+            return MustacheBox(
                 willRender: { (tag, box) in
                     if tag.type == .Section {
                         self.log("\(self.indentationPrefix)\(tag) will render \(box.valueDescription)")

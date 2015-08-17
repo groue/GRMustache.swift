@@ -339,7 +339,7 @@ extension Template : MustacheBoxable {
     included in an HTML template.
     */
     public var mustacheBox: MustacheBox {
-        return Box(value: self, render: { (info) in
+        return MustacheBox(value: self, render: { (info) in
             switch info.tag {
             case let sectionTag as SectionTag:
                 // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}

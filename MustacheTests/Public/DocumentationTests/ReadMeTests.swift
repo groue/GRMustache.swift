@@ -84,7 +84,7 @@ class ReadMeTests: XCTestCase {
             var mustacheBox: MustacheBox {
                 // Return a Box that wraps our user, and knows how to extract
                 // the `name` key of our user:
-                return Box(value: self, keyedSubscript: { (key: String) in
+                return MustacheBox(value: self, keyedSubscript: { (key: String) in
                     switch key {
                     case "name":
                         return Box(self.name)

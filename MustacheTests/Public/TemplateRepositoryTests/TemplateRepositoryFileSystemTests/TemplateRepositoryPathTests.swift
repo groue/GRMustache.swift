@@ -112,7 +112,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests", ofType: nil)!
-        let repo = TemplateRepository(directoryPath: directoryPath.stringByAppendingPathComponent("partials"))
+        let repo = TemplateRepository(directoryPath: (directoryPath as NSString).stringByAppendingPathComponent("partials"))
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
@@ -122,7 +122,7 @@ class TemplateRepositoryPathTests: XCTestCase {
             try repo.template(named: "up")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }

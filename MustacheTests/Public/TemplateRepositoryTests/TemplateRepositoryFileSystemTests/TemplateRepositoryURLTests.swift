@@ -122,7 +122,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             try repo.template(named: "up")
             XCTFail("Expected Mustache.Error")
         } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, .TemplateNotFound)
+            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
         } catch {
             XCTFail("Expected Mustache.Error")
         }
