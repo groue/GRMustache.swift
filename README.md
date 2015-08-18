@@ -856,7 +856,7 @@ You'll wonder what type the `data` parameter should be.
 
 - `MustacheBox`? This would sure work, but now your library has married GRMustache.swift for good, and your library users are exposed to an alien library.
 
-- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. No Swift collection of boxable values can adopt any protocol, actually, because Swift won't let any specialization of a generic type adopt a protocol. Forget Dictionary, Array, Set, etc. 
+- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. No Swift collection of boxable values can adopt any protocol, actually, because Swift won't let any specialization of a generic type adopt a protocol. Forget Dictionary, Array, Set, etc.
 
 - `NSObject` or `NSDictionary`? This one would sure work. But now your users have no way to use the extra features of GRMustache.swift such as [filters](#filters) and [lambdas](#lambdas), etc. Consider that lambdas are part of the Mustache specification: your users may expect them to be available as soon as you claim to use a Mustache back end.
 
@@ -1445,42 +1445,44 @@ This variety of behaviors is available through public APIs. Before we dig into t
     
     This one is used by [Localizer](Docs/Guides/goodies.md#localizer) and [Logger](Docs/Guides/goodies.md#logger) goodies.
 
-All those customizable properties are gathered in the most low-level function that returns a box:
+All those customizable properties are not exposed through a Box() function, but instead gathered by the low-level MustacheBox initializer:
 
 ```swift
-public func Box(
+// MustacheBox initializer
+init(
     value value: Any? = nil,
     boolValue: Bool? = nil,
     keyedSubscript: KeyedSubscriptFunction? = nil,
     filter: FilterFunction? = nil,
     render: RenderFunction? = nil,
     willRender: WillRenderFunction? = nil,
-    didRender: DidRenderFunction? = nil) -> MustacheBox
+    didRender: DidRenderFunction? = nil)
 ```
 
 We'll below describe each of them individually, even though you can provide several ones at the same time:
 
-- `boolValue`
-    
-    The optional *boolValue* parameter tells whether the Box should trigger or prevent the rendering of regular `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}` tags. The default value is true, unless the function is called without argument to build the empty box: `Box()`.
-    
-    ```swift
-    // Render "true", "false"
-    let template = try Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-    try template.render(Box(boolValue: true))
-    try template.render(Box(boolValue: false))
-    ```
-
 - `value`
     
-    The optional *value* parameter gives the boxed value. The value is used when the box is rendered (unless you provide a custom RenderFunction).
+    The optional *value* parameter gives the boxed value. The value is used when the box is rendered (unless you provide a custom RenderFunction). It is also
+    returned by the `value` property of MustacheBox.
     
     ```swift
-    let aBox = Box(value: 1)
+    let aBox = MustacheBox(value: 1)
     
     // Renders "1"
     let template = try Template(string: "{{a}}")
     try template.render(Box(["a": aBox]))
+    ```
+
+- `boolValue`
+    
+    The optional *boolValue* parameter tells whether the Box should trigger or prevent the rendering of regular `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}` tags. The default value is true.
+    
+    ```swift
+    // Render "true", "false"
+    let template = try Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
+    try template.render(MustacheBox(boolValue: true))
+    try template.render(MustacheBox(boolValue: false))
     ```
 
 - `keyedSubscript`
@@ -1492,7 +1494,7 @@ We'll below describe each of them individually, even though you can provide seve
     Check the `KeyedSubscriptFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
     ```swift
-    let box = Box(keyedSubscript: { (key: String) in
+    let box = MustacheBox(keyedSubscript: { (key: String) in
         return Box("key:\(key)")
     })
     
@@ -1508,7 +1510,7 @@ We'll below describe each of them individually, even though you can provide seve
     Check the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
     ```swift
-    let box = Box(filter: Filter { (x: Int?) in
+    let box = MustacheBox(filter: Filter { (x: Int?) in
         return Box(x! * x!)
     })
     
@@ -1530,7 +1532,7 @@ We'll below describe each of them individually, even though you can provide seve
     Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
     ```swift
-    let box = Box(render: { (info: RenderingInfo) in
+    let box = MustacheBox(render: { (info: RenderingInfo) in
         return Rendering("foo")
     })
     
@@ -1546,7 +1548,7 @@ We'll below describe each of them individually, even though you can provide seve
     Check the `WillRenderFunction` and `DidRenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
     
     ```swift
-    let box = Box(willRender: { (tag: Tag, box: MustacheBox) in
+    let box = MustacheBox(willRender: { (tag: Tag, box: MustacheBox) in
         return Box("baz")
     })
     
@@ -1554,6 +1556,8 @@ We'll below describe each of them individually, even though you can provide seve
     let template = try Template(string:"{{#.}}{{foo}} {{bar}}{{/.}}")
     try template.render(box)
     ```
+
+**By mixing all those parameters, you can finely tune the behavior of a box.**
 
 
 Built-in goodies
