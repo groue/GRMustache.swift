@@ -171,20 +171,20 @@ final public class MustacheBox : NSObject {
     
     
     // -------------------------------------------------------------------------
-    // MARK: - Multi-facetted Initialization
+    // MARK: - Multi-facetted Box Initialization
     
     /**
-    This function is the most low-level function that lets you build MustacheBox
-    for feeding templates.
+    This is the most low-level initializer of MustacheBox.
 
-    It is suited for building "advanced" boxes. There are other simpler versions of
-    the `Box` function that may well better suit your need: you should check them.
+    It is suited for building "advanced" boxes. There are simpler versions of
+    the `Box` function that may well better suit your need: you should check
+    them.
 
-    It can take up to seven parameters, all optional, that define how the box
-    interacts with the Mustache engine:
+    This initializer can take up to seven parameters, all optional, that define
+    how the box interacts with the Mustache engine:
 
-    - `boolValue`:      an optional boolean value for the Box.
     - `value`:          an optional boxed value
+    - `boolValue`:      an optional boolean value for the Box.
     - `keyedSubscript`: an optional KeyedSubscriptFunction
     - `filter`:         an optional FilterFunction
     - `render`:         an optional RenderFunction
@@ -195,62 +195,64 @@ final public class MustacheBox : NSObject {
     To illustrate the usage of all those parameters, let's look at how the
     `{{f(a)}}` tag is rendered.
 
-    First the `a` and `f` expressions are evaluated. The Mustache engine looks in
-    the context stack for boxes whose *keyedSubscript* return non-empty boxes for
-    the keys "a" and "f". Let's call them aBox and fBox.
+    First the `a` and `f` expressions are evaluated. The Mustache engine looks
+    in the context stack for boxes whose *keyedSubscript* return non-empty boxes
+    for the keys "a" and "f". Let's call them aBox and fBox.
 
     Then the *filter* of the fBox is evaluated with aBox as an argument. It is
-    likely that the result depends on the *value* of the aBox: it is the resultBox.
+    likely that the result depends on the *value* of the aBox: it is the
+    resultBox.
 
-    Then the Mustache engine is ready to render resultBox. It looks in the context
-    stack for boxes whose *willRender* function is defined. Those willRender
-    functions have the opportunity to process the resultBox, and eventually provide
-    the box that will be actually rendered: the renderedBox.
+    Then the Mustache engine is ready to render resultBox. It looks in the
+    context stack for boxes whose *willRender* function is defined. Those
+    willRender functions have the opportunity to process the resultBox, and
+    eventually provide the box that will be actually rendered: the renderedBox.
 
-    The renderedBox has a *render* function: it is evaluated by the Mustache engine
-    which appends its result to the final rendering.
+    The renderedBox has a *render* function: it is evaluated by the Mustache
+    engine which appends its result to the final rendering.
 
     Finally the Mustache engine looks in the context stack for boxes whose
     *didRender* function is defined, and call them.
 
 
-    ### boolValue
-
-    The optional `boolValue` parameter tells whether the Box should trigger or
-    prevent the rendering of regular `{{#section}}...{{/}}` and inverted
-    `{{^section}}...{{/}}` tags. The default value is true, unless the function is
-    called without argument to build the empty box: `Box()`.
-
-        // Render "true", "false"
-        let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-        try! template.render(Box(boolValue: true))
-        try! template.render(Box(boolValue: false))
-
-
     ### value
 
-    The optional `value` parameter gives the boxed value. The value is used when the
-    box is rendered (unless you provide a custom RenderFunction).
+    The optional `value` parameter gives the boxed value. The value is used when
+    the box is rendered (unless you provide a custom RenderFunction). It is also
+    returned by the `value` property of MustacheBox.
 
-        let aBox = Box(value: 1)
+        let aBox = MustacheBox(value: 1)
 
         // Renders "1"
         let template = try! Template(string: "{{a}}")
         try! template.render(Box(["a": aBox]))
 
 
+    ### boolValue
+
+    The optional `boolValue` parameter tells whether the Box should trigger or
+    prevent the rendering of regular `{{#section}}...{{/}}` and inverted
+    `{{^section}}...{{/}}` tags. The default boolValue is true, unless the
+    Box is initialized without argument to build the empty box.
+
+        // Render "true", "false"
+        let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
+        try! template.render(MustacheBox(boolValue: true))
+        try! template.render(MustacheBox(boolValue: false))
+
+
     ### keyedSubscript
 
-    The optional `keyedSubscript` parameter is a `KeyedSubscriptFunction` that lets
-    the Mustache engine extract keys out of the box. For example, the `{{a}}` tag
-    would call the subscript function with `"a"` as an argument, and render the
-    returned box.
+    The optional `keyedSubscript` parameter is a `KeyedSubscriptFunction` that
+    lets the Mustache engine extract keys out of the box. For example, the
+    `{{a}}` tag would call the subscript function with `"a"` as an argument, and
+    render the returned box.
 
     The default value is nil, which means that no key can be extracted.
 
     See `KeyedSubscriptFunction` for a full discussion of this type.
 
-        let box = Box(keyedSubscript: { (key: String) in
+        let box = MustacheBox(keyedSubscript: { (key: String) in
             return Box("key:\(key)")
         })
 
@@ -262,12 +264,12 @@ final public class MustacheBox : NSObject {
     ### filter
 
     The optional `filter` parameter is a `FilterFunction` that lets the Mustache
-    engine evaluate filtered expression that involve the box. The default value is
-    nil, which means that the box can not be used as a filter.
+    engine evaluate filtered expression that involve the box. The default value
+    is nil, which means that the box can not be used as a filter.
 
     See `FilterFunction` for a full discussion of this type.
 
-        let box = Box(filter: Filter { (x: Int?) in
+        let box = MustacheBox(filter: Filter { (x: Int?) in
             return Box(x! * x!)
         })
 
@@ -278,8 +280,8 @@ final public class MustacheBox : NSObject {
 
     ### render
 
-    The optional `render` parameter is a `RenderFunction` that is evaluated when the
-    Box is rendered.
+    The optional `render` parameter is a `RenderFunction` that is evaluated when
+    the Box is rendered.
 
     The default value is nil, which makes the box perform default Mustache
     rendering:
@@ -288,17 +290,18 @@ final public class MustacheBox : NSObject {
       HTML-escaped.
 
     - `{{{box}}}` renders the built-in Swift String Interpolation of the value,
-    not HTML-escaped.
+      not HTML-escaped.
 
-    - `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise, it
-      pushes the box on the top of the context stack, and renders the section once.
+    - `{{#box}}...{{/box}}` does not render if `boolValue` is false. Otherwise,
+      it pushes the box on the top of the context stack, and renders the section
+      once.
 
     - `{{^box}}...{{/box}}` renders once if `boolValue` is false. Otherwise, it
       does not render.
 
     See `RenderFunction` for a full discussion of this type.
 
-        let box = Box(render: { (info: RenderingInfo) in
+        let box = MustacheBox(render: { (info: RenderingInfo) in
             return Rendering("foo")
         })
 
@@ -309,14 +312,14 @@ final public class MustacheBox : NSObject {
 
     ### willRender, didRender
 
-    The optional `willRender` and `didRender` parameters are a `WillRenderFunction`
-    and `DidRenderFunction` that are evaluated for all tags as long as the box is in
-    the context stack.
+    The optional `willRender` and `didRender` parameters are a
+    `WillRenderFunction` and `DidRenderFunction` that are evaluated for all tags
+    as long as the box is in the context stack.
 
-    See `WillRenderFunction` and `DidRenderFunction` for a full discussion of those
-    types.
+    See `WillRenderFunction` and `DidRenderFunction` for a full discussion of
+    those types.
 
-        let box = Box(willRender: { (tag: Tag, box: MustacheBox) in
+        let box = MustacheBox(willRender: { (tag: Tag, box: MustacheBox) in
             return Box("baz")
         })
 
@@ -329,8 +332,8 @@ final public class MustacheBox : NSObject {
 
     By mixing all those parameters, you can finely tune the behavior of a box.
 
-    GRMustache source code ships a few multi-facetted boxes, which may inspire you.
-    See for example:
+    GRMustache source code ships a few multi-facetted boxes, which may inspire
+    you. See for example:
 
     - NSFormatter.mustacheBox
     - HTMLEscape.mustacheBox
@@ -347,12 +350,12 @@ final public class MustacheBox : NSObject {
 
     We want:
 
-    1. `{{person.firstName}}` and `{{person.lastName}}` should render the matching
-       properties.
+    1. `{{person.firstName}}` and `{{person.lastName}}` should render the
+       matching properties.
     2. `{{person}}` should render the concatenation of the first and last names.
 
-    We'll provide a `KeyedSubscriptFunction` to implement 1, and a `RenderFunction`
-    to implement 2:
+    We'll provide a `KeyedSubscriptFunction` to implement 1, and a
+    `RenderFunction` to implement 2:
 
         // Have Person conform to MustacheBoxable so that we can box people, and
         // render them:
@@ -365,7 +368,7 @@ final public class MustacheBox : NSObject {
             var mustacheBox: MustacheBox {
                 
                 // A person is a multi-facetted object:
-                return Box(
+                return MustacheBox(
                     // It has a value:
                     value: self,
                     

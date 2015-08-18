@@ -339,33 +339,35 @@ extension Template : MustacheBoxable {
     included in an HTML template.
     */
     public var mustacheBox: MustacheBox {
-        return MustacheBox(value: self, render: { (info) in
-            switch info.tag {
-            case let sectionTag as SectionTag:
-                // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
-                //
-                // Let's render the template, overriding blocks with the content
-                // of the section.
-                //
-                // Overriding requires an PartialOverrideNode:
-                let partialOverrideNode = TemplateASTNode.partialOverride(
-                    childTemplateAST: sectionTag.innerTemplateAST,
-                    parentTemplateAST: self.templateAST)
-                
-                // Only RenderingEngine knows how to render PartialOverrideNode.
-                // So wrap the node into a TemplateAST, and render.
-                let renderingEngine = RenderingEngine(
-                    templateAST: TemplateAST(nodes: [partialOverrideNode], contentType: self.templateAST.contentType),
-                    context: info.context)
-                return try renderingEngine.render()
-            default:
-                // Assume Variable tag
-                //
-                // {{ template }} behaves just like {{> partial }}
-                //
-                // Let's simply render the template:
-                return try self.render(info.context)
-            }
+        return MustacheBox(
+            value: self,
+            render: { (info) in
+                switch info.tag {
+                case let sectionTag as SectionTag:
+                    // {{# template }}...{{/ template }} behaves just like {{< partial }}...{{/ partial }}
+                    //
+                    // Let's render the template, overriding blocks with the content
+                    // of the section.
+                    //
+                    // Overriding requires an PartialOverrideNode:
+                    let partialOverrideNode = TemplateASTNode.partialOverride(
+                        childTemplateAST: sectionTag.innerTemplateAST,
+                        parentTemplateAST: self.templateAST)
+                    
+                    // Only RenderingEngine knows how to render PartialOverrideNode.
+                    // So wrap the node into a TemplateAST, and render.
+                    let renderingEngine = RenderingEngine(
+                        templateAST: TemplateAST(nodes: [partialOverrideNode], contentType: self.templateAST.contentType),
+                        context: info.context)
+                    return try renderingEngine.render()
+                default:
+                    // Assume Variable tag
+                    //
+                    // {{ template }} behaves just like {{> partial }}
+                    //
+                    // Let's simply render the template:
+                    return try self.render(info.context)
+                }
         })
     }
 }

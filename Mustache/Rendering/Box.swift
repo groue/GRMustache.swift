@@ -1681,8 +1681,10 @@ public func Box(didRender: DidRenderFunction) -> MustacheBox {
 }
 
 /**
-TODO
+The empty box, the box that represents missing values.
 */
 public func Box() -> MustacheBox {
-    return MustacheBox()
+    return EmptyBox
 }
+
+private let EmptyBox = MustacheBox()
