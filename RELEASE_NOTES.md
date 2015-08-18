@@ -19,6 +19,8 @@ Release Notes
 
 - `BoxAnyObject()` is removed. You must now explicit cast `AnyObject` to a boxable type that you can box with `Box()`.
 
+- `Box(value:boolValue:keyedSubscript:filter:render:willRender:didRender:)` has been replaced by a MustacheBox initializer with the same arguments.
+
 
 ## v0.9.3
 
