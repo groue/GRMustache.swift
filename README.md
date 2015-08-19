@@ -5,7 +5,7 @@ GRMustache.swift is a [Mustache](http://mustache.github.io) template engine writ
 
 It extends the genuine Mustache language with built-in goodies and extensibility hooks that let you avoid the strict minimalism of Mustache when you need it.
 
-**August 19, 2015: GRMustache.swift 0.9.4 is out** - [Release notes](RELEASE_NOTES.md). Follow [@GRMustache on Twitter](http://twitter.com/GRMustache) for release announcements and usage tips.
+**August 19, 2015: GRMustache.swift 0.9.4 is out** - [Release notes](RELEASE_NOTES.md). Follow [@GRMustache](http://twitter.com/GRMustache) on Twitter for release announcements and usage tips.
 
 **Swift 2**: Check the [Swift2 branch](https://github.com/groue/GRMustache.swift/tree/Swift2).
 
