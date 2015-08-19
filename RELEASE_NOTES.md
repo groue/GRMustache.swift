@@ -4,6 +4,8 @@ Release Notes
 
 ## v0.9.4
 
+Released on August 19, 2015
+
 **Fixed**
 
 - A memory leak
