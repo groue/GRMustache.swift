@@ -5,7 +5,7 @@ GRMustache.swift is a [Mustache](http://mustache.github.io) template engine writ
 
 It extends the genuine Mustache language with built-in goodies and extensibility hooks that let you avoid the strict minimalism of Mustache when you need it.
 
-**June 9, 2015: GRMustache.swift 0.9.3 is out.** [Release notes](RELEASE_NOTES.md)
+**August 19, 2015: GRMustache.swift 0.9.4 is out.** [Release notes](RELEASE_NOTES.md)
 
 **SWIFT 2**: Check the [Swift2 branch](https://github.com/groue/GRMustache.swift/tree/Swift2).
 
@@ -96,7 +96,7 @@ To use GRMustache.swift with Cocoapods, specify in your Podfile:
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
-pod 'GRMustache.swift', '0.9.3'
+pod 'GRMustache.swift', '0.9.4'
 ```
 
 
@@ -107,7 +107,7 @@ pod 'GRMustache.swift', '0.9.3'
 To use GRMustache.swift with Carthage, specify in your Cartfile:
 
 ```
-github "groue/GRMustache.swift" == 0.9.3
+github "groue/GRMustache.swift" == 0.9.4
 ```
 
 
@@ -124,7 +124,7 @@ To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contai
 External links:
 
 - [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html) on cocoadocs.org
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Classes/Template.html) on cocoadocs.org
 
 Rendering templates:
 
@@ -191,8 +191,8 @@ Templates may come from various sources:
 
 For more information, check:
 
-- [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html))
-- [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html))
+- [Template.swift](Mustache/Template/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Classes/Template.html))
+- [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Classes/TemplateRepository.html))
 
 
 Errors
@@ -520,7 +520,7 @@ Generally speaking, partial names are always interpreted by a **Template Reposit
 - `Template(string:...)` uses a template repository that can’t load any partial.
 - `templateRepository.template(named:...)` uses the partial loading mechanism of the template repository.
 
-Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/TemplateRepository.html)).
+Check [TemplateRepository.swift](Mustache/Template/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Classes/TemplateRepository.html)).
 
 
 #### Dynamic partials
@@ -653,7 +653,7 @@ ERB-styled tags: <% name %>
 Default tags again: {{ name }}
 ```
 
-There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
+There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Structs/Configuration.html)).
 
 
 ### Comment Tags
@@ -674,7 +674,7 @@ GRMustache.swift interprets two pragma tags that set the content type of the tem
 
 In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
-For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Structs/Configuration.html)).
+For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Structs/Configuration.html)).
 
 
 The Context Stack and Expressions
@@ -734,7 +734,7 @@ template.render(Box(data))
 
 The base context is usually a good place to register [filters](#filters).
 
-See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Classes/Template.html)).
+See [Template.swift](Mustache/Template/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Classes/Template.html)).
 
 
 ### Expressions
@@ -1124,7 +1124,7 @@ let data = [
 let rendering = template.render(Box(data))!
 ```
 
-Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
 
 
 Filters
@@ -1356,14 +1356,14 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = template.render(Box(data))!
 ```
 
-As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
 
 
 ### Advanced Filters
 
 All the filters seen above are particular cases of `FilterFunction`. "Value filters", "Pre-rendering filters" and "Custom rendering filters" are common use cases that are granted with specific APIs.
 
-Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+Yet the library ships with a few built-in filters that don't quite fit any of those categories. Go check their [documentation](Docs/Guides/goodies.md). And since they are all written with public GRMustache.swift APIs, check also their [source code](Mustache/Goodies), for inspiration. The general `FilterFunction` itself is detailed in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
 
 
 Advanced Boxes
@@ -1492,7 +1492,7 @@ We'll below describe each of them individually, even though you can provide seve
     
     The default value is nil, which means that no key can be extracted.
     
-    Check the `KeyedSubscriptFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    Check the `KeyedSubscriptFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
     
     ```swift
     let box = Box(keyedSubscript: { (key: String) in
@@ -1508,7 +1508,7 @@ We'll below describe each of them individually, even though you can provide seve
     
     The optional *filter* parameter is a `FilterFunction` that lets the Mustache engine evaluate filtered expression that involve the box. The default value is nil, which means that the box can not be used as a filter.
     
-    Check the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    Check the `FilterFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
     
     ```swift
     let box = Box(filter: Filter { (x: Int?, _) in
@@ -1530,7 +1530,7 @@ We'll below describe each of them individually, even though you can provide seve
     - `{{{box}}}` renders the built-in Swift String Interpolation of the value, not HTML-escaped.
     - `{{#box}}...{{/box}}` pushes the box on the top of the context stack, and renders the section once.
     
-    Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    Check the `RenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
     
     ```swift
     let box = Box(render: { (info: RenderingInfo, _) in
@@ -1546,7 +1546,7 @@ We'll below describe each of them individually, even though you can provide seve
     
     The optional *willRender* and *didRender* parameters are a `WillRenderFunction` and `DidRenderFunction` that are evaluated for all tags as long as the box is in the context stack.
     
-    Check the `WillRenderFunction` and `DidRenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.3/Typealiases.html)).
+    Check the `WillRenderFunction` and `DidRenderFunction` type in [CoreFunctions.swift](Mustache/Rendering/CoreFunctions.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.9.4/Typealiases.html)).
     
     ```swift
     let box = Box(willRender: { (tag: Tag, box: MustacheBox) in

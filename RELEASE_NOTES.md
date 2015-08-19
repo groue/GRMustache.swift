@@ -2,6 +2,14 @@ Release Notes
 =============
 
 
+## v0.9.4
+
+**Fixed**
+
+- A memory leak
+- Reduced deployment targets to iOS 8.0 and OSX 10.9 ([#11](https://github.com/groue/GRMustache.swift/pull/11))
+
+
 ## v0.9.3
 
 Released on June 9, 2015
