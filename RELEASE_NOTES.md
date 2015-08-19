@@ -22,6 +22,16 @@ Release Notes
 - `Box(value:boolValue:keyedSubscript:filter:render:willRender:didRender:)` has been replaced by a MustacheBox initializer with the same arguments.
 
 
+## v0.9.4
+
+Released on August 19, 2015
+
+**Fixed**
+
+- A memory leak
+- Reduced deployment targets to iOS 8.0 and OSX 10.9 ([#11](https://github.com/groue/GRMustache.swift/pull/11))
+
+
 ## v0.9.3
 
 Released on June 9, 2015
