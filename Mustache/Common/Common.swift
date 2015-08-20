@@ -56,11 +56,6 @@ public enum ContentType {
 
 /// The errors thrown by Mustache.swift
 public struct Error: ErrorType {
-    /// Required for ErrorType conformance.
-    public let _domain = "Mustache.Error"
-    
-    /// Required for ErrorType conformance.
-    public var _code: Int { return type.rawValue }
     
     /// Mustache.Error types
     public enum Type : Int {
