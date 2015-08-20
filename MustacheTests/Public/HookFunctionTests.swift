@@ -78,8 +78,8 @@ class HookFunctionTests: XCTestCase {
         XCTAssertEqual(rendering, "---1---")
         XCTAssertEqual(preRenderingTagType!, TagType.Variable)
         XCTAssertEqual(postRenderingTagType!, TagType.Variable)
-        XCTAssertEqual(preRenderingValue?.value as! String, "value")
-        XCTAssertEqual(postRenderingValue?.value as! Int, 1)
+        XCTAssertEqual((preRenderingValue?.value as! String), "value")
+        XCTAssertEqual((postRenderingValue?.value as! Int), 1)
     }
     
     func testSectionHooks() {
@@ -130,8 +130,8 @@ class HookFunctionTests: XCTestCase {
         XCTAssertEqual(postRenderingValues.count, 2)
         XCTAssertTrue(preRenderingValues[0].isEmpty)
         XCTAssertTrue(preRenderingValues[1].isEmpty)
-        XCTAssertEqual(postRenderingValues[0].value as! String, "observer")
-        XCTAssertEqual(postRenderingValues[1].value as! Bool, true)
+        XCTAssertEqual((postRenderingValues[0].value as! String), "observer")
+        XCTAssertEqual((postRenderingValues[1].value as! Bool), true)
         XCTAssertEqual(preRenderingTagTypes[0], TagType.Section)
         XCTAssertEqual(preRenderingTagTypes[1], TagType.Variable)
         XCTAssertEqual(postRenderingTagTypes[0], TagType.Variable)
@@ -166,7 +166,7 @@ class HookFunctionTests: XCTestCase {
         rendering = try! template.render(Box(["subject": "foo"]))
         XCTAssertEqual(rendering, "foo")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual(renderedValue!.value as! String, "foo")
+        XCTAssertEqual((renderedValue!.value as! String), "foo")
         
         template = try! Template(string: "{{subject.foo}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -193,7 +193,7 @@ class HookFunctionTests: XCTestCase {
         rendering = try! template.render(Box(["subject": ["foo": "bar"]]))
         XCTAssertEqual(rendering, "bar")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual(renderedValue!.value as! String, "bar")
+        XCTAssertEqual((renderedValue!.value as! String), "bar")
         
         template = try! Template(string: "{{filter(subject)}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -211,7 +211,7 @@ class HookFunctionTests: XCTestCase {
         rendering = try! template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))
         XCTAssertEqual(rendering, "FOO")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual(renderedValue!.value as! String, "FOO")
+        XCTAssertEqual((renderedValue!.value as! String), "FOO")
         
         template = try! Template(string: "{{filter(subject).length}}")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -220,7 +220,7 @@ class HookFunctionTests: XCTestCase {
         rendering = try! template.render(Box(["subject": Box("foo"), "filter": Box(Filter(filter))]))
         XCTAssertEqual(rendering, "3")
         XCTAssertEqual(willRenderCount, 1)
-        XCTAssertEqual(renderedValue!.value as! Int, 3)
+        XCTAssertEqual((renderedValue!.value as! Int), 3)
     }
     
     func testDidRenderFunctionObservesRenderedString() {

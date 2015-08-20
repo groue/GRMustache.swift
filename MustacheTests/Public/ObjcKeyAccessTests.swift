@@ -36,11 +36,11 @@ class ObjcKeyAccessTests: XCTestCase {
     
         // test setup
         XCTAssertEqual(object.property, "property")
-        XCTAssertEqual(object.valueForKey("property") as! String, "property")
+        XCTAssertEqual((object.valueForKey("property") as! String), "property")
         
         // test context
         let context = Context(Box(object))
-        XCTAssertEqual(context["property"].value as! String, "property")
+        XCTAssertEqual((context["property"].value as! String), "property")
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
@@ -48,7 +48,7 @@ class ObjcKeyAccessTests: XCTestCase {
         
         // test setup
         XCTAssertEqual(object.method(), "method")
-        XCTAssertEqual(object.valueForKey("method") as! String, "method")
+        XCTAssertEqual((object.valueForKey("method") as! String), "method")
     
         // test context
         let context = Context(Box(object))

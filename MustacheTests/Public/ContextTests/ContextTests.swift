@@ -71,7 +71,7 @@ class ContextTests: XCTestCase {
 //        XCTAssertEqual(context.topBox.value as String, "object")
 
         context = context.extendedContext(Box("object2"))
-        XCTAssertEqual(context.topBox.value as! String, "object2")
+        XCTAssertEqual((context.topBox.value as! String), "object2")
     }
     
     func testSubscript() {
@@ -81,7 +81,7 @@ class ContextTests: XCTestCase {
         XCTAssertTrue(context["."].isEmpty)
         
         // 'name' is a key
-        XCTAssertEqual(context["name"].value as! String, "name1")
+        XCTAssertEqual((context["name"].value as! String), "name1")
         
         // 'a.name' is an expression, not a key
         XCTAssertTrue(context["a.name"].isEmpty)
