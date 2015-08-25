@@ -62,23 +62,23 @@ final class TemplateGenerator {
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = block.name
-            buffer.extend("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
             renderTemplateAST(block.innerTemplateAST)
-            buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialOverrideNode(let partialOverride):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = partialOverride.parentPartial.name ?? "<null>"
-            buffer.extend("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
             renderTemplateAST(partialOverride.childTemplateAST)
-            buffer.extend("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialNode(let partial):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = partial.name ?? "<null>"
-            buffer.extend("\(tagStartDelimiter)>\(name)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)>\(name)\(tagEndDelimiter)")
             
         case .SectionNode(let section):
             // Change delimiters tags are ignored. Always use configuration tag
@@ -87,15 +87,15 @@ final class TemplateGenerator {
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let expression = ExpressionGenerator().stringFromExpression(section.expression)
             if section.inverted {
-                buffer.extend("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
+                buffer.appendContentsOf("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
             } else {
-                buffer.extend("\(tagStartDelimiter)#\(expression)\(tagEndDelimiter)")
+                buffer.appendContentsOf("\(tagStartDelimiter)#\(expression)\(tagEndDelimiter)")
             }
             renderTemplateAST(section.tag.innerTemplateAST)
-            buffer.extend("\(tagStartDelimiter)/\(expression)\(tagEndDelimiter)")
+            buffer.appendContentsOf("\(tagStartDelimiter)/\(expression)\(tagEndDelimiter)")
             
         case .TextNode(let text):
-            buffer.extend(text)
+            buffer.appendContentsOf(text)
             
         case .VariableNode(let variable):
             // Change delimiters tags are ignored. Always use configuration tag
@@ -104,11 +104,11 @@ final class TemplateGenerator {
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let expression = ExpressionGenerator().stringFromExpression(variable.expression)
             if variable.escapesHTML {
-                buffer.extend("\(tagStartDelimiter)\(expression)\(tagEndDelimiter)")
+                buffer.appendContentsOf("\(tagStartDelimiter)\(expression)\(tagEndDelimiter)")
             } else if tagStartDelimiter == "{{" && tagEndDelimiter == "}}" {
-                buffer.extend("\(tagStartDelimiter){\(expression)}\(tagEndDelimiter)")
+                buffer.appendContentsOf("\(tagStartDelimiter){\(expression)}\(tagEndDelimiter)")
             } else {
-                buffer.extend("\(tagStartDelimiter)&\(expression)\(tagEndDelimiter)")
+                buffer.appendContentsOf("\(tagStartDelimiter)&\(expression)\(tagEndDelimiter)")
             }
         }
     }

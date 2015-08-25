@@ -47,19 +47,19 @@ final class ExpressionGenerator {
         case .ImplicitIterator:
             // {{ . }}
             
-            buffer.extend(".")
+            buffer.appendContentsOf(".")
             
         case .Identifier(let identifier):
             // {{ identifier }}
             
-            buffer.extend(identifier)
+            buffer.appendContentsOf(identifier)
             
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
             renderExpression(baseExpression)
-            buffer.extend(".")
-            buffer.extend(identifier)
+            buffer.appendContentsOf(".")
+            buffer.appendContentsOf(identifier)
             
         case .Filter(let filterExpression, let argumentExpression, _):
             // {{ <expression>(<expression>) }}
@@ -68,9 +68,9 @@ final class ExpressionGenerator {
             // `f(a,b)` is rendered `f(a)(b)`.
             
             renderExpression(filterExpression)
-            buffer.extend("(")
+            buffer.appendContentsOf("(")
             renderExpression(argumentExpression)
-            buffer.extend(")")
+            buffer.appendContentsOf(")")
         }
     }
     

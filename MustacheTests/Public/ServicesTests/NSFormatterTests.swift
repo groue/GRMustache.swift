@@ -47,7 +47,7 @@ class NSFormatterTests: XCTestCase {
         percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
         
         // test that number is processable
-        XCTAssertNil(percentFormatter.stringForObjectValue("foo"))
+        XCTAssertTrue(percentFormatter.stringForObjectValue("foo") == nil)
         
         // test filtering a string
         let template = try! Template(string: "{{ percent(string) }}")
