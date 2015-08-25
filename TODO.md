@@ -10,3 +10,6 @@ TODO
 - [ ] Experiment with NSError.setUserInfoValueProviderForDomain
 - [ ] Restore `Box([MustacheBoxable?]?)` as soon as Swift2 can
 - [ ] Make sure we have a test for all cases of errors thrown from user closures: Mustache.Error should get a templateID and a line number when possible, and other errors should be wrapped as underlying errors of Mustache.Error.
+- [ ] (Xcode7b6) Evaluate the consequences of:
+    http://adcdownload.apple.com/Developer_Tools/Xcode_7_beta_6/Xcode_7_beta_6_Release_Notes.pdf
+    > Collections containing types that are not Objective-C compatible are no longer considered Objective-C compatible types themselves. For example, previously Array<SwiftClassType> was permitted as the type of a property marked @objc. This is no longer the case. (19787270)
