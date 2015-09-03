@@ -13,3 +13,4 @@ TODO
 - [ ] (Xcode7b6) Evaluate the consequences of:
     http://adcdownload.apple.com/Developer_Tools/Xcode_7_beta_6/Xcode_7_beta_6_Release_Notes.pdf
     > Collections containing types that are not Objective-C compatible are no longer considered Objective-C compatible types themselves. For example, previously Array<SwiftClassType> was permitted as the type of a property marked @objc. This is no longer the case. (19787270)
+- [?] Custom escape function? HTML, shell, javascript, whatever...
