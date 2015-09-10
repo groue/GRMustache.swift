@@ -220,14 +220,6 @@ do {
 }
 ```
 
-When you render trusted valid templates with trusted valid data, you can avoid error handling with the `try!` Swift construct:
-
-```swift
-// Assume valid parsing and rendering
-let template = try! Template(string: "{{name}} has a Mustache.")
-let rendering = try! template.render(Box(data))
-```
-
 
 Mustache Tags Reference
 -----------------------
