@@ -2,7 +2,9 @@ Release Notes
 =============
 
 
-## Future release
+## v0.10.0
+
+Released on September 10, 2015
 
 **New**
 
@@ -11,7 +13,7 @@ Release Notes
 
 **Breaking changes**
 
-- Swift 2, and especially error handling.
+- Swift 2.
 
 - Collections no longer expose Objective-C-compatible keys to templates: `{{ array.firstObject }}`, `{{ array.lastObject }}`, `{{ set.anyObject }}` no longer render anything. Focusing on Swift standard library, the only supported keys are now `first`, `count`, and `last` (the latter being undefined for sets).
 
