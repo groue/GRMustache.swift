@@ -1,0 +1,3 @@
+[submodule "MustacheTests/vendor/groue/GRMustacheSpec"]
+	path = MustacheTests/vendor/groue/GRMustacheSpec
+	url = https://github.com/groue/GRMustacheSpec.git

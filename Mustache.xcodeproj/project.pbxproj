@@ -141,10 +141,10 @@
 		5660B9911B2832BE00102EF1 /* ExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */; };
 		566244571AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
 		566244581AEBC88C008BAD41 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
-		566244931AF1638F008BAD41 /* GRMustacheSuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */; };
-		566244941AF1638F008BAD41 /* GRMustacheSuiteTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */; };
-		566244961AF163A3008BAD41 /* GRMustacheSuite in Resources */ = {isa = PBXBuildFile; fileRef = 566244951AF163A3008BAD41 /* GRMustacheSuite */; };
-		566244971AF163A3008BAD41 /* GRMustacheSuite in Resources */ = {isa = PBXBuildFile; fileRef = 566244951AF163A3008BAD41 /* GRMustacheSuite */; };
+		566244931AF1638F008BAD41 /* GRMustacheSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244701AF1638F008BAD41 /* GRMustacheSpecTests.swift */; };
+		566244941AF1638F008BAD41 /* GRMustacheSpecTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244701AF1638F008BAD41 /* GRMustacheSpecTests.swift */; };
+		566244961AF163A3008BAD41 /* Tests in Resources */ = {isa = PBXBuildFile; fileRef = 566244951AF163A3008BAD41 /* Tests */; };
+		566244971AF163A3008BAD41 /* Tests in Resources */ = {isa = PBXBuildFile; fileRef = 566244951AF163A3008BAD41 /* Tests */; };
 		566244A11AF1645F008BAD41 /* HoganSuite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244A01AF1645F008BAD41 /* HoganSuite.swift */; };
 		566244A21AF1645F008BAD41 /* HoganSuite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244A01AF1645F008BAD41 /* HoganSuite.swift */; };
 		566244A41AF164D5008BAD41 /* SuiteTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244A31AF164D5008BAD41 /* SuiteTestCase.swift */; };
@@ -273,8 +273,8 @@
 		564717301A18EAE600E383F9 /* FilterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FilterTests.swift; sourceTree = "<group>"; };
 		5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExpressionGenerator.swift; sourceTree = "<group>"; };
 		566244561AEBC88C008BAD41 /* Expression.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
-		566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRMustacheSuiteTests.swift; sourceTree = "<group>"; };
-		566244951AF163A3008BAD41 /* GRMustacheSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GRMustacheSuite; sourceTree = "<group>"; };
+		566244701AF1638F008BAD41 /* GRMustacheSpecTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRMustacheSpecTests.swift; sourceTree = "<group>"; };
+		566244951AF163A3008BAD41 /* Tests */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Tests; path = ../../../vendor/groue/GRMustacheSpec/Tests; sourceTree = "<group>"; };
 		566244A01AF1645F008BAD41 /* HoganSuite.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HoganSuite.swift; sourceTree = "<group>"; };
 		566244A31AF164D5008BAD41 /* SuiteTestCase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SuiteTestCase.swift; sourceTree = "<group>"; };
 		566244A61AF1653C008BAD41 /* HoganSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = HoganSuite; sourceTree = "<group>"; };
@@ -549,19 +549,19 @@
 			isa = PBXGroup;
 			children = (
 				566244A31AF164D5008BAD41 /* SuiteTestCase.swift */,
-				5662445D1AF1638F008BAD41 /* GRMustacheSuite */,
+				5662445D1AF1638F008BAD41 /* GRMustacheSpec */,
 				566244981AF1641A008BAD41 /* twitter/hogan.js */,
 			);
 			path = SuitesTests;
 			sourceTree = "<group>";
 		};
-		5662445D1AF1638F008BAD41 /* GRMustacheSuite */ = {
+		5662445D1AF1638F008BAD41 /* GRMustacheSpec */ = {
 			isa = PBXGroup;
 			children = (
-				566244951AF163A3008BAD41 /* GRMustacheSuite */,
-				566244701AF1638F008BAD41 /* GRMustacheSuiteTests.swift */,
+				566244951AF163A3008BAD41 /* Tests */,
+				566244701AF1638F008BAD41 /* GRMustacheSpecTests.swift */,
 			);
-			path = GRMustacheSuite;
+			path = GRMustacheSpec;
 			sourceTree = "<group>";
 		};
 		566244981AF1641A008BAD41 /* twitter/hogan.js */ = {
@@ -874,7 +874,7 @@
 				561E72CE1A8BDDAD004ED48B /* TemplateRepositoryFileSystemTests_UTF8 in Resources */,
 				561E72CA1A8BDD96004ED48B /* TemplateRepositoryBundleTests.text in Resources */,
 				561E72C81A8BDD96004ED48B /* TemplateRepositoryBundleTests_partial.text in Resources */,
-				566244971AF163A3008BAD41 /* GRMustacheSuite in Resources */,
+				566244971AF163A3008BAD41 /* Tests in Resources */,
 				561E72C91A8BDD96004ED48B /* TemplateRepositoryBundleTests.mustache in Resources */,
 				561E72CD1A8BDDA4004ED48B /* TemplateRepositoryFileSystemTests_ISOLatin1 in Resources */,
 				561E72BE1A8BDD6A004ED48B /* TagTests.mustache in Resources */,
@@ -913,7 +913,7 @@
 				560ABB691A2754FD009A004A /* TemplateRepositoryFileSystemTests in Resources */,
 				56B4B2321A27091900BD4F8F /* TemplateRepositoryBundleTests_partial.text in Resources */,
 				561646971A23C21B00F8ADE0 /* Movie.mustache in Resources */,
-				566244961AF163A3008BAD41 /* GRMustacheSuite in Resources */,
+				566244961AF163A3008BAD41 /* Tests in Resources */,
 				560ABB6D1A2754FD009A004A /* TemplateRepositoryFileSystemTests_UTF8 in Resources */,
 				560ABAD61A260A42009A004A /* TemplateFromMethodsTests_parserError.mustache in Resources */,
 				560ABADA1A260A42009A004A /* TemplateFromMethodsTests.mustache in Resources */,
@@ -990,7 +990,7 @@
 				561E72B71A8BDC6A004ED48B /* TemplateRepositoryPathTests.swift in Sources */,
 				561E72A51A8BDC6A004ED48B /* FilterTests.swift in Sources */,
 				561E72A31A8BDC6A004ED48B /* ReadMeTests.swift in Sources */,
-				566244941AF1638F008BAD41 /* GRMustacheSuiteTests.swift in Sources */,
+				566244941AF1638F008BAD41 /* GRMustacheSpecTests.swift in Sources */,
 				5611BF991B333E1F005FA874 /* LoggerTests.swift in Sources */,
 				561E729F1A8BDC6A004ED48B /* ContextRegisteredKeyTests.swift in Sources */,
 				561E72AC1A8BDC6A004ED48B /* EachFilterTests.swift in Sources */,
@@ -1073,7 +1073,7 @@
 				56FC9C911A189FA70020AAF8 /* VariadicFilterTests.swift in Sources */,
 				56B4B21C1A27022C00BD4F8F /* TemplateRepositoryDataSourceTests.swift in Sources */,
 				56BA49201A221ECB0029FD45 /* MustacheRenderableGuideTests.swift in Sources */,
-				566244931AF1638F008BAD41 /* GRMustacheSuiteTests.swift in Sources */,
+				566244931AF1638F008BAD41 /* GRMustacheSpecTests.swift in Sources */,
 				5611BF981B333E1F005FA874 /* LoggerTests.swift in Sources */,
 				56B4B2191A26459C00BD4F8F /* TemplateRepositoryTests.swift in Sources */,
 				560ABAE41A27539B009A004A /* TemplateRepositoryURLTests.swift in Sources */,
