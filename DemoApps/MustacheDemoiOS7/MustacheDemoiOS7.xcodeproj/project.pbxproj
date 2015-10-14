@@ -50,14 +50,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		56EB0ABF1BCE25CE00A3DC55 /* MustacheiOS7.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheiOS7.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		56EB0ABF1BCE25CE00A3DC55 /* MustacheDemoiOS7.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheDemoiOS7.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56EB0AC21BCE25CE00A3DC55 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		56EB0AC41BCE25CE00A3DC55 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		56EB0AC71BCE25CE00A3DC55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		56EB0AC91BCE25CE00A3DC55 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		56EB0ACC1BCE25CE00A3DC55 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		56EB0ACE1BCE25CE00A3DC55 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		56EB0ADF1BCE267B00A3DC55 /* MustacheiOS7-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MustacheiOS7-Bridging-Header.h"; sourceTree = "<group>"; };
+		56EB0ADF1BCE267B00A3DC55 /* MustacheDemoiOS7-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "MustacheDemoiOS7-Bridging-Header.h"; sourceTree = "<group>"; };
 		56EB0B701BCE270A00A3DC55 /* Document.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Document.mustache; sourceTree = "<group>"; };
 		56EB0B711BCE270A00A3DC55 /* Layout.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Layout.mustache; sourceTree = "<group>"; };
 		56EB0B7A1BCE279500A3DC55 /* Common.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
@@ -110,7 +110,7 @@
 		56EB0AB61BCE25CE00A3DC55 = {
 			isa = PBXGroup;
 			children = (
-				56EB0AC11BCE25CE00A3DC55 /* MustacheiOS7 */,
+				56EB0AC11BCE25CE00A3DC55 /* MustacheDemoiOS7 */,
 				56EB0AC01BCE25CE00A3DC55 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -118,27 +118,27 @@
 		56EB0AC01BCE25CE00A3DC55 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				56EB0ABF1BCE25CE00A3DC55 /* MustacheiOS7.app */,
+				56EB0ABF1BCE25CE00A3DC55 /* MustacheDemoiOS7.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		56EB0AC11BCE25CE00A3DC55 /* MustacheiOS7 */ = {
+		56EB0AC11BCE25CE00A3DC55 /* MustacheDemoiOS7 */ = {
 			isa = PBXGroup;
 			children = (
 				56EB0AC21BCE25CE00A3DC55 /* AppDelegate.swift */,
 				56EB0AC41BCE25CE00A3DC55 /* ViewController.swift */,
-				56EB0B781BCE279500A3DC55 /* GRMustache.swift */,
+				56EB0B781BCE279500A3DC55 /* Mustache */,
 				56EB0B751BCE272500A3DC55 /* Resources */,
 				56EB0B741BCE271400A3DC55 /* Supporting Files */,
 			);
-			path = MustacheiOS7;
+			path = MustacheDemoiOS7;
 			sourceTree = "<group>";
 		};
 		56EB0B741BCE271400A3DC55 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				56EB0ADF1BCE267B00A3DC55 /* MustacheiOS7-Bridging-Header.h */,
+				56EB0ADF1BCE267B00A3DC55 /* MustacheDemoiOS7-Bridging-Header.h */,
 				56EB0ACE1BCE25CE00A3DC55 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -156,7 +156,7 @@
 			name = Resources;
 			sourceTree = "<group>";
 		};
-		56EB0B781BCE279500A3DC55 /* GRMustache.swift */ = {
+		56EB0B781BCE279500A3DC55 /* Mustache */ = {
 			isa = PBXGroup;
 			children = (
 				56EB0B791BCE279500A3DC55 /* Common */,
@@ -168,7 +168,7 @@
 				56EB0B9A1BCE279500A3DC55 /* Rendering */,
 				56EB0BA31BCE279600A3DC55 /* Template */,
 			);
-			name = GRMustache.swift;
+			name = Mustache;
 			path = ../../../../GRMustache.swift/Mustache;
 			sourceTree = "<group>";
 		};
@@ -273,9 +273,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		56EB0ABE1BCE25CE00A3DC55 /* MustacheiOS7 */ = {
+		56EB0ABE1BCE25CE00A3DC55 /* MustacheDemoiOS7 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 56EB0AD11BCE25CE00A3DC55 /* Build configuration list for PBXNativeTarget "MustacheiOS7" */;
+			buildConfigurationList = 56EB0AD11BCE25CE00A3DC55 /* Build configuration list for PBXNativeTarget "MustacheDemoiOS7" */;
 			buildPhases = (
 				56EB0ABB1BCE25CE00A3DC55 /* Sources */,
 				56EB0ABC1BCE25CE00A3DC55 /* Frameworks */,
@@ -285,9 +285,9 @@
 			);
 			dependencies = (
 			);
-			name = MustacheiOS7;
+			name = MustacheDemoiOS7;
 			productName = MustacheiOS7;
-			productReference = 56EB0ABF1BCE25CE00A3DC55 /* MustacheiOS7.app */;
+			productReference = 56EB0ABF1BCE25CE00A3DC55 /* MustacheDemoiOS7.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -305,7 +305,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 56EB0ABA1BCE25CE00A3DC55 /* Build configuration list for PBXProject "MustacheiOS7" */;
+			buildConfigurationList = 56EB0ABA1BCE25CE00A3DC55 /* Build configuration list for PBXProject "MustacheDemoiOS7" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
@@ -318,7 +318,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				56EB0ABE1BCE25CE00A3DC55 /* MustacheiOS7 */,
+				56EB0ABE1BCE25CE00A3DC55 /* MustacheDemoiOS7 */,
 			);
 		};
 /* End PBXProject section */
@@ -491,12 +491,12 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = MustacheiOS7/Info.plist;
+				INFOPLIST_FILE = MustacheDemoiOS7/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.MustacheiOS7;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.MustacheDemoiOS7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MustacheiOS7/MustacheiOS7-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "MustacheDemoiOS7/MustacheDemoiOS7-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
@@ -506,19 +506,19 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
-				INFOPLIST_FILE = MustacheiOS7/Info.plist;
+				INFOPLIST_FILE = MustacheDemoiOS7/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.MustacheiOS7;
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.MustacheDemoiOS7;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_OBJC_BRIDGING_HEADER = "MustacheiOS7/MustacheiOS7-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "MustacheDemoiOS7/MustacheDemoiOS7-Bridging-Header.h";
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		56EB0ABA1BCE25CE00A3DC55 /* Build configuration list for PBXProject "MustacheiOS7" */ = {
+		56EB0ABA1BCE25CE00A3DC55 /* Build configuration list for PBXProject "MustacheDemoiOS7" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56EB0ACF1BCE25CE00A3DC55 /* Debug */,
@@ -527,7 +527,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		56EB0AD11BCE25CE00A3DC55 /* Build configuration list for PBXNativeTarget "MustacheiOS7" */ = {
+		56EB0AD11BCE25CE00A3DC55 /* Build configuration list for PBXNativeTarget "MustacheDemoiOS7" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				56EB0AD21BCE25CE00A3DC55 /* Debug */,
