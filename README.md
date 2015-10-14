@@ -194,13 +194,13 @@ For more information, check:
 Errors
 ------
 
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `Mustache.Error`:
+Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `MustacheError`:
 
 ```swift
 do {
     let template = try Template(named: "Document")
     let rendering = template.render(Box(data))
-} catch let error as Mustache.Error {
+} catch let error as MustacheError {
     // Parse error at line 2 of template /path/to/template.mustache:
     // Unclosed Mustache tag.
     error.description
