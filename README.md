@@ -79,7 +79,7 @@ Installation
 
 ### iOS7
 
-To use GRMustache.swift in a project targetting iOS7, you must include the source files directly in your project.
+To use GRMustache.swift in a project targetting iOS7, you must include the source files directly in your project. Check the DemoApps/MustacheiOS7 sample application for an example of integration.
 
 
 ### CocoaPods
