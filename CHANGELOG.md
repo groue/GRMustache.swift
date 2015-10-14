@@ -5,7 +5,7 @@ Release Notes
 
 **Fixed**
 
-- Compatibility with iOS7.
+- Compatibility with iOS7 ([#13](https://github.com/groue/GRMustache.swift/issues/13))
 
 
 **Breaking Changes**
