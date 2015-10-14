@@ -157,18 +157,17 @@ final public class Context {
             let context = Context(Box(data))
     
             // "Groucho Marx"
-            context["name"].value
+            context.mustacheBoxForKey("name").value
 
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the `mustacheBoxForExpression` method.
     
-    See also:
-    
-    - mustacheBoxForExpression
+    - parameter key: A key.
+    - returns: The MustacheBox for *key*.
     */
-    public subscript (key: String) -> MustacheBox {
+    public func mustacheBoxForKey(key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
-            let box = registeredKeysContext[key]
+            let box = registeredKeysContext.mustacheBoxForKey(key)
             if !box.isEmpty {
                 return box
             }
@@ -178,14 +177,14 @@ final public class Context {
         case .Root:
             return Box()
         case .Box(box: let box, parent: let parent):
-            let innerBox = box[key]
+            let innerBox = box.mustacheBoxForKey(key)
             if innerBox.isEmpty {
-                return parent[key]
+                return parent.mustacheBoxForKey(key)
             } else {
                 return innerBox
             }
         case .PartialOverride(partialOverride: _, parent: let parent):
-            return parent[key]
+            return parent.mustacheBoxForKey(key)
         }
     }
     

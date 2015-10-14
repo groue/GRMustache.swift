@@ -318,7 +318,7 @@ class BoxTests: XCTestCase {
         
         let array = NSArray(object: Class())
         let context = Context(Box(array))
-        let box = context["first"]
+        let box = context.mustacheBoxForKey("first")
         XCTAssertTrue(box.value == nil)
     }
 }

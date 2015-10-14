@@ -78,12 +78,12 @@ class ContextTests: XCTestCase {
         let context = Context(Box(["name": "name1", "a": ["name": "name2"]]))
         
         // '.' is an expression, not a key
-        XCTAssertTrue(context["."].isEmpty)
+        XCTAssertTrue(context.mustacheBoxForKey(".").isEmpty)
         
         // 'name' is a key
-        XCTAssertEqual((context["name"].value as! String), "name1")
+        XCTAssertEqual((context.mustacheBoxForKey("name").value as! String), "name1")
         
         // 'a.name' is an expression, not a key
-        XCTAssertTrue(context["a.name"].isEmpty)
+        XCTAssertTrue(context.mustacheBoxForKey("a.name").isEmpty)
     }
 }

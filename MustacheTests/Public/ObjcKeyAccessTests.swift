@@ -40,7 +40,7 @@ class ObjcKeyAccessTests: XCTestCase {
         
         // test context
         let context = Context(Box(object))
-        XCTAssertEqual((context["property"].value as! String), "property")
+        XCTAssertEqual((context.mustacheBoxForKey("property").value as! String), "property")
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
@@ -52,6 +52,6 @@ class ObjcKeyAccessTests: XCTestCase {
     
         // test context
         let context = Context(Box(object))
-        XCTAssertTrue(context["method"].value == nil)
+        XCTAssertTrue(context.mustacheBoxForKey("method").value == nil)
     }
 }

@@ -6,12 +6,14 @@ Release Notes
 **Fixed**
 
 - Compatibility with iOS7 ([#13](https://github.com/groue/GRMustache.swift/issues/13))
+- GRMustache.swift no longer messes with AnyObject subscript operator ([#12](https://github.com/groue/GRMustache.swift/issues/12))
 
 
 **Breaking Changes**
 
 - `Error` has been renamed `MustacheError`.
 - `Error.Type` has been renamed `MustacheError.Kind`
+- Subscript operators on `MustacheBox` and `Context` have been removed due to a [weird Swift bug](https://github.com/groue/GRMustache.swift/issues/12). Use the `mustacheBoxForKey()` function instead.
 
 
 ## v0.10.0

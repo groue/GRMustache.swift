@@ -144,12 +144,12 @@ final public class MustacheBox : NSObject {
     Extracts a key out of a box.
     
         let box = Box(["firstName": "Arthur"])
-        box["firstName"].value  // "Arthur"
+        box.mustacheBoxForKey("firstName").value  // "Arthur"
     
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public subscript (key: String) -> MustacheBox {
+    public func mustacheBoxForKey(key: String) -> MustacheBox {
         return keyedSubscript?(key: key) ?? Box()
     }
     
