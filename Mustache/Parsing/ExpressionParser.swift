@@ -334,11 +334,11 @@ final class ExpressionParser {
         switch finalState {
         case .Empty:
             outEmpty = true
-            throw Mustache.Error(type: .ParseError, message: "Missing expression")
+            throw MustacheError(kind: .ParseError, message: "Missing expression")
             
         case .Error(let description):
             outEmpty = false
-            throw Mustache.Error(type: .ParseError, message: "Invalid expression `\(string)`: \(description)")
+            throw MustacheError(kind: .ParseError, message: "Invalid expression `\(string)`: \(description)")
             
         case .Valid(expression: let expression):
             return expression

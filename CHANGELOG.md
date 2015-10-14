@@ -1,6 +1,18 @@
 Release Notes
 =============
 
+## Next Release
+
+**Fixed**
+
+- Compatibility with iOS7.
+
+
+**Breaking Changes**
+
+- `Error` has been renamed `MustacheError`.
+- `Error.Type` has been renamed `MustacheError.Kind`
+
 
 ## v0.10.0
 

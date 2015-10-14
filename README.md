@@ -206,7 +206,7 @@ do {
     error.description
     
     // TemplateNotFound, ParseError, or RenderError
-    error.type
+    error.kind
     
     // The eventual template at the source of the error. Can be a path, a URL,
     // a resource name, depending on the repository data source.

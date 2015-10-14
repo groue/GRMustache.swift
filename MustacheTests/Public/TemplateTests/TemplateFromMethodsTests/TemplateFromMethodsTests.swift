@@ -109,168 +109,168 @@ class TemplateFromMethodsTests: XCTestCase {
     func testParserErrorFromString() {
         do {
             let _ = try Template(string: parserErrorTemplateString)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testParserErrorFromPath() {
         do {
             let _ = try Template(path: parserErrorTemplatePath)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(path: parserErrorTemplateWrapperPath)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testParserErrorFromURL() {
         do {
             let _ = try Template(URL: parserErrorTemplateURL)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(URL: parserErrorTemplateWrapperURL)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testParserErrorFromResource() {
         do {
             let _ = try Template(named: parserErrorTemplateName, bundle: testBundle)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(named: parserErrorTemplateWrapperName, bundle: testBundle)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testCompilerErrorFromString() {
         do {
             let _ = try Template(string: compilerErrorTemplateString)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testCompilerErrorFromPath() {
         do {
             let _ = try Template(path: compilerErrorTemplatePath)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(path: compilerErrorTemplateWrapperPath)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testCompilerErrorFromURL() {
         do {
             let _ = try Template(URL: compilerErrorTemplateURL)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(URL: compilerErrorTemplateWrapperURL)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
     func testCompilerErrorFromResource() {
         do {
             let _ = try Template(named: compilerErrorTemplateName, bundle: testBundle)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             let _ = try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle)
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
             XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
             XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
 }

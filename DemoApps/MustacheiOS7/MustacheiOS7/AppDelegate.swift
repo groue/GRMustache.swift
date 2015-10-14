@@ -1,9 +1,9 @@
 //
 //  AppDelegate.swift
-//  MustacheDemoiOS
+//  MustacheiOS7
 //
-//  Created by Gwendal Roué on 10/03/2015.
-//  Copyright (c) 2015 Gwendal Roué. All rights reserved.
+//  Created by Gwendal Roué on 14/10/2015.
+//  Copyright © 2015 Gwendal Roué. All rights reserved.
 //
 
 import UIKit

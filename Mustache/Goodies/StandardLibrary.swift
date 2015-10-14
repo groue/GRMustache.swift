@@ -54,7 +54,7 @@ public struct StandardLibrary {
         let template = ...
         template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
     */
-    public static let HTMLEscape: MustacheBoxable = Mustache.HTMLEscape()
+    public static let HTMLEscape: MustacheBoxable = HTMLEscapeHelper()
     
     /**
     As a filter, `URLEscape` returns its argument, percent-escaped.
@@ -80,7 +80,7 @@ public struct StandardLibrary {
         let template = ...
         template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
     */
-    public static let URLEscape: MustacheBoxable = Mustache.URLEscape()
+    public static let URLEscape: MustacheBoxable = URLEscapeHelper()
     
     /**
     As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
@@ -114,7 +114,7 @@ public struct StandardLibrary {
         let template = ...
         template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
     */
-    public static let javascriptEscape: MustacheBoxable = Mustache.JavascriptEscape()
+    public static let javascriptEscape: MustacheBoxable = JavascriptEscapeHelper()
     
     /**
     Iteration is natural to Mustache templates:

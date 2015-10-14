@@ -23,49 +23,50 @@
 
 import Foundation
 
-final class HTMLEscape : MustacheBoxable {
+final class URLEscapeHelper : MustacheBoxable {
     
     var mustacheBox: MustacheBox {
-        // Return a multi-facetted box, because HTMLEscape interacts in
+        // Return a multi-facetted box, because URLEscape interacts in
         // various ways with Mustache rendering.
         return MustacheBox(
             // It has a value:
             value: self,
             
-            // HTMLEscape can be used as a filter: {{ HTMLEscape(x) }}:
+            // URLEscape can be used as a filter: {{ URLEscape(x) }}:
             filter: Filter(filter),
             
-            // HTMLEscape escapes all variable tags: {{# HTMLEscape }}...{{ x }}...{{/ HTMLEscape }}
+            // URLEscape escapes all variable tags: {{# URLEscape }}...{{ x }}...{{/ URLEscape }}
             willRender: willRender)
     }
     
-    // This function is used for evaluating `HTMLEscape(x)` expressions.
+    // This function is used for evaluating `URLEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
-        return Rendering(escapeHTML(rendering.string), rendering.contentType)
+        return Rendering(URLEscapeHelper.escapeURL(rendering.string), rendering.contentType)
     }
     
-    // A WillRenderFunction: this function lets HTMLEscape change values that
+    // A WillRenderFunction: this function lets URLEscape change values that
     // are about to be rendered to their escaped counterpart.
     //
     // It is activated as soon as the formatter enters the context stack, when
-    // used in a section {{# HTMLEscape }}...{{/ HTMLEscape }}.
+    // used in a section {{# URLEscape }}...{{/ URLEscape }}.
     private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
         switch tag.type {
         case .Variable:
-            // {{ value }}
             // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box({ (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info: info)
                 return try self.filter(rendering)
+
             })
         case .Section:
-            // {{# value }}...{{/ value }}
-            // {{^ value }}...{{/ value }}
-            // Leave sections untouched, so that loops and conditions are not
-            // affected by the formatter.
-            
             return box
         }
+    }
+    
+    private class func escapeURL(string: String) -> String {
+        let s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
+        s.removeCharactersInString("?&=")
+        return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
     }
 }

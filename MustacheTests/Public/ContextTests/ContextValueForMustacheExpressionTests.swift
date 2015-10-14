@@ -61,11 +61,11 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         let context = Context()
         do {
             try context.mustacheBoxForExpression("a.")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.ParseError) // Invalid expression
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.ParseError) // Invalid expression
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
     
@@ -73,11 +73,11 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         let context = Context()
         do {
             try context.mustacheBoxForExpression("f(x)")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.RenderError) // Missing filter
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError) // Missing filter
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
 }

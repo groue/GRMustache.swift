@@ -23,7 +23,7 @@
 
 import Foundation
 
-final class JavascriptEscape : MustacheBoxable {
+final class JavascriptEscapeHelper : MustacheBoxable {
     
     var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because JavascriptEscape interacts in
@@ -41,7 +41,7 @@ final class JavascriptEscape : MustacheBoxable {
     
     // This function is used for evaluating `javascriptEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
-        return Rendering(JavascriptEscape.escapeJavascript(rendering.string), rendering.contentType)
+        return Rendering(JavascriptEscapeHelper.escapeJavascript(rendering.string), rendering.contentType)
     }
     
     // A WillRenderFunction: this function lets JavascriptEscape change values that

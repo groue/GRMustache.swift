@@ -269,7 +269,7 @@ final class TemplateParser {
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
-                        let error = Mustache.Error(type: .ParseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
+                        let error = MustacheError(kind: .ParseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
                         tokenConsumer.parser(self, didFailWithError: error)
                         return;
                     }
@@ -310,13 +310,13 @@ final class TemplateParser {
                 range: range)
             tokenConsumer.parser(self, shouldContinueAfterParsingToken: token)
         case .Tag(_, let startLineNumber):
-            let error = Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
+            let error = MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
             tokenConsumer.parser(self, didFailWithError: error)
         case .UnescapedTag(_, let startLineNumber):
-            let error = Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
+            let error = MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
             tokenConsumer.parser(self, didFailWithError: error)
         case .SetDelimitersTag(_, let startLineNumber):
-            let error = Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
+            let error = MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: templateID, lineNumber: startLineNumber)
             tokenConsumer.parser(self, didFailWithError: error)
         }
     }

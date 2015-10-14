@@ -37,20 +37,20 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         
         do {
             try repo.template(named: "not_found")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             try repo.template(string: "{{>not_found}}")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
 
         template = try! repo.template(named: "a")

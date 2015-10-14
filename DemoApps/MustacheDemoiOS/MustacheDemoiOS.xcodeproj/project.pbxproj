@@ -12,19 +12,11 @@
 		56FD0F491AAED3C3005C55A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F471AAED3C3005C55A7 /* Main.storyboard */; };
 		56FD0F4B1AAED3C3005C55A7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F4A1AAED3C3005C55A7 /* Images.xcassets */; };
 		56FD0F4E1AAED3C3005C55A7 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F4C1AAED3C3005C55A7 /* LaunchScreen.xib */; };
-		56FD0F5A1AAED3C3005C55A7 /* MustacheDemoiOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD0F591AAED3C3005C55A7 /* MustacheDemoiOSTests.swift */; };
 		56FD0F761AAED6BE005C55A7 /* Document.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F751AAED6BE005C55A7 /* Document.mustache */; };
 		56FD0F781AAED70F005C55A7 /* Layout.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F771AAED70F005C55A7 /* Layout.mustache */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		56FD0F541AAED3C3005C55A7 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F361AAED3C2005C55A7 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 56FD0F3D1AAED3C3005C55A7;
-			remoteInfo = MustacheDemoiOS;
-		};
 		56FD0F6B1AAED4EC005C55A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
@@ -70,9 +62,6 @@
 		56FD0F481AAED3C3005C55A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		56FD0F4A1AAED3C3005C55A7 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		56FD0F4D1AAED3C3005C55A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		56FD0F531AAED3C3005C55A7 /* MustacheDemoiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheDemoiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		56FD0F581AAED3C3005C55A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		56FD0F591AAED3C3005C55A7 /* MustacheDemoiOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustacheDemoiOSTests.swift; sourceTree = "<group>"; };
 		56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../../Mustache.xcodeproj; sourceTree = "<group>"; };
 		56FD0F751AAED6BE005C55A7 /* Document.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Document.mustache; sourceTree = "<group>"; };
 		56FD0F771AAED70F005C55A7 /* Layout.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Layout.mustache; sourceTree = "<group>"; };
@@ -86,21 +75,25 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		56FD0F501AAED3C3005C55A7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		56EB0B761BCE273400A3DC55 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				56FD0F471AAED3C3005C55A7 /* Main.storyboard */,
+				56FD0F4A1AAED3C3005C55A7 /* Images.xcassets */,
+				56FD0F4C1AAED3C3005C55A7 /* LaunchScreen.xib */,
+				56FD0F751AAED6BE005C55A7 /* Document.mustache */,
+				56FD0F771AAED70F005C55A7 /* Layout.mustache */,
+			);
+			name = Resources;
+			sourceTree = "<group>";
+		};
 		56FD0F351AAED3C2005C55A7 = {
 			isa = PBXGroup;
 			children = (
 				56FD0F401AAED3C3005C55A7 /* MustacheDemoiOS */,
-				56FD0F561AAED3C3005C55A7 /* MustacheDemoiOSTests */,
 				56FD0F3F1AAED3C3005C55A7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -109,7 +102,6 @@
 			isa = PBXGroup;
 			children = (
 				56FD0F3E1AAED3C3005C55A7 /* MustacheDemoiOS.app */,
-				56FD0F531AAED3C3005C55A7 /* MustacheDemoiOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -119,13 +111,9 @@
 			children = (
 				56FD0F431AAED3C3005C55A7 /* AppDelegate.swift */,
 				56FD0F451AAED3C3005C55A7 /* ViewController.swift */,
-				56FD0F471AAED3C3005C55A7 /* Main.storyboard */,
-				56FD0F4A1AAED3C3005C55A7 /* Images.xcassets */,
-				56FD0F4C1AAED3C3005C55A7 /* LaunchScreen.xib */,
+				56EB0B761BCE273400A3DC55 /* Resources */,
 				56FD0F631AAED4D7005C55A7 /* Frameworks */,
 				56FD0F411AAED3C3005C55A7 /* Supporting Files */,
-				56FD0F751AAED6BE005C55A7 /* Document.mustache */,
-				56FD0F771AAED70F005C55A7 /* Layout.mustache */,
 			);
 			path = MustacheDemoiOS;
 			sourceTree = "<group>";
@@ -134,23 +122,6 @@
 			isa = PBXGroup;
 			children = (
 				56FD0F421AAED3C3005C55A7 /* Info.plist */,
-			);
-			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		56FD0F561AAED3C3005C55A7 /* MustacheDemoiOSTests */ = {
-			isa = PBXGroup;
-			children = (
-				56FD0F591AAED3C3005C55A7 /* MustacheDemoiOSTests.swift */,
-				56FD0F571AAED3C3005C55A7 /* Supporting Files */,
-			);
-			path = MustacheDemoiOSTests;
-			sourceTree = "<group>";
-		};
-		56FD0F571AAED3C3005C55A7 /* Supporting Files */ = {
-			isa = PBXGroup;
-			children = (
-				56FD0F581AAED3C3005C55A7 /* Info.plist */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -195,24 +166,6 @@
 			productReference = 56FD0F3E1AAED3C3005C55A7 /* MustacheDemoiOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		56FD0F521AAED3C3005C55A7 /* MustacheDemoiOSTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 56FD0F601AAED3C3005C55A7 /* Build configuration list for PBXNativeTarget "MustacheDemoiOSTests" */;
-			buildPhases = (
-				56FD0F4F1AAED3C3005C55A7 /* Sources */,
-				56FD0F501AAED3C3005C55A7 /* Frameworks */,
-				56FD0F511AAED3C3005C55A7 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				56FD0F551AAED3C3005C55A7 /* PBXTargetDependency */,
-			);
-			name = MustacheDemoiOSTests;
-			productName = MustacheDemoiOSTests;
-			productReference = 56FD0F531AAED3C3005C55A7 /* MustacheDemoiOSTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -225,10 +178,6 @@
 				TargetAttributes = {
 					56FD0F3D1AAED3C3005C55A7 = {
 						CreatedOnToolsVersion = 6.2;
-					};
-					56FD0F521AAED3C3005C55A7 = {
-						CreatedOnToolsVersion = 6.2;
-						TestTargetID = 56FD0F3D1AAED3C3005C55A7;
 					};
 				};
 			};
@@ -252,7 +201,6 @@
 			projectRoot = "";
 			targets = (
 				56FD0F3D1AAED3C3005C55A7 /* MustacheDemoiOS */,
-				56FD0F521AAED3C3005C55A7 /* MustacheDemoiOSTests */,
 			);
 		};
 /* End PBXProject section */
@@ -301,13 +249,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		56FD0F511AAED3C3005C55A7 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
@@ -320,22 +261,9 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		56FD0F4F1AAED3C3005C55A7 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				56FD0F5A1AAED3C3005C55A7 /* MustacheDemoiOSTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		56FD0F551AAED3C3005C55A7 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 56FD0F3D1AAED3C3005C55A7 /* MustacheDemoiOS */;
-			targetProxy = 56FD0F541AAED3C3005C55A7 /* PBXContainerItemProxy */;
-		};
 		56FD0F741AAED500005C55A7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MustacheiOS;
@@ -463,42 +391,6 @@
 			};
 			name = Release;
 		};
-		56FD0F611AAED3C3005C55A7 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = MustacheDemoiOSTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MustacheDemoiOS.app/MustacheDemoiOS";
-			};
-			name = Debug;
-		};
-		56FD0F621AAED3C3005C55A7 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SDKROOT)/Developer/Library/Frameworks",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = MustacheDemoiOSTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MustacheDemoiOS.app/MustacheDemoiOS";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -516,15 +408,6 @@
 			buildConfigurations = (
 				56FD0F5E1AAED3C3005C55A7 /* Debug */,
 				56FD0F5F1AAED3C3005C55A7 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		56FD0F601AAED3C3005C55A7 /* Build configuration list for PBXNativeTarget "MustacheDemoiOSTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				56FD0F611AAED3C3005C55A7 /* Debug */,
-				56FD0F621AAED3C3005C55A7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

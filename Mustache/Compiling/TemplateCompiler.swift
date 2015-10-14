@@ -39,13 +39,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
             case .Root:
                 return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
             case .Section(openingToken: let openingToken, expression: _):
-                throw Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
             case .InvertedSection(openingToken: let openingToken, expression: _):
-                throw Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
             case .PartialOverride(openingToken: let openingToken, parentPartialName: _):
-                throw Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
             case .Block(openingToken: let openingToken, blockName: _):
-                throw Mustache.Error(type: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
             }
         case .Error(let compilationError):
             throw compilationError
@@ -82,14 +82,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.Text)
                         case .Locked(_):
-                            throw Mustache.Error(type: .ParseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                     } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.HTML)
                         case .Locked(_):
-                            throw Mustache.Error(type: .ParseError, message:"CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                     }
                     
@@ -113,68 +113,68 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .EscapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
-                        throw Mustache.Error(type: .ParseError, message:"Illegal tag inside a partial override tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                        throw MustacheError(kind: .ParseError, message:"Illegal tag inside a partial override tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
                 case .UnescapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
-                        throw Mustache.Error(type: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
                 case .Section(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
-                        throw Mustache.Error(type: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
                 case .InvertedSection(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
                     case .PartialOverride:
-                        throw Mustache.Error(type: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
@@ -193,22 +193,22 @@ final class TemplateCompiler: TemplateTokenConsumer {
                 case .Close(content: let content):
                     switch compilationState.currentScope.type {
                     case .Root:
-                        throw Mustache.Error(type: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                        throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         
                     case .Section(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
                         var expression: Expression?
                         do {
                             expression = try ExpressionParser().parse(content, empty: &empty)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                         if expression != nil && expression != closedExpression {
-                            throw Mustache.Error(type: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -230,15 +230,15 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var expression: Expression?
                         do {
                             expression = try ExpressionParser().parse(content, empty: &empty)
-                        } catch let error as Mustache.Error {
+                        } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         } catch {
-                            throw Mustache.Error(type: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                         if expression != nil && expression != closedExpression {
-                            throw Mustache.Error(type: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -266,7 +266,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if partialName != nil && partialName != parentPartialName {
-                            throw Mustache.Error(type: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let parentTemplateAST = try repository.templateAST(named: parentPartialName, relativeToTemplateID:templateID)
@@ -275,7 +275,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             break
                         case .Defined(nodes: _, contentType: let partialContentType):
                             if partialContentType != compilationState.contentType {
-                                throw Mustache.Error(type: .ParseError, message: "Content type mismatch", templateID: token.templateID, lineNumber: token.lineNumber)
+                                throw MustacheError(kind: .ParseError, message: "Content type mismatch", templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         }
                         
@@ -296,7 +296,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if blockName != nil && blockName != closedBlockName {
-                            throw Mustache.Error(type: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -393,10 +393,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
         let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if blockName.characters.count == 0 {
             empty = true
-            throw Mustache.Error(type: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if (blockName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             empty = false
-            throw Mustache.Error(type: .ParseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .ParseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
         return blockName
     }
@@ -406,10 +406,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if partialName.characters.count == 0 {
             empty = true
-            throw Mustache.Error(type: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
             empty = false
-            throw Mustache.Error(type: .ParseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .ParseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
         return partialName
     }

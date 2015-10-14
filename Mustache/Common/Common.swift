@@ -55,17 +55,17 @@ public enum ContentType {
 // MARK: - Errors
 
 /// The errors thrown by Mustache.swift
-public struct Error: ErrorType {
+public struct MustacheError: ErrorType {
     
-    /// Mustache.Error types
-    public enum Type : Int {
+    /// MustacheError types
+    public enum Kind : Int {
         case TemplateNotFound
         case ParseError
         case RenderError
     }
     
     /// The error type
-    public let type: Type
+    public let kind: Kind
     
     /// Eventual error message
     public let message: String?
@@ -82,17 +82,17 @@ public struct Error: ErrorType {
     
     // Not public
     
-    public init(type: Type, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
-        self.type = type
+    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+        self.kind = kind
         self.message = message
         self.templateID = templateID
         self.lineNumber = lineNumber
         self.underlyingError = underlyingError
     }
     
-    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> Error {
-        return Error(
-            type: self.type,
+    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> MustacheError {
+        return MustacheError(
+            kind: self.kind,
             message: message ?? self.message,
             templateID: templateID ?? self.templateID,
             lineNumber: lineNumber ?? self.lineNumber,
@@ -100,7 +100,7 @@ public struct Error: ErrorType {
     }
 }
 
-extension Error : CustomStringConvertible {
+extension MustacheError : CustomStringConvertible {
     
     var locationDescription: String? {
         if let templateID = templateID {
@@ -121,7 +121,7 @@ extension Error : CustomStringConvertible {
     /// A textual representation of `self`.
     public var description: String {
         var description: String
-        switch type {
+        switch kind {
         case .TemplateNotFound:
             description = ""
         case .ParseError:

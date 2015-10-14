@@ -31,20 +31,20 @@ class TemplateRepositoryTests: XCTestCase {
         
         do {
             try repo.template(named:"partial")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
         
         do {
             try repo.template(string:"{{>partial}}")
-            XCTFail("Expected Mustache.Error")
-        } catch let error as Mustache.Error {
-            XCTAssertEqual(error.type, Mustache.Error.Type.TemplateNotFound)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
-            XCTFail("Expected Mustache.Error")
+            XCTFail("Expected MustacheError")
         }
     }
 
@@ -83,7 +83,7 @@ class TemplateRepositoryTests: XCTestCase {
                 if let string = templates[templateID] {
                     return string
                 } else {
-                    throw Mustache.Error(type: .TemplateNotFound)
+                    throw MustacheError(kind: .TemplateNotFound)
                 }
             }
             func setTemplateString(templateString: String, forKey key: String) {

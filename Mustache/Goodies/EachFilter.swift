@@ -94,5 +94,5 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     }
     
     // Non-iterable value
-    throw Mustache.Error(type: .RenderError, message: "Non-enumerable argument in each filter: \(box.value)")
+    throw MustacheError(kind: .RenderError, message: "Non-enumerable argument in each filter: \(box.value)")
 }

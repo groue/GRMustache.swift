@@ -135,7 +135,7 @@ final class RenderingEngine {
 
         do {
             box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
-        } catch let error as Mustache.Error {
+        } catch let error as MustacheError {
             let newMessage: String
             if let oldMessage = error.message {
                 newMessage = "Could not evaluate \(tag): \(oldMessage)"
@@ -144,7 +144,7 @@ final class RenderingEngine {
             }
             throw error.errorWith(message: newMessage, templateID: tag.templateID, lineNumber: tag.lineNumber)
         } catch {
-            throw Mustache.Error(type: .RenderError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
+            throw MustacheError(kind: .RenderError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
         }
         
         

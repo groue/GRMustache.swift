@@ -140,7 +140,7 @@ For example, here is the trivial `identity` filter:
     try! template.render(Box(["a": "foo", "b": 1]))
 
 If the template provides more than one argument, the filter returns a
-Mustache.Error of type RenderError.
+MustacheError of type RenderError.
 
 - parameter filter: A function `(MustacheBox) throws -> MustacheBox`.
 - returns: A FilterFunction.
@@ -149,7 +149,7 @@ public func Filter(filter: (MustacheBox) throws -> MustacheBox) -> FilterFunctio
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw Mustache.Error(type: .RenderError, message: "Too many arguments")
+            throw MustacheError(kind: .RenderError, message: "Too many arguments")
         }
         return try filter(box)
     }
@@ -174,7 +174,7 @@ The argument is converted to `T` using the built-in `as?` operator before being
 given to the filter.
 
 If the template provides more than one argument, the filter returns a
-Mustache.Error of type RenderError.
+MustacheError of type RenderError.
 
 - parameter filter: A function `(T?) throws -> MustacheBox`.
 - returns: A FilterFunction.
@@ -183,7 +183,7 @@ public func Filter<T>(filter: (T?) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw Mustache.Error(type: .RenderError, message: "Too many arguments")
+            throw MustacheError(kind: .RenderError, message: "Too many arguments")
         }
         return try filter(box.value as? T)
     }
@@ -269,7 +269,7 @@ public func Filter(filter: (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
-            throw Mustache.Error(type: .RenderError, message: "Too many arguments")
+            throw MustacheError(kind: .RenderError, message: "Too many arguments")
         }
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
@@ -335,7 +335,7 @@ The argument is converted to `T` using the built-in `as?` operator before being
 given to the filter.
 
 If the template provides more than one argument, the filter returns a
-Mustache.Error of type RenderError.
+MustacheError of type RenderError.
 
 See the documentation of the `RenderFunction` type for a detailed discussion of
 the `RenderingInfo` and `Rendering` types.

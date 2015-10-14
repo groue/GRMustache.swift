@@ -339,14 +339,14 @@ final public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID baseTemplateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw Mustache.Error(type: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
+            throw MustacheError(kind: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
         }
         
         guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
             if let baseTemplateID = baseTemplateID {
-                throw Mustache.Error(type: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
+                throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
             } else {
-                throw Mustache.Error(type: .TemplateNotFound, message: "Template not found: \"\(name)\"")
+                throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\"")
             }
         }
         
@@ -425,7 +425,7 @@ final public class TemplateRepository {
             if let string = templates[templateID] {
                 return string
             } else {
-                throw Mustache.Error(type: .TemplateNotFound, templateID: templateID)
+                throw MustacheError(kind: .TemplateNotFound, templateID: templateID)
             }
         }
     }
