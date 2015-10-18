@@ -27,23 +27,44 @@ import Mustache
 class GRMustacheSpecTests: SuiteTestCase {
     
     func testSuite() {
-        runTestsFromResource("arrays.json", directory: "Tests")
-        runTestsFromResource("comments.json", directory: "Tests")
-        runTestsFromResource("compound_keys.json", directory: "Tests")
-        runTestsFromResource("delimiters.json", directory: "Tests")
-        runTestsFromResource("expression_parsing_errors.json", directory: "Tests")
-        runTestsFromResource("filters.json", directory: "Tests")
-        runTestsFromResource("general.json", directory: "Tests")
-        runTestsFromResource("implicit_iterator.json", directory: "Tests")
-        runTestsFromResource("partial_overrides.json", directory: "Tests")
-        runTestsFromResource("blocks.json", directory: "Tests")
-        runTestsFromResource("inverted_sections.json", directory: "Tests")
-        runTestsFromResource("partials.json", directory: "Tests")
-        runTestsFromResource("pragmas.json", directory: "Tests")
-        runTestsFromResource("sections.json", directory: "Tests")
-        runTestsFromResource("standard_library.json", directory: "Tests")
-        runTestsFromResource("tag_parsing_errors.json", directory: "Tests")
-        runTestsFromResource("text_rendering.json", directory: "Tests")
-        runTestsFromResource("variables.json", directory: "Tests")
+        // General
+        runTestsFromResource("comments.json", directory: "Tests/general")
+        runTestsFromResource("delimiters.json", directory: "Tests/general")
+        runTestsFromResource("general.json", directory: "Tests/general")
+        runTestsFromResource("partials.json", directory: "Tests/general")
+        runTestsFromResource("pragmas.json", directory: "Tests/general")
+        runTestsFromResource("sections.json", directory: "Tests/general")
+        runTestsFromResource("inverted_sections.json", directory: "Tests/general")
+        runTestsFromResource("text_rendering.json", directory: "Tests/general")
+        runTestsFromResource("variables.json", directory: "Tests/general")
+        
+        // Errors
+        runTestsFromResource("expression_parsing_errors.json", directory: "Tests/errors")
+        runTestsFromResource("tag_parsing_errors.json", directory: "Tests/errors")
+        
+        // Expressions
+        runTestsFromResource("compound_keys.json", directory: "Tests/expressions")
+        runTestsFromResource("filters.json", directory: "Tests/expressions")
+        runTestsFromResource("implicit_iterator.json", directory: "Tests/expressions")
+        
+        // Inheritance
+        runTestsFromResource("blocks.json", directory: "Tests/inheritance")
+        runTestsFromResource("partial_overrides.json", directory: "Tests/inheritance")
+        
+        // Standard library
+        runTestsFromResource("each.json", directory: "Tests/standard_library")
+        runTestsFromResource("HTMLEscape.json", directory: "Tests/standard_library")
+        runTestsFromResource("javascriptEscape.json", directory: "Tests/standard_library")
+        runTestsFromResource("URLEscape.json", directory: "Tests/standard_library")
+        runTestsFromResource("zip.json", directory: "Tests/standard_library")
+        
+        // Values
+        runTestsFromResource("array.json", directory: "Tests/values")
+        runTestsFromResource("bool.json", directory: "Tests/values")
+        runTestsFromResource("dictionary.json", directory: "Tests/values")
+        runTestsFromResource("missing_value.json", directory: "Tests/values")
+        runTestsFromResource("null.json", directory: "Tests/values")
+        runTestsFromResource("number.json", directory: "Tests/values")
+        runTestsFromResource("string.json", directory: "Tests/values")
     }
 }
