@@ -148,27 +148,27 @@ Loading Templates
 
 Templates may come from various sources:
 
-- Raw Swift strings:
+- **Raw Swift strings:**
 
     ```swift
     let template = try Template(string: "Hello {{name}}")
     ```
 
-- Bundle resources:
+- **Bundle resources:**
 
     ```swift
     // Loads the "document.mustache" resource of the main bundle:
     let template = try Template(named: "document")
     ```
 
-- Files and URLs:
+- **Files and URLs:**
 
     ```swift
     let template = try Template(path: "/path/to/document.mustache")
     let template = try Template(URL: templateURL)
     ```
 
-- Template Repositories:
+- **Template Repositories:**
     
     Template repositories represent a group of templates. They can be configured independently, and provide neat features like template caching. For example:
     
@@ -469,7 +469,7 @@ When your templates are stored in a hierarchy of directories, you can use **abso
 
 ```swift
 let repository = TemplateRepository(directoryPath: "/path")
-let template = repository.template(named: "documents/profile")
+let template = repository.template(named: ...)
 
 // {{> /shared/partial }} includes /path/shared/partial.mustache.
 ```
@@ -531,13 +531,15 @@ let template = try Template(string: "{{#user}}{{partial}}{{/user}}")
 // The user
 let user = ["firstName": "Georges", "lastName": "Brassens", "occupation": "Singer"]
 
-// First rendering -> "Georges Brassens"
+// Two different partials:
 let partial1 = try Template(string: "{{firstName}} {{lastName}}")
+let partial2 = try Template(string: "{{occupation}}")
+
+// Two different renderings of the same template:
+// "Georges Brassens"
 let data1 = ["user": Box(user), "partial": Box(partial1) ]
 try template.render(Box(data1))
-
-// Second rendering -> "Singer"
-let partial2 = try Template(string: "{{occupation}}")
+// "Singer"
 let data2 = ["user": Box(user), "partial": Box(partial2) ]
 try template.render(Box(data2))
 ```
@@ -660,7 +662,7 @@ GRMustache.swift interprets two pragma tags that set the content type of the tem
 
 In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
-For a more complete discussion, see the documentation of  `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.11.0/Structs/Configuration.html)).
+For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Mustache/Configuration/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/0.11.0/Structs/Configuration.html)).
 
 
 The Context Stack and Expressions
@@ -881,7 +883,7 @@ GRMustache supports `Int`, `UInt` and `Double`:
 
 - `{{number}}` renders the standard Swift string interpolation of *number*.
 - `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
-- `{{^number}}...{{/number}}` renders if and only if *int* is 0 (zero).
+- `{{^number}}...{{/number}}` renders if and only if *number* is 0 (zero).
 
 The Swift types `Float`, `Int8`, `UInt8`, etc. have no built-in support: turn them into one of the three general types before injecting them into templates.
 
