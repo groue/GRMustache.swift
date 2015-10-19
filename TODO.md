@@ -15,3 +15,4 @@ TODO
     > Collections containing types that are not Objective-C compatible are no longer considered Objective-C compatible types themselves. For example, previously Array<SwiftClassType> was permitted as the type of a property marked @objc. This is no longer the case. (19787270)
 - [?] Custom escape function? HTML, shell, javascript, whatever...
 - [ ] Python-like string interpolation: "Hello {{name}}" % ["name": "Arthur"] which wraps String.mustacheInterpolate(data: ?). Needs another global configuration: StringInterpolationConfiguration. StringInterpolationConfiguration could be filled with all built-in helpers.
+- [ ] Check https://github.com/twitter/hogan.js/issues/175
