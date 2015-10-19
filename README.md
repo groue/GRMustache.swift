@@ -181,7 +181,7 @@ Templates may come from various sources:
     // Disable HTML escaping for Bash scripts:
     repo.configuration.contentType = .Text
     
-    // Load a template:
+    // Load the "script.sh" resource:
     let template = repo.template(named: "script")!
     ```
 
