@@ -168,6 +168,7 @@ class LambdaTests: XCTestCase {
         ]
         do {
             try template.render(Box(data))
+            XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
@@ -180,12 +181,13 @@ class LambdaTests: XCTestCase {
         let partials = ["partial" : "success"]
         let templateRepository = TemplateRepository(templates: partials)
         let lambda = Lambda { (string: String) in "{{>partial}}" }
-        let template = try! templateRepository.template(string: "<{{lambda}}>")
+        let template = try! templateRepository.template(string: "<{{#lambda}}...{{/lambda}}>")
         let data = [
             "lambda": Box(lambda),
         ]
         do {
             try template.render(Box(data))
+            XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
         } catch {
