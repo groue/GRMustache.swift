@@ -678,6 +678,13 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             // Should we ever implement this, beware the retain cycle between
             // tags and template repositories (which own tags through their
             // cached templateASTs).
+            //
+            // --------
+            //
+            // Lambda spec requires Lambda { ">" } to render "&gt".
+            //
+            // What should Lambda { "<{{>partial}}>" } render when partial
+            // contains "<>"? "&lt;<>&gt;" ????
         case .Section:
             // {{# lambda }}...{{/ lambda }}
             //
