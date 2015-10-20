@@ -16,3 +16,4 @@ TODO
 - [?] Custom escape function? HTML, shell, javascript, whatever...
 - [ ] Python-like string interpolation: "Hello {{name}}" % ["name": "Arthur"] which wraps String.mustacheInterpolate(data: ?). Needs another global configuration: StringInterpolationConfiguration. StringInterpolationConfiguration could be filled with all built-in helpers.
 - [ ] Check https://github.com/twitter/hogan.js/issues/175
+- [ ] Just as in Obj-C GRMustache, we need to distinguish "missing key" from "missing value for a known key". Obj-C uses nil vs. NSNull. What should GRMustache.swift use?
