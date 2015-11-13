@@ -7,6 +7,71 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		09A89DDD1BF584EE003A695E /* MustacheTVOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */; };
+		09A89DDF1BF584EE003A695E /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89DCE1BF58489003A695E /* Mustache.framework */; };
+		09A89DE51BF58526003A695E /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561336051B21745A005BB0F7 /* Common.swift */; };
+		09A89DE61BF58538003A695E /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
+		09A89DE71BF58538003A695E /* LocatedTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56105B081B4E8618002CD224 /* LocatedTag.swift */; };
+		09A89DE81BF58538003A695E /* SectionTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1FA19FC5B860028C6C1 /* SectionTag.swift */; };
+		09A89DE91BF58538003A695E /* Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20019FC62330028C6C1 /* Tag.swift */; };
+		09A89DEA1BF58538003A695E /* TemplateAST.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BF19FC29BF0028C6C1 /* TemplateAST.swift */; };
+		09A89DEB1BF58538003A695E /* TemplateASTNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */; };
+		09A89DEC1BF58538003A695E /* VariableTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1CF19FC446A0028C6C1 /* VariableTag.swift */; };
+		09A89DED1BF58538003A695E /* TemplateCompiler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1BC19FC27040028C6C1 /* TemplateCompiler.swift */; };
+		09A89DEE1BF58541003A695E /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B919FBE6F40028C6C1 /* Configuration.swift */; };
+		09A89DEF1BF58548003A695E /* TemplateGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244B01AF201E7008BAD41 /* TemplateGenerator.swift */; };
+		09A89DF01BF58548003A695E /* ExpressionGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */; };
+		09A89DF11BF58550003A695E /* EachFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1FA1A0355EE00B5D3F8 /* EachFilter.swift */; };
+		09A89DF21BF58550003A695E /* HTMLEscapeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F2001A054D5800B5D3F8 /* HTMLEscapeHelper.swift */; };
+		09A89DF31BF58550003A695E /* JavascriptEscapeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF065A1A063DE600926BEB /* JavascriptEscapeHelper.swift */; };
+		09A89DF41BF58550003A695E /* Localizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F71A03535700B5D3F8 /* Localizer.swift */; };
+		09A89DF51BF58550003A695E /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D204331B32EBA50031FEE7 /* Logger.swift */; };
+		09A89DF61BF58550003A695E /* StandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5622F1F41A02E98F00B5D3F8 /* StandardLibrary.swift */; };
+		09A89DF71BF58550003A695E /* URLEscapeHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06571A063DC800926BEB /* URLEscapeHelper.swift */; };
+		09A89DF81BF58550003A695E /* NSFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3721A1CC417000CE8CB /* NSFormatter.swift */; };
+		09A89DF91BF58550003A695E /* ZipFilter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C42371A86824800748E98 /* ZipFilter.swift */; };
+		09A89DFA1BF58557003A695E /* ExpressionParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1C819FC38B80028C6C1 /* ExpressionParser.swift */; };
+		09A89DFB1BF58557003A695E /* TemplateParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B419FBE4FF0028C6C1 /* TemplateParser.swift */; };
+		09A89DFC1BF58557003A695E /* TemplateToken.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1B619FBE6220028C6C1 /* TemplateToken.swift */; };
+		09A89DFD1BF58560003A695E /* Box.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560DE2621AC33D0D005C0312 /* Box.swift */; };
+		09A89DFE1BF58560003A695E /* Context.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D719FC4A450028C6C1 /* Context.swift */; };
+		09A89DFF1BF58560003A695E /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
+		09A89E001BF58560003A695E /* ExpressionInvocation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */; };
+		09A89E011BF58569003A695E /* GRMustacheKeyAccess.m in Sources */ = {isa = PBXBuildFile; fileRef = 569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */; };
+		09A89E021BF58569003A695E /* MustacheBox.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BD793F1A0E381900937A76 /* MustacheBox.swift */; };
+		09A89E031BF58569003A695E /* RenderingEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */; };
+		09A89E041BF58572003A695E /* Template.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D419FC48330028C6C1 /* Template.swift */; };
+		09A89E051BF58572003A695E /* TemplateRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 563AE1D219FC45400028C6C1 /* TemplateRepository.swift */; };
+		09A89E061BF5862C003A695E /* Mustache.h in Headers */ = {isa = PBXBuildFile; fileRef = 563AE19C19FBE47A0028C6C1 /* Mustache.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		09A89E071BF58639003A695E /* GRMustacheKeyAccess.m in Headers */ = {isa = PBXBuildFile; fileRef = 569516F81A863F2100FF7D86 /* GRMustacheKeyAccess.m */; settings = {ATTRIBUTES = (Public, ); }; };
+		09A89E081BF58702003A695E /* BoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */; };
+		09A89E091BF58702003A695E /* FoundationCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BF06C41A0650B400926BEB /* FoundationCollectionTests.swift */; };
+		09A89E0A1BF58702003A695E /* HookFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */; };
+		09A89E0B1BF58702003A695E /* KeyedSubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */; };
+		09A89E0C1BF58702003A695E /* LambdaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */; };
+		09A89E0D1BF58702003A695E /* MustacheBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560FA5A11A8F72CF00840A58 /* MustacheBoxTests.swift */; };
+		09A89E0E1BF58702003A695E /* ObjcKeyAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */; };
+		09A89E0F1BF58702003A695E /* RenderFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */; };
+		09A89E101BF58709003A695E /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */; };
+		09A89E111BF58709003A695E /* ConfigurationContentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */; };
+		09A89E121BF58709003A695E /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
+		09A89E131BF58709003A695E /* ConfigurationTagDelimitersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C871A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift */; };
+		09A89E141BF5870E003A695E /* ContextRegisteredKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423A1A87D03800748E98 /* ContextRegisteredKeyTests.swift */; };
+		09A89E151BF5870E003A695E /* ContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0B4661A19D95A008A719F /* ContextTests.swift */; };
+		09A89E161BF5870E003A695E /* ContextValueForMustacheExpressionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C891A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift */; };
+		09A89E171BF58719003A695E /* Movie.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646931A23C11400F8ADE0 /* Movie.mustache */; };
+		09A89E181BF58719003A695E /* MustacheBoxDocumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */; };
+		09A89E191BF58719003A695E /* Person.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 561646951A23C12B00F8ADE0 /* Person.mustache */; };
+		09A89E1A1BF58719003A695E /* ReadMeExample1.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56C8D6E31A1F1AD800F106F8 /* ReadMeExample1.mustache */; };
+		09A89E1B1BF58719003A695E /* ReadMeExample2.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56C8D6E41A1F1AD800F106F8 /* ReadMeExample2.mustache */; };
+		09A89E1C1BF58719003A695E /* ReadMeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6E51A1F1AD800F106F8 /* ReadMeTests.swift */; };
+		09A89E1D1BF58719003A695E /* MustacheRenderableGuideTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56BA491F1A221ECB0029FD45 /* MustacheRenderableGuideTests.swift */; };
+		09A89E1E1BF58720003A695E /* FilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 564717301A18EAE600E383F9 /* FilterTests.swift */; };
+		09A89E1F1BF58720003A695E /* VariadicFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C901A189FA70020AAF8 /* VariadicFilterTests.swift */; };
+		09A89E201BF58720003A695E /* FilterTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56CD9F651A275980001BABA4 /* FilterTests.mustache */; };
+		09A89E251BF62345003A695E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89E231BF58903003A695E /* UIKit.framework */; };
+		09A89E261BF62355003A695E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89E211BF588EC003A695E /* Foundation.framework */; };
+		09A89E271BF62482003A695E /* GRMustacheKeyAccess_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		560ABACB1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */; };
 		560ABAD21A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */; };
 		560ABAD41A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */; };
@@ -196,8 +261,8 @@
 		56CDD4431A5A7A2200C4F47E /* HookFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56CDD4421A5A7A2200C4F47E /* HookFunctionTests.swift */; };
 		56D204341B32EBA50031FEE7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D204331B32EBA50031FEE7 /* Logger.swift */; };
 		56D204351B32ECF40031FEE7 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56D204331B32EBA50031FEE7 /* Logger.swift */; };
-		56EB0BE81BD0CB0D00A3DC55 /* LambdaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */; settings = {ASSET_TAGS = (); }; };
-		56EB0BE91BD0CB0D00A3DC55 /* LambdaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */; settings = {ASSET_TAGS = (); }; };
+		56EB0BE81BD0CB0D00A3DC55 /* LambdaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */; };
+		56EB0BE91BD0CB0D00A3DC55 /* LambdaTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */; };
 		56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */; };
 		56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */; };
 		56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
@@ -207,6 +272,13 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		09A89DE01BF584EE003A695E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 563AE18E19FBE4790028C6C1 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 09A89DCD1BF58489003A695E;
+			remoteInfo = MustacheTVOS;
+		};
 		561E72681A8BDC2C004ED48B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 563AE18E19FBE4790028C6C1 /* Project object */;
@@ -224,6 +296,12 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		09A89DCE1BF58489003A695E /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		09A89DDA1BF584EE003A695E /* MustacheTVOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheTVOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustacheTVOSTests.swift; sourceTree = "<group>"; };
+		09A89DDE1BF584EE003A695E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		09A89E211BF588EC003A695E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		09A89E231BF58903003A695E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		56056AA51A84CDBD0076BBAA /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
 		560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateFromMethodsTests.swift; sourceTree = "<group>"; };
 		560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TemplateFromMethodsTests_compilerError.mustache; sourceTree = "<group>"; };
@@ -334,6 +412,23 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		09A89DCA1BF58489003A695E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89E261BF62355003A695E /* Foundation.framework in Frameworks */,
+				09A89E251BF62345003A695E /* UIKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A89DD71BF584EE003A695E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89DDF1BF584EE003A695E /* Mustache.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561E72581A8BDC2B004ED48B /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -368,6 +463,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		09A89DDB1BF584EE003A695E /* MustacheTVOSTests */ = {
+			isa = PBXGroup;
+			children = (
+				09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */,
+				09A89DDE1BF584EE003A695E /* Info.plist */,
+			);
+			path = MustacheTVOSTests;
+			sourceTree = "<group>";
+		};
 		560ABAE21A275378009A004A /* TemplateRepositoryFileSystemTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -412,11 +516,14 @@
 		563AE18D19FBE4790028C6C1 = {
 			isa = PBXGroup;
 			children = (
+				09A89E231BF58903003A695E /* UIKit.framework */,
+				09A89E211BF588EC003A695E /* Foundation.framework */,
 				5623427D1B024EF100458D87 /* GRMustache.swift.podspec */,
 				56D32B1C1B19A212007FA037 /* CHANGELOG.md */,
 				56056AA51A84CDBD0076BBAA /* TODO.md */,
 				563AE19919FBE47A0028C6C1 /* Mustache */,
 				563AE1A619FBE47A0028C6C1 /* MustacheTests */,
+				09A89DDB1BF584EE003A695E /* MustacheTVOSTests */,
 				563AE19819FBE47A0028C6C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -428,6 +535,8 @@
 				563AE1A219FBE47A0028C6C1 /* MustacheiOSTests.xctest */,
 				561E725C1A8BDC2B004ED48B /* Mustache.framework */,
 				561E72661A8BDC2B004ED48B /* MustacheOSXTests.xctest */,
+				09A89DCE1BF58489003A695E /* Mustache.framework */,
+				09A89DDA1BF584EE003A695E /* MustacheTVOSTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -725,6 +834,16 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
+		09A89DCB1BF58489003A695E /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89E061BF5862C003A695E /* Mustache.h in Headers */,
+				09A89E071BF58639003A695E /* GRMustacheKeyAccess.m in Headers */,
+				09A89E271BF62482003A695E /* GRMustacheKeyAccess_private.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561E72591A8BDC2B004ED48B /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -746,6 +865,42 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		09A89DCD1BF58489003A695E /* MustacheTVOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09A89DD51BF58489003A695E /* Build configuration list for PBXNativeTarget "MustacheTVOS" */;
+			buildPhases = (
+				09A89DC91BF58489003A695E /* Sources */,
+				09A89DCA1BF58489003A695E /* Frameworks */,
+				09A89DCB1BF58489003A695E /* Headers */,
+				09A89DCC1BF58489003A695E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = MustacheTVOS;
+			productName = MustacheTVOS;
+			productReference = 09A89DCE1BF58489003A695E /* Mustache.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+		09A89DD91BF584EE003A695E /* MustacheTVOSTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 09A89DE21BF584EE003A695E /* Build configuration list for PBXNativeTarget "MustacheTVOSTests" */;
+			buildPhases = (
+				09A89DD61BF584EE003A695E /* Sources */,
+				09A89DD71BF584EE003A695E /* Frameworks */,
+				09A89DD81BF584EE003A695E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				09A89DE11BF584EE003A695E /* PBXTargetDependency */,
+			);
+			name = MustacheTVOSTests;
+			productName = MustacheTVOSTests;
+			productReference = 09A89DDA1BF584EE003A695E /* MustacheTVOSTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		561E725B1A8BDC2B004ED48B /* MustacheOSX */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 561E726F1A8BDC2C004ED48B /* Build configuration list for PBXNativeTarget "MustacheOSX" */;
@@ -824,10 +979,16 @@
 		563AE18E19FBE4790028C6C1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0700;
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Gwendal Roué";
 				TargetAttributes = {
+					09A89DCD1BF58489003A695E = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
+					09A89DD91BF584EE003A695E = {
+						CreatedOnToolsVersion = 7.1.1;
+					};
 					561E725B1A8BDC2B004ED48B = {
 						CreatedOnToolsVersion = 6.1.1;
 					};
@@ -858,11 +1019,32 @@
 				563AE1A119FBE47A0028C6C1 /* MustacheiOSTests */,
 				561E725B1A8BDC2B004ED48B /* MustacheOSX */,
 				561E72651A8BDC2B004ED48B /* MustacheOSXTests */,
+				09A89DCD1BF58489003A695E /* MustacheTVOS */,
+				09A89DD91BF584EE003A695E /* MustacheTVOSTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		09A89DCC1BF58489003A695E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A89DD81BF584EE003A695E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89E191BF58719003A695E /* Person.mustache in Resources */,
+				09A89E201BF58720003A695E /* FilterTests.mustache in Resources */,
+				09A89E1A1BF58719003A695E /* ReadMeExample1.mustache in Resources */,
+				09A89E171BF58719003A695E /* Movie.mustache in Resources */,
+				09A89E1B1BF58719003A695E /* ReadMeExample2.mustache in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561E725A1A8BDC2B004ED48B /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -944,6 +1126,74 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		09A89DC91BF58489003A695E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89DF11BF58550003A695E /* EachFilter.swift in Sources */,
+				09A89DEA1BF58538003A695E /* TemplateAST.swift in Sources */,
+				09A89DE81BF58538003A695E /* SectionTag.swift in Sources */,
+				09A89DFF1BF58560003A695E /* CoreFunctions.swift in Sources */,
+				09A89DFE1BF58560003A695E /* Context.swift in Sources */,
+				09A89E041BF58572003A695E /* Template.swift in Sources */,
+				09A89E021BF58569003A695E /* MustacheBox.swift in Sources */,
+				09A89E051BF58572003A695E /* TemplateRepository.swift in Sources */,
+				09A89DE51BF58526003A695E /* Common.swift in Sources */,
+				09A89DE91BF58538003A695E /* Tag.swift in Sources */,
+				09A89E001BF58560003A695E /* ExpressionInvocation.swift in Sources */,
+				09A89DF81BF58550003A695E /* NSFormatter.swift in Sources */,
+				09A89DEF1BF58548003A695E /* TemplateGenerator.swift in Sources */,
+				09A89E031BF58569003A695E /* RenderingEngine.swift in Sources */,
+				09A89DF61BF58550003A695E /* StandardLibrary.swift in Sources */,
+				09A89DFB1BF58557003A695E /* TemplateParser.swift in Sources */,
+				09A89DF31BF58550003A695E /* JavascriptEscapeHelper.swift in Sources */,
+				09A89DF71BF58550003A695E /* URLEscapeHelper.swift in Sources */,
+				09A89DFC1BF58557003A695E /* TemplateToken.swift in Sources */,
+				09A89E011BF58569003A695E /* GRMustacheKeyAccess.m in Sources */,
+				09A89DE71BF58538003A695E /* LocatedTag.swift in Sources */,
+				09A89DF51BF58550003A695E /* Logger.swift in Sources */,
+				09A89DFD1BF58560003A695E /* Box.swift in Sources */,
+				09A89DE61BF58538003A695E /* Expression.swift in Sources */,
+				09A89DEE1BF58541003A695E /* Configuration.swift in Sources */,
+				09A89DEC1BF58538003A695E /* VariableTag.swift in Sources */,
+				09A89DED1BF58538003A695E /* TemplateCompiler.swift in Sources */,
+				09A89DEB1BF58538003A695E /* TemplateASTNode.swift in Sources */,
+				09A89DF01BF58548003A695E /* ExpressionGenerator.swift in Sources */,
+				09A89DF21BF58550003A695E /* HTMLEscapeHelper.swift in Sources */,
+				09A89DF41BF58550003A695E /* Localizer.swift in Sources */,
+				09A89DFA1BF58557003A695E /* ExpressionParser.swift in Sources */,
+				09A89DF91BF58550003A695E /* ZipFilter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A89DD61BF584EE003A695E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				09A89E131BF58709003A695E /* ConfigurationTagDelimitersTests.swift in Sources */,
+				09A89E0C1BF58702003A695E /* LambdaTests.swift in Sources */,
+				09A89E0F1BF58702003A695E /* RenderFunctionTests.swift in Sources */,
+				09A89E0A1BF58702003A695E /* HookFunctionTests.swift in Sources */,
+				09A89DDD1BF584EE003A695E /* MustacheTVOSTests.swift in Sources */,
+				09A89E1E1BF58720003A695E /* FilterTests.swift in Sources */,
+				09A89E091BF58702003A695E /* FoundationCollectionTests.swift in Sources */,
+				09A89E101BF58709003A695E /* ConfigurationBaseContextTests.swift in Sources */,
+				09A89E1D1BF58719003A695E /* MustacheRenderableGuideTests.swift in Sources */,
+				09A89E1C1BF58719003A695E /* ReadMeTests.swift in Sources */,
+				09A89E0D1BF58702003A695E /* MustacheBoxTests.swift in Sources */,
+				09A89E151BF5870E003A695E /* ContextTests.swift in Sources */,
+				09A89E081BF58702003A695E /* BoxTests.swift in Sources */,
+				09A89E1F1BF58720003A695E /* VariadicFilterTests.swift in Sources */,
+				09A89E0B1BF58702003A695E /* KeyedSubscriptFunctionTests.swift in Sources */,
+				09A89E111BF58709003A695E /* ConfigurationContentTypeTests.swift in Sources */,
+				09A89E181BF58719003A695E /* MustacheBoxDocumentationTests.swift in Sources */,
+				09A89E0E1BF58702003A695E /* ObjcKeyAccessTests.swift in Sources */,
+				09A89E161BF5870E003A695E /* ContextValueForMustacheExpressionTests.swift in Sources */,
+				09A89E121BF58709003A695E /* ConfigurationExtendBaseContextTests.swift in Sources */,
+				09A89E141BF5870E003A695E /* ContextRegisteredKeyTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		561E72571A8BDC2B004ED48B /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1115,6 +1365,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		09A89DE11BF584EE003A695E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 09A89DCD1BF58489003A695E /* MustacheTVOS */;
+			targetProxy = 09A89DE01BF584EE003A695E /* PBXContainerItemProxy */;
+		};
 		561E72691A8BDC2C004ED48B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 561E725B1A8BDC2B004ED48B /* MustacheOSX */;
@@ -1128,6 +1383,80 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		09A89DD31BF58489003A695E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = Mustache/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOS;
+				PRODUCT_NAME = Mustache;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		09A89DD41BF58489003A695E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = Mustache/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOS;
+				PRODUCT_NAME = Mustache;
+				SDKROOT = appletvos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
+		09A89DE31BF584EE003A695E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = MustacheTVOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		09A89DE41BF584EE003A695E /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_NO_COMMON_BLOCKS = YES;
+				INFOPLIST_FILE = MustacheTVOSTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOSTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Release;
+		};
 		561E72701A8BDC2C004ED48B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1384,6 +1713,22 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		09A89DD51BF58489003A695E /* Build configuration list for PBXNativeTarget "MustacheTVOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09A89DD31BF58489003A695E /* Debug */,
+				09A89DD41BF58489003A695E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		09A89DE21BF584EE003A695E /* Build configuration list for PBXNativeTarget "MustacheTVOSTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				09A89DE31BF584EE003A695E /* Debug */,
+				09A89DE41BF584EE003A695E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		561E726F1A8BDC2C004ED48B /* Build configuration list for PBXNativeTarget "MustacheOSX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
