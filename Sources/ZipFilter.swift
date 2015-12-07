@@ -37,7 +37,7 @@ let ZipFilter = VariadicFilter { (boxes) in
             // Missing collection does not provide anything
         } else if let array = box.arrayValue {
             // Array
-            zippedGenerators.append(AnyGenerator(array.generate()))
+            zippedGenerators.append(anyGenerator(array.generate()))
         } else {
             // Error
             throw MustacheError(kind: .RenderError, message: "Non-enumerable argument in zip filter: `\(box.value)`")

@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		09A89DDD1BF584EE003A695E /* MustacheTVOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */; };
 		09A89DDF1BF584EE003A695E /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89DCE1BF58489003A695E /* Mustache.framework */; };
 		09A89DE51BF58526003A695E /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 561336051B21745A005BB0F7 /* Common.swift */; };
 		09A89DE61BF58538003A695E /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244561AEBC88C008BAD41 /* Expression.swift */; };
@@ -298,8 +297,6 @@
 /* Begin PBXFileReference section */
 		09A89DCE1BF58489003A695E /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		09A89DDA1BF584EE003A695E /* MustacheTVOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheTVOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MustacheTVOSTests.swift; sourceTree = "<group>"; };
-		09A89DDE1BF584EE003A695E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		09A89E211BF588EC003A695E /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		09A89E231BF58903003A695E /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS9.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		56056AA51A84CDBD0076BBAA /* TODO.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TODO.md; sourceTree = "<group>"; };
@@ -331,7 +328,7 @@
 		5623427D1B024EF100458D87 /* GRMustache.swift.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = GRMustache.swift.podspec; sourceTree = "<group>"; };
 		5629A7C61A1F676600D41F7C /* TagTests_wrapper.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TagTests_wrapper.mustache; sourceTree = "<group>"; };
 		563AE19719FBE47A0028C6C1 /* Mustache.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Mustache.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		563AE19B19FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		563AE19C19FBE47A0028C6C1 /* Mustache.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Mustache.h; sourceTree = "<group>"; };
 		563AE1A219FBE47A0028C6C1 /* MustacheiOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MustacheiOSTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		563AE1A819FBE47A0028C6C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -463,15 +460,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		09A89DDB1BF584EE003A695E /* MustacheTVOSTests */ = {
-			isa = PBXGroup;
-			children = (
-				09A89DDC1BF584EE003A695E /* MustacheTVOSTests.swift */,
-				09A89DDE1BF584EE003A695E /* Info.plist */,
-			);
-			path = MustacheTVOSTests;
-			sourceTree = "<group>";
-		};
 		560ABAE21A275378009A004A /* TemplateRepositoryFileSystemTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -510,20 +498,17 @@
 				5674F3721A1CC417000CE8CB /* NSFormatter.swift */,
 				569C42371A86824800748E98 /* ZipFilter.swift */,
 			);
-			path = Goodies;
+			name = Goodies;
 			sourceTree = "<group>";
 		};
 		563AE18D19FBE4790028C6C1 = {
 			isa = PBXGroup;
 			children = (
-				09A89E231BF58903003A695E /* UIKit.framework */,
-				09A89E211BF588EC003A695E /* Foundation.framework */,
 				5623427D1B024EF100458D87 /* GRMustache.swift.podspec */,
 				56D32B1C1B19A212007FA037 /* CHANGELOG.md */,
 				56056AA51A84CDBD0076BBAA /* TODO.md */,
-				563AE19919FBE47A0028C6C1 /* Mustache */,
-				563AE1A619FBE47A0028C6C1 /* MustacheTests */,
-				09A89DDB1BF584EE003A695E /* MustacheTVOSTests */,
+				56B45F5D1C15B9FB00A18DAD /* Mustache */,
+				563AE1A619FBE47A0028C6C1 /* Tests */,
 				563AE19819FBE47A0028C6C1 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -541,10 +526,9 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		563AE19919FBE47A0028C6C1 /* Mustache */ = {
+		563AE19919FBE47A0028C6C1 /* Sources */ = {
 			isa = PBXGroup;
 			children = (
-				563AE19C19FBE47A0028C6C1 /* Mustache.h */,
 				563AE1C319FC2A2A0028C6C1 /* Common */,
 				563AE1BB19FC26F00028C6C1 /* Compiling */,
 				563AE1B819FBE6E80028C6C1 /* Configuration */,
@@ -554,9 +538,8 @@
 				563AE1D619FC4A360028C6C1 /* Rendering */,
 				563AE1D119FC45350028C6C1 /* Template */,
 				56E8B5081A8BDFC0000DCC81 /* Frameworks */,
-				563AE19A19FBE47A0028C6C1 /* Supporting Files */,
 			);
-			path = Mustache;
+			path = Sources;
 			sourceTree = "<group>";
 		};
 		563AE19A19FBE47A0028C6C1 /* Supporting Files */ = {
@@ -567,13 +550,13 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		563AE1A619FBE47A0028C6C1 /* MustacheTests */ = {
+		563AE1A619FBE47A0028C6C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
 				56BF069B1A064FE900926BEB /* Public */,
 				563AE1A719FBE47A0028C6C1 /* Supporting Files */,
 			);
-			path = MustacheTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 		563AE1A719FBE47A0028C6C1 /* Supporting Files */ = {
@@ -591,7 +574,7 @@
 				563AE1B419FBE4FF0028C6C1 /* TemplateParser.swift */,
 				563AE1B619FBE6220028C6C1 /* TemplateToken.swift */,
 			);
-			path = Parsing;
+			name = Parsing;
 			sourceTree = "<group>";
 		};
 		563AE1B819FBE6E80028C6C1 /* Configuration */ = {
@@ -599,7 +582,7 @@
 			children = (
 				563AE1B919FBE6F40028C6C1 /* Configuration.swift */,
 			);
-			path = Configuration;
+			name = Configuration;
 			sourceTree = "<group>";
 		};
 		563AE1BB19FC26F00028C6C1 /* Compiling */ = {
@@ -609,7 +592,7 @@
 				563AE1BE19FC29B30028C6C1 /* TemplateAST */,
 				563AE1BC19FC27040028C6C1 /* TemplateCompiler.swift */,
 			);
-			path = Compiling;
+			name = Compiling;
 			sourceTree = "<group>";
 		};
 		563AE1BE19FC29B30028C6C1 /* TemplateAST */ = {
@@ -622,7 +605,7 @@
 				563AE1C119FC29E70028C6C1 /* TemplateASTNode.swift */,
 				563AE1CF19FC446A0028C6C1 /* VariableTag.swift */,
 			);
-			path = TemplateAST;
+			name = TemplateAST;
 			sourceTree = "<group>";
 		};
 		563AE1C319FC2A2A0028C6C1 /* Common */ = {
@@ -630,7 +613,7 @@
 			children = (
 				561336051B21745A005BB0F7 /* Common.swift */,
 			);
-			path = Common;
+			name = Common;
 			sourceTree = "<group>";
 		};
 		563AE1D119FC45350028C6C1 /* Template */ = {
@@ -639,7 +622,7 @@
 				563AE1D419FC48330028C6C1 /* Template.swift */,
 				563AE1D219FC45400028C6C1 /* TemplateRepository.swift */,
 			);
-			path = Template;
+			name = Template;
 			sourceTree = "<group>";
 		};
 		563AE1D619FC4A360028C6C1 /* Rendering */ = {
@@ -654,7 +637,7 @@
 				56BD793F1A0E381900937A76 /* MustacheBox.swift */,
 				563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */,
 			);
-			path = Rendering;
+			name = Rendering;
 			sourceTree = "<group>";
 		};
 		5662445C1AF1638F008BAD41 /* SuitesTests */ = {
@@ -691,7 +674,7 @@
 				566244B01AF201E7008BAD41 /* TemplateGenerator.swift */,
 				5660B98F1B2832BE00102EF1 /* ExpressionGenerator.swift */,
 			);
-			path = Generation;
+			name = Generation;
 			sourceTree = "<group>";
 		};
 		5685DAAD1A1A201E003E583B /* ServicesTests */ = {
@@ -715,6 +698,27 @@
 				56B4019F1A1F643B002D5CD7 /* TagTests.swift */,
 			);
 			path = TagTests;
+			sourceTree = "<group>";
+		};
+		56B45F5D1C15B9FB00A18DAD /* Mustache */ = {
+			isa = PBXGroup;
+			children = (
+				563AE19C19FBE47A0028C6C1 /* Mustache.h */,
+				563AE19919FBE47A0028C6C1 /* Sources */,
+				56B45F5E1C15BA1D00A18DAD /* Frameworks */,
+				563AE19A19FBE47A0028C6C1 /* Supporting Files */,
+			);
+			name = Mustache;
+			sourceTree = "<group>";
+		};
+		56B45F5E1C15BA1D00A18DAD /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				09A89E231BF58903003A695E /* UIKit.framework */,
+				09A89E211BF588EC003A695E /* Foundation.framework */,
+				561E72D41A8BDDE3004ED48B /* Foundation.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		56B4B2131A25BC4200BD4F8F /* TemplateTests */ = {
@@ -794,10 +798,8 @@
 		56E8B5081A8BDFC0000DCC81 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				561E72D41A8BDDE3004ED48B /* Foundation.framework */,
 			);
-			name = Frameworks;
-			path = ..;
+			path = Frameworks;
 			sourceTree = "<group>";
 		};
 		56FC9C831A17CD0C0020AAF8 /* ConfigurationTests */ = {
@@ -1174,7 +1176,6 @@
 				09A89E0C1BF58702003A695E /* LambdaTests.swift in Sources */,
 				09A89E0F1BF58702003A695E /* RenderFunctionTests.swift in Sources */,
 				09A89E0A1BF58702003A695E /* HookFunctionTests.swift in Sources */,
-				09A89DDD1BF584EE003A695E /* MustacheTVOSTests.swift in Sources */,
 				09A89E1E1BF58720003A695E /* FilterTests.swift in Sources */,
 				09A89E091BF58702003A695E /* FoundationCollectionTests.swift in Sources */,
 				09A89E101BF58709003A695E /* ConfigurationBaseContextTests.swift in Sources */,
@@ -1433,7 +1434,7 @@
 			buildSettings = {
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = MustacheTVOSTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1448,7 +1449,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_NO_COMMON_BLOCKS = YES;
-				INFOPLIST_FILE = MustacheTVOSTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.github.groue.Mustache.MustacheTVOSTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1471,7 +1472,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = Mustache/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -1494,7 +1495,7 @@
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
 				FRAMEWORK_VERSION = A;
-				INFOPLIST_FILE = Mustache/Info.plist;
+				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
@@ -1518,7 +1519,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MustacheTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
@@ -1536,7 +1537,7 @@
 					"$(DEVELOPER_FRAMEWORKS_DIR)",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MustacheTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
@@ -1684,7 +1685,7 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MustacheTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
@@ -1700,7 +1701,7 @@
 					"$(SDKROOT)/Developer/Library/Frameworks",
 					"$(inherited)",
 				);
-				INFOPLIST_FILE = MustacheTests/Info.plist;
+				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
