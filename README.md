@@ -7,6 +7,8 @@ It extends the genuine Mustache language with built-in goodies and extensibility
 
 **December 7, 2015: GRMustache.swift 1.0.0rc1 is out** - [Release notes](CHANGELOG.md). Follow [@GRMustache](http://twitter.com/GRMustache) on Twitter for release announcements and usage tips.
 
+**The last release that supports Swift 2.1** is version v0.11.0, on the [Swift2.1 branch](https://github.com/groue/GRMustache.swift/tree/Swift2.1).
+
 Jump to:
 
 - [Usage](#usage)
@@ -124,6 +126,8 @@ let package = Package(
     ]
 )
 ```
+
+Check [groue/GRMustacheSPM](https://github.com/groue/GRMustacheSPM) for a sample Swift package that uses GRMustache.swift.
 
 
 ### Manually
