@@ -1,6 +1,19 @@
 Release Notes
 =============
 
+## v1.0.0rc1
+
+Released on December 7, 2015
+
+**New**
+
+- Support for Swift Package Manager ([#17](https://github.com/groue/GRMustache.swift/issues/17))
+
+**Breaking Change**
+
+- Swift 2.2 ([#17](https://github.com/groue/GRMustache.swift/issues/17))
+
+
 ## v0.11.0
 
 Released on October 14, 2015
