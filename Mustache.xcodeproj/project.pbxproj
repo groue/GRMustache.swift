@@ -71,7 +71,7 @@
 		09A89E201BF58720003A695E /* FilterTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56CD9F651A275980001BABA4 /* FilterTests.mustache */; };
 		09A89E251BF62345003A695E /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89E231BF58903003A695E /* UIKit.framework */; };
 		09A89E261BF62355003A695E /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09A89E211BF588EC003A695E /* Foundation.framework */; };
-		09A89E271BF62482003A695E /* GRMustacheKeyAccess_private.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess_private.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		09A89E271BF62482003A695E /* GRMustacheKeyAccess.h in Headers */ = {isa = PBXBuildFile; fileRef = 569516F71A863F2100FF7D86 /* GRMustacheKeyAccess.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		560ABACB1A26039F009A004A /* TemplateFromMethodsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 560ABACA1A26039F009A004A /* TemplateFromMethodsTests.swift */; };
 		560ABAD21A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACD1A260A42009A004A /* TemplateFromMethodsTests_compilerError.mustache */; };
 		560ABAD41A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 560ABACE1A260A42009A004A /* TemplateFromMethodsTests_compilerErrorWrapper.mustache */; };
@@ -840,7 +840,7 @@
 			files = (
 				09A89E061BF5862C003A695E /* Mustache.h in Headers */,
 				09A89E071BF58639003A695E /* GRMustacheKeyAccess.m in Headers */,
-				09A89E271BF62482003A695E /* GRMustacheKeyAccess_private.h in Headers */,
+				09A89E271BF62482003A695E /* GRMustacheKeyAccess.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -980,7 +980,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0710;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0720;
 				ORGANIZATIONNAME = "Gwendal Roué";
 				TargetAttributes = {
 					09A89DCD1BF58489003A695E = {
@@ -1479,7 +1479,7 @@
 				PRODUCT_NAME = Mustache;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Debug;
 		};
@@ -1502,7 +1502,7 @@
 				PRODUCT_NAME = Mustache;
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 			};
 			name = Release;
 		};
@@ -1647,8 +1647,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Mustache;
 				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -1669,7 +1668,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = Mustache;
 				SKIP_INSTALL = YES;
-				SWIFT_WHOLE_MODULE_OPTIMIZATION = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -1720,6 +1719,7 @@
 				09A89DD41BF58489003A695E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		09A89DE21BF584EE003A695E /* Build configuration list for PBXNativeTarget "MustacheTVOSTests" */ = {
 			isa = XCConfigurationList;
@@ -1728,6 +1728,7 @@
 				09A89DE41BF584EE003A695E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		561E726F1A8BDC2C004ED48B /* Build configuration list for PBXNativeTarget "MustacheOSX" */ = {
 			isa = XCConfigurationList;
