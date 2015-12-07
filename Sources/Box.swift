@@ -524,6 +524,7 @@ extension NSObject : MustacheBoxable {
         } else {
             // Generic NSObject
             
+            #if OBJC
             return MustacheBox(
                 value: self,
                 keyedSubscript: { (key: String) in
@@ -535,6 +536,9 @@ extension NSObject : MustacheBoxable {
                         return Box()
                     }
                 })
+            #else
+                return MustacheBox(value: self)
+            #endif
         }
     }
 }

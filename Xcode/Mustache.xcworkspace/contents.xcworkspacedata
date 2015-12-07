@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Workspace
+   version = "1.0">
+   <FileRef
+      location = "group:../Docs/Playground.playground">
+   </FileRef>
+   <FileRef
+      location = "container:Mustache.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../Docs/DemoApps/MustacheDemoOSX/MustacheDemoOSX.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../Docs/DemoApps/MustacheDemoiOS/MustacheDemoiOS.xcodeproj">
+   </FileRef>
+   <FileRef
+      location = "group:../Docs/DemoApps/MustacheDemoiOS7/MustacheDemoiOS7.xcodeproj">
+   </FileRef>
+</Workspace>
