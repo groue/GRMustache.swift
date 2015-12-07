@@ -123,7 +123,7 @@ let package = Package(
         .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 1, minor: 0),
     ]
 )
-```swift`
+```
 
 
 ### Manually
