@@ -132,13 +132,13 @@ Check [groue/GRMustacheSPM](https://github.com/groue/GRMustacheSPM) for a sample
 
 ### Manually
 
-Download a copy of GRMustache.swift, embed the `Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
+Download a copy of GRMustache.swift, embed the `Xcode/Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
 
 
 Documentation
 =============
 
-To fiddle with the library, open the `Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
+To fiddle with the library, open the `Xcode/Mustache.xcworkspace` workspace: it contains a Mustache-enabled Playground at the top of the files list.
 
 External links:
 
