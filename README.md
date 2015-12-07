@@ -1014,7 +1014,7 @@ The rendering of NSObject depends on the actual class:
     - `{{#object}}...{{/object}}` renders once, pushing the object on top of the [context stack](#the-context-stack).
     - `{{^object}}...{{/object}}` does not render.
     
-    Templates can render object properties: `{{ user.name }}`.
+    With support for Objective-C runtime, templates can render object properties: `{{ user.name }}`.
     
     Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
@@ -1055,7 +1055,7 @@ Custom Types
 
 ### NSObject subclasses
 
-Your NSObject subclass can trivially feed your templates:
+With support for Objective-C runtime (on Apple platforms), your NSObject subclass can trivially feed your templates:
 
 ```swift
 // An NSObject subclass
