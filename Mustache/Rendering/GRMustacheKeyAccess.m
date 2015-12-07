@@ -22,7 +22,7 @@
 
 #import <objc/message.h>
 #import <pthread.h>
-#import "GRMustacheKeyAccess_private.h"
+#import "GRMustacheKeyAccess.h"
 
 
 static pthread_key_t GRSafeKeysForClassKey;

@@ -44,7 +44,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     if let dictionary = box.dictionaryValue {
         let count = dictionary.count
         let transformedBoxes = dictionary.enumerate().map { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
-            let customRenderFunction: RenderFunction = { (var info) in
+            let customRenderFunction: RenderFunction = { info in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
                 var position: [String: MustacheBox] = [:]
@@ -54,6 +54,8 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@first"] = Box(index == 0)
                 position["@last"] = Box((index == count - 1))
                 position["@key"] = Box(element.key)
+                
+                var info = info
                 info.context = info.context.extendedContext(Box(position))
                 return try element.box.render(info: info)
             }
@@ -76,7 +78,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     if let boxes = box.arrayValue {
         let count = boxes.count
         let transformedBoxes = boxes.enumerate().map { (index: Int, box: MustacheBox) -> MustacheBox in
-            let customRenderFunction: RenderFunction = { (var info) in
+            let customRenderFunction: RenderFunction = { info in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
                 var position: [String: MustacheBox] = [:]
@@ -85,6 +87,8 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@indexIsEven"] = Box(index % 2 == 0)
                 position["@first"] = Box(index == 0)
                 position["@last"] = Box((index == count - 1))
+                
+                var info = info
                 info.context = info.context.extendedContext(Box(position))
                 return try box.render(info: info)
             }

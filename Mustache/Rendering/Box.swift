@@ -952,7 +952,7 @@ extension CollectionType {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(var info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
+    private func renderItems(info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var buffer = ""
         var contentType: ContentType? = nil
@@ -970,7 +970,7 @@ extension CollectionType {
         // This is also the case of collections: they enter the context stack
         // when used as an item of a collection, and enumerate their items when
         // used as a collection.
-        
+        var info = info
         info.enumerationItem = true
         
         for item in self {
@@ -1410,7 +1410,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
+                    var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
@@ -1475,7 +1476,8 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (var boxDictionary, item: (key: String, value: T?)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T?)) in
+                    var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
                 })),
@@ -1551,7 +1553,8 @@ extension NSDictionary {
     public override var mustacheBox: MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (var boxDictionary, key) in
+                dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+                    var boxDictionary = boxDictionary
                     if let key = key as? String {
                         boxDictionary[key] = BoxAnyObject(self[key])
                     } else {
