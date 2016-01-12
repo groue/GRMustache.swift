@@ -11,31 +11,57 @@
             buildForRunning = "YES"
             buildForProfiling = "YES"
             buildForArchiving = "YES"
-            buildForAnalyzing = "YES">
+            buildForAnalyzing = "YES"
+            hideIssues = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "563AE19619FBE47A0028C6C1"
+               BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
                BuildableName = "Mustache.framework"
-               BlueprintName = "MustacheiOS"
+               BlueprintName = "MustacheOSX"
+               ReferencedContainer = "container:Mustache.xcodeproj">
+            </BuildableReference>
+         </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "NO"
+            buildForProfiling = "NO"
+            buildForArchiving = "NO"
+            buildForAnalyzing = "NO"
+            hideIssues = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "561E72651A8BDC2B004ED48B"
+               BuildableName = "MustacheOSXTests.xctest"
+               BlueprintName = "MustacheOSXTests"
                ReferencedContainer = "container:Mustache.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      codeCoverageEnabled = "YES"
-      buildConfiguration = "Debug">
+      codeCoverageEnabled = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "561E72651A8BDC2B004ED48B"
+               BuildableName = "MustacheOSXTests.xctest"
+               BlueprintName = "MustacheOSXTests"
+               ReferencedContainer = "container:Mustache.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "563AE19619FBE47A0028C6C1"
+            BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
             BuildableName = "Mustache.framework"
-            BlueprintName = "MustacheiOS"
+            BlueprintName = "MustacheOSX"
             ReferencedContainer = "container:Mustache.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -43,11 +69,11 @@
       </AdditionalOptions>
    </TestAction>
    <LaunchAction
+      buildConfiguration = "Debug"
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Debug"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"
@@ -55,9 +81,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "563AE19619FBE47A0028C6C1"
+            BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
             BuildableName = "Mustache.framework"
-            BlueprintName = "MustacheiOS"
+            BlueprintName = "MustacheOSX"
             ReferencedContainer = "container:Mustache.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -65,17 +91,17 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
+      buildConfiguration = "Release"
       shouldUseLaunchSchemeArgsEnv = "YES"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
-      buildConfiguration = "Release"
       debugDocumentVersioning = "YES">
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "563AE19619FBE47A0028C6C1"
+            BlueprintIdentifier = "561E725B1A8BDC2B004ED48B"
             BuildableName = "Mustache.framework"
-            BlueprintName = "MustacheiOS"
+            BlueprintName = "MustacheOSX"
             ReferencedContainer = "container:Mustache.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
