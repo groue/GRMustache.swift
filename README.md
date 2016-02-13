@@ -88,7 +88,7 @@ To use GRMustache.swift in a project targetting iOS7, you must include the sourc
 
 [CocoaPods](http://cocoapods.org/) is a dependency manager for Xcode projects.
 
-To use GRMustache.swift with Cocoapods, specify in your Podfile:
+To use GRMustache.swift with CocoaPods, specify in your Podfile:
 
 ```ruby
 source 'https://github.com/CocoaPods/Specs.git'
