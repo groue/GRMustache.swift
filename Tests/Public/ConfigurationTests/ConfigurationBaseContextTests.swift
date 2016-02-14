@@ -26,8 +26,7 @@ import Mustache
 
 class ConfigurationBaseContextTests: XCTestCase {
     
-    override func tearDown() {
-        super.tearDown()
+    func tearDown() {
         DefaultConfiguration = Configuration()
     }
     

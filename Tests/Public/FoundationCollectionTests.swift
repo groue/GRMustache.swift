@@ -33,7 +33,7 @@ class FoundationCollectionTests: XCTestCase {
     var boxedNSSet: MustacheBox!
     var boxedNSOrderedSet: MustacheBox!
     
-    override func setUp() {
+    func setUp() {
         boxedArray = Box(["collection": [["key": "value"]]])
         boxedNSArray = {
             let array = NSMutableArray()
