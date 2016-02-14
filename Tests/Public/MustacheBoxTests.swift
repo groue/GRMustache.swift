@@ -25,6 +25,15 @@ import XCTest
 import Mustache
 
 class MustacheBoxTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testBoolValue", testBoolValue),
+            ("testBoolBoxing", testBoolBoxing),
+        ]
+    }
+// END OF GENERATED CODE
     
     // This test should go elsewhere, or should have many brothers: tests for
     // each way to feed the Box(boolValue:value:etc.) function.

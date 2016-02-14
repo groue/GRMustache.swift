@@ -27,6 +27,56 @@ import Foundation
 
 class RenderFunctionTests: XCTestCase {
 
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testRenderFunctionInVariableTag", testRenderFunctionInVariableTag),
+            ("testRenderFunctionInSectionTag", testRenderFunctionInSectionTag),
+            ("testRenderFunctionInInvertedSectionTag", testRenderFunctionInInvertedSectionTag),
+            ("testRenderFunctionHTMLRenderingOfEscapedVariableTag", testRenderFunctionHTMLRenderingOfEscapedVariableTag),
+            ("testRenderFunctionHTMLRenderingOfUnescapedVariableTag", testRenderFunctionHTMLRenderingOfUnescapedVariableTag),
+            ("testRenderFunctionTextRenderingOfEscapedVariableTag", testRenderFunctionTextRenderingOfEscapedVariableTag),
+            ("testRenderFunctionTextRenderingOfUnescapedVariableTag", testRenderFunctionTextRenderingOfUnescapedVariableTag),
+            ("testRenderFunctionHTMLRenderingOfSectionTag", testRenderFunctionHTMLRenderingOfSectionTag),
+            ("testRenderFunctionTextRenderingOfSectionTag", testRenderFunctionTextRenderingOfSectionTag),
+            ("testRenderFunctionCanThrowNSErrorFromVariableTag", testRenderFunctionCanThrowNSErrorFromVariableTag),
+            ("testRenderFunctionCanThrowCustomErrorFromVariableTag", testRenderFunctionCanThrowCustomErrorFromVariableTag),
+            ("testRenderFunctionCanThrowNSErrorFromSectionTag", testRenderFunctionCanThrowNSErrorFromSectionTag),
+            ("testRenderFunctionCanThrowCustomErrorFromSectionTag", testRenderFunctionCanThrowCustomErrorFromSectionTag),
+            ("testRenderFunctionCanAccessVariableTagType", testRenderFunctionCanAccessVariableTagType),
+            ("testRenderFunctionCanAccessSectionTagType", testRenderFunctionCanAccessSectionTagType),
+            ("testRenderFunctionCanAccessInnerTemplateStringFromSectionTag", testRenderFunctionCanAccessInnerTemplateStringFromSectionTag),
+            ("testRenderFunctionCanAccessInnerTemplateStringFromVariableTag", testRenderFunctionCanAccessInnerTemplateStringFromVariableTag),
+            ("testRenderFunctionCanAccessRenderedContentFromSectionTag", testRenderFunctionCanAccessRenderedContentFromSectionTag),
+            ("testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag", testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag),
+            ("testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag", testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag),
+            ("testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag", testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag),
+            ("testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromSectionTag", testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromSectionTag),
+            ("testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack", testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack),
+            ("testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack", testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack),
+            ("testRenderFunctionCanExtendValueContextStackInVariableTag", testRenderFunctionCanExtendValueContextStackInVariableTag),
+            ("testRenderFunctionCanExtendValueContextStackInSectionTag", testRenderFunctionCanExtendValueContextStackInSectionTag),
+            ("testRenderFunctionCanExtendWillRenderStackInVariableTag", testRenderFunctionCanExtendWillRenderStackInVariableTag),
+            ("testRenderFunctionCanExtendWillRenderStackInSectionTag", testRenderFunctionCanExtendWillRenderStackInSectionTag),
+            ("testRenderFunctionTriggersWillRenderFunctions", testRenderFunctionTriggersWillRenderFunctions),
+            ("testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag", testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag),
+            ("testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag", testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag),
+            ("testArrayOfRenderFunctionsInSectionTag", testArrayOfRenderFunctionsInSectionTag),
+            ("testArrayOfRenderFunctionsInEscapedVariableTag", testArrayOfRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfHTMLRenderFunctionsInEscapedVariableTag", testArrayOfHTMLRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfHTMLRenderFunctionsInUnescapedVariableTag", testArrayOfHTMLRenderFunctionsInUnescapedVariableTag),
+            ("testArrayOfTextRenderFunctionsInEscapedVariableTag", testArrayOfTextRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfTextRenderFunctionsInUnescapedVariableTag", testArrayOfTextRenderFunctionsInUnescapedVariableTag),
+            ("testArrayOfInconsistentContentTypeRenderFunctionsInVariableTag", testArrayOfInconsistentContentTypeRenderFunctionsInVariableTag),
+            ("testArrayOfInconsistentContentTypeRenderFunctionsInSectionTag", testArrayOfInconsistentContentTypeRenderFunctionsInSectionTag),
+            ("testDynamicPartial", testDynamicPartial),
+            ("testDynamicPartialIsNotHTMLEscaped", testDynamicPartialIsNotHTMLEscaped),
+            ("testDynamicPartialOverride", testDynamicPartialOverride),
+            ("testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation", testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation),
+        ]
+    }
+// END OF GENERATED CODE
+
     enum CustomError : ErrorType {
         case Error
     }

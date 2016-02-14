@@ -26,6 +26,13 @@ import Mustache
 import Foundation
 
 class SuiteTestCase: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+        ]
+    }
+// END OF GENERATED CODE
     
     func runTestsFromResource(name: String, directory: String) {
         let testBundle = NSBundle(forClass: self.dynamicType)

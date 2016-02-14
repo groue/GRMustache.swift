@@ -26,6 +26,27 @@ import Mustache
 
 class LambdaTests: XCTestCase {
 
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testMustacheSpecInterpolation", testMustacheSpecInterpolation),
+            ("testMustacheSpecInterpolationExpansion", testMustacheSpecInterpolationExpansion),
+            ("testMustacheSpecInterpolationAlternateDelimiters", testMustacheSpecInterpolationAlternateDelimiters),
+            ("testMustacheSpecMultipleCalls", testMustacheSpecMultipleCalls),
+            ("testMustacheSpecEscaping", testMustacheSpecEscaping),
+            ("testMustacheSpecSection", testMustacheSpecSection),
+            ("testMustacheSpecSectionExpansion", testMustacheSpecSectionExpansion),
+            ("testMustacheSpecSectionAlternateDelimiters", testMustacheSpecSectionAlternateDelimiters),
+            ("testMustacheSpecSectionMultipleCalls", testMustacheSpecSectionMultipleCalls),
+            ("testMustacheSpecInvertedSection", testMustacheSpecInvertedSection),
+            ("testPartialInArity0Lambda", testPartialInArity0Lambda),
+            ("testPartialInArity1Lambda", testPartialInArity1Lambda),
+            ("testArity0LambdaInSectionTag", testArity0LambdaInSectionTag),
+            ("testArity1LambdaInVariableTag", testArity1LambdaInVariableTag),
+        ]
+    }
+// END OF GENERATED CODE
+
     func testMustacheSpecInterpolation() {
         // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L15
         let lambda = Lambda { "world" }

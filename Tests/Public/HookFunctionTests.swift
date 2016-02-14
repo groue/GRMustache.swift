@@ -26,6 +26,25 @@ import Mustache
 import Foundation
 
 class HookFunctionTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testWillRenderFunctionIsNotTriggeredByText", testWillRenderFunctionIsNotTriggeredByText),
+            ("testDidRenderFunctionIsNotTriggeredByText", testDidRenderFunctionIsNotTriggeredByText),
+            ("testVariableHooks", testVariableHooks),
+            ("testSectionHooks", testSectionHooks),
+            ("testMultipleTagsObserver", testMultipleTagsObserver),
+            ("testObserverInterpretsRenderedValue", testObserverInterpretsRenderedValue),
+            ("testDidRenderFunctionObservesRenderedString", testDidRenderFunctionObservesRenderedString),
+            ("testDidRenderFunctionObservesRenderingNSError", testDidRenderFunctionObservesRenderingNSError),
+            ("testDidRenderFunctionObservesRenderingCustomError", testDidRenderFunctionObservesRenderingCustomError),
+            ("testHookFunctionsOrdering", testHookFunctionsOrdering),
+            ("testArrayOfWillRenderFunctionsInSectionTag", testArrayOfWillRenderFunctionsInSectionTag),
+            ("testWillRenderFunctionCanProcessRenderFunction", testWillRenderFunctionCanProcessRenderFunction),
+        ]
+    }
+// END OF GENERATED CODE
     
     enum CustomError : ErrorType {
         case Error

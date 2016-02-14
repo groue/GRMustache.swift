@@ -26,6 +26,15 @@ import Mustache
 
 class TemplateRepositoryDictionaryTests: XCTestCase {
 
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateRepositoryWithDictionary", testTemplateRepositoryWithDictionary),
+            ("testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation", testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation),
+        ]
+    }
+// END OF GENERATED CODE
+
     func testTemplateRepositoryWithDictionary() {
         let templates = [
             "a": "A{{>b}}",

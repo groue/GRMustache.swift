@@ -26,6 +26,30 @@ import Mustache
 import Foundation
 
 class FilterTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testFilterCanChain", testFilterCanChain),
+            ("testScopedValueAreExtractedOutOfAFilterExpression", testScopedValueAreExtractedOutOfAFilterExpression),
+            ("testFilterArgumentsDoNotEnterSectionContextStack", testFilterArgumentsDoNotEnterSectionContextStack),
+            ("testFilterNameSpace", testFilterNameSpace),
+            ("testFilterCanReturnFilter", testFilterCanReturnFilter),
+            ("testImplicitIteratorCanReturnFilter", testImplicitIteratorCanReturnFilter),
+            ("testMissingFilterError", testMissingFilterError),
+            ("testNotAFilterError", testNotAFilterError),
+            ("testMissingFilterErrorDescriptionContainsLineNumber", testMissingFilterErrorDescriptionContainsLineNumber),
+            ("testMissingFilterErrorDescriptionContainsTemplatePath", testMissingFilterErrorDescriptionContainsTemplatePath),
+            ("testNotAFilterErrorDescriptionContainsLineNumber", testNotAFilterErrorDescriptionContainsLineNumber),
+            ("testNotAFilterErrorDescriptionContainsTemplatePath", testNotAFilterErrorDescriptionContainsTemplatePath),
+            ("testFilterOfOptionalInt", testFilterOfOptionalInt),
+            ("testFilterOfOptionalString", testFilterOfOptionalString),
+            ("testFilterCanThrowMustacheError", testFilterCanThrowMustacheError),
+            ("testFilterCanThrowCustomNSError", testFilterCanThrowCustomNSError),
+            ("testFilterCanThrowCustomError", testFilterCanThrowCustomError),
+        ]
+    }
+// END OF GENERATED CODE
     
     enum CustomError : ErrorType {
         case Error

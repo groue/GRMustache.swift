@@ -25,6 +25,17 @@ import XCTest
 import Mustache
 
 class StandardLibraryTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testStandardLibraryHTMLEscapeDoesEscapeText", testStandardLibraryHTMLEscapeDoesEscapeText),
+            ("testStandardLibraryHTMLEscapeDoesEscapeHTML", testStandardLibraryHTMLEscapeDoesEscapeHTML),
+            ("testStandardLibraryJavascriptEscapeDoesEscapeRenderFunction", testStandardLibraryJavascriptEscapeDoesEscapeRenderFunction),
+            ("testStandardLibraryURLEscapeDoesEscapeRenderFunctions", testStandardLibraryURLEscapeDoesEscapeRenderFunctions),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
         let render = Box({ (info: RenderingInfo) -> Rendering in

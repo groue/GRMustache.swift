@@ -25,6 +25,16 @@ import XCTest
 import Mustache
 
 class ConfigurationExtendBaseContextTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testConfigurationExtendBaseContextWithValue", testConfigurationExtendBaseContextWithValue),
+            ("testConfigurationExtendBaseContextWithProtectedObject", testConfigurationExtendBaseContextWithProtectedObject),
+            ("testConfigurationExtendBaseContextWithWillRenderFunction", testConfigurationExtendBaseContextWithWillRenderFunction),
+        ]
+    }
+// END OF GENERATED CODE
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()

@@ -26,6 +26,15 @@ import Mustache
 import Foundation
 
 class TemplateRepositoryBundleTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateRepositoryWithBundle", testTemplateRepositoryWithBundle),
+            ("testTemplateRepositoryWithBundleTemplateExtensionEncoding", testTemplateRepositoryWithBundleTemplateExtensionEncoding),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testTemplateRepositoryWithBundle() {
         let repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType))

@@ -26,6 +26,15 @@ import Mustache
 import Foundation
 
 class ObjcKeyAccessTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testPropertiesAreSafeAndAvailable", testPropertiesAreSafeAndAvailable),
+            ("testMethodsAreUnsafeAndNotAvailable", testMethodsAreUnsafeAndNotAvailable),
+        ]
+    }
+// END OF GENERATED CODE
     
     class ClassWithProperties: NSObject {
         let property: String = "property"

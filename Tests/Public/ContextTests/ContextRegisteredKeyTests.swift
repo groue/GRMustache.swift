@@ -25,6 +25,19 @@ import XCTest
 import Mustache
 
 class ContextRegisteredKeyTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testRegisteredKeyCanBeAccessed", testRegisteredKeyCanBeAccessed),
+            ("testMultipleRegisteredKeysCanBeAccessed", testMultipleRegisteredKeysCanBeAccessed),
+            ("testRegisteredKeysCanNotBeShadowed", testRegisteredKeysCanNotBeShadowed),
+            ("testDeepRegisteredKeyCanBeAccessedViaFullKeyPath", testDeepRegisteredKeyCanBeAccessedViaFullKeyPath),
+            ("testDeepRegisteredKeyCanBeAccessedViaScopedExpression", testDeepRegisteredKeyCanBeAccessedViaScopedExpression),
+            ("testDeepRegisteredKeyCanBeShadowed", testDeepRegisteredKeyCanBeShadowed),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testRegisteredKeyCanBeAccessed() {
         let template = try! Template(string: "{{safe}}")

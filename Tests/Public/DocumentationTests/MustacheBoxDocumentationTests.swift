@@ -25,6 +25,15 @@ import XCTest
 import Mustache
 
 class MustacheBoxDocumentationTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testRenderingDocumentation", testRenderingDocumentation),
+            ("testRenderingInfoDocumentation", testRenderingInfoDocumentation),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testRenderingDocumentation() {
         let render: RenderFunction = { (info: RenderingInfo) -> Rendering in

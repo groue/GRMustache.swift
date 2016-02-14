@@ -25,6 +25,24 @@ import XCTest
 import Mustache
 
 class ConfigurationBaseContextTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testDefaultConfigurationCustomBaseContext", testDefaultConfigurationCustomBaseContext),
+            ("testTemplateBaseContextOverridesDefaultConfigurationBaseContext", testTemplateBaseContextOverridesDefaultConfigurationBaseContext),
+            ("testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext", testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext),
+            ("testRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration", testRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration),
+            ("testRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration", testRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration),
+            ("testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration", testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration),
+            ("testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration", testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration),
+            ("testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration", testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration),
+            ("testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration", testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration),
+            ("testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled", testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled),
+            ("testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled", testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled),
+        ]
+    }
+// END OF GENERATED CODE
     
     func tearDown() {
         DefaultConfiguration = Configuration()

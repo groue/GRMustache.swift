@@ -26,6 +26,14 @@ import Mustache
 import Foundation
 
 class TemplateRepositoryDataSourceTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateRepositoryDataSource", testTemplateRepositoryDataSource),
+        ]
+    }
+// END OF GENERATED CODE
     
     enum CustomError : ErrorType {
         case Error
