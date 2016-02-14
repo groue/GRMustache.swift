@@ -23,6 +23,7 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class SuiteTestCase: XCTestCase {
     

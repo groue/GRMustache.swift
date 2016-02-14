@@ -22,7 +22,8 @@
 
 
 import XCTest
-import Mustache;
+import Mustache
+import Foundation
 
 // TODO: write an equivalent test class for Swift collections
 class FoundationCollectionTests: XCTestCase {

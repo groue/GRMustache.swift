@@ -23,6 +23,7 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class ReadMeTests: XCTestCase {
     

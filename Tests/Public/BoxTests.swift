@@ -23,6 +23,7 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 struct HashableBoxable : MustacheBoxable, Hashable {
     let int: Int
