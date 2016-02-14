@@ -161,7 +161,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Variable:
-                ++variableTagDetections
+                variableTagDetections += 1
             default:
                 break
             }
@@ -176,7 +176,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Section:
-                ++sectionTagDetections
+                sectionTagDetections += 1
             default:
                 break
             }
@@ -312,7 +312,7 @@ class RenderFunctionTests: XCTestCase {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
             let context = info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
-                ++tagWillRenderCount
+                tagWillRenderCount += 1
                 return box
             }))
             let template = try! Template(string: "{{subject}}{{subject}}")
@@ -328,7 +328,7 @@ class RenderFunctionTests: XCTestCase {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
             return try info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
-                ++tagWillRenderCount
+                tagWillRenderCount += 1
                 return box
             })))
         }
