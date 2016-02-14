@@ -24,7 +24,7 @@ else
         fwDir=$dir
     done
     if [[ "${fwDir}" !=  "!"  &&  -d "${fwDir}" ]]; then
-        "${fwDir}/TestFramework/mainBuildTests.sh"
+        "${fwDir}/TestFramework/mainBuildTests.sh" Public
     else
         echo "Didn't find the Kitura test framework"
         exit 1
