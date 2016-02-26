@@ -25,9 +25,27 @@ import XCTest
 import Mustache
 
 class ConfigurationTagDelimitersTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testFactoryConfigurationHasTagDelimitersRegardlessOfDefaultConfiguration", testFactoryConfigurationHasTagDelimitersRegardlessOfDefaultConfiguration),
+            ("testDefaultConfigurationTagDelimiters", testDefaultConfigurationTagDelimiters),
+            ("testSetDelimitersTagOverridesDefaultConfigurationDelimiters", testSetDelimitersTagOverridesDefaultConfigurationDelimiters),
+            ("testDefaultRepositoryConfigurationHasDefaultConfigurationTagDelimiters", testDefaultRepositoryConfigurationHasDefaultConfigurationTagDelimiters),
+            ("testRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration", testRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration),
+            ("testRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration", testRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration),
+            ("testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenSettingTheWholeConfiguration", testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenSettingTheWholeConfiguration),
+            ("testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration", testRepositoryConfigurationTagDelimitersOverridesDefaultConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration),
+            ("testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration", testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenSettingTheWholeConfiguration),
+            ("testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration", testSetDelimitersTagOverridesRepositoryConfigurationTagDelimitersWhenUpdatingRepositoryConfiguration),
+            ("testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled", testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled),
+            ("testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled", testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled),
+        ]
+    }
+// END OF GENERATED CODE
    
-    override func tearDown() {
-        super.tearDown()
+    func tearDown() {
         DefaultConfiguration = Configuration()
     }
         

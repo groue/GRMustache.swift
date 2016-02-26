@@ -23,8 +23,24 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class TagTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTagDescriptionContainsTagToken", testTagDescriptionContainsTagToken),
+            ("testTagDescriptionContainsLineNumber", testTagDescriptionContainsLineNumber),
+            ("testTagDescriptionContainsResourceBasedTemplatePath", testTagDescriptionContainsResourceBasedTemplatePath),
+            ("testTagDescriptionContainsURLBasedTemplatePath", testTagDescriptionContainsURLBasedTemplatePath),
+            ("testTagDescriptionContainsPathBasedTemplatePath", testTagDescriptionContainsPathBasedTemplatePath),
+            ("testTagDescriptionContainsResourceBasedPartialPath", testTagDescriptionContainsResourceBasedPartialPath),
+            ("testTagDescriptionContainsURLBasedPartialPath", testTagDescriptionContainsURLBasedPartialPath),
+            ("testTagDescriptionContainsPathBasedPartialPath", testTagDescriptionContainsPathBasedPartialPath),
+        ]
+    }
+// END OF GENERATED CODE
 
     func testTagDescriptionContainsTagToken() {
         var tagDescription: String? = nil

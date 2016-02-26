@@ -25,6 +25,14 @@ import XCTest
 import Mustache
 
 class KeyedSubscriptFunctionTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testBoxedKeyedSubscriptFunction", testBoxedKeyedSubscriptFunction),
+        ]
+    }
+// END OF GENERATED CODE
     
     func makeKeyedSubscriptFunction() -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in

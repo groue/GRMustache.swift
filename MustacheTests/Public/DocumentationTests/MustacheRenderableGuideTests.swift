@@ -23,8 +23,20 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class MustacheRenderableGuideTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testExample1", testExample1),
+            ("testExample6", testExample6),
+            ("testExample7", testExample7),
+            ("testExample8", testExample8),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testExample1() {
         let render = { (info: RenderingInfo) -> Rendering in

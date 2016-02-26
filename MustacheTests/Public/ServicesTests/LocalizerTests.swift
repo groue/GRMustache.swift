@@ -23,8 +23,27 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class LocalizerTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testLocalizableBundle", testLocalizableBundle),
+            ("testLocalizer", testLocalizer),
+            ("testLocalizerFromTable", testLocalizerFromTable),
+            ("testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString),
+            ("testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString),
+            ("testLocalizerAsFilter", testLocalizerAsFilter),
+            ("testLocalizerAsRenderable", testLocalizerAsRenderable),
+            ("testLocalizerAsRenderableWithArgument", testLocalizerAsRenderableWithArgument),
+            ("testLocalizerAsRenderableWithArgumentAndConditions", testLocalizerAsRenderableWithArgumentAndConditions),
+            ("testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates", testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates),
+            ("testLocalizerRendersUnescapedValuesOfTextTemplates", testLocalizerRendersUnescapedValuesOfTextTemplates),
+        ]
+    }
+// END OF GENERATED CODE
     
     lazy var localizableBundle: NSBundle = NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("LocalizerTestsBundle", ofType: nil)!)!
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)

@@ -25,6 +25,17 @@ import XCTest
 import Mustache
 
 class TemplateRepositoryTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateRepositoryWithoutDataSourceCanNotLoadPartialTemplate", testTemplateRepositoryWithoutDataSourceCanNotLoadPartialTemplate),
+            ("testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate", testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate),
+            ("testTemplateInstancesAreNotReused", testTemplateInstancesAreNotReused),
+            ("testReloadTemplates", testReloadTemplates),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testTemplateRepositoryWithoutDataSourceCanNotLoadPartialTemplate() {
         let repo = TemplateRepository()

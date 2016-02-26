@@ -23,8 +23,20 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class TemplateRepositoryPathTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateRepositoryWithURL", testTemplateRepositoryWithURL),
+            ("testTemplateRepositoryWithURLTemplateExtensionEncoding", testTemplateRepositoryWithURLTemplateExtensionEncoding),
+            ("testAbsolutePartialName", testAbsolutePartialName),
+            ("testPartialNameCanNotEscapeTemplateRepositoryRootDirectory", testPartialNameCanNotEscapeTemplateRepositoryRootDirectory),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testTemplateRepositoryWithURL() {
         let testBundle = NSBundle(forClass: self.dynamicType)

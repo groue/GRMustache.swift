@@ -23,8 +23,23 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class EachFilterTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testEachFilterEnumeratesSet", testEachFilterEnumeratesSet),
+            ("testEachFilterEnumeratesNSSet", testEachFilterEnumeratesNSSet),
+            ("testEachFilterTriggersRenderFunctionsInArray", testEachFilterTriggersRenderFunctionsInArray),
+            ("testEachFilterTriggersRenderFunctionsInDictionary", testEachFilterTriggersRenderFunctionsInDictionary),
+            ("testEachFilterDoesNotMessWithItemValues", testEachFilterDoesNotMessWithItemValues),
+            ("testEachFilterDoesNotMessWithItemKeyedSubscriptFunction", testEachFilterDoesNotMessWithItemKeyedSubscriptFunction),
+            ("testEachFilterDoesNotMessWithItemRenderFunction", testEachFilterDoesNotMessWithItemRenderFunction),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testEachFilterEnumeratesSet() {
         let set = Set(["a", "b"])

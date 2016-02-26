@@ -25,6 +25,17 @@ import XCTest
 import Mustache
 
 class TemplateTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateBelongsToItsOriginTemplateRepository", testTemplateBelongsToItsOriginTemplateRepository),
+            ("testTemplateExtendBaseContextWithValue", testTemplateExtendBaseContextWithValue),
+            ("testTemplateExtendBaseContextWithProtectedValue", testTemplateExtendBaseContextWithProtectedValue),
+            ("testTemplateExtendBaseContextWithWillRenderFunction", testTemplateExtendBaseContextWithWillRenderFunction),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testTemplateBelongsToItsOriginTemplateRepository() {
         let repo = TemplateRepository()

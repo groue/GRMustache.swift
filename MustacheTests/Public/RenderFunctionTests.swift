@@ -23,8 +23,59 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class RenderFunctionTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testRenderFunctionInVariableTag", testRenderFunctionInVariableTag),
+            ("testRenderFunctionInSectionTag", testRenderFunctionInSectionTag),
+            ("testRenderFunctionInInvertedSectionTag", testRenderFunctionInInvertedSectionTag),
+            ("testRenderFunctionHTMLRenderingOfEscapedVariableTag", testRenderFunctionHTMLRenderingOfEscapedVariableTag),
+            ("testRenderFunctionHTMLRenderingOfUnescapedVariableTag", testRenderFunctionHTMLRenderingOfUnescapedVariableTag),
+            ("testRenderFunctionTextRenderingOfEscapedVariableTag", testRenderFunctionTextRenderingOfEscapedVariableTag),
+            ("testRenderFunctionTextRenderingOfUnescapedVariableTag", testRenderFunctionTextRenderingOfUnescapedVariableTag),
+            ("testRenderFunctionHTMLRenderingOfSectionTag", testRenderFunctionHTMLRenderingOfSectionTag),
+            ("testRenderFunctionTextRenderingOfSectionTag", testRenderFunctionTextRenderingOfSectionTag),
+            ("testRenderFunctionCanThrowNSErrorFromVariableTag", testRenderFunctionCanThrowNSErrorFromVariableTag),
+            ("testRenderFunctionCanThrowCustomErrorFromVariableTag", testRenderFunctionCanThrowCustomErrorFromVariableTag),
+            ("testRenderFunctionCanThrowNSErrorFromSectionTag", testRenderFunctionCanThrowNSErrorFromSectionTag),
+            ("testRenderFunctionCanThrowCustomErrorFromSectionTag", testRenderFunctionCanThrowCustomErrorFromSectionTag),
+            ("testRenderFunctionCanAccessVariableTagType", testRenderFunctionCanAccessVariableTagType),
+            ("testRenderFunctionCanAccessSectionTagType", testRenderFunctionCanAccessSectionTagType),
+            ("testRenderFunctionCanAccessInnerTemplateStringFromSectionTag", testRenderFunctionCanAccessInnerTemplateStringFromSectionTag),
+            ("testRenderFunctionCanAccessInnerTemplateStringFromVariableTag", testRenderFunctionCanAccessInnerTemplateStringFromVariableTag),
+            ("testRenderFunctionCanAccessRenderedContentFromSectionTag", testRenderFunctionCanAccessRenderedContentFromSectionTag),
+            ("testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag", testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag),
+            ("testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag", testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag),
+            ("testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag", testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag),
+            ("testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromSectionTag", testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromSectionTag),
+            ("testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack", testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack),
+            ("testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack", testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack),
+            ("testRenderFunctionCanExtendValueContextStackInVariableTag", testRenderFunctionCanExtendValueContextStackInVariableTag),
+            ("testRenderFunctionCanExtendValueContextStackInSectionTag", testRenderFunctionCanExtendValueContextStackInSectionTag),
+            ("testRenderFunctionCanExtendWillRenderStackInVariableTag", testRenderFunctionCanExtendWillRenderStackInVariableTag),
+            ("testRenderFunctionCanExtendWillRenderStackInSectionTag", testRenderFunctionCanExtendWillRenderStackInSectionTag),
+            ("testRenderFunctionTriggersWillRenderFunctions", testRenderFunctionTriggersWillRenderFunctions),
+            ("testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag", testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag),
+            ("testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag", testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag),
+            ("testArrayOfRenderFunctionsInSectionTag", testArrayOfRenderFunctionsInSectionTag),
+            ("testArrayOfRenderFunctionsInEscapedVariableTag", testArrayOfRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfHTMLRenderFunctionsInEscapedVariableTag", testArrayOfHTMLRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfHTMLRenderFunctionsInUnescapedVariableTag", testArrayOfHTMLRenderFunctionsInUnescapedVariableTag),
+            ("testArrayOfTextRenderFunctionsInEscapedVariableTag", testArrayOfTextRenderFunctionsInEscapedVariableTag),
+            ("testArrayOfTextRenderFunctionsInUnescapedVariableTag", testArrayOfTextRenderFunctionsInUnescapedVariableTag),
+            ("testArrayOfInconsistentContentTypeRenderFunctionsInVariableTag", testArrayOfInconsistentContentTypeRenderFunctionsInVariableTag),
+            ("testArrayOfInconsistentContentTypeRenderFunctionsInSectionTag", testArrayOfInconsistentContentTypeRenderFunctionsInSectionTag),
+            ("testDynamicPartial", testDynamicPartial),
+            ("testDynamicPartialIsNotHTMLEscaped", testDynamicPartialIsNotHTMLEscaped),
+            ("testDynamicPartialOverride", testDynamicPartialOverride),
+            ("testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation", testArrayOfRenderFunctionsInSectionTagDoesNotNeedExplicitInvocation),
+        ]
+    }
+// END OF GENERATED CODE
 
     enum CustomError : ErrorType {
         case Error
@@ -161,7 +212,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Variable:
-                ++variableTagDetections
+                variableTagDetections += 1
             default:
                 break
             }
@@ -176,7 +227,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
             case .Section:
-                ++sectionTagDetections
+                sectionTagDetections += 1
             default:
                 break
             }
@@ -312,7 +363,7 @@ class RenderFunctionTests: XCTestCase {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
             let context = info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
-                ++tagWillRenderCount
+                tagWillRenderCount += 1
                 return box
             }))
             let template = try! Template(string: "{{subject}}{{subject}}")
@@ -328,7 +379,7 @@ class RenderFunctionTests: XCTestCase {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
             return try info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
-                ++tagWillRenderCount
+                tagWillRenderCount += 1
                 return box
             })))
         }

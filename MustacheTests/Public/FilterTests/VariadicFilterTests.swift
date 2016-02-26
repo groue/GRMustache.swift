@@ -26,6 +26,20 @@ import Mustache
 
 class VariadicFilterTests: XCTestCase {
 
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testVariadicFilterCanAccessArguments", testVariadicFilterCanAccessArguments),
+            ("testVariadicFilterCanReturnFilter", testVariadicFilterCanReturnFilter),
+            ("testVariadicFilterCanBeRootOfScopedExpression", testVariadicFilterCanBeRootOfScopedExpression),
+            ("testVariadicFilterCanBeUsedForObjectSections", testVariadicFilterCanBeUsedForObjectSections),
+            ("testVariadicFilterCanBeUsedForEnumerableSections", testVariadicFilterCanBeUsedForEnumerableSections),
+            ("testVariadicFilterCanBeUsedForBooleanSections", testVariadicFilterCanBeUsedForBooleanSections),
+            ("testImplicitIteratorCanBeVariadicFilterArgument", testImplicitIteratorCanBeVariadicFilterArgument),
+        ]
+    }
+// END OF GENERATED CODE
+
     func testVariadicFilterCanAccessArguments() {
         let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
             return Box(boxes.map { ($0.value as? String) ?? "" }.joinWithSeparator(","))

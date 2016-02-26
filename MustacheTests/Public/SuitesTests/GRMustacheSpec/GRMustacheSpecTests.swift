@@ -25,7 +25,13 @@ import XCTest
 import Mustache
 
 class GRMustacheSpecTests: SuiteTestCase {
-    
+
+    override var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testSuite", testSuite),
+        ]
+    }
+
     func testSuite() {
         // General
         runTestsFromResource("comments.json", directory: "Tests/general")

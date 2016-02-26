@@ -25,6 +25,15 @@ import XCTest
 import Mustache
 
 class LoggerTests : XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testFullTemplateLogging", testFullTemplateLogging),
+            ("testPartialTemplateLogging", testPartialTemplateLogging),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testFullTemplateLogging() {
         var logMessages = [String]()

@@ -23,8 +23,18 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class ObjcKeyAccessTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testPropertiesAreSafeAndAvailable", testPropertiesAreSafeAndAvailable),
+            ("testMethodsAreUnsafeAndNotAvailable", testMethodsAreUnsafeAndNotAvailable),
+        ]
+    }
+// END OF GENERATED CODE
     
     class ClassWithProperties: NSObject {
         let property: String = "property"
@@ -40,7 +50,9 @@ class ObjcKeyAccessTests: XCTestCase {
         
         // test context
         let context = Context(Box(object))
+        #if OBJC // the test would not work without ObjectiveC
         XCTAssertEqual((context.mustacheBoxForKey("property").value as! String), "property")
+        #endif
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {

@@ -26,6 +26,19 @@ import Mustache
 
 class ContextValueForMustacheExpressionTests: XCTestCase {
 
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testImplicitIteratorExpression", testImplicitIteratorExpression),
+            ("testIdentifierExpression", testIdentifierExpression),
+            ("testScopedExpression", testScopedExpression),
+            ("testFilteredExpression", testFilteredExpression),
+            ("testParseError", testParseError),
+            ("testRenderError", testRenderError),
+        ]
+    }
+// END OF GENERATED CODE
+
     func testImplicitIteratorExpression() {
         let context = Context(Box("success"))
         let box = try! context.mustacheBoxForExpression(".")

@@ -23,8 +23,32 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class NSFormatterTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testFormatterIsAFilterForProcessableValues", testFormatterIsAFilterForProcessableValues),
+            ("testFormatterIsAFilterForUnprocessableValues", testFormatterIsAFilterForUnprocessableValues),
+            ("testFormatterSectionFormatsInnerVariableTags", testFormatterSectionFormatsInnerVariableTags),
+            ("testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags", testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags),
+            ("testFormatterAsSectionFormatsDeepInnerVariableTags", testFormatterAsSectionFormatsDeepInnerVariableTags),
+            ("testFormatterAsSectionDoesNotFormatInnerSectionTags", testFormatterAsSectionDoesNotFormatInnerSectionTags),
+            ("testFormatterIsTruthy", testFormatterIsTruthy),
+            ("testFormatterRendersSelfAsSomething", testFormatterRendersSelfAsSomething),
+            ("testNumberFormatterRendersNothingForMissingValue", testNumberFormatterRendersNothingForMissingValue),
+            ("testNumberFormatterRendersNothingForNSNull", testNumberFormatterRendersNothingForNSNull),
+            ("testNumberFormatterRendersNothingForNSString", testNumberFormatterRendersNothingForNSString),
+            ("testNumberFormatterRendersNothingForNSDate", testNumberFormatterRendersNothingForNSDate),
+            ("testDateFormatterRendersNothingForMissingValue", testDateFormatterRendersNothingForMissingValue),
+            ("testDateFormatterRendersNothingForNSNull", testDateFormatterRendersNothingForNSNull),
+            ("testDateFormatterRendersNothingForNSString", testDateFormatterRendersNothingForNSString),
+            ("testDateFormatterRendersNothingForNSNumber", testDateFormatterRendersNothingForNSNumber),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testFormatterIsAFilterForProcessableValues() {
         let percentFormatter = NSNumberFormatter()

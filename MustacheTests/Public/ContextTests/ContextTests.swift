@@ -25,6 +25,18 @@ import XCTest
 import Mustache
 
 class ContextTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testContextWithValueConstructor", testContextWithValueConstructor),
+            ("testContextWithProtectedObjectConstructor", testContextWithProtectedObjectConstructor),
+            ("testContextWithWillRenderFunction", testContextWithWillRenderFunction),
+            ("testTopMustacheValue", testTopMustacheValue),
+            ("testSubscript", testSubscript),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testContextWithValueConstructor() {
         let template = try! Template(string: "{{foo}}")

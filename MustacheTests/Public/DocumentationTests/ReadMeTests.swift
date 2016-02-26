@@ -23,11 +23,24 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class ReadMeTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testReadmeExample1", testReadmeExample1),
+            ("testReadmeExample2", testReadmeExample2),
+            ("testReadmeExample3", testReadmeExample3),
+            ("testReadMeExampleNSFormatter1", testReadMeExampleNSFormatter1),
+            ("testReadMeExampleNSFormatter2", testReadMeExampleNSFormatter2),
+            ("testDemo", testDemo),
+        ]
+    }
+// END OF GENERATED CODE
     
-    override func tearDown() {
-        super.tearDown()
+    func tearDown() {
         DefaultConfiguration = Configuration()
     }
     

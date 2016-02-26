@@ -23,8 +23,28 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 class TemplateFromMethodsTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testTemplateFromString", testTemplateFromString),
+            ("testTemplateFromPath", testTemplateFromPath),
+            ("testTemplateFromURL", testTemplateFromURL),
+            ("testTemplateFromResource", testTemplateFromResource),
+            ("testParserErrorFromString", testParserErrorFromString),
+            ("testParserErrorFromPath", testParserErrorFromPath),
+            ("testParserErrorFromURL", testParserErrorFromURL),
+            ("testParserErrorFromResource", testParserErrorFromResource),
+            ("testCompilerErrorFromString", testCompilerErrorFromString),
+            ("testCompilerErrorFromPath", testCompilerErrorFromPath),
+            ("testCompilerErrorFromURL", testCompilerErrorFromURL),
+            ("testCompilerErrorFromResource", testCompilerErrorFromResource),
+        ]
+    }
+// END OF GENERATED CODE
     
     func makeKeyedSubscriptFunction(string: String) -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in

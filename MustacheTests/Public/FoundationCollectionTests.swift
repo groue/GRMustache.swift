@@ -22,10 +22,47 @@
 
 
 import XCTest
-import Mustache;
+import Mustache
+import Foundation
 
 // TODO: write an equivalent test class for Swift collections
 class FoundationCollectionTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testNSArrayIsIterated", testNSArrayIsIterated),
+            ("testNSArrayIsNotIteratedWithValueForKey", testNSArrayIsNotIteratedWithValueForKey),
+            ("testNSArrayIsEmpty", testNSArrayIsEmpty),
+            ("testNSArrayCountKey", testNSArrayCountKey),
+            ("testNSArrayKeyFirst", testNSArrayKeyFirst),
+            ("testNSArrayLastKey", testNSArrayLastKey),
+            ("testArrayIsIterated", testArrayIsIterated),
+            ("testArrayIsNotIteratedWithValueForKey", testArrayIsNotIteratedWithValueForKey),
+            ("testArrayIsEmpty", testArrayIsEmpty),
+            ("testArrayCountKey", testArrayCountKey),
+            ("testArrayKeyFirst", testArrayKeyFirst),
+            ("testArrayLastKey", testArrayLastKey),
+            ("testNSSetIsIterated", testNSSetIsIterated),
+            ("testNSSetIsNotIteratedWithValueForKey", testNSSetIsNotIteratedWithValueForKey),
+            ("testNSSetIsEmpty", testNSSetIsEmpty),
+            ("testNSSetCountKey", testNSSetCountKey),
+            ("testNSSetFirstKey", testNSSetFirstKey),
+            ("testNSSetLastKey", testNSSetLastKey),
+            ("testSetIsIterated", testSetIsIterated),
+            ("testSetIsNotIteratedWithValueForKey", testSetIsNotIteratedWithValueForKey),
+            ("testSetIsEmpty", testSetIsEmpty),
+            ("testSetCountKey", testSetCountKey),
+            ("testSetFirstKey", testSetFirstKey),
+            ("testSetLastKey", testSetLastKey),
+            ("testNSOrderedSetIsIterated", testNSOrderedSetIsIterated),
+            ("testNSOrderedSetIsNotIteratedWithValueForKey", testNSOrderedSetIsNotIteratedWithValueForKey),
+            ("testNSOrderedSetCountKey", testNSOrderedSetCountKey),
+            ("testNSOrderedSetKeyFirst", testNSOrderedSetKeyFirst),
+            ("testNSOrderedSetLastKey", testNSOrderedSetLastKey),
+        ]
+    }
+// END OF GENERATED CODE
     
     var boxedArray: MustacheBox!
     var boxedNSArray: MustacheBox!
@@ -33,7 +70,7 @@ class FoundationCollectionTests: XCTestCase {
     var boxedNSSet: MustacheBox!
     var boxedNSOrderedSet: MustacheBox!
     
-    override func setUp() {
+    func setUp() {
         boxedArray = Box(["collection": [["key": "value"]]])
         boxedNSArray = {
             let array = NSMutableArray()

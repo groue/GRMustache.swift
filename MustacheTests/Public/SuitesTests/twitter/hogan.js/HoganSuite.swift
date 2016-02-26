@@ -25,7 +25,15 @@ import XCTest
 import Mustache
 
 class HoganSuite: SuiteTestCase {
-    
+
+    override var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testSuite", testSuite),
+            ("testLambdaExpressionInInheritedTemplateSubsections", testLambdaExpressionInInheritedTemplateSubsections),
+            ("testBlah", testBlah)
+        ]
+    }
+
     func testSuite() {
         // This suite contains template inheritance tests taken from
         // https://github.com/twitter/hogan.js/blob/master/test/index.js

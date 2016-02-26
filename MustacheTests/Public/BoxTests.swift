@@ -23,6 +23,7 @@
 
 import XCTest
 import Mustache
+import Foundation
 
 struct HashableBoxable : MustacheBoxable, Hashable {
     let int: Int
@@ -35,6 +36,33 @@ func ==(lhs: HashableBoxable, rhs: HashableBoxable) -> Bool {
 }
 
 class BoxTests: XCTestCase {
+
+// GENERATED: allTests required for Swift 3.0
+    var allTests : [(String, () throws -> Void)] {
+        return [
+            ("testCustomValueExtraction", testCustomValueExtraction),
+            ("testSetOfInt", testSetOfInt),
+            ("testSetOfMustacheBoxable", testSetOfMustacheBoxable),
+            ("testDictionaryOfInt", testDictionaryOfInt),
+            ("testDictionaryOfOptionalInt", testDictionaryOfOptionalInt),
+            ("testArrayOfInt", testArrayOfInt),
+            ("testArrayOfOptionalInt", testArrayOfOptionalInt),
+            ("testArrayOfArrayOfInt", testArrayOfArrayOfInt),
+            ("testArrayOfArrayOfArrayOfInt", testArrayOfArrayOfArrayOfInt),
+            ("testArrayOfArrayOfArrayOfDictionaryOfInt", testArrayOfArrayOfArrayOfDictionaryOfInt),
+            ("testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt", testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt),
+            ("testRange", testRange),
+            ("testArrayValueForArray", testArrayValueForArray),
+            ("testArrayValueForNSArray", testArrayValueForNSArray),
+            ("testArrayValueForNSOrderedSet", testArrayValueForNSOrderedSet),
+            ("testArrayValueForCollectionOfOne", testArrayValueForCollectionOfOne),
+            ("testArrayValueForRange", testArrayValueForRange),
+            ("testDictionaryValueForNSDictionary", testDictionaryValueForNSDictionary),
+            ("testBoxNSArrayOfMustacheBoxable", testBoxNSArrayOfMustacheBoxable),
+            ("testBoxNSArrayOfNonMustacheBoxable", testBoxNSArrayOfNonMustacheBoxable),
+        ]
+    }
+// END OF GENERATED CODE
     
     func testCustomValueExtraction() {
         // Test that one can extract a custom value from MustacheBox.
