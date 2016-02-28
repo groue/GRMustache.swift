@@ -77,13 +77,13 @@ extension StandardLibrary {
                 willRender: { (tag, box) in
                     if tag.type == .Section {
                         self.log("\(self.indentationPrefix)\(tag) will render \(box.valueDescription)")
-                        self.indentationLevel++
+                        self.indentationLevel += 1
                     }
                     return box
                 },
                 didRender: { (tag, box, string) in
                     if tag.type == .Section {
-                        self.indentationLevel--
+                        self.indentationLevel -= 1
                     }
                     if let string = string {
                         self.log("\(self.indentationPrefix)\(tag) did render \(box.valueDescription) as \(string.debugDescription)")
