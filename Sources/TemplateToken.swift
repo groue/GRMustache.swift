@@ -22,7 +22,7 @@
 
 
 struct TemplateToken {
-    enum Type {
+    enum `Type` {
         /// text
         case Text(text: String)
         
