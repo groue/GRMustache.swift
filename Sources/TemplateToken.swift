@@ -22,7 +22,7 @@
 
 
 struct TemplateToken {
-    enum Type {
+    enum `Type` {
         /// text
         case Text(text: String)
         
@@ -60,7 +60,7 @@ struct TemplateToken {
         case Block(content: String)
     }
     
-    let type: Type
+    let type: `Type`
     let lineNumber: Int
     let templateID: TemplateID?
     let templateString: String

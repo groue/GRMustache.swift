@@ -368,10 +368,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
     }
     
     private class Scope {
-        let type: Type
+        let type: `Type`
         var templateASTNodes: [TemplateASTNode]
         
-        init(type:Type) {
+        init(type:`Type`) {
             self.type = type
             self.templateASTNodes = []
         }
@@ -380,7 +380,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             templateASTNodes.append(node)
         }
         
-        enum Type {
+        enum `Type` {
             case Root
             case Section(openingToken: TemplateToken, expression: Expression)
             case InvertedSection(openingToken: TemplateToken, expression: Expression)
