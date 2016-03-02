@@ -25,7 +25,7 @@ import Foundation
 
 final class ExpressionParser {
     
-    func parse(string: String, inout empty outEmpty: Bool) throws -> Expression {
+    func parse(string: String,  empty outEmpty: inout Bool) throws -> Expression {
         enum State {
             // error
             case Error(String)
