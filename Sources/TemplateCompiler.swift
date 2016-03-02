@@ -389,7 +389,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    private func blockNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+    private func blockNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if blockName.characters.count == 0 {
@@ -402,7 +402,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         return blockName
     }
     
-    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
+    private func partialNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
         let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
         if partialName.characters.count == 0 {
