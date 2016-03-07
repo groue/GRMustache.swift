@@ -317,7 +317,7 @@ Template:
 
 ```mustache
 {{# friends }}
-- {{# name }}
+- {{ name }}
 {{/ friends }}
 ```
 
