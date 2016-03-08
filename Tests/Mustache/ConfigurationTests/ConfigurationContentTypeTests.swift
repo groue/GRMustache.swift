@@ -59,7 +59,7 @@ class ConfigurationContentTypeTests: XCTestCase {
     }
 // END OF GENERATED CODE
     
-    func tearDown() {
+    override func tearDown() {
         DefaultConfiguration = Configuration()
     }
     
