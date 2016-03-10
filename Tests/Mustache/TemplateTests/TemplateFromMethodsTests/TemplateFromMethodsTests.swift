@@ -94,7 +94,7 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     func extensionOfTemplateFileInRendering(rendering: String) -> String? {
-        return (valueForKey("fileName", inRendering: rendering) as! NSString?)?.pathExtension
+        return ((valueForKey("fileName", inRendering: rendering) as? String)?.bridge())?.pathExtension
     }
     
     func testTemplateFromString() {

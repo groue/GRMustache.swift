@@ -124,7 +124,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests", ofType: nil)!
-        let repo = TemplateRepository(directoryPath: (directoryPath as NSString).stringByAppendingPathComponent("partials"))
+        let repo = TemplateRepository(directoryPath: directoryPath.bridge().stringByAppendingPathComponent("partials"))
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()

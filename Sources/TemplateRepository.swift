@@ -465,7 +465,7 @@ final public class TemplateRepository {
             
             let templateFilename: String
             if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
-                templateFilename = (normalizedName as NSString).stringByAppendingPathExtension(templateExtension)!
+                templateFilename = normalizedName.bridge().stringByAppendingPathExtension(templateExtension)!
             } else {
                 templateFilename = normalizedName
             }
@@ -519,13 +519,12 @@ final public class TemplateRepository {
                 normalizedName = name
                 normalizedBaseTemplateID = baseTemplateID
             }
-            
             if normalizedName.isEmpty {
                 return normalizedBaseTemplateID
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = (normalizedBaseTemplateID as NSString).stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
+                let relativePath = normalizedBaseTemplateID.bridge().stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
                 return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.pathForResource(normalizedName, ofType: templateExtension)
@@ -533,7 +532,7 @@ final public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfFile: templateID, encoding: encoding) as String
+            return try NSString(contentsOfFile: templateID, encoding: encoding).bridge()
         }
     }
 }

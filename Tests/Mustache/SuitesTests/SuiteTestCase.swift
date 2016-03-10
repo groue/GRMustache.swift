@@ -108,15 +108,15 @@ class SuiteTestCase: XCTestCase {
             if let partialsDictionary = partialsDictionary {
                 if let templateName = templateName {
                     var templates: [Template] = []
-                    let templateExtension = (templateName as NSString).pathExtension
+                    let templateExtension = templateName.bridge().pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         do {
-                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -124,12 +124,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -228,7 +228,7 @@ class SuiteTestCase: XCTestCase {
                 do {
                     let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))
                     let errorMessage = "\(error)"
-                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, (errorMessage as NSString).length))
+                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage.bridge().length))
                     if matches.count == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
@@ -256,14 +256,14 @@ class SuiteTestCase: XCTestCase {
             let fm = NSFileManager.defaultManager()
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
-                let templatesPath = ((NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("GRMustacheTest") as NSString).stringByAppendingPathComponent("encoding_\(encoding)")
+                let templatesPath = NSTemporaryDirectory().bridge().stringByAppendingPathComponent("GRMustacheTest").bridge().stringByAppendingPathComponent("encoding_\(encoding)")
                 if fm.fileExistsAtPath(templatesPath) {
                     try! fm.removeItemAtPath(templatesPath)
                 }
                 for (partialName, partialString) in partialsDictionary {
-                    let partialPath = (templatesPath as NSString).stringByAppendingPathComponent(partialName)
+                    let partialPath = templatesPath.bridge().stringByAppendingPathComponent(partialName)
                     do {
-                        try fm.createDirectoryAtPath((partialPath as NSString).stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
+                        try fm.createDirectoryAtPath(partialPath.bridge().stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
                         if !fm.createFileAtPath(partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []
