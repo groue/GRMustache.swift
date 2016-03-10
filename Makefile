@@ -37,7 +37,13 @@ endif
 	@echo --- Invoking swift build
 	swift build $(CC_FLAGS) $(SWIFTC_FLAGS) $(LINKER_FLAGS)
 
-test: build copytestresources
+Tests/LinuxMain.swift:
+ifeq ($(UNAME), Linux)
+	@echo --- Generating $@
+	bash generate_linux_main.sh
+endif
+
+test: build copytestresources Tests/LinuxMain.swift
 	@echo --- Invoking swift test
 	swift test
 
