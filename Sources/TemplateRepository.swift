@@ -490,11 +490,7 @@ final public class TemplateRepository {
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
             if let nsURL = NSURL(string: templateID) {
-                do {
-                    return try NSString(contentsOfURL: nsURL, encoding: encoding).bridge()
-                } catch {
-                    return ""
-                }
+                return try NSString(contentsOfURL: nsURL, encoding: encoding).bridge()
             }
             return ""
         }
