@@ -27,7 +27,15 @@ import Foundation
 
 class LocalizerTests: XCTestCase {
 
-// GENERATED: allTests required for Swift 3.0
+    #if os(Linux)
+    // do not run these tests until the following feature is implemented
+    // https://bugs.swift.org/browse/SR-929
+    //TODO remove this ifdef once the feature is implemented
+    var allTests : [(String, () throws -> Void)] {
+        return []
+    }
+    #else
+    // GENERATED: allTests required for Swift 3.0
     var allTests : [(String, () throws -> Void)] {
         return [
             ("testLocalizableBundle", testLocalizableBundle),
@@ -43,7 +51,8 @@ class LocalizerTests: XCTestCase {
             ("testLocalizerRendersUnescapedValuesOfTextTemplates", testLocalizerRendersUnescapedValuesOfTextTemplates),
         ]
     }
-// END OF GENERATED CODE
+    // END OF GENERATED CODE
+    #endif
     
     lazy var localizableBundle: NSBundle = NSBundle(path: NSBundle(forClass: self.dynamicType).pathForResource("LocalizerTestsBundle", ofType: nil)!)!
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
