@@ -175,7 +175,7 @@ final public class TemplateRepository {
     - returns: A new TemplateRepository.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: URLDataSource(baseURL: NSURL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
     
     /**

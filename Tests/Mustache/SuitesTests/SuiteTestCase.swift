@@ -124,12 +124,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                            let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                                    try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -154,12 +154,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                            let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                                    try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
