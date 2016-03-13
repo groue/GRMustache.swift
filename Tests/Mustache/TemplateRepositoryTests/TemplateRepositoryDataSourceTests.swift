@@ -85,13 +85,17 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
+        #if os(Linux) // catching NSError not yet implemented - see https://bugs.swift.org/browse/SR-585
+            //TODO remove this ifdef once the issue is resolved
+        #else
         do {
             try repo.template(string: "{{>CustomNSError}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "CustomNSError")
         }
+        #endif
         
         do {
             try repo.template(string: "{{>CustomError}}")

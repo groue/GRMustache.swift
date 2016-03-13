@@ -264,6 +264,9 @@ class HookFunctionTests: XCTestCase {
     }
     
     func testDidRenderFunctionObservesRenderingNSError() {
+        #if os(Linux) // the test causes segmentation fault on Linux due to the following issue https://bugs.swift.org/browse/SR-585
+            //TODO remove this ifdef once the issue is resolved
+         #else
         var failedRendering = false
         let didRender = { (tag: Tag, box: MustacheBox, string: String?) in
             failedRendering = (string == nil)
@@ -282,6 +285,7 @@ class HookFunctionTests: XCTestCase {
             XCTAssertEqual(error.code, 1)
         }
         XCTAssertTrue(failedRendering)
+        #endif
     }
     
     func testDidRenderFunctionObservesRenderingCustomError() {

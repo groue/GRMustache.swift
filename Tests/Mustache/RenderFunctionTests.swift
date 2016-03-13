@@ -154,6 +154,9 @@ class RenderFunctionTests: XCTestCase {
     }
     
     func testRenderFunctionCanThrowNSErrorFromVariableTag() {
+        #if os(Linux) // the test causes segmentation fault on Linux due to the following issue https://bugs.swift.org/browse/SR-585
+            //TODO remove this ifdef once the issue is resolved
+        #else
         let errorDomain = "ClusterTests"
         let render = { (info: RenderingInfo) -> Rendering in
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
@@ -164,6 +167,7 @@ class RenderFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
         }
+        #endif
     }
     
     func testRenderFunctionCanThrowCustomErrorFromVariableTag() {
@@ -181,6 +185,9 @@ class RenderFunctionTests: XCTestCase {
     }
     
     func testRenderFunctionCanThrowNSErrorFromSectionTag() {
+        #if os(Linux) // the test causes segmentation fault on Linux due to the following issue https://bugs.swift.org/browse/SR-585
+            //TODO remove this ifdef once the issue is resolved
+        #else
         let errorDomain = "ClusterTests"
         let render = { (info: RenderingInfo) -> Rendering in
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
@@ -191,6 +198,7 @@ class RenderFunctionTests: XCTestCase {
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
         }
+        #endif
     }
     
     func testRenderFunctionCanThrowCustomErrorFromSectionTag() {

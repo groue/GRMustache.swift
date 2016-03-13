@@ -27,6 +27,17 @@ import Foundation
 
 class TemplateFromMethodsTests: XCTestCase {
 
+    #if os(Linux) // do not run tests due to the following issue https://bugs.swift.org/browse/SR-585
+        //TODO remove this ifdef once the issue is resolved
+        var allTests : [(String, () throws -> Void)] {
+         return [
+             ("testTemplateFromString", testTemplateFromString),
+             ("testTemplateFromPath", testTemplateFromPath),
+             ("testTemplateFromURL", testTemplateFromURL),
+             ("testTemplateFromResource", testTemplateFromResource),
+         ]
+       }
+        #else
 // GENERATED: allTests required for Swift 3.0
     var allTests : [(String, () throws -> Void)] {
         return [
@@ -45,7 +56,7 @@ class TemplateFromMethodsTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
+    #endif
     func makeKeyedSubscriptFunction(string: String) -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in
             if key == "string" {
