@@ -50,7 +50,7 @@ class EachFilterTests: XCTestCase {
     }
     
     func testEachFilterEnumeratesNSSet() {
-        let set = NSSet(objects: "a", "b")
+        let set = NSSet(array: [NSString(string: "a"), NSString(string: "b")])
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = try! template.render(Box(["set": set]))
