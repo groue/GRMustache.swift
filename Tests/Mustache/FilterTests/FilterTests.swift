@@ -340,6 +340,10 @@ class FilterTests: XCTestCase {
     }
     
     func testFilterCanThrowCustomNSError() {
+        #if os(Linux) // the test causes segmentation fault on Linux due to the following issue https://bugs.swift.org/browse/SR-585
+              //TODO remove this ifdef once the issue is resolved
+            return
+        #else
         let filter = Filter { (box: MustacheBox) in
             throw NSError(domain: "CustomErrorDomain", code: 0, userInfo: [NSLocalizedDescriptionKey: "CustomMessage"])
         }
@@ -360,6 +364,7 @@ class FilterTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
+       #endif
     }
     
     func testFilterCanThrowCustomError() {
