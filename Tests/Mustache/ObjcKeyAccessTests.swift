@@ -42,6 +42,7 @@ class ObjcKeyAccessTests: XCTestCase {
     }
     
     func testPropertiesAreSafeAndAvailable() {
+        #if OBJC // the test would not work without ObjectiveC
         let object = ClassWithProperties()
     
         // test setup
@@ -50,12 +51,13 @@ class ObjcKeyAccessTests: XCTestCase {
         
         // test context
         let context = Context(Box(object))
-        #if OBJC // the test would not work without ObjectiveC
+
         XCTAssertEqual((context.mustacheBoxForKey("property").value as! String), "property")
         #endif
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
+        #if OBJC // the test would not work without ObjectiveC
         let object = ClassWithProperties()
         
         // test setup
@@ -65,5 +67,6 @@ class ObjcKeyAccessTests: XCTestCase {
         // test context
         let context = Context(Box(object))
         XCTAssertTrue(context.mustacheBoxForKey("method").value == nil)
+        #endif
     }
 }
