@@ -916,39 +916,45 @@ private func BoxAny(object: Any?) -> MustacheBox {
         return Box()
     }
 
-    switch object {
-    case let boxable as MustacheBoxable:
+    if let boxable = object as? MustacheBoxable {
         return boxable.mustacheBox
-//TODO handle Arrays and Dictionaries by using reflection (Mirror)
-    default:
-        // relevant MustacheBox.
-        // 
-        // Yet we can not prevent the user from trying to box it, because the
-        // Thing class adopts the Any protocol, just as all Swift classes.
-        //
-        //     class Thing { }
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
-        //     Box(Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAny(Thing())
-        //
-        //     // Foundation collections can also contain unsupported classes:
-        //     let array = NSArray(object: Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     Box(array)
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Any)'
-        //     Box(array[0])
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAny(array[0])
-        
-        NSLog("Mustache.BoxAny(): value `\(object)` does not conform to MustacheBoxable and cannot be boxed: it is discarded.")
-        return Box()
     }
+
+    let mirror = Mirror(reflecting: object)
+    if  mirror.displayStyle == .Collection  {
+        var array = [Any]()
+        for (_, element) in mirror.children {
+            array.append(element)
+        }
+        return Box(array)
+    }
+
+    //
+    // Yet we can not prevent the user from trying to box it, because the
+    // Thing class adopts the Any protocol, just as all Swift classes.
+    //
+    //     class Thing { }
+    //
+    //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
+    //     Box(Thing())
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     BoxAny(Thing())
+    //
+    //     // Foundation collections can also contain unsupported classes:
+    //     let array = NSArray(object: Thing())
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     Box(array)
+    //
+    //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Any)'
+    //     Box(array[0])
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     BoxAny(array[0])
+
+    NSLog("Mustache.BoxAny(): value `\(object)` does not conform to MustacheBoxable and cannot be boxed: it is discarded.")
+    return Box()
 }
 
 
