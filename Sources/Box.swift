@@ -1355,8 +1355,8 @@ public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.
     }
 }
 
-// array of collections
-public func Box<C: CollectionType where C.Generator.Element: CollectionType, C.Index: BidirectionalIndexType,
+// any array, other than array of MustacheBoxables
+public func Box<C: CollectionType where C.Index: BidirectionalIndexType,
                 C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { (element: C.Generator.Element) -> MustacheBox in return BoxAny(element) })
