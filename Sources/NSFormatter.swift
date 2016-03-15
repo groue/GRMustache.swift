@@ -28,8 +28,6 @@ import Foundation
 GRMustache lets you use `NSFormatter` to format your values.
 */
 
-extension NSFormatter {
-    
     /**
     `NSFormatter` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates.
@@ -85,13 +83,18 @@ extension NSFormatter {
     dates: you can safely mix various data types in a section controlled by
     those well-behaved formatters.
     */
-    public override var mustacheBox: MustacheBox {
+
+    public func Box(formatter: NSFormatter?) -> MustacheBox {
+        guard let formatter = formatter else {
+            return Box()
+        }
+
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering.
         
         return MustacheBox(
             // Let user extract the formatter out of the box:
-            value: self,
+            value: formatter,
             
             // This function is used for evaluating `formatter(x)` expressions.
             filter: Filter { (box: MustacheBox) in
@@ -102,7 +105,7 @@ extension NSFormatter {
                 // > right class, return a properly formatted and, if necessary,
                 // > localized string.
                 if let object = box.value as? NSObject {
-                    return Box(self.stringForObjectValue(object))
+                    return Box(formatter.stringForObjectValue(object))
                 } else {
                     // Not the correct class: return nil, i.e. empty Box.
                     return Box()
@@ -129,7 +132,7 @@ extension NSFormatter {
                     // So nil result means that object is not of the correct class. Leave
                     // it untouched.
                     
-                    if let object = box.value as? NSObject, let formatted = self.stringForObjectValue(object) {
+                    if let object = box.value as? NSObject, let formatted = formatter.stringForObjectValue(object) {
                         return Box(formatted)
                     } else {
                         return box
@@ -145,4 +148,3 @@ extension NSFormatter {
                 }
         })
     }
-}

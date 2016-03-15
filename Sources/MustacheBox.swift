@@ -54,59 +54,7 @@ feed templates:
 implementation detail that is enforced by the Swift 2 language itself. This may
 change in the future: do not rely on it.
 */
-final public class MustacheBox : NSObject {
-    
-    // IMPLEMENTATION NOTE
-    //
-    // Why is MustacheBox a subclass of NSObject, and not, say, a Swift struct?
-    //
-    // Swift does not allow a class extension to override a method that is
-    // inherited from an extension to its superclass and incompatible with
-    // Objective-C.
-    //
-    // If MustacheBox were a pure Swift type, this Swift limit would prevent
-    // NSObject subclasses such as NSNull, NSNumber, etc. to override
-    // MustacheBoxable.mustacheBox, and provide custom rendering behavior.
-    //
-    // For an example of this limitation, see example below:
-    //
-    //     import Foundation
-    //     
-    //     // A type that is not compatible with Objective-C
-    //     struct MustacheBox { }
-    //     
-    //     // So far so good
-    //     extension NSObject {
-    //         var mustacheBox: MustacheBox { return MustacheBox() }
-    //     }
-    //     
-    //     // Error: declarations in extensions cannot override yet
-    //     extension NSNull {
-    //         override var mustacheBox: MustacheBox { return MustacheBox() }
-    //     }
-    //
-    // This problem does not apply to Objc-C compatible protocols:
-    //
-    //     import Foundation
-    //     
-    //     // So far so good
-    //     extension NSObject {
-    //         var prop: String { return "NSObject" }
-    //     }
-    //     
-    //     // No error
-    //     extension NSNull {
-    //         override var prop: String { return "NSNull" }
-    //     }
-    //     
-    //     NSObject().prop // "NSObject"
-    //     NSNull().prop   // "NSNull"
-    //
-    // In order to let the user easily override NSObject.mustacheBox, we had to
-    // keep its return type compatible with Objective-C, that is to say make
-    // MustacheBox a subclass of NSObject.
-    
-
+final public class MustacheBox {
     // -------------------------------------------------------------------------
     // MARK: - The boxed value
     
@@ -440,7 +388,19 @@ final public class MustacheBox : NSObject {
     
     let keyedSubscript: KeyedSubscriptFunction?
     let converter: Converter?
-    
+
+        /// A textual representation of `self`.
+    public var description: String {
+        let facets = self.facetsDescriptions
+        switch facets.count {
+        case 0:
+            return "MustacheBox(Empty)"
+        default:
+            let content = facets.joinWithSeparator(",")
+            return "MustacheBox(\(content))"
+        }
+    }
+
     init(
         converter: Converter?,
         value: Any? = nil,
@@ -463,7 +423,6 @@ final public class MustacheBox : NSObject {
         if let render = render {
             self.hasCustomRenderFunction = true
             self.render = render
-            super.init()
         } else {
             // The default render function: it renders {{variable}} tags as the
             // boxed value, and {{#section}}...{{/}} tags by adding the box to
@@ -476,7 +435,6 @@ final public class MustacheBox : NSObject {
             // initialized"
             self.render = { (_) in return Rendering("") }
             self.hasCustomRenderFunction = false
-            super.init()
             self.render = { [unowned self] (info: RenderingInfo) in
                 
                 // Default rendering depends on the tag type:
@@ -517,20 +475,6 @@ final public class MustacheBox : NSObject {
         {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
-        }
-    }
-}
-
-extension MustacheBox {
-    /// A textual representation of `self`.
-    override public var description: String {
-        let facets = self.facetsDescriptions
-        switch facets.count {
-        case 0:
-            return "MustacheBox(Empty)"
-        default:
-            let content = facets.joinWithSeparator(",")
-            return "MustacheBox(\(content))"
         }
     }
 }
