@@ -286,7 +286,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! NSArray
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { ($0.value as! NSString).bridge() }, ["foo"])
+        XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
     }
     
     func testArrayValueForNSOrderedSet() {
@@ -295,7 +295,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! NSOrderedSet
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { ($0.value as! NSString).bridge() }, ["foo"])
+        XCTAssertEqual(extractedArray.map { $0.value as! String}, ["foo"])
     }
     
     func testArrayValueForCollectionOfOne() {
@@ -323,7 +323,7 @@ class BoxTests: XCTestCase {
         let extractedValue = box.value as! NSDictionary
         XCTAssertEqual(extractedValue, originalValue)
         let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
-        XCTAssertEqual((extractedDictionary["key"]!.value as! NSString).bridge(), "value")
+        XCTAssertEqual((extractedDictionary["key"]!.value as! String), "value")
     }
     
     func testBoxNSArrayOfMustacheBoxable() {
