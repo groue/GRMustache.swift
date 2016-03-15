@@ -21,9 +21,7 @@
 // THE SOFTWARE.
 
 import Foundation
-#if !os(Linux)
 import Bridging
-#endif
 
 // Note on changes for Swift 3.0 on Linux
 // It is not possible to override methods in extensions. Due to that, making
