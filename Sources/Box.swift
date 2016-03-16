@@ -937,6 +937,18 @@ private func BoxAny(object: Any?) -> MustacheBox {
         }
     }
 
+    if mirror.displayStyle == .Dictionary  {
+        var resultDictionary = [String: Any]()
+        for (_, element) in mirror.children {
+            let elementMirror = Mirror(reflecting: element)
+            if elementMirror.displayStyle == .Tuple {
+                if let key = elementMirror.descendant(0) as? String, value = elementMirror.descendant(1) {
+                    resultDictionary[key] = value
+                }
+            }
+        }
+        return Box(resultDictionary)
+    }
     //
     // Yet we can not prevent the user from trying to box it, because the
     // Thing class adopts the Any protocol, just as all Swift classes.
