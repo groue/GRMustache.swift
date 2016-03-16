@@ -931,7 +931,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
     }
 
     // hanlde Optionals and other enums
-    if  mirror.displayStyle == .Enum  {
+    if mirror.displayStyle == .Enum  {
         for (_, element) in mirror.children {
             return BoxAny(element)
         }
