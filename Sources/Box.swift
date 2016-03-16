@@ -929,6 +929,13 @@ private func BoxAny(object: Any?) -> MustacheBox {
         return Box(array)
     }
 
+    // hanlde Optionals and other enums
+    if  mirror.displayStyle == .Enum  {
+        for (_, element) in mirror.children {
+            return BoxAny(element)
+        }
+    }
+
     //
     // Yet we can not prevent the user from trying to box it, because the
     // Thing class adopts the Any protocol, just as all Swift classes.
