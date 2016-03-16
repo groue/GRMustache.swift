@@ -29,7 +29,7 @@ class LocalizerTests: XCTestCase {
 
     #if os(Linux)
     // do not run these tests until the following feature is implemented
-    // https://bugs.swift.org/browse/SR-929
+    // https://bugs.swift.org/browse/SR-957
     //TODO remove this ifdef once the feature is implemented
     var allTests : [(String, () throws -> Void)] {
         return []

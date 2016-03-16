@@ -258,7 +258,8 @@ extension StandardLibrary {
         
         private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
             #if os(Linux)
-                // see issue https://bugs.swift.org/browse/SR-929
+                // see issue https://bugs.swift.org/browse/SR-957
+                // before the issue is resolved - manually replace %@ string one by one by NSLocalizedString
                 //TODO remove this ifdef once the feature is implemented
                 if args.count == 0 {
                     return format
