@@ -921,7 +921,8 @@ private func BoxAny(object: Any?) -> MustacheBox {
     }
 
     let mirror = Mirror(reflecting: object)
-    if  mirror.displayStyle == .Collection  {
+    if mirror.displayStyle == .Collection ||
+         mirror.displayStyle == .Set {
         var array = [Any]()
         for (_, element) in mirror.children {
             array.append(element)
