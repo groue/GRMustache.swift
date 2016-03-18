@@ -1643,7 +1643,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
     dictionary, whatever the actual type of the raw boxed value.
     */
     public func Box(value: NSDictionary?) -> MustacheBox {
-       guard let value = value else {
+        guard let value = value else {
             return Box()
         }
         #if os(Linux)
@@ -1656,15 +1656,15 @@ GRMustache provides built-in support for rendering `NSDictionary`.
                 }
             }
         #else
-             let dictionary = GeneratorSequence(NSFastGenerator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
-                    var boxDictionary = boxDictionary
-                    if let key = key as? String {
-                        boxDictionary[key] = BoxAny(value[key])
-                    } else {
-                        NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
-                    }
-                    return boxDictionary
-              })
+            let dictionary = GeneratorSequence(NSFastGenerator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+                var boxDictionary = boxDictionary
+                if let key = key as? String {
+                    boxDictionary[key] = BoxAny(value[key])
+                } else {
+                    NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
+                }
+                return boxDictionary
+            })
         #endif
         return MustacheBox(
             converter: MustacheBox.Converter(dictionaryValue: dictionary),
