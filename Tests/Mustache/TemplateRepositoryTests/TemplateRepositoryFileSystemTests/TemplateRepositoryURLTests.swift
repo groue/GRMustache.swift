@@ -39,7 +39,13 @@ class TemplateRepositoryURLTests: XCTestCase {
 // END OF GENERATED CODE
     
     func testTemplateRepositoryWithURL() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+             let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
         let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         var template: Template
@@ -69,7 +75,13 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+             let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
         var URL: NSURL
         var repo: TemplateRepository
         var template: Template
@@ -113,7 +125,14 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testAbsolutePartialName() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+            let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         let template = try! repo.template(named: "base")
@@ -122,7 +141,13 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+             let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
         let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL.URLByAppendingPathComponent("partials"))
         

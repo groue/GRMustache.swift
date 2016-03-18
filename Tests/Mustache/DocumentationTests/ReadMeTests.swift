@@ -45,7 +45,14 @@ class ReadMeTests: XCTestCase {
     }
     
     func testReadmeExample1() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+             // issue https://bugs.swift.org/browse/SR-953
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+            let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
         let data: [String: Any] = [
             "name": "Chris",
@@ -80,8 +87,13 @@ class ReadMeTests: XCTestCase {
         
         
         // I have 3 cats.
-        
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+             // issue https://bugs.swift.org/browse/SR-953
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+            let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = try! template.render(Box(data))

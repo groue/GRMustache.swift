@@ -67,7 +67,15 @@ class TemplateFromMethodsTests: XCTestCase {
         }
     }
     
-    var testBundle: NSBundle { return NSBundle(forClass: self.dynamicType) }
+    var testBundle: NSBundle {
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+        //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            return NSBundle(path: ".build/debug")!
+        #else
+        return NSBundle(forClass: self.dynamicType)
+        #endif
+    }
     
     let templateName = "TemplateFromMethodsTests"
     var templateURL: NSURL { return testBundle.URLForResource(templateName, withExtension: "mustache")! }

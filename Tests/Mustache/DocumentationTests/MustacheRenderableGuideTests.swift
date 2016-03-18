@@ -135,7 +135,14 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    let template = try! Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
+                    #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+                        //TODO remove this ifdef once NSBundle(forClass:) is implemented
+                        // issue https://bugs.swift.org/browse/SR-953
+                    let testBundle = NSBundle(path: ".build/debug")!
+                    #else
+                    let testBundle = NSBundle(forClass: MustacheRenderableGuideTests.self)
+                    #endif
+                    let template = try! Template(named: "Person", bundle: testBundle)
                     let context = info.context.extendedContext(Box(self))
                     return try template.render(context)
                 }
@@ -161,7 +168,14 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    let template = try! Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
+                    #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+                        //TODO remove this ifdef once NSBundle(forClass:) is implemented
+                        // issue https://bugs.swift.org/browse/SR-953
+                    let testBundle = NSBundle(path: ".build/debug")!
+                    #else
+                    let testBundle = NSBundle(forClass: MustacheRenderableGuideTests.self)
+                    #endif
+                    let template = try! Template(named: "Movie", bundle: testBundle)
                     let context = info.context.extendedContext(Box(self))
                     return try template.render(context)
                 }

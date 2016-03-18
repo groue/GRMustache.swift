@@ -37,10 +37,17 @@ class TemplateRepositoryBundleTests: XCTestCase {
 // END OF GENERATED CODE
     
     func testTemplateRepositoryWithBundle() {
-        let repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType))
         var template: Template
         var rendering: String
         
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let repo = TemplateRepository(bundle: NSBundle(path: ".build/debug")!)
+        #else
+            let repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType))
+        #endif
+
         do {
             try repo.template(named: "notFound")
             XCTAssert(false)
@@ -61,9 +68,17 @@ class TemplateRepositoryBundleTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithBundleTemplateExtensionEncoding() {
-        var repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "text", encoding: NSUTF8StringEncoding)
         var template: Template
         var rendering: String
+
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-794
+            let testBundle = NSBundle(path: ".build/debug")!
+        #else
+            let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
+        var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: NSUTF8StringEncoding)
         
         do {
             try repo.template(named: "notFound")
@@ -79,7 +94,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
-        repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(bundle: testBundle, templateExtension: "", encoding: NSUTF8StringEncoding)
         
         do {
             try repo.template(named: "notFound")

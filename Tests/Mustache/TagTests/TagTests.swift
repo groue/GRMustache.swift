@@ -108,7 +108,15 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+            let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -132,7 +140,14 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+            let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -156,7 +171,15 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+            let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -180,7 +203,15 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+            let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -211,7 +242,15 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+            let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
+
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -242,7 +281,13 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // issue https://bugs.swift.org/browse/SR-953
+            let bundle = NSBundle(path: ".build/debug")!
+        #else
+             let bundle = NSBundle(forClass: self.dynamicType)
+        #endif
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(Box(willRender))

@@ -35,7 +35,13 @@ class SuiteTestCase: XCTestCase {
 // END OF GENERATED CODE
     
     func runTestsFromResource(name: String, directory: String) {
+        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+            // https://bugs.swift.org/browse/SR-953
+        let testBundle = NSBundle(path: ".build/debug")!
+        #else
         let testBundle = NSBundle(forClass: self.dynamicType)
+        #endif
         let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
         if path == nil {
             XCTFail("No such test suite \(directory)/\(name)")
