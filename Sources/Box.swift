@@ -1669,7 +1669,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
         return MustacheBox(
             converter: MustacheBox.Converter(dictionaryValue: dictionary),
             value: value,
-            keyedSubscript: { (key: String) in BoxAny(dictionary[key])})
+            keyedSubscript: { (key: String) in BoxAny(value[key])})
     }
 
 // =============================================================================
