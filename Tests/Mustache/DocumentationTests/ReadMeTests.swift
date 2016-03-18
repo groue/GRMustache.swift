@@ -47,7 +47,7 @@ class ReadMeTests: XCTestCase {
     func testReadmeExample1() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
-        let data = [
+        let data: [String: Any] = [
             "name": "Chris",
             "value": 10000,
             "taxed_value": 10000 - (10000 * 0.4),
@@ -153,7 +153,7 @@ class ReadMeTests: XCTestCase {
         let template = try! Template(string: templateString)
         template.registerInBaseContext("format", Box(dateFormatter))
         
-        let data = [
+        let data: [String: Any] = [
             "name": "Arthur",
             "date": NSDate(),
             "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
