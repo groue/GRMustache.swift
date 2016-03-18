@@ -913,13 +913,20 @@ private func BoxAny(object: Any?) -> MustacheBox {
     }
 
     let mirror = Mirror(reflecting: object)
-    if mirror.displayStyle == .Collection ||
-         mirror.displayStyle == .Set {
+    if mirror.displayStyle == .Collection {
         var array = [Any]()
         for (_, element) in mirror.children {
             array.append(element)
         }
         return Box(array)
+    }
+
+    if mirror.displayStyle == .Set {
+        var `set` = NSMutableSet() // do not use Set<Any> since Any is not hashable
+        for (_, element) in mirror.children {
+            set.addObject(BoxAny(element))
+        }
+        return Box(set)
     }
 
     // hanlde Optionals and other enums
