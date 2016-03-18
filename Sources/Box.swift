@@ -516,7 +516,6 @@ extension NSObject: MustacheBoxable {
     
     */
     public var mustacheBox : MustacheBox {
-    #if os(Linux)
         switch self {
         case let nsSet as NSSet:
             return Box(nsSet)
@@ -534,15 +533,8 @@ extension NSObject: MustacheBoxable {
             return handleEnumeration(self)
         default:
             return handleNonEnumerationObject(self)
+        }
     }
-    #else
-         if self is NSFastEnumeration {
-             return handleEnumeration(self)
-         }
-         return handleNonEnumerationObject(self)
-    #endif
-
-}
 
     private func handleEnumeration(object: NSObject?) -> MustacheBox {
     #if os(Linux)
