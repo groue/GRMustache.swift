@@ -42,22 +42,31 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     func testImplicitIteratorExpression() {
         let context = Context(Box("success"))
         let box = try! context.mustacheBoxForExpression(".")
-        let string = box.value as? String
-        XCTAssertEqual(string!, "success")
+        guard let string = box.value as? String else {
+            XCTFail("box.value is not String")
+            return
+        }
+        XCTAssertEqual(string, "success")
     }
     
     func testIdentifierExpression() {
         let context = Context(Box(["name": "success"]))
         let box = try! context.mustacheBoxForExpression("name")
-        let string = box.value as? String
-        XCTAssertEqual(string!, "success")
+        guard let string = box.value as? String else {
+            XCTFail("box.value is not String")
+            return
+        }
+        XCTAssertEqual(string, "success")
     }
     
     func testScopedExpression() {
         let context = Context(Box(["a": ["name": "success"]]))
         let box = try! context.mustacheBoxForExpression("a.name")
-        let string = box.value as? String
-        XCTAssertEqual(string!, "success")
+        guard let string = box.value as? String else {
+            XCTFail("box.value is not String")
+            return
+        }
+        XCTAssertEqual(string, "success")
     }
     
     func testFilteredExpression() {
@@ -66,8 +75,11 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
         })
         let context = Context(Box(["name": Box("success"), "f": Box(filter)]))
         let box = try! context.mustacheBoxForExpression("f(name)")
-        let string = box.value as? String
-        XCTAssertEqual(string!, "SUCCESS")
+        guard let string = box.value as? String else {
+            XCTFail("box.value is not String")
+            return
+        }
+        XCTAssertEqual(string, "SUCCESS")
     }
 
     func testParseError() {
