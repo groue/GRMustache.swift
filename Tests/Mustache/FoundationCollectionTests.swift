@@ -79,7 +79,10 @@ class FoundationCollectionTests: XCTestCase {
             data.setObject(array, forKey: "collection".bridge())
             return Box(data)
         }()
-        boxedSet = Box(["collection": Set([["key": "value"].bridge()])])
+        boxedSet = {
+            let object = NSDictionary(objects: [NSString(string: "value")], forKeys: [NSString(string:"key")])
+            return Box(["collection": Set([object])])
+        }()
         boxedNSSet = {
             let set = NSMutableSet()
             set.addObject(["key": "value"].bridge())
