@@ -69,8 +69,18 @@ class FoundationCollectionTests: XCTestCase {
     var boxedSet: MustacheBox!
     var boxedNSSet: MustacheBox!
     var boxedNSOrderedSet: MustacheBox!
-    
-    override func setUp() {
+
+    #if os(Linux) //fix until swift snapshot of 16-th of March 2016
+        func tearDown() {
+            doSetUp()
+        }
+    #else
+        override func tearDown() {
+            doSetUp()
+        }
+    #endif
+
+    func doSetUp() {
         boxedArray = Box(["collection": [["key": "value"]]])
         boxedNSArray = {
             let array = NSMutableArray()

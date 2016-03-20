@@ -44,9 +44,15 @@ class ConfigurationBaseContextTests: XCTestCase {
     }
 // END OF GENERATED CODE
     
-    override func tearDown() {
+    #if os(Linux) //fix until swift snapshot of 16-th of March 2016
+        func tearDown() {
+         DefaultConfiguration = Configuration()
+     }
+    #else
+         override func tearDown() {
         DefaultConfiguration = Configuration()
     }
+    #endif
     
     func testDefaultConfigurationCustomBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
