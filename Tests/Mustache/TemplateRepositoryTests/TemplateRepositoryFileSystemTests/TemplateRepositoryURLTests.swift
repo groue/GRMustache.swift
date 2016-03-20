@@ -149,8 +149,14 @@ class TemplateRepositoryURLTests: XCTestCase {
              let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
         let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
-        let repo = TemplateRepository(baseURL: URL.URLByAppendingPathComponent("partials"))
-        
+        let baseURL = URL.URLByAppendingPathComponent("partials")
+        #if os(Linux) // see issue https://bugs.swift.org/browse/SR-996
+            //TODO remove #if os(Linux) once the issue is resolved
+            let repo = TemplateRepository(baseURL: baseURL!)
+        #else
+            let repo = TemplateRepository(baseURL: baseURL)
+        #endif
+
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
