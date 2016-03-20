@@ -56,7 +56,7 @@ class SuiteTestCase: XCTestCase {
         
         let testSuite = try! NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as! NSDictionary
         
-        let tests = testSuite["tests"] as! NSArray!
+        let tests = testSuite["tests".bridge()] as! NSArray!
         if tests == nil {
             XCTFail("Missing tests in \(path)")
             return
@@ -78,7 +78,7 @@ class SuiteTestCase: XCTestCase {
         }
         
         func run() {
-            let name = dictionary["name"] as! String
+            let name = dictionary["name".bridge()] as! String
             NSLog("Run test \(name)")
             for template in templates {
                 
@@ -102,13 +102,13 @@ class SuiteTestCase: XCTestCase {
         //
         
         var description: String { return "test `\(name)` at \(path)" }
-        var name: String { return dictionary["name"] as! String }
-        var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
-        var templateString: String? { return dictionary["template"] as! String? }
-        var templateName: String? { return dictionary["template_name"] as! String? }
-        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
-        var expectedRendering: String? { return dictionary["expected"] as! String? }
-        var expectedError: String? { return dictionary["expected_error"] as! String? }
+        var name: String { return dictionary["name".bridge()] as! String }
+        var partialsDictionary: [String: String]? { return dictionary["partials".bridge()] as! [String: String]? }
+        var templateString: String? { return dictionary["template".bridge()] as! String? }
+        var templateName: String? { return dictionary["template_name".bridge()] as! String? }
+        var renderedValue: MustacheBox { return Box(dictionary["data".bridge()] as? NSObject) }
+        var expectedRendering: String? { return dictionary["expected".bridge()] as! String? }
+        var expectedError: String? { return dictionary["expected_error".bridge()] as! String? }
         
         var templates: [Template] {
             if let partialsDictionary = partialsDictionary {
