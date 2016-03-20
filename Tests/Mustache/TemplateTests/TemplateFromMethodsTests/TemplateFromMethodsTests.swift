@@ -104,16 +104,16 @@ class TemplateFromMethodsTests: XCTestCase {
     
     func valueForKey(key: String, inRendering rendering: String) -> AnyObject? {
         let data = rendering.dataUsingEncoding(NSUTF8StringEncoding)!
-        let object: AnyObject = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
-        return object.valueForKey(key)
+        let object = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
+        return (object as? NSDictionary)?.objectForKey(key.bridge())
     }
     
     func valueForStringPropertyInRendering(rendering: String) -> String? {
-        return valueForKey("string", inRendering: rendering) as! String?
+        return (valueForKey("string", inRendering: rendering) as? NSString)?.bridge()
     }
     
     func extensionOfTemplateFileInRendering(rendering: String) -> String? {
-        return ((valueForKey("fileName", inRendering: rendering) as? String)?.bridge())?.pathExtension
+        return (valueForKey("fileName", inRendering: rendering) as? NSString)?.pathExtension
     }
     
     func testTemplateFromString() {
