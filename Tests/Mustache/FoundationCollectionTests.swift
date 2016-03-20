@@ -71,11 +71,11 @@ class FoundationCollectionTests: XCTestCase {
     var boxedNSOrderedSet: MustacheBox!
 
     #if os(Linux) //fix until swift snapshot of 16-th of March 2016
-        func tearDown() {
+        func setUp() {
             doSetUp()
         }
     #else
-        override func tearDown() {
+        override func setUp() {
             doSetUp()
         }
     #endif
