@@ -65,7 +65,14 @@ final public class Template {
         let nsPath = path.bridge()
         let directoryPath = nsPath.stringByDeletingLastPathComponent
         let templateExtension = nsPath.pathExtension
-        let templateName = nsPath.lastPathComponent.bridge().stringByDeletingPathExtension
+        #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
+            var templateName = nsPath.lastPathComponent.bridge().stringByDeletingPathExtension
+            if templateName.characters.last == "." {
+                templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
+            }
+        #else
+            let templateName = nsPath.lastPathComponent.bridge().stringByDeletingPathExtension
+        #endif
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -89,7 +96,15 @@ final public class Template {
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let baseURL = URL.URLByDeletingLastPathComponent!
         let templateExtension = URL.pathExtension
-        let templateName = URL.lastPathComponent!.bridge().stringByDeletingPathExtension
+        #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
+            var templateName = URL.lastPathComponent!.bridge().stringByDeletingPathExtension
+            if templateName.characters.last == "." {
+                templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
+            }
+        #else
+            let templateName = URL.lastPathComponent!.bridge().stringByDeletingPathExtension
+        #endif
+
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)

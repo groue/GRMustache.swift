@@ -465,7 +465,12 @@ final public class TemplateRepository {
             
             let templateFilename: String
             if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
-                templateFilename = normalizedName.bridge().stringByAppendingPathExtension(templateExtension)!
+            #if os(Linux) //handle issue https://bugs.swift.org/browse/SR-999
+                 //TODO remove this ifdef once the issue is resolved
+                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension("." + templateExtension)!
+            #else
+                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension(templateExtension)!
+            #endif
             } else {
                 templateFilename = normalizedName
             }
