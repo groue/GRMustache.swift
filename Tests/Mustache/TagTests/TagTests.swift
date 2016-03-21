@@ -112,7 +112,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let bundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -143,7 +143,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let bundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -154,7 +154,7 @@ class TagTests: XCTestCase {
         try! template.render()
         var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(URL: bundle.URLForResource("TagTests", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
@@ -175,7 +175,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let bundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -207,7 +207,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let bundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -246,7 +246,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let bundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -284,7 +284,7 @@ class TagTests: XCTestCase {
         #if os(Linux)// NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug")!
+            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
              let bundle = NSBundle(forClass: self.dynamicType)
         #endif

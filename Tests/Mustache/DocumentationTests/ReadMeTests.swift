@@ -54,7 +54,7 @@ class ReadMeTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = NSBundle(path: ".build/debug")!
+            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -96,7 +96,7 @@ class ReadMeTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = NSBundle(path: ".build/debug")!
+            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let testBundle = NSBundle(forClass: self.dynamicType)
         #endif

@@ -42,7 +42,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
-        let testBundle = NSBundle(path: ".build/debug")!
+        let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
         let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -78,7 +78,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // https://bugs.swift.org/browse/SR-794
-        let testBundle = NSBundle(path: ".build/debug")!
+        let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
         let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -129,7 +129,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug")!
+            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
@@ -144,7 +144,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(forClass:) is implemented
             // https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug")!
+            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
             let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
