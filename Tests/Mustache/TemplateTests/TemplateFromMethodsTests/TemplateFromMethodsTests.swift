@@ -102,18 +102,32 @@ class TemplateFromMethodsTests: XCTestCase {
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path! }
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
-    func valueForKey(key: String, inRendering rendering: String) -> AnyObject? {
+    func valueForKey(key: String, inRendering rendering: String) -> Any? {
         let data = rendering.dataUsingEncoding(NSUTF8StringEncoding)!
         let object = try! NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions(rawValue: 0))
-        return (object as? NSDictionary)?.objectForKey(key.bridge())
+
+        let mirror = Mirror(reflecting: object)
+        if mirror.displayStyle == .Dictionary  {
+            for (_, element) in mirror.children {
+                let elementMirror = Mirror(reflecting: element)
+                if elementMirror.displayStyle == .Tuple {
+                    if let tupleKey = elementMirror.descendant(0) as? String,
+                        value = elementMirror.descendant(1) where tupleKey == key {
+                        return value
+                    }
+                }
+            }
+        }
+        return nil
     }
+
     
     func valueForStringPropertyInRendering(rendering: String) -> String? {
-        return (valueForKey("string", inRendering: rendering) as? NSString)?.bridge()
+        return valueForKey("string", inRendering: rendering) as? String
     }
     
     func extensionOfTemplateFileInRendering(rendering: String) -> String? {
-        return (valueForKey("fileName", inRendering: rendering) as? NSString)?.pathExtension
+        return (valueForKey("fileName", inRendering: rendering) as? String)?.pathExtension
     }
     
     func testTemplateFromString() {
