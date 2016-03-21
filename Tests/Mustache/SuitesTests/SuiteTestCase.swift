@@ -44,6 +44,7 @@ class SuiteTestCase: XCTestCase {
         #endif
 
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-794
+            //TODO remove this ifdef once the issue is resolved
             let path = ".build/debug/Package.xctest/Contents/Resources/" + directory + "/" + name
         #else
             let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
