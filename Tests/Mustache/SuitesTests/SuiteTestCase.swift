@@ -42,11 +42,16 @@ class SuiteTestCase: XCTestCase {
         #else
         let testBundle = NSBundle(forClass: self.dynamicType)
         #endif
-        let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
-        if path == nil {
-            XCTFail("No such test suite \(directory)/\(name)")
-            return
-        }
+
+        #if os(Linux) // issue https://bugs.swift.org/browse/SR-794
+            let path = ".build/debug/Package.xctest/Contents/Resources/" + directory + "/" + name
+        #else
+            let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
+            if path == nil {
+                XCTFail("No such test suite \(directory)/\(name)")
+                return
+            }
+        #endif
         
         let data: NSData! = NSData(contentsOfFile:path)
         if data == nil {
