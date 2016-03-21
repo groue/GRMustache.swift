@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import SwiftyJSON
 
 class SuiteTestCase: XCTestCase {
 
@@ -60,25 +61,23 @@ class SuiteTestCase: XCTestCase {
             return
         }
         
-        let testSuite = try! NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as! NSDictionary
+        let testSuite = JSON(data: data)
         
-        let tests = testSuite["tests".bridge()] as! NSArray!
-        if tests == nil {
-            XCTFail("Missing tests in \(path)")
-            return
-        }
-        
-        for testDictionary in tests {
-            let test = Test(path: path, dictionary: testDictionary as! NSDictionary)
+        for (_, testDictionaryJSON) in testSuite["tests"] {
+            var dictionary = [String: Any]()
+            for (key, value) in testDictionaryJSON.dictionaryValue {
+                dictionary[key] = value.object
+            }
+            let test = Test(path: path, dictionary: dictionary)
             test.run()
         }
     }
     
     class Test {
         let path: String
-        let dictionary: NSDictionary
+        let dictionary: [String: Any]
         
-        init(path: String, dictionary: NSDictionary) {
+        init(path: String, dictionary: [String: Any]) {
             self.path = path
             self.dictionary = dictionary
         }
@@ -108,13 +107,13 @@ class SuiteTestCase: XCTestCase {
         //
         
         var description: String { return "test `\(name)` at \(path)" }
-        var name: String { return dictionary["name".bridge()] as! String }
-        var partialsDictionary: [String: String]? { return dictionary["partials".bridge()] as! [String: String]? }
-        var templateString: String? { return dictionary["template".bridge()] as! String? }
-        var templateName: String? { return dictionary["template_name".bridge()] as! String? }
-        var renderedValue: MustacheBox { return Box(dictionary["data".bridge()] as? NSObject) }
-        var expectedRendering: String? { return dictionary["expected".bridge()] as! String? }
-        var expectedError: String? { return dictionary["expected_error".bridge()] as! String? }
+        var name: String { return dictionary["name"] as! String }
+        var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
+        var templateString: String? { return dictionary["template"] as! String? }
+        var templateName: String? { return dictionary["template_name"] as! String? }
+        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
+        var expectedRendering: String? { return dictionary["expected"] as! String? }
+        var expectedError: String? { return dictionary["expected_error"] as! String? }
         
         var templates: [Template] {
             if let partialsDictionary = partialsDictionary {
