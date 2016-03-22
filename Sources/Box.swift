@@ -33,12 +33,11 @@ import Bridging
 // MustacheBoxable and they do not implement mustacheBox method. Instead, added
 // Box methods per each relevant NSObject subclass
 // 2. The classes that are not subclasses of NSObject left AS IS
-// 3. MustacheBox changed to not inherit from NSObject
-// 4. Handling of AnyObject changed to handling Any. On OS X, everything is AnyObject
+// 3. Handling of AnyObject changed to handling Any. On OS X, everything is AnyObject
 // when import Foundation is made. In general case, Any should be handled and not only
 // AnyObject. To this end, AnyObject was replaced by Any in the file and BoxAnyObject
 // changed to BoxAny
-// 5. Swift reflection (Mirror) is used in BoxAny to cast Any parameter to its
+// 4. Swift reflection (Mirror) is used in BoxAny to cast Any parameter to its
 // correct type
 
 // "It's all boxes all the way down."
@@ -147,16 +146,6 @@ public protocol MustacheBoxable {
     */
     var mustacheBox: MustacheBox { get }
 }
-
-extension MustacheBox: MustacheBoxable {
-     /**
-     `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
-     Mustache templates. Its mustacheBox property returns itself.
-     */
-     public var mustacheBox: MustacheBox {
-         return self
-     }
- }
 
 public func Box(box: MustacheBox?) -> MustacheBox {
     return box ?? Box()
