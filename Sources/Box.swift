@@ -506,6 +506,8 @@ extension NSObject: MustacheBoxable {
     */
     public var mustacheBox : MustacheBox {
         switch self {
+        case let box as MustacheBox:
+            return Box(box)
         case let nsSet as NSSet:
             return Box(nsSet)
         case let nsDictionary as NSDictionary:
