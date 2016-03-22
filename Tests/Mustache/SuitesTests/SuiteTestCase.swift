@@ -26,6 +26,27 @@ import Mustache
 import Foundation
 import SwiftyJSON
 
+extension JSON: MustacheBoxable {
+    public var mustacheBox: MustacheBox {
+        if let bool = self.bool {
+            return Box(bool)
+        }
+        if let int = self.int {
+            return Box(int)
+        }
+        if let string = self.string {
+            return Box(string)
+        }
+        if let array = self.array {
+            return Box(array)
+        }
+        if let dictionary = self.dictionary {
+            return Box(dictionary)
+        }
+        return Box()
+    }
+}
+
 class SuiteTestCase: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
@@ -64,26 +85,22 @@ class SuiteTestCase: XCTestCase {
         let testSuite = JSON(data: data)
         
         for (_, testDictionaryJSON) in testSuite["tests"] {
-            var dictionary = [String: Any]()
-            for (key, value) in testDictionaryJSON.dictionaryValue {
-                dictionary[key] = value.object
-            }
-            let test = Test(path: path, dictionary: dictionary)
+            let test = Test(path: path, dictionary: testDictionaryJSON.dictionaryValue)
             test.run()
         }
     }
     
     class Test {
         let path: String
-        let dictionary: [String: Any]
+        let dictionary: [String: JSON]
         
-        init(path: String, dictionary: [String: Any]) {
+        init(path: String, dictionary: [String: JSON]) {
             self.path = path
             self.dictionary = dictionary
         }
         
         func run() {
-            let name = dictionary["name"] as! String
+            let name = dictionary["name"]!.stringValue
             NSLog("Run test \(name)")
             for template in templates {
                 
@@ -107,13 +124,22 @@ class SuiteTestCase: XCTestCase {
         //
         
         var description: String { return "test `\(name)` at \(path)" }
-        var name: String { return dictionary["name"] as! String }
-        var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
-        var templateString: String? { return dictionary["template"] as! String? }
-        var templateName: String? { return dictionary["template_name"] as! String? }
-        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
-        var expectedRendering: String? { return dictionary["expected"] as! String? }
-        var expectedError: String? { return dictionary["expected_error"] as! String? }
+        var name: String { return dictionary["name"]!.stringValue }
+        var partialsDictionary: [String: String]? {
+            var resultDictionary = [String: String]()
+            if let partialsDictionary = dictionary["partials"]?.dictionaryValue {
+                for (key, value) in partialsDictionary {
+                    resultDictionary[key] = value.stringValue
+                }
+                return resultDictionary
+            }
+            return nil
+        }
+        var templateString: String? { return dictionary["template"]?.string }
+        var templateName: String? { return dictionary["template_name"]?.string }
+        var renderedValue: MustacheBox { return Box(dictionary["data"]) }
+        var expectedRendering: String? { return dictionary["expected"]?.string }
+        var expectedError: String? { return dictionary["expected_error"]?.string }
         
         var templates: [Template] {
             if let partialsDictionary = partialsDictionary {
