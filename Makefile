@@ -57,13 +57,13 @@ clean:
 	@echo --- Invoking swift build --clean
 	swift build --clean
 
-NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec:
+NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests:
 	@echo --- Fetching GRMustacheSpec
 	git submodule init
 	git submodule update
 
 
-copytestresources: NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec
+copytestresources: NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests
 	@echo --- Copying test files
 	mkdir -p .build/debug/Package.xctest/Contents/Resources
 	cp Tests/Mustache/*/*.mustache .build/debug/Package.xctest/Contents/Resources
