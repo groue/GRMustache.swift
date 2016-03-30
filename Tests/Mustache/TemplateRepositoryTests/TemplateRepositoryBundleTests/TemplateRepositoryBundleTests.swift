@@ -29,10 +29,15 @@ class TemplateRepositoryBundleTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
     var allTests : [(String, () throws -> Void)] {
+        #if os(Linux) //disable the tests due to issue https://bugs.swift.org/browse/SR-794?jql=text%20~%20%22pathForResource%22
+            //TODO remove once the issue is resolved
+            return []
+        #else
         return [
             ("testTemplateRepositoryWithBundle", testTemplateRepositoryWithBundle),
             ("testTemplateRepositoryWithBundleTemplateExtensionEncoding", testTemplateRepositoryWithBundleTemplateExtensionEncoding),
         ]
+        #endif
     }
 // END OF GENERATED CODE
     
