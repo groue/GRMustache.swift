@@ -55,7 +55,7 @@ public enum ContentType {
 // MARK: - Errors
 
 /// The errors thrown by Mustache.swift
-public struct MustacheError: ErrorType {
+public struct MustacheError: ErrorProtocol {
     
     /// MustacheError types
     public enum Kind : Int {
@@ -77,12 +77,12 @@ public struct MustacheError: ErrorType {
     public let lineNumber: Int?
     
     /// Eventual underlying error
-    public let underlyingError: ErrorType?
+    public let underlyingError: ErrorProtocol?
     
     
     // Not public
     
-    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) {
         self.kind = kind
         self.message = message
         self.templateID = templateID
@@ -90,7 +90,7 @@ public struct MustacheError: ErrorType {
         self.underlyingError = underlyingError
     }
     
-    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> MustacheError {
+    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) -> MustacheError {
         return MustacheError(
             kind: self.kind,
             message: message ?? self.message,
