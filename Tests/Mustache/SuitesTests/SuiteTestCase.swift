@@ -151,7 +151,16 @@ class SuiteTestCase: XCTestCase {
                     let templateExtension = templateName.bridge().pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         do {
-                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                            #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
+                                //TODO remove once the issue is resolved
+                                var templateByDeletingPathExtension = templateName.bridge().stringByDeletingPathExtension
+                                if templateByDeletingPathExtension.characters.last == "." {
+                                    templateByDeletingPathExtension = templateByDeletingPathExtension.substringToIndex(templateByDeletingPathExtension.endIndex.predecessor())
+                                }
+                                let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateByDeletingPathExtension)
+                            #else
+                                 let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                            #endif
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
@@ -164,7 +173,16 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                            #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
+                                //TODO remove once the issue is resolved
+                                var templateByDeletingPathExtension = templateName.bridge().stringByDeletingPathExtension
+                                if templateByDeletingPathExtension.characters.last == "." {
+                                    templateByDeletingPathExtension = templateByDeletingPathExtension.substringToIndex(templateByDeletingPathExtension.endIndex.predecessor())
+                                }
+                                let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateByDeletingPathExtension)
+                            #else
+                                 let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().stringByDeletingPathExtension)
+                             #endif
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
