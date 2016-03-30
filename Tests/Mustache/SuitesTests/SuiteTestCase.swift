@@ -43,6 +43,9 @@ extension JSON: MustacheBoxable {
         if let dictionary = self.dictionary {
             return Box(dictionary)
         }
+        if let nsnull = self.object as? NSNull {
+            return Box(nsnull)
+        }
         return Box()
     }
 }
