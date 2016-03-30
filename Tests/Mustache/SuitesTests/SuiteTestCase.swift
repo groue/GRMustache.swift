@@ -277,11 +277,11 @@ class SuiteTestCase: XCTestCase {
             } else {
                 #if os(Linux) //Due to issue https://bugs.swift.org/browse/SR-585
                      //TODO remove once the issue is resolved
-                     let errorDescription = "unknown error"
+                     XCTFail("Unexpected error in \(description): unknown error")
                 #else
-                     let errorDescription = error.description
+                     XCTFail("Unexpected error in \(description): \(error)")
                 #endif
-                XCTFail("Unexpected error in \(description): \(errorDescription)")
+
                 replayBlock()
             }
         }
