@@ -348,19 +348,19 @@ final class TemplateParser {
         init(tagDelimiterPair : TagDelimiterPair) {
             self.tagDelimiterPair = tagDelimiterPair
             
-            tagStartLength = tagDelimiterPair.0.startIndex.distanceTo(tagDelimiterPair.0.endIndex)
-            tagEndLength = tagDelimiterPair.1.startIndex.distanceTo(tagDelimiterPair.1.endIndex)
+            tagStartLength = tagDelimiterPair.0.startIndex.distance(to: tagDelimiterPair.0.endIndex)
+            tagEndLength = tagDelimiterPair.1.startIndex.distance(to: tagDelimiterPair.1.endIndex)
             
             let usesStandardDelimiters = (tagDelimiterPair.0 == "{{") && (tagDelimiterPair.1 == "}}")
             unescapedTagStart = usesStandardDelimiters ? "{{{" : nil
-            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.startIndex.distanceTo(unescapedTagStart!.endIndex) : 0
+            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.startIndex.distance(to: unescapedTagStart!.endIndex) : 0
             unescapedTagEnd = usesStandardDelimiters ? "}}}" : nil
-            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.startIndex.distanceTo(unescapedTagEnd!.endIndex) : 0
+            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.startIndex.distance(to: unescapedTagEnd!.endIndex) : 0
             
             setDelimitersStart = "\(tagDelimiterPair.0)="
-            setDelimitersStartLength = setDelimitersStart.startIndex.distanceTo(setDelimitersStart.endIndex)
+            setDelimitersStartLength = setDelimitersStart.startIndex.distance(to: setDelimitersStart.endIndex)
             setDelimitersEnd = "=\(tagDelimiterPair.1)"
-            setDelimitersEndLength = setDelimitersEnd.startIndex.distanceTo(setDelimitersEnd.endIndex)
+            setDelimitersEndLength = setDelimitersEnd.startIndex.distance(to: setDelimitersEnd.endIndex)
         }
     }
 }
