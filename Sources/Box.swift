@@ -544,7 +544,7 @@ extension NSObject: MustacheBoxable {
             return Box()
         }
         // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-        let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAny)
+        let array = IteratorSequence(NSFastEnumerationIterator(enumerable)).map(BoxAny)
    #endif
         return array.mustacheBoxWithArrayValue(object, box: { $0 })
     }
@@ -1013,7 +1013,7 @@ extension Collection {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
+    private func renderItems(info: RenderingInfo, @noescape box: (Iterator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var buffer = ""
         var contentType: ContentType? = nil
@@ -1104,7 +1104,7 @@ extension Collection where Index.Distance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithSetValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1154,7 +1154,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndexType 
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBoxWithArrayValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1258,10 +1258,10 @@ GRMustache provides built-in support for rendering `NSSet`.
         //
         // So turn NSSet into a Swift Array of MustacheBoxes, and ask the array
         // to return a set-like box:
-        #if os(Linux) //TODO - remove the Linux case once NSFastGenerator becomes available
+        #if os(Linux) //TODO - remove the Linux case once NSFastEnumerationIterator becomes available
             let array = value.allObjects.map(BoxAny)
         #else
-            let array = GeneratorSequence(NSFastGenerator(value)).map(BoxAny)
+            let array = IteratorSequence(NSFastEnumerationIterator(value)).map(BoxAny)
         #endif
         return array.mustacheBoxWithSetValue(value, box: { $0 })
     }
@@ -1310,7 +1310,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
     if let set = set {
         return set.mustacheBoxWithSetValue(set, box: { Box($0) })
     } else {
@@ -1361,7 +1361,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
@@ -1373,7 +1373,7 @@ public func Box<C: Collection where C.Generator.Element: MustacheBoxable, C.Inde
 public func Box<C: Collection where C.Index: BidirectionalIndexType,
                 C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
-        return array.mustacheBoxWithArrayValue(array, box: { (element: C.Generator.Element) -> MustacheBox in return BoxAny(element) })
+        return array.mustacheBoxWithArrayValue(array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
     } else {
         return Box()
     }
@@ -1422,7 +1422,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
@@ -1647,7 +1647,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
                 }
             }
         #else
-            let dictionary = GeneratorSequence(NSFastGenerator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+            let dictionary = IteratorSequence(NSFastEnumerationIterator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
                 var boxDictionary = boxDictionary
                 if let key = key as? String {
                     boxDictionary[key] = BoxAny(value[key])
