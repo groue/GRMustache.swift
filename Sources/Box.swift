@@ -904,7 +904,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
     }
 
     let mirror = Mirror(reflecting: object)
-    if mirror.displayStyle == .Collection {
+    if mirror.displayStyle == .collection {
         var array = [Any]()
         for (_, element) in mirror.children {
             array.append(element)
@@ -912,7 +912,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
         return Box(array)
     }
 
-    if mirror.displayStyle == .Set {
+    if mirror.displayStyle == .set {
         let `set` = NSMutableSet() // do not use Set<Any> since Any is not hashable
         for (_, element) in mirror.children {
             set.addObject(BoxAny(element))
@@ -921,17 +921,17 @@ private func BoxAny(object: Any?) -> MustacheBox {
     }
 
     // hanlde Optionals and other enums
-    if mirror.displayStyle == .Enum  {
+    if mirror.displayStyle == .`enum`  {
         for (_, element) in mirror.children {
             return BoxAny(element)
         }
     }
 
-    if mirror.displayStyle == .Dictionary  {
+    if mirror.displayStyle == .dictionary  {
         var resultDictionary = [String: Any]()
         for (_, element) in mirror.children {
             let elementMirror = Mirror(reflecting: element)
-            if elementMirror.displayStyle == .Tuple {
+            if elementMirror.displayStyle == .tuple {
                 if let key = elementMirror.descendant(0) as? String, value = elementMirror.descendant(1) {
                     resultDictionary[key] = value
                 }
