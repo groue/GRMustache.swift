@@ -48,3 +48,4 @@ MustacheTests/Carthage/Carthage
 MustacheTests/Carthage/Cartfile.resolved
 
 Packages
+Tests/LinuxMain.swift

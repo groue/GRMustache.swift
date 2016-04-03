@@ -257,6 +257,15 @@ extension StandardLibrary {
         }
         
         private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
+            #if os(Linux)
+                // see issue https://bugs.swift.org/browse/SR-957
+                // before the issue is resolved - manually replace %@ string one by one by NSLocalizedString
+                //TODO remove this ifdef once the feature is implemented
+                if args.count == 0 {
+                    return format
+                }
+                fatalError("GRMustache.swift, Localizer.swift:\(#line) Not implemented: String(format, locale, args)")
+            #else
             switch args.count {
             case 0:
                 return String(format: format)
@@ -283,6 +292,7 @@ extension StandardLibrary {
             default:
                 fatalError("Not implemented: format with \(args.count) parameters")
             }
+            #endif
         }
         
         struct Placeholder {

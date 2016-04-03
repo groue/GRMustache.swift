@@ -519,9 +519,7 @@ final public class MustacheBox : NSObject {
             self.dictionaryValue = dictionaryValue
         }
     }
-}
 
-extension MustacheBox {
     /// A textual representation of `self`.
     override public var description: String {
         let facets = self.facetsDescriptions

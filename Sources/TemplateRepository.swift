@@ -175,7 +175,7 @@ final public class TemplateRepository {
     - returns: A new TemplateRepository.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: URLDataSource(baseURL: NSURL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
     
     /**
@@ -442,7 +442,7 @@ final public class TemplateRepository {
         
         init(baseURL: NSURL, templateExtension: String?, encoding: NSStringEncoding) {
             self.baseURL = baseURL
-            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath!.absoluteString
+            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath?.absoluteString ?? ""
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
@@ -465,20 +465,25 @@ final public class TemplateRepository {
             
             let templateFilename: String
             if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
-                templateFilename = (normalizedName as NSString).stringByAppendingPathExtension(templateExtension)!
+            #if os(Linux) //handle issue https://bugs.swift.org/browse/SR-999
+                 //TODO remove this ifdef once the issue is resolved
+                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension("." + templateExtension)!
+            #else
+                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension(templateExtension)!
+            #endif
             } else {
                 templateFilename = normalizedName
             }
-            
             let templateBaseURL: NSURL
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
                 templateBaseURL = NSURL(string: normalizedBaseTemplateID)!
             } else {
                 templateBaseURL = self.baseURL
             }
+
             
             let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
-            let templateAbsoluteString = templateURL.absoluteString
+            let templateAbsoluteString = templateURL.absoluteString ?? ""
             
             // Make sure partial relative paths can not escape repository root
             if templateAbsoluteString.rangeOfString(baseURLAbsoluteString)?.startIndex == templateAbsoluteString.startIndex {
@@ -489,7 +494,10 @@ final public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding) as String
+            if let nsURL = NSURL(string: templateID) {
+                return try NSString(contentsOfURL: nsURL, encoding: encoding).bridge()
+            }
+            return ""
         }
     }
     
@@ -519,13 +527,12 @@ final public class TemplateRepository {
                 normalizedName = name
                 normalizedBaseTemplateID = baseTemplateID
             }
-            
             if normalizedName.isEmpty {
                 return normalizedBaseTemplateID
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = (normalizedBaseTemplateID as NSString).stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
+                let relativePath = normalizedBaseTemplateID.bridge().stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
                 return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.pathForResource(normalizedName, ofType: templateExtension)
@@ -533,7 +540,7 @@ final public class TemplateRepository {
         }
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfFile: templateID, encoding: encoding) as String
+            return try NSString(contentsOfFile: templateID, encoding: encoding).bridge()
         }
     }
 }

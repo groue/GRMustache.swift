@@ -21,7 +21,24 @@
 // THE SOFTWARE.
 
 import Foundation
+import Bridging
 
+// Note on changes for Swift 3.0 on Linux
+// It is not possible to override methods in extensions. Due to that, making
+// NSObject and its subclasses implement MustacheBoxable and override mustacheBox
+// methods does not compile. To overcome this, the following strategy is used:
+//
+// 1. NSObject only made MustacheBoxable. Its mustacheBox implements all the logic
+// of boxing of subclasses of NSObject. Subclasses of NSObject are not
+// MustacheBoxable and they do not implement mustacheBox method. Instead, added
+// Box methods per each relevant NSObject subclass
+// 2. The classes that are not subclasses of NSObject left AS IS
+// 3. Handling of AnyObject changed to handling Any. On OS X, everything is AnyObject
+// when import Foundation is made. In general case, Any should be handled and not only
+// AnyObject. To this end, AnyObject was replaced by Any in the file and BoxAnyObject
+// changed to BoxAny
+// 4. Swift reflection (Mirror) is used in BoxAny to cast Any parameter to its
+// correct type
 
 // "It's all boxes all the way down."
 //
@@ -85,6 +102,7 @@ Your own types can conform to it as well, so that they can feed templates:
     let template = try! Template(named: "Profile")
     let rendering = try! template.render(Box(profile))
 */
+
 public protocol MustacheBoxable {
     
     /**
@@ -129,24 +147,9 @@ public protocol MustacheBoxable {
     var mustacheBox: MustacheBox { get }
 }
 
-// IMPLEMENTATION NOTE
-//
-// This protocol conformance is not only a matter of consistency. It is also
-// a convenience for the library implementation: it makes arrays
-// [MustacheBox] boxable via Box<C: Collection where C.Generator.Element: MustacheBoxable>(collection: C?)
-// and dictionaries [String:MustacheBox] boxable via Box<T: MustacheBoxable>(dictionary: [String: T]?)
-
-extension MustacheBox {
-    
-    /**
-    `MustacheBox` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates. Its mustacheBox property returns itself.
-    */
-    public override var mustacheBox: MustacheBox {
-        return self
-    }
+public func Box(box: MustacheBox?) -> MustacheBox {
+    return box ?? Box()
 }
-
 
 /**
 GRMustache provides built-in support for rendering `Bool`.
@@ -432,21 +435,9 @@ extension String : MustacheBoxable {
 /**
 GRMustache provides built-in support for rendering `NSObject`.
 */
-
-extension NSObject : MustacheBoxable {
-    
-    /**
-    `NSObject` adopts the `MustacheBoxable` protocol so that it can feed
-    Mustache templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        object.mustacheBox   // Valid, but discouraged
-        Box(object)          // Preferred
-    
-    
-    NSObject's default implementation handles two general cases:
+extension NSObject: MustacheBoxable {
+  /**
+    Box(NSObject) handles two general cases:
     
     - Enumerable objects that conform to the `NSFastEnumeration` protocol, such
       as `NSArray` and `NSOrderedSet`.
@@ -513,42 +504,79 @@ extension NSObject : MustacheBoxable {
     - `{{^object}}...{{/object}}` does not render.
     
     */
-    public var mustacheBox: MustacheBox {
-        if let enumerable = self as? NSFastEnumeration {
-            // Enumerable
-            
-            // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-            let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
-            return array.mustacheBoxWithArrayValue(self, box: { $0 })
-            
-        } else {
-            // Generic NSObject
-            
-            #if OBJC
-            return MustacheBox(
-                value: self,
+    public var mustacheBox : MustacheBox {
+        switch self {
+        case let box as MustacheBox:
+            return Box(box)
+        case let nsSet as NSSet:
+            return Box(nsSet)
+        case let nsDictionary as NSDictionary:
+            return Box(nsDictionary)
+        case let nsNumber as NSNumber:
+            return Box(nsNumber)
+        case let nsString as NSString:
+            return Box(nsString)
+        case let nsNull as NSNull:
+            return Box(nsNull)
+        case let nsFormatter as NSString:
+            return Box(nsFormatter)
+        case is NSArray, is NSOrderedSet:
+            return handleEnumeration(self)
+        default:
+            return handleNonEnumerationObject(self)
+        }
+    }
+
+    private func handleEnumeration(object: NSObject?) -> MustacheBox {
+    #if os(Linux)
+        var selfArray = [AnyObject]()
+        if let nsArray = object as? NSArray {
+            selfArray = nsArray.bridge()
+        } else if let orderedSet = object as? NSOrderedSet {
+            // NSOrderedSet.array is not implemented yet
+            for element in orderedSet {
+                selfArray.append(element)
+            }
+        }
+        let array = selfArray.map(BoxAny)
+   #else
+        guard let enumerable = object as? NSFastEnumeration else {
+            return Box()
+        }
+        // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
+        let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAny)
+   #endif
+        return array.mustacheBoxWithArrayValue(object, box: { $0 })
+    }
+
+    private func handleNonEnumerationObject(object: NSObject?) -> MustacheBox {
+        // Generic NSObject
+        guard let object = object else {
+            return Box()
+        }
+    #if OBJC
+        return MustacheBox(
+                value: object,
                 keyedSubscript: { (key: String) in
-                    if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
+                    if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: object) {
                         // Use valueForKey: for safe keys
-                        return BoxAnyObject(self.valueForKey(key))
+                        return BoxAny(object.valueForKey(key))
                     } else {
                         // Missing key
                         return Box()
                     }
                 })
-            #else
-                return MustacheBox(value: self)
-            #endif
-        }
-    }
+   #else
+        return MustacheBox(value: object)
+   #endif
+   }
 }
+
 
 
 /**
 GRMustache provides built-in support for rendering `NSNull`.
 */
-
-extension NSNull {
     
     /**
     `NSNull` adopts the `MustacheBoxable` protocol so that it can feed Mustache
@@ -569,20 +597,21 @@ extension NSNull {
     
     - `{{^null}}...{{/null}}` does render (NSNull is falsey).
     */
-    public override var mustacheBox: MustacheBox {
-        return MustacheBox(
-            value: self,
+
+
+   public func Box(value: NSNull) -> MustacheBox {
+    return MustacheBox(
+            value: value,
             boolValue: false,
             render: { (info: RenderingInfo) in return Rendering("") })
     }
-}
+
 
 
 /**
 GRMustache provides built-in support for rendering `NSNumber`.
 */
 
-extension NSNumber {
     
     /**
     `NSNumber` adopts the `MustacheBoxable` protocol so that it can feed
@@ -609,8 +638,11 @@ extension NSNumber {
     - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
     
     */
-    public override var mustacheBox: MustacheBox {
-        
+
+    public func Box(number: NSNumber?) -> MustacheBox {
+        guard let number = number else {
+            return Box()
+        }
         // IMPLEMENTATION NOTE
         //
         // Don't event think about wrapping unsigned values in an Int, even if
@@ -618,48 +650,46 @@ extension NSNumber {
         // This would make template rendering depend on the size of Int, and
         // yield very weird platform-related issues. So keep it simple, stupid.
         
-        let objCType = String.fromCString(self.objCType)!
+        let objCType = String.fromCString(number.objCType)!
         switch objCType {
         case "c":
-            return Box(Int(charValue))
+            return Box(Int(number.charValue))
         case "C":
-            return Box(UInt(unsignedCharValue))
+            return Box(UInt(number.unsignedCharValue))
         case "s":
-            return Box(Int(shortValue))
+            return Box(Int(number.shortValue))
         case "S":
-            return Box(UInt(unsignedShortValue))
+            return Box(UInt(number.unsignedShortValue))
         case "i":
-            return Box(Int(intValue))
+            return Box(Int(number.intValue))
         case "I":
-            return Box(UInt(unsignedIntValue))
+            return Box(UInt(number.unsignedIntValue))
         case "l":
-            return Box(Int(longValue))
+            return Box(Int(number.longValue))
         case "L":
-            return Box(UInt(unsignedLongValue))
+            return Box(UInt(number.unsignedLongValue))
         case "q":
-            return Box(Int(longLongValue))          // May fail on 32-bits architectures, right?
+            return Box(Int(number.longLongValue))          // May fail on 32-bits architectures, right?
         case "Q":
-            return Box(UInt(unsignedLongLongValue)) // May fail on 32-bits architectures, right?
+            return Box(UInt(number.unsignedLongLongValue)) // May fail on 32-bits architectures, right?
         case "f":
-            return Box(Double(floatValue))
+            return Box(Double(number.floatValue))
         case "d":
-            return Box(doubleValue)
+            return Box(number.doubleValue)
         case "B":
-            return Box(boolValue)
+            return Box(number.boolValue)
         default:
             NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
             return Box()
         }
     }
-}
+
 
 
 /**
 GRMustache provides built-in support for rendering `NSString`.
 */
 
-extension NSString {
-    
     /**
     `NSString` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates.
@@ -693,10 +723,15 @@ extension NSString {
     - `length`: the number of characters in the string (using Swift method).
     
     */
-    public override var mustacheBox: MustacheBox {
-        return Box(self as String)
+
+    public func Box(string: NSString?) -> MustacheBox {
+        guard let string = string else {
+            return Box()
+        }
+
+        return Box(string.bridge())
     }
-}
+
 
 
 /**
@@ -735,20 +770,9 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 // - ["cats": Box([Box("Kitty"), Box("Pussy"), Box("Melba")])]
 // - [Box([0,1]), Box([2,3])]
 
-/**
-See the documentation of `NSObject.mustacheBox`.
-
-- parameter object: An NSObject.
-- returns: A MustacheBox that wraps *object*.
-*/
-public func Box(object: NSObject?) -> MustacheBox {
-    return object?.mustacheBox ?? Box()
-}
-
-
 // IMPLEMENTATION NOTE
 //
-// Why is there a BoxAnyObject(AnyObject?) function, but no Box(AnyObject?)
+// Why is there a BoxAny(Any?) function, but no Box(Any?)
 //
 // GRMustache aims at having a single boxing function: Box(), with many
 // overloaded variants. This lets the user box anything, standard Swift types
@@ -763,10 +787,10 @@ public func Box(object: NSObject?) -> MustacheBox {
 // Sometimes values come out of Foundation objects:
 //
 //     class NSDictionary {
-//         subscript (key: NSCopying) -> AnyObject? { get }
+//         subscript (key: NSCopying) -> Any? { get }
 //     }
 //
-// So we need a Box(AnyObject?) function, right?
+// So we need a Box(Any?) function, right?
 //
 // Unfortunately, this will not work:
 //
@@ -774,7 +798,7 @@ public func Box(object: NSObject?) -> MustacheBox {
 //     class Thing: MustacheBoxable {}
 //
 //     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box(x: AnyObject?) -> String { return "AnyObject" }
+//     func Box(x: Any?) -> String { return "Any" }
 //
 //     // error: ambiguous use of 'Box'
 //     Box(Thing())
@@ -786,9 +810,9 @@ public func Box(object: NSObject?) -> MustacheBox {
 //     class Thing: MustacheBoxable {}
 //
 //     func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
-//     func Box(x: AnyObject?) -> String { return "AnyObject" }
+//     func Box(x: Any?) -> String { return "Any" }
 //
-//     // Wrong: uses the AnyObject variant
+//     // Wrong: uses the Any variant
 //     Box(Thing())
 //
 //     // Error: cannot find an overload for 'Box' that accepts an argument list of type '(MustacheBoxable)'
@@ -797,14 +821,14 @@ public func Box(object: NSObject?) -> MustacheBox {
 //     // Error: Crash the compiler
 //     Box(Thing() as MustacheBoxable?)
 //
-// And if we turn the func Box(x: AnyObject) into a generic one? Well, it gets
+// And if we turn the func Box(x: Any) into a generic one? Well, it gets
 // better:
 //
 //     protocol MustacheBoxable {}
 //     class Thing: MustacheBoxable {}
 //
 //     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box<T:AnyObject>(object: T?) -> String { return "AnyObject" }
+//     func Box<T:Any>(object: T?) -> String { return "Any" }
 //
 //     // OK: uses the MustacheBox variant
 //     Box(Thing())
@@ -815,51 +839,51 @@ public func Box(object: NSObject?) -> MustacheBox {
 //     // OK: uses the MustacheBox variant
 //     Box(Thing() as MustacheBoxable?)
 //
-//     // OK: uses the AnyObject variant
-//     Box(Thing() as AnyObject)
+//     // OK: uses the Any variant
+//     Box(Thing() as Any)
 //
-//     // OK: uses the AnyObject variant
-//     Box(Thing() as AnyObject?)
+//     // OK: uses the Any variant
+//     Box(Thing() as Any?)
 //
 // This looks OK, doesn't it? Well, it's not satisfying yet.
 //
 // According to http://airspeedvelocity.net/2015/03/26/protocols-and-generics-2/
 // there are reasons for preferring func Box<T: MustacheBoxable>(x: T?) over
 // func Box(x: MustacheBoxable?). The example above have shown that the boxing
-// of AnyObject with an overloaded version of Box() would make this choice for
+// of Any with an overloaded version of Box() would make this choice for
 // us.
 //
 // It's better not to make any choice right now, until we have a better
 // knowledge of Swift performances and optimization, and of the way Swift
 // resolves overloaded functions.
 // 
-// So let's avoid having any Box(AnyObject?) variant in the public API, and
-// let's expose the BoxAnyObject(object: AnyObject?) instead.
+// So let's avoid having any Box(Any?) variant in the public API, and
+// let's expose the BoxAny(object: Any?) instead.
 
 // IMPLEMENTATION NOTE 2
 //
-// BoxAnyObject has been made private. Now users get a compiler error when they
-// try to box AnyObject.
+// BoxAny has been made private. Now users get a compiler error when they
+// try to box Any.
 //
 // Reasons for this removal from the public API:
 //
 // - Users will try Box() first, which will fail. Since they may not know
-//   anything BoxAnyObject, BoxAnyObject is of little value anyway.
-// - BoxAnyObject is error-prone, since it accepts anything and fails at
+//   anything BoxAny, BoxAny is of little value anyway.
+// - BoxAny is error-prone, since it accepts anything and fails at
 //   runtime.
 //
 // It still exists because we need it to box Foundation collections like
 // NSArray, NSSet, NSDictionary.
 
 /**
-`AnyObject` can feed Mustache templates.
+`Any` can feed Mustache templates.
 
-Yet, due to constraints in the Swift language, there is no `Box(AnyObject)`
-function. Instead, you use `BoxAnyObject`:
+Yet, due to constraints in the Swift language, there is no `Box(Any)`
+function. Instead, you use `BoxAny`:
 
     let set = NSSet(object: "Mario")
-    let object: AnyObject = set.anyObject()
-    let box = BoxAnyObject(object)
+    let object: Any = set.anyObject()
+    let box = BoxAny(object)
     box.value as String  // "Mario"
 
 The object is tested at runtime whether it adopts the `MustacheBoxable`
@@ -870,44 +894,77 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 - parameter object: An object.
 - returns: A MustacheBox that wraps *object*.
 */
-private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
-    if let boxable = object as? MustacheBoxable {
-        return boxable.mustacheBox
-    } else if let object: AnyObject = object {
-        
-        // IMPLEMENTATION NOTE
-        //
-        // In the example below, the Thing class can not be turned into any
-        // relevant MustacheBox.
-        // 
-        // Yet we can not prevent the user from trying to box it, because the
-        // Thing class adopts the AnyObject protocol, just as all Swift classes.
-        //
-        //     class Thing { }
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
-        //     Box(Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(Thing())
-        //
-        //     // Foundation collections can also contain unsupported classes:
-        //     let array = NSArray(object: Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     Box(array)
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
-        //     Box(array[0])
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(array[0])
-        
-        NSLog("Mustache.BoxAnyObject(): value `\(object)` is does not conform to MustacheBoxable: it is discarded.")
-        return Box()
-    } else {
+private func BoxAny(object: Any?) -> MustacheBox {
+    guard let object = object else {
         return Box()
     }
+
+    if let boxable = object as? MustacheBoxable {
+        return boxable.mustacheBox
+    }
+
+    let mirror = Mirror(reflecting: object)
+    if mirror.displayStyle == .Collection {
+        var array = [Any]()
+        for (_, element) in mirror.children {
+            array.append(element)
+        }
+        return Box(array)
+    }
+
+    if mirror.displayStyle == .Set {
+        let `set` = NSMutableSet() // do not use Set<Any> since Any is not hashable
+        for (_, element) in mirror.children {
+            set.addObject(BoxAny(element))
+        }
+        return Box(set)
+    }
+
+    // hanlde Optionals and other enums
+    if mirror.displayStyle == .Enum  {
+        for (_, element) in mirror.children {
+            return BoxAny(element)
+        }
+    }
+
+    if mirror.displayStyle == .Dictionary  {
+        var resultDictionary = [String: Any]()
+        for (_, element) in mirror.children {
+            let elementMirror = Mirror(reflecting: element)
+            if elementMirror.displayStyle == .Tuple {
+                if let key = elementMirror.descendant(0) as? String, value = elementMirror.descendant(1) {
+                    resultDictionary[key] = value
+                }
+            }
+        }
+        return Box(resultDictionary)
+    }
+    //
+    // Yet we can not prevent the user from trying to box it, because the
+    // Thing class adopts the Any protocol, just as all Swift classes.
+    //
+    //     class Thing { }
+    //
+    //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
+    //     Box(Thing())
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     BoxAny(Thing())
+    //
+    //     // Foundation collections can also contain unsupported classes:
+    //     let array = NSArray(object: Thing())
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     Box(array)
+    //
+    //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Any)'
+    //     Box(array[0])
+    //
+    //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
+    //     BoxAny(array[0])
+
+    NSLog("Mustache.BoxAny(): value `\(object)` does not conform to MustacheBoxable and cannot be boxed: it is discarded.")
+    return Box()
 }
 
 
@@ -1081,7 +1138,7 @@ extension Collection where Index.Distance == Int {
 }
 
 // Support for Array
-extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
+extension Collection where Index.Distance == Int, Index: BidirectionalIndexType {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -1110,7 +1167,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
                     } else {
                         return Box()
                     }
-                case "last":    // C.Index: BidirectionalIndex
+                case "last":    // C.Index: BidirectionalIndexType
                     if let last = self.last {
                         return box(last)
                     } else {
@@ -1141,8 +1198,6 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
 GRMustache provides built-in support for rendering `NSSet`.
 */
 
-extension NSSet {
-    
     /**
     `NSSet` adopts the `MustacheBoxable` protocol so that it can feed Mustache
     templates.
@@ -1189,7 +1244,11 @@ extension NSSet {
     `arrayValue` property: it reliably returns an Array of MustacheBox, whatever
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
-    public override var mustacheBox: MustacheBox {
+
+    public func Box(value: NSSet?) -> MustacheBox {
+        guard let value = value else {
+            return Box()
+        }
         // DRY principle won't let us provide all the code for boxing NSSet when
         // we already have it for Set.
         //
@@ -1199,10 +1258,14 @@ extension NSSet {
         //
         // So turn NSSet into a Swift Array of MustacheBoxes, and ask the array
         // to return a set-like box:
-        let array = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
-        return array.mustacheBoxWithSetValue(self, box: { $0 })
+        #if os(Linux) //TODO - remove the Linux case once NSFastGenerator becomes available
+            let array = value.allObjects.map(BoxAny)
+        #else
+            let array = GeneratorSequence(NSFastGenerator(value)).map(BoxAny)
+        #endif
+        return array.mustacheBoxWithSetValue(value, box: { $0 })
     }
-}
+
 
 
 /**
@@ -1298,9 +1361,19 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
+    } else {
+        return Box()
+    }
+}
+
+// any array, other than array of MustacheBoxables
+public func Box<C: Collection where C.Index: BidirectionalIndexType,
+                C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
+        return array.mustacheBoxWithArrayValue(array, box: { (element: C.Generator.Element) -> MustacheBox in return BoxAny(element) })
     } else {
         return Box()
     }
@@ -1349,7 +1422,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
@@ -1410,18 +1483,18 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
+public func Box<T>(dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
                     var boxDictionary = boxDictionary
-                    boxDictionary[item.key] = Box(item.value)
+                    boxDictionary[item.key] = BoxAny(item.value)
                     return boxDictionary
                 })),
             value: dictionary,
             keyedSubscript: { (key: String) in
-                return Box(dictionary[key])
+                return BoxAny(dictionary[key])
         })
     } else {
         return Box()
@@ -1476,25 +1549,32 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
-    if let dictionary = dictionary {
+
+extension Dictionary: MustacheBoxable {
+    public var mustacheBox: MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T?)) in
-                    var boxDictionary = boxDictionary
-                    boxDictionary[item.key] = Box(item.value)
-                    return boxDictionary
-                })),
-            value: dictionary,
-            keyedSubscript: { (key: String) in
-                if let value = dictionary[key] {
-                    return Box(value)
-                } else {
-                    return Box()
-                }
-        })
-    } else {
-        return Box()
+                converter: MustacheBox.Converter(
+                               dictionaryValue: self.reduce([String: MustacheBox]()) { (boxDictionary, item: (key: Key, value: Value)) in
+                                   var boxDictionary = boxDictionary
+                                   guard let key = item.key as? String else {
+                                       NSLog("GRMustache found a non-String key in Dictionary (\(item.key)): value is discarded.")
+                                       return boxDictionary
+                                   }
+                                   boxDictionary[key] = BoxAny(item.value)
+                                   return boxDictionary
+                               }),
+                value: self,
+                keyedSubscript: { (key: String) in
+                    guard let typedKey = key as? Key else {
+                        NSLog("GRMustache cannot use \(key) as a key in Dictionary : returning empty box.")
+                        return Box()
+                    }
+                    if let value = self[typedKey] {
+                        return BoxAny(value)
+                    } else {
+                        return Box()
+                    }
+                })
     }
 }
 
@@ -1503,7 +1583,6 @@ public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
 GRMustache provides built-in support for rendering `NSDictionary`.
 */
 
-extension NSDictionary {
     
     /**
     `NSDictionary` adopts the `MustacheBoxable` protocol so that it can feed
@@ -1554,24 +1633,35 @@ extension NSDictionary {
     `dictionaryValue` property: it reliably returns an `[String: MustacheBox]`
     dictionary, whatever the actual type of the raw boxed value.
     */
-    public override var mustacheBox: MustacheBox {
+    public func Box(value: NSDictionary?) -> MustacheBox {
+        guard let value = value else {
+            return Box()
+        }
+        #if os(Linux)
+            var dictionary = [String: MustacheBox]()
+            let _ = value.allKeys.map { key in
+                if let stringKey = (key as? NSString)?.bridge() {
+                    dictionary[stringKey] = BoxAny(value[key])
+                } else {
+                    NSLog("GRMustache found a non-NSString key in NSDictionary (\(key)): value is discarded.")
+                }
+            }
+        #else
+            let dictionary = GeneratorSequence(NSFastGenerator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+                var boxDictionary = boxDictionary
+                if let key = key as? String {
+                    boxDictionary[key] = BoxAny(value[key])
+                } else {
+                    NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
+                }
+                return boxDictionary
+            })
+        #endif
         return MustacheBox(
-            converter: MustacheBox.Converter(
-                dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
-                    var boxDictionary = boxDictionary
-                    if let key = key as? String {
-                        boxDictionary[key] = BoxAnyObject(self[key])
-                    } else {
-                        NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
-                    }
-                    return boxDictionary
-                })),
-            value: self,
-            keyedSubscript: { BoxAnyObject(self[$0])
-        })
+            converter: MustacheBox.Converter(dictionaryValue: dictionary),
+            value: value,
+            keyedSubscript: { (key: String) in BoxAny(dictionary[key])})
     }
-}
-
 
 // =============================================================================
 // MARK: - Boxing of Core Mustache functions
