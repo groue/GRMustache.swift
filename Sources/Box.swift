@@ -1138,7 +1138,7 @@ extension Collection where Index.Distance == Int {
 }
 
 // Support for Array
-extension Collection where Index.Distance == Int, Index: BidirectionalIndexType {
+extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -1167,7 +1167,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndexType 
                     } else {
                         return Box()
                     }
-                case "last":    // C.Index: BidirectionalIndexType
+                case "last":    // C.Index: BidirectionalIndex
                     if let last = self.last {
                         return box(last)
                     } else {
@@ -1370,7 +1370,7 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 }
 
 // any array, other than array of MustacheBoxables
-public func Box<C: Collection where C.Index: BidirectionalIndexType,
+public func Box<C: Collection where C.Index: BidirectionalIndex,
                 C.Index.Distance == Int>(array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
