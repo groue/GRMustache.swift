@@ -650,7 +650,7 @@ GRMustache provides built-in support for rendering `NSNumber`.
         // This would make template rendering depend on the size of Int, and
         // yield very weird platform-related issues. So keep it simple, stupid.
         
-        let objCType = String.fromCString(number.objCType)!
+        let objCType = String(cString: number.objCType)
         switch objCType {
         case "c":
             return Box(Int(number.charValue))
