@@ -482,7 +482,7 @@ final public class TemplateRepository {
             }
 
             
-            let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
+            let templateURL = NSURL(string: templateFilename, relativeTo: templateBaseURL)!.URLByStandardizingPath!
             let templateAbsoluteString = templateURL.absoluteString ?? ""
             
             // Make sure partial relative paths can not escape repository root
