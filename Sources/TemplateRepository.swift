@@ -369,7 +369,7 @@ final public class TemplateRepository {
             return templateAST
         } catch {
             // Failure: remove the empty AST
-            templateASTCache.removeValueForKey(templateID)
+            templateASTCache.removeValue(forKey: templateID)
             throw error
         }
     }
