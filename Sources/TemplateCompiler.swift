@@ -56,7 +56,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     // MARK: - TemplateTokenConsumer
     
-    func parser(parser: TemplateParser, didFailWithError error: ErrorType) {
+    func parser(parser: TemplateParser, didFailWithError error: ErrorProtocol) {
         state = .Error(error)
     }
     
@@ -364,7 +364,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     private enum CompilerState {
         case Compiling(CompilationState)
-        case Error(ErrorType)
+        case Error(ErrorProtocol)
     }
     
     private class Scope {
