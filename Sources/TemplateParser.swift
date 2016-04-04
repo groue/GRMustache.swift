@@ -140,7 +140,7 @@ final class TemplateParser {
                             return
                         }
                     case "#":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .Section(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                             lineNumber: startLineNumber,
@@ -151,7 +151,7 @@ final class TemplateParser {
                             return
                         }
                     case "^":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .InvertedSection(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                             lineNumber: startLineNumber,
@@ -162,7 +162,7 @@ final class TemplateParser {
                             return
                         }
                     case "$":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .Block(content: content),
                             lineNumber: startLineNumber,
@@ -173,7 +173,7 @@ final class TemplateParser {
                             return
                         }
                     case "/":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .Close(content: content),
                             lineNumber: startLineNumber,
@@ -184,7 +184,7 @@ final class TemplateParser {
                             return
                         }
                     case ">":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .Partial(content: content),
                             lineNumber: startLineNumber,
@@ -195,7 +195,7 @@ final class TemplateParser {
                             return
                         }
                     case "<":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .PartialOverride(content: content),
                             lineNumber: startLineNumber,
@@ -206,7 +206,7 @@ final class TemplateParser {
                             return
                         }
                     case "&":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .UnescapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                             lineNumber: startLineNumber,
@@ -217,7 +217,7 @@ final class TemplateParser {
                             return
                         }
                     case "%":
-                        let content = templateString.substringWithRange(tagInitialIndex.successor()..<i)
+                        let content = templateString.substring(with: tagInitialIndex.successor()..<i)
                         let token = TemplateToken(
                             type: .Pragma(content: content),
                             lineNumber: startLineNumber,
@@ -228,7 +228,7 @@ final class TemplateParser {
                             return
                         }
                     default:
-                        let content = templateString.substringWithRange(tagInitialIndex..<i)
+                        let content = templateString.substring(with: tagInitialIndex..<i)
                         let token = TemplateToken(
                             type: .EscapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                             lineNumber: startLineNumber,
@@ -248,7 +248,7 @@ final class TemplateParser {
                     lineNumber += 1
                 } else if atString(i, currentDelimiters.unescapedTagEnd) {
                     let tagInitialIndex = startIndex.advanced(by: currentDelimiters.unescapedTagStartLength)
-                    let content = templateString.substringWithRange(tagInitialIndex..<i)
+                    let content = templateString.substring(with: tagInitialIndex..<i)
                     let token = TemplateToken(
                         type: .UnescapedVariable(content: content, tagDelimiterPair: currentDelimiters.tagDelimiterPair),
                         lineNumber: startLineNumber,
@@ -266,7 +266,7 @@ final class TemplateParser {
                     lineNumber += 1
                 } else if atString(i, currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = startIndex.advanced(by: currentDelimiters.setDelimitersStartLength)
-                    let content = templateString.substringWithRange(tagInitialIndex..<i)
+                    let content = templateString.substring(with: tagInitialIndex..<i)
                     let newDelimiters = content.componentsSeparatedByCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
                         let error = MustacheError(kind: .ParseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
