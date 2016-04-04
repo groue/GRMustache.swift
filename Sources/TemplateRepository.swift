@@ -495,7 +495,7 @@ final public class TemplateRepository {
         
         func templateStringForTemplateID(templateID: TemplateID) throws -> String {
             if let nsURL = NSURL(string: templateID) {
-                return try NSString(contentsOfURL: nsURL, encoding: encoding).bridge()
+                return try NSString(contentsOf: nsURL, encoding: encoding).bridge()
             }
             return ""
         }
