@@ -70,7 +70,7 @@ extension StandardLibrary {
         - returns: A new Localizer.
         */
         public init(bundle: NSBundle?, table: String?) {
-            self.bundle = bundle ?? NSBundle.mainBundle()
+            self.bundle = bundle ?? NSBundle.main()
             self.table = table
         }
         

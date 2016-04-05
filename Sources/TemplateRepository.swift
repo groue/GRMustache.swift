@@ -235,7 +235,7 @@ final public class TemplateRepository {
     - returns: A new TemplateRepository.
     */
     convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.main(), templateExtension: templateExtension, encoding: encoding))
     }
     
     

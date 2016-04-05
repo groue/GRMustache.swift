@@ -134,7 +134,7 @@ public struct Configuration {
     
         // Locally, using a TemplateRepository:
     
-        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        let repository = TemplateRepository(bundle: NSBundle.main())
         repository.configuration.contentType = .HTML
         let HTMLTemplate = try! repository.template(named: "HTMLDocument")
     
@@ -179,7 +179,7 @@ public struct Configuration {
     
         // Locally, using a TemplateRepository:
         
-        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        let repository = TemplateRepository(bundle: NSBundle.main())
         repository.configuration.baseContext = Context(Box(["foo": "bar"]))
         
         // "bar"
@@ -215,7 +215,7 @@ public struct Configuration {
     
         // Locally, using a TemplateRepository:
         
-        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        let repository = TemplateRepository(bundle: NSBundle.main())
         repository.configuration.extendBaseContext(Box(["foo": "bar"]))
         
         // "bar"
@@ -260,7 +260,7 @@ public struct Configuration {
     
         // Locally, using a TemplateRepository:
         
-        let repository = TemplateRepository(bundle: NSBundle.mainBundle())
+        let repository = TemplateRepository(bundle: NSBundle.main())
         repository.configuration.registerInBaseContext("foo", Box("bar"))
         
         // "bar"
