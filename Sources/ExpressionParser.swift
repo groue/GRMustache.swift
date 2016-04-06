@@ -292,7 +292,7 @@ final class ExpressionParser {
             
         case .Identifier(identifierStart: let identifierStart):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substringFromIndex(identifierStart)
+                let identifier = string.substring(from: identifierStart)
                 finalState = .Valid(expression: Expression.Identifier(identifier: identifier))
             } else {
                 finalState = .Error("Missing `)` character at index \(string.startIndex.distance(to: string.endIndex))")
@@ -300,7 +300,7 @@ final class ExpressionParser {
             
         case .ScopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substringFromIndex(identifierStart)
+                let identifier = string.substring(from: identifierStart)
                 let scopedExpression = Expression.Scoped(baseExpression: baseExpression, identifier: identifier)
                 finalState = .Valid(expression: scopedExpression)
             } else {

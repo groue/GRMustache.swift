@@ -44,7 +44,7 @@ final class TemplateParser {
             guard let string = string else {
                 return false
             }
-            return templateString.substringFromIndex(index).hasPrefix(string)
+            return templateString.substring(from: index).hasPrefix(string)
         }
         
         var state: State = .Start
