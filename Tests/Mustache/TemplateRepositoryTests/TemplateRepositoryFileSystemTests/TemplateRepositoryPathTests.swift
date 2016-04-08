@@ -150,7 +150,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         #endif
 
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
-        let repo = TemplateRepository(directoryPath: directoryPath.bridge().stringByAppendingPathComponent("partials"))
+        let repo = TemplateRepository(directoryPath: directoryPath.bridge().appendingPathComponent("partials"))
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
