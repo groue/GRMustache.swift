@@ -229,8 +229,8 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("Missing filter") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.range(of: "Missing filter") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -249,8 +249,8 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("Not a filter") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.range(of: "Not a filter") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -331,9 +331,9 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("CustomMessage") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 3") != nil)
-            XCTAssertTrue(error.description.rangeOfString("{{f(x)}}") != nil)
+            XCTAssertTrue(error.description.range(of: "CustomMessage") != nil)
+            XCTAssertTrue(error.description.range(of: "line 3") != nil)
+            XCTAssertTrue(error.description.range(of: "{{f(x)}}") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }

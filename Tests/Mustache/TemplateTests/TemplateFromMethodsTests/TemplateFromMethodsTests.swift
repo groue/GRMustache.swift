@@ -153,7 +153,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -165,8 +165,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -176,8 +176,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -189,8 +189,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -200,8 +200,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -213,8 +213,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -224,8 +224,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(parserErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -237,7 +237,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -249,8 +249,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -260,8 +260,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -273,8 +273,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -284,8 +284,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -297,8 +297,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -308,8 +308,8 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.ParseError)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
-            XCTAssertTrue(error.description.rangeOfString(compilerErrorTemplatePath) != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
