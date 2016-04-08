@@ -105,7 +105,7 @@ GRMustache lets you use `NSFormatter` to format your values.
                 // > right class, return a properly formatted and, if necessary,
                 // > localized string.
                 if let object = box.value as? NSObject {
-                    return Box(formatter.stringForObjectValue(object))
+                    return Box(formatter.string(for: object))
                 } else {
                     // Not the correct class: return nil, i.e. empty Box.
                     return Box()
@@ -132,7 +132,7 @@ GRMustache lets you use `NSFormatter` to format your values.
                     // So nil result means that object is not of the correct class. Leave
                     // it untouched.
                     
-                    if let object = box.value as? NSObject, let formatted = formatter.stringForObjectValue(object) {
+                    if let object = box.value as? NSObject, let formatted = formatter.string(for: object) {
                         return Box(formatted)
                     } else {
                         return box
