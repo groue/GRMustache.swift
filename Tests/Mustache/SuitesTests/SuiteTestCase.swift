@@ -321,14 +321,14 @@ class SuiteTestCase: XCTestCase {
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
                 let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")
-                if fm.fileExistsAtPath(templatesPath) {
-                    try! fm.removeItemAtPath(templatesPath)
+                if fm.fileExists(atPath: templatesPath) {
+                    try! fm.removeItem(atPath: templatesPath)
                 }
                 for (partialName, partialString) in partialsDictionary {
                     let partialPath = templatesPath.bridge().appendingPathComponent(partialName)
                     do {
-                        try fm.createDirectoryAtPath(partialPath.bridge().deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
-                        if !fm.createFileAtPath(partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
+                        try fm.createDirectory(atPath: partialPath.bridge().deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
+                        if !fm.createFile(atPath: partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []
                         }
