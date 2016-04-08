@@ -281,7 +281,7 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func testError(error: ErrorType, replayOnFailure replayBlock: ()->()) {
+        func testError(error: ErrorProtocol, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 do {
                     let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))

@@ -46,7 +46,7 @@ class HookFunctionTests: XCTestCase {
     }
 // END OF GENERATED CODE
     
-    enum CustomError : ErrorType {
+    enum CustomError : ErrorProtocol {
         case Error
     }
     
