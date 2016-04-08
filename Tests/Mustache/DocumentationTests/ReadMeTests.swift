@@ -174,7 +174,7 @@ class ReadMeTests: XCTestCase {
         let data: [String: Any] = [
             "name": "Arthur",
             "date": NSDate(),
-            "real_date": NSDate().dateByAddingTimeInterval(60*60*24*3),
+            "real_date": NSDate().addingTimeInterval(60*60*24*3),
             "late": true
         ]
         let rendering = try! template.render(Box(data))
