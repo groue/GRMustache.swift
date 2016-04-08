@@ -915,7 +915,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
     if mirror.displayStyle == .set {
         let `set` = NSMutableSet() // do not use Set<Any> since Any is not hashable
         for (_, element) in mirror.children {
-            set.addObject(BoxAny(element))
+            set.add(BoxAny(element))
         }
         return Box(set)
     }
