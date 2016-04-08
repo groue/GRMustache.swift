@@ -395,7 +395,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         if blockName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if (blockName.rangeOfCharacterFromSet(whiteSpace) != nil) {
+        } else if (blockName.rangeOfCharacter(from: whiteSpace) != nil) {
             empty = false
             throw MustacheError(kind: .ParseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
@@ -408,7 +408,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         if partialName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
+        } else if (partialName.rangeOfCharacter(from: whiteSpace) != nil) {
             empty = false
             throw MustacheError(kind: .ParseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
