@@ -186,7 +186,7 @@ extension StandardLibrary {
                 //
                 // The format string will then be "%%d %@", as needed.
                 
-                let localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%").stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
+                let localizableFormat = localizableFormatRendering.string.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: Placeholder.string, with: "%@")
                 
                 // Now localize the format
                 let localizedFormat = localizedStringForKey(localizableFormat)
