@@ -59,7 +59,7 @@ class FilterTests: XCTestCase {
         let box = Box([
             "name": Box("Name"),
             "uppercase": Box(Filter { (string: String?) -> MustacheBox in
-                return Box(string?.uppercaseString)
+                return Box(string?.uppercased())
             }),
             "prefix": Box(Filter { (string: String?) -> MustacheBox in
                 return Box("prefix\(string!)")

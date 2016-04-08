@@ -167,7 +167,7 @@ class HookFunctionTests: XCTestCase {
             return box
         }
         let filter = { (string: String?) -> MustacheBox in
-            return Box(string?.uppercaseString)
+            return Box(string?.uppercased())
         }
         
         var template = try! Template(string: "{{subject}}")
@@ -405,7 +405,7 @@ class HookFunctionTests: XCTestCase {
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             return Box({ (info) -> Rendering in
                 let rendering = try box.render(info: info)
-                return Rendering(rendering.string.uppercaseString, rendering.contentType)
+                return Rendering(rendering.string.uppercased(), rendering.contentType)
             })
         }
         
