@@ -79,27 +79,27 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     let templateName = "TemplateFromMethodsTests"
-    var templateURL: NSURL { return testBundle.URLForResource(templateName, withExtension: "mustache")! }
+    var templateURL: NSURL { return testBundle.url(forResource: templateName, withExtension: "mustache")! }
     var templatePath: String { return templateURL.path! }
     var templateString: String { return try! String(contentsOfFile: templatePath, encoding: NSUTF8StringEncoding) }
     
     let parserErrorTemplateName = "TemplateFromMethodsTests_parserError"
-    var parserErrorTemplateURL: NSURL { return testBundle.URLForResource(parserErrorTemplateName, withExtension: "mustache")! }
+    var parserErrorTemplateURL: NSURL { return testBundle.url(forResource: parserErrorTemplateName, withExtension: "mustache")! }
     var parserErrorTemplatePath: String { return parserErrorTemplateURL.path! }
     var parserErrorTemplateString: String { return try! String(contentsOfFile: parserErrorTemplatePath, encoding: NSUTF8StringEncoding) }
     
     let parserErrorTemplateWrapperName = "TemplateFromMethodsTests_parserErrorWrapper"
-    var parserErrorTemplateWrapperURL: NSURL { return testBundle.URLForResource(parserErrorTemplateWrapperName, withExtension: "mustache")! }
+    var parserErrorTemplateWrapperURL: NSURL { return testBundle.url(forResource: parserErrorTemplateWrapperName, withExtension: "mustache")! }
     var parserErrorTemplateWrapperPath: String { return parserErrorTemplateWrapperURL.path! }
     var parserErrorTemplateWrapperString: String { return try! String(contentsOfFile: parserErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
     let compilerErrorTemplateName = "TemplateFromMethodsTests_compilerError"
-    var compilerErrorTemplateURL: NSURL { return testBundle.URLForResource(compilerErrorTemplateName, withExtension: "mustache")! }
+    var compilerErrorTemplateURL: NSURL { return testBundle.url(forResource: compilerErrorTemplateName, withExtension: "mustache")! }
     var compilerErrorTemplatePath: String { return compilerErrorTemplateURL.path! }
     var compilerErrorTemplateString: String { return try! String(contentsOfFile: compilerErrorTemplatePath, encoding: NSUTF8StringEncoding) }
     
     let compilerErrorTemplateWrapperName = "TemplateFromMethodsTests_compilerErrorWrapper"
-    var compilerErrorTemplateWrapperURL: NSURL { return testBundle.URLForResource(compilerErrorTemplateWrapperName, withExtension: "mustache")! }
+    var compilerErrorTemplateWrapperURL: NSURL { return testBundle.url(forResource: compilerErrorTemplateWrapperName, withExtension: "mustache")! }
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path! }
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     

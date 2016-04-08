@@ -46,7 +46,7 @@ class TemplateRepositoryURLTests: XCTestCase {
         #else
              let testBundle = NSBundle(for: self.dynamicType)
         #endif
-        let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
+        let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         var template: Template
         var rendering: String
@@ -87,37 +87,37 @@ class TemplateRepositoryURLTests: XCTestCase {
         var template: Template
         var rendering: String
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: NSUTF8StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: NSUTF8StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: NSUTF8StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: NSISOLatin1StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: NSISOLatin1StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
-        URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
+        URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: NSISOLatin1StringEncoding)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
@@ -133,7 +133,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             let testBundle = NSBundle(for: self.dynamicType)
         #endif
 
-        let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
+        let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         let template = try! repo.template(named: "base")
         let rendering = try! template.render()
@@ -148,7 +148,7 @@ class TemplateRepositoryURLTests: XCTestCase {
         #else
              let testBundle = NSBundle(for: self.dynamicType)
         #endif
-        let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
+        let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
         let baseURL = URL.URLByAppendingPathComponent("partials")
         #if os(Linux) // see issue https://bugs.swift.org/browse/SR-996
             //TODO remove #if os(Linux) once the issue is resolved
