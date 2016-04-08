@@ -532,7 +532,7 @@ final public class TemplateRepository {
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = normalizedBaseTemplateID.bridge().stringByDeletingLastPathComponent.replacingOccurrences(of: bundle.resourcePath!, with:"")
+                let relativePath = normalizedBaseTemplateID.bridge().deletingLastPathComponent.replacingOccurrences(of: bundle.resourcePath!, with:"")
                 return bundle.path(forResource: normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.path(forResource: normalizedName, ofType: templateExtension)

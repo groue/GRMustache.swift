@@ -63,15 +63,15 @@ final public class Template {
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
         let nsPath = path.bridge()
-        let directoryPath = nsPath.stringByDeletingLastPathComponent
+        let directoryPath = nsPath.deletingLastPathComponent
         let templateExtension = nsPath.pathExtension
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-            var templateName = nsPath.lastPathComponent.bridge().stringByDeletingPathExtension
+            var templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
             if templateName.characters.last == "." {
                 templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
             }
         #else
-            let templateName = nsPath.lastPathComponent.bridge().stringByDeletingPathExtension
+            let templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
         #endif
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
@@ -97,12 +97,12 @@ final public class Template {
         let baseURL = URL.URLByDeletingLastPathComponent!
         let templateExtension = URL.pathExtension
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-            var templateName = URL.lastPathComponent!.bridge().stringByDeletingPathExtension
+            var templateName = URL.lastPathComponent!.bridge().deletingPathExtension
             if templateName.characters.last == "." {
                 templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
             }
         #else
-            let templateName = URL.lastPathComponent!.bridge().stringByDeletingPathExtension
+            let templateName = URL.lastPathComponent!.bridge().deletingPathExtension
         #endif
 
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
