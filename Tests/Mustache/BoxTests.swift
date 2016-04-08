@@ -187,7 +187,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
-        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
     func testSetOfMustacheBoxable() {
@@ -195,7 +195,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
-        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
     func testDictionaryOfInt() {
