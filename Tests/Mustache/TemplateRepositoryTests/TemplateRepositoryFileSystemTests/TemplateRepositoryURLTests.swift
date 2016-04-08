@@ -149,7 +149,7 @@ class TemplateRepositoryURLTests: XCTestCase {
              let testBundle = NSBundle(for: self.dynamicType)
         #endif
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
-        let baseURL = URL.URLByAppendingPathComponent("partials")
+        let baseURL = URL.appendingPathComponent("partials")
         #if os(Linux) // see issue https://bugs.swift.org/browse/SR-996
             //TODO remove #if os(Linux) once the issue is resolved
             let repo = TemplateRepository(baseURL: baseURL!)
