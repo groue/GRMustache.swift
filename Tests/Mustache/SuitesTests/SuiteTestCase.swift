@@ -117,7 +117,7 @@ class SuiteTestCase: XCTestCase {
                 
                 // Support for filters.json
                 template.registerInBaseContext("capitalized", Box(Filter({ (string: String?) -> MustacheBox in
-                    return Box(string?.capitalizedString)
+                    return Box(string?.capitalized)
                 })))
                 
                 testRendering(template)
