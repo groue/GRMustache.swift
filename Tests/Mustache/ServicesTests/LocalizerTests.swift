@@ -58,7 +58,7 @@ class LocalizerTests: XCTestCase {
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
     
     func testLocalizableBundle() {
-        let testable = localizableBundle.localizedStringForKey("testable?", value:"", table:nil)
+        let testable = localizableBundle.localizedString(forKey: "testable?", value:"", table:nil)
         XCTAssertEqual(testable, "YES")
     }
     
@@ -81,13 +81,13 @@ class LocalizerTests: XCTestCase {
         var template = try! Template(string: "{{#localize}}%d{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         var rendering = try! template.render()
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%d", value: nil, table: nil), "ha ha percent d %d")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%d", value: nil, table: nil), "ha ha percent d %d")
         XCTAssertEqual(rendering, "ha ha percent d %d")
         
         template = try! Template(string: "{{#localize}}%@{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         rendering = try! template.render()
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%@", value: nil, table: nil), "ha ha percent @ %@")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%@", value: nil, table: nil), "ha ha percent @ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@")
     }
     
@@ -95,13 +95,13 @@ class LocalizerTests: XCTestCase {
         var template = try! Template(string: "{{#localize}}%d {{foo}}{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         var rendering = try! template.render(Box(["foo": "bar"]))
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%%d %@", value: nil, table: nil), "ha ha percent d %%d %@")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%%d %@", value: nil, table: nil), "ha ha percent d %%d %@")
         XCTAssertEqual(rendering, "ha ha percent d %d bar")
 
         template = try! Template(string: "{{#localize}}%@ {{foo}}{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         rendering = try! template.render(Box(["foo": "bar"]))
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("%%@ %@", value: nil, table: nil), "ha ha percent @ %%@ %@")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%%@ %@", value: nil, table: nil), "ha ha percent @ %%@ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@ bar")
     }
     
@@ -109,7 +109,7 @@ class LocalizerTests: XCTestCase {
         let template = try! Template(string: "{{localize(foo)}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         let rendering = try! template.render(Box(["foo": "bar"]))
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("bar", value: nil, table: nil), "translated_bar")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
     
@@ -117,7 +117,7 @@ class LocalizerTests: XCTestCase {
         let template = try! Template(string: "{{#localize}}bar{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         let rendering = try! template.render()
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("bar", value: nil, table: nil), "translated_bar")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
     
@@ -125,7 +125,7 @@ class LocalizerTests: XCTestCase {
         let template = try! Template(string: "{{#localize}}..{{foo}}..{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         let rendering = try! template.render(Box(["foo": "bar"]))
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey("..%@..", value: nil, table: nil), "!!%@!!")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "..%@..", value: nil, table: nil), "!!%@!!")
         XCTAssertEqual(rendering, "!!bar!!")
     }
     
@@ -133,7 +133,7 @@ class LocalizerTests: XCTestCase {
         let template = try! Template(string: "{{#localize}}.{{foo}}.{{^false}}{{baz}}{{/}}.{{/}}")
         template.baseContext = template.baseContext.extendedContext(Box(["localize": Box(localizer)]))
         let rendering = try! template.render(Box(["foo": "bar", "baz": "truc"]))
-        XCTAssertEqual(self.localizer.bundle.localizedStringForKey(".%@.%@.", value: nil, table: nil), "!%@!%@!")
+        XCTAssertEqual(self.localizer.bundle.localizedString(forKey: ".%@.%@.", value: nil, table: nil), "!%@!%@!")
         XCTAssertEqual(rendering, "!bar!truc!")
     }
     
