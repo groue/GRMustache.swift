@@ -328,7 +328,7 @@ class SuiteTestCase: XCTestCase {
                     let partialPath = templatesPath.bridge().appendingPathComponent(partialName)
                     do {
                         try fm.createDirectory(atPath: partialPath.bridge().deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
-                        if !fm.createFile(atPath: partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
+                        if !fm.createFile(atPath: partialPath, contents: partialString.data(usingEncoding: encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []
                         }
