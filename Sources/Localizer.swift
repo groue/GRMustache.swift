@@ -253,7 +253,7 @@ extension StandardLibrary {
         }
         
         private func localizedStringForKey(key: String) -> String {
-            return bundle.localizedStringForKey(key, value:"", table:table)
+            return bundle.localizedString(forKey: key, value:"", table:table)
         }
         
         private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
