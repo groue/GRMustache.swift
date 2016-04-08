@@ -77,7 +77,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     break
                     
                 case .Pragma(content: let content):
-                    let pragma = content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
+                     let pragma = content.trimmingCharacters(in: NSCharacterSet.whitespaceAndNewlineCharacterSet())
                     if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
@@ -391,7 +391,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     private func blockNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
+        let blockName = string.trimmingCharacters(in: whiteSpace)
         if blockName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
@@ -404,7 +404,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     private func partialNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
+        let partialName = string.trimmingCharacters(in: whiteSpace)
         if partialName.characters.count == 0 {
             empty = true
             throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
