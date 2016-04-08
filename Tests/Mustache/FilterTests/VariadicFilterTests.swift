@@ -42,7 +42,7 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
         let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return Box(boxes.map { ($0.value as? String) ?? "" }.joinWithSeparator(","))
+            return Box(boxes.map { ($0.value as? String) ?? "" }.joined(separator: ","))
         })
         let box = Box([
             "a": Box("a"),
@@ -56,7 +56,7 @@ class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanReturnFilter() {
         let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            let joined = boxes.map { ($0.value as? String) ?? "" }.joinWithSeparator(",")
+            let joined = boxes.map { ($0.value as? String) ?? "" }.joined(separator: ",")
             return Box(Filter({ (box: MustacheBox) -> MustacheBox in
                 return Box(joined + "+" + ((box.value as? String) ?? ""))
             }))
