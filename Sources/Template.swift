@@ -94,7 +94,7 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        let baseURL = URL.URLByDeletingLastPathComponent!
+        let baseURL = URL.deletingLastPathComponent!
         let templateExtension = URL.pathExtension
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
             var templateName = URL.lastPathComponent!.bridge().deletingPathExtension

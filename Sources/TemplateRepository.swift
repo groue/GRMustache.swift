@@ -442,7 +442,7 @@ final public class TemplateRepository {
         
         init(baseURL: NSURL, templateExtension: String?, encoding: NSStringEncoding) {
             self.baseURL = baseURL
-            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath?.absoluteString ?? ""
+            self.baseURLAbsoluteString = baseURL.standardizingPath?.absoluteString ?? ""
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
@@ -482,7 +482,7 @@ final public class TemplateRepository {
             }
 
             
-            let templateURL = NSURL(string: templateFilename, relativeTo: templateBaseURL)!.URLByStandardizingPath!
+            let templateURL = NSURL(string: templateFilename, relativeTo: templateBaseURL)!.standardizingPath!
             let templateAbsoluteString = templateURL.absoluteString ?? ""
             
             // Make sure partial relative paths can not escape repository root
