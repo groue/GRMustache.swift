@@ -69,12 +69,12 @@ class TemplateFromMethodsTests: XCTestCase {
     }
     
     var testBundle: NSBundle {
-        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
-        //TODO remove this ifdef once NSBundle(forClass:) is implemented
+        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
+        //TODO remove this ifdef once NSBundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
             return NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-        return NSBundle(forClass: self.dynamicType)
+        return NSBundle(for: self.dynamicType)
         #endif
     }
     

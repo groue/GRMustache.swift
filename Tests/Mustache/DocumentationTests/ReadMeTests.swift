@@ -51,12 +51,12 @@ class ReadMeTests: XCTestCase {
     #endif
     
     func testReadmeExample1() {
-        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(for:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(forClass: self.dynamicType)
+            let testBundle = NSBundle(for: self.dynamicType)
         #endif
 
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
@@ -93,12 +93,12 @@ class ReadMeTests: XCTestCase {
         
         
         // I have 3 cats.
-        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(for:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(forClass: self.dynamicType)
+            let testBundle = NSBundle(for: self.dynamicType)
         #endif
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]

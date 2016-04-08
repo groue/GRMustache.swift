@@ -60,12 +60,12 @@ class SuiteTestCase: XCTestCase {
 // END OF GENERATED CODE
     
     func runTestsFromResource(name: String, directory: String) {
-        #if os(Linux) // NSBundle(forClass:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(forClass:) is implemented
+        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once NSBundle(for:) is implemented
             // https://bugs.swift.org/browse/SR-953
         let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        let testBundle = NSBundle(for: self.dynamicType)
         #endif
 
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-794
