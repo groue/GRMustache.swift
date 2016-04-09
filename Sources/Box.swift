@@ -518,7 +518,7 @@ extension NSObject: MustacheBoxable {
             return Box(nsString)
         case let nsNull as NSNull:
             return Box(nsNull)
-        case let nsFormatter as NSString:
+        case let nsFormatter as NSFormatter:
             return Box(nsFormatter)
         case is NSArray, is NSOrderedSet:
             return handleEnumeration(self)
