@@ -469,7 +469,7 @@ final public class TemplateRepository {
                  //TODO remove this ifdef once the issue is resolved
                  templateFilename = normalizedName.bridge().stringByAppendingPathExtension("." + templateExtension)!
             #else
-                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension(templateExtension)!
+                 templateFilename = normalizedName.bridge().appendingPathExtension(templateExtension)!
             #endif
             } else {
                 templateFilename = normalizedName
