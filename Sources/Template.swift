@@ -382,7 +382,7 @@ extension Template : MustacheBoxable {
                     // {{ template }} behaves just like {{> partial }}
                     //
                     // Let's simply render the template:
-                    return try self.render(info.context)
+                    return try self.render(context: info.context)
                 }
         })
     }

@@ -189,7 +189,7 @@ extension Bool : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# bools }}...{{/ bools }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
                     } else {
                         // {{# bool }}...{{/ bool }}
                         //
@@ -198,7 +198,7 @@ extension Bool : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
+                        return try info.tag.render(context: info.context)
                     }
                 }
         })
@@ -246,7 +246,7 @@ extension Int : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# ints }}...{{/ ints }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
                     } else {
                         // {{# int }}...{{/ int }}
                         //
@@ -255,7 +255,7 @@ extension Int : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
+                        return try info.tag.render(context: info.context)
                     }
                 }
         })
@@ -303,7 +303,7 @@ extension UInt : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# uints }}...{{/ uints }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
                     } else {
                         // {{# uint }}...{{/ uint }}
                         //
@@ -312,7 +312,7 @@ extension UInt : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
+                        return try info.tag.render(context: info.context)
                     }
                 }
         })
@@ -360,7 +360,7 @@ extension Double : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# doubles }}...{{/ doubles }}
-                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
                     } else {
                         // {{# double }}...{{/ double }}
                         //
@@ -369,7 +369,7 @@ extension Double : MustacheBoxable {
                         //
                         // This behavior must not change:
                         // https://github.com/groue/GRMustache/issues/83
-                        return try info.tag.render(info.context)
+                        return try info.tag.render(context: info.context)
                     }
                 }
         })
@@ -1083,7 +1083,7 @@ extension Collection {
             // Renderings have a content type. In order to render an empty
             // rendering that has the contentType of the tag, let's use the
             // `render` method of the tag.
-            return try info.tag.render(info.context)
+            return try info.tag.render(context: info.context)
         }
     }
 }
@@ -1126,7 +1126,7 @@ extension Collection where Index.Distance == Int {
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithSetValue(value, box: box)))
+                    return try info.tag.render(context: info.context.extendedContext(self.mustacheBoxWithSetValue(value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -1182,7 +1182,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(info.context.extendedContext(self.mustacheBoxWithArrayValue(value, box: box)))
+                    return try info.tag.render(context: info.context.extendedContext(self.mustacheBoxWithArrayValue(value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}

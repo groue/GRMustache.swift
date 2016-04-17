@@ -131,7 +131,7 @@ public protocol Tag: class, CustomStringConvertible {
     
         // The strong RenderFunction below wraps a section in a <strong> HTML tag.
         let strong: RenderFunction = { (info: RenderingInfo) -> Rendering in
-            let rendering = try info.tag.render(info.context)
+            let rendering = try info.tag.render(context: info.context)
             return Rendering("<strong>\(rendering.string)</strong>", .HTML)
         }
 
