@@ -894,8 +894,8 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 - parameter object: An object.
 - returns: A MustacheBox that wraps *object*.
 */
-private func BoxAny(object: Any?) -> MustacheBox {
-    guard let object = object else {
+private func BoxAny(value: Any?) -> MustacheBox {
+    guard let object = value else {
         return Box()
     }
 
