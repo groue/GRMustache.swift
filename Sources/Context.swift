@@ -34,7 +34,7 @@ rendered by the `{{.}}` tag:
 
     // Renders "Kitty, Pussy, Melba, "
     let template = try! Template(string: "{{#cats}}{{.}}, {{/cats}}")
-    try! template.render(Box(["cats": ["Kitty", "Pussy", "Melba"]]))
+    try! template.render(Box(value: ["cats": ["Kitty", "Pussy", "Melba"]]))
 
 Key lookup starts with the current context and digs down the stack until if
 finds a value:
@@ -48,7 +48,7 @@ finds a value:
           [:]    // a child without a name
       ]
     ]
-    try! template.render(Box(data))
+    try! template.render(Box(value: data))
 
 See also:
 
@@ -88,7 +88,7 @@ final public class Context {
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         let d = [key: box]
-        self.init(type: .Root, registeredKeysContext: Context(Box(d)))
+        self.init(type: .Root, registeredKeysContext: Context(Box(value: d)))
     }
     
     
@@ -118,7 +118,7 @@ final public class Context {
     @warn_unused_result(message:"Context.contextWithRegisteredKey returns a new Context.")
     public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
         let d = [key: box]
-        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(d))
+        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(value: d))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     
@@ -154,7 +154,7 @@ final public class Context {
     3. If none of the above situations occurs, returns the empty box.
     
             let data = ["name": "Groucho Marx"]
-            let context = Context(Box(data))
+            let context = Context(Box(value: data))
     
             // "Groucho Marx"
             context.mustacheBoxForKey("name").value
@@ -192,7 +192,7 @@ final public class Context {
     Evaluates a Mustache expression such as `name`, or `uppercase(user.name)`.
     
         let data = ["person": ["name": "Albert Einstein"]]
-        let context = Context(Box(data))
+        let context = Context(Box(value: data))
 
         // "Albert Einstein"
         try! context.mustacheBoxForExpression("person.name").value

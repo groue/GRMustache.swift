@@ -33,16 +33,16 @@ feed templates:
 
 - Basic Swift values:
 
-        template.render(Box("foo"))
+        template.render(Box(value: "foo"))
 
 - Dictionaries & collections:
 
-        template.render(Box(["numbers": [1,2,3]]))
+        template.render(Box(value: ["numbers": [1,2,3]]))
 
 - Custom types via the `MustacheBoxable` protocol:
     
         extension User: MustacheBoxable { ... }
-        template.render(Box(user))
+        template.render(Box(value: user))
 
 - Functions such as `FilterFunction`, `RenderFunction`, `WillRenderFunction` and
   `DidRenderFunction`:
@@ -143,7 +143,7 @@ final public class MustacheBox : NSObject {
     /**
     Extracts a key out of a box.
     
-        let box = Box(["firstName": "Arthur"])
+        let box = Box(value: ["firstName": "Arthur"])
         box.mustacheBoxForKey("firstName").value  // "Arthur"
     
     - parameter key: A key.
@@ -225,7 +225,7 @@ final public class MustacheBox : NSObject {
 
         // Renders "1"
         let template = try! Template(string: "{{a}}")
-        try! template.render(Box(["a": aBox]))
+        try! template.render(Box(value: ["a": aBox]))
 
 
     ### boolValue
@@ -253,7 +253,7 @@ final public class MustacheBox : NSObject {
     See `KeyedSubscriptFunction` for a full discussion of this type.
 
         let box = MustacheBox(keyedSubscript: { (key: String) in
-            return Box("key:\(key)")
+            return Box(value: "key:\(key)")
         })
 
         // Renders "key:a"
@@ -270,12 +270,12 @@ final public class MustacheBox : NSObject {
     See `FilterFunction` for a full discussion of this type.
 
         let box = MustacheBox(filter: Filter { (x: Int?) in
-            return Box(x! * x!)
+            return Box(value: x! * x!)
         })
 
         // Renders "100"
         let template = try! Template(string:"{{square(x)}}")
-        try! template.render(Box(["square": box, "x": Box(10)]))
+        try! template.render(Box(value: ["square": box, "x": Box(10)]))
 
 
     ### render
@@ -320,7 +320,7 @@ final public class MustacheBox : NSObject {
     those types.
 
         let box = MustacheBox(willRender: { (tag: Tag, box: MustacheBox) in
-            return Box("baz")
+            return Box(value: "baz")
         })
 
         // Renders "baz baz"
@@ -375,8 +375,8 @@ final public class MustacheBox : NSObject {
                     // It lets Mustache extracts properties by name:
                     keyedSubscript: { (key: String) -> MustacheBox in
                         switch key {
-                        case "firstName": return Box(self.firstName)
-                        case "lastName":  return Box(self.lastName)
+                        case "firstName": return Box(value: self.firstName)
+                        case "lastName":  return Box(value: self.lastName)
                         default:          return Box()
                         }
                     },
@@ -392,7 +392,7 @@ final public class MustacheBox : NSObject {
                             //
                             // Perform the default rendering: push self on the top
                             // of the context stack, and render the section:
-                            let context = info.context.extendedContext(Box(self))
+                            let context = info.context.extendedContext(Box(value: self))
                             return try info.tag.render(context)
                         }
                     }
@@ -403,7 +403,7 @@ final public class MustacheBox : NSObject {
         // Renders "The person is Errol Flynn"
         let person = Person(firstName: "Errol", lastName: "Flynn")
         let template = try! Template(string: "{{# person }}The person is {{.}}{{/ person }}")
-        try! template.render(Box(["person": person]))
+        try! template.render(Box(value: ["person": person]))
 
     - parameter value:          An optional boxed value.
     - parameter boolValue:      An optional boolean value for the Box.

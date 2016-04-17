@@ -48,7 +48,7 @@ import Bridging
 // so that nearly anything can be boxed and feed templates:
 //
 //     let value = ...
-//     template.render(Box(value))
+//     template.render(Box(value: value))
 //
 // This file is organized in five sections with many examples. You can use the
 // Playground included in `Mustache.xcworkspace` to run those examples.
@@ -100,7 +100,7 @@ Your own types can conform to it as well, so that they can feed templates:
 
     let profile = ...
     let template = try! Template(named: "Profile")
-    let rendering = try! template.render(Box(profile))
+    let rendering = try! template.render(Box(value: profile))
 */
 
 public protocol MustacheBoxable {
@@ -127,7 +127,7 @@ public protocol MustacheBoxable {
             // Expose the `firstName`, `lastName` and `fullName` keys to
             // Mustache templates:
             var mustacheBox: MustacheBox {
-                return Box([
+                return Box(value: [
                     "firstName": firstName,
                     "lastName": lastName,
                     "fullName": "\(self.firstName) \(self.lastName)",
@@ -139,7 +139,7 @@ public protocol MustacheBoxable {
     
         // Renders "Tom Selleck"
         let template = try! Template(string: "{{person.fullName}}")
-        try! template.render(Box(["person": Box(person)]))
+        try! template.render(Box(value: ["person": Box(person)]))
 
     However, there are multiple ways to build a box, several `Box()` functions.
     See their documentations.
@@ -189,7 +189,7 @@ extension Bool : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# bools }}...{{/ bools }}
-                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(value: self)))
                     } else {
                         // {{# bool }}...{{/ bool }}
                         //
@@ -246,7 +246,7 @@ extension Int : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# ints }}...{{/ ints }}
-                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(value: self)))
                     } else {
                         // {{# int }}...{{/ int }}
                         //
@@ -303,7 +303,7 @@ extension UInt : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# uints }}...{{/ uints }}
-                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(value: self)))
                     } else {
                         // {{# uint }}...{{/ uint }}
                         //
@@ -360,7 +360,7 @@ extension Double : MustacheBoxable {
                 case .Section:
                     if info.enumerationItem {
                         // {{# doubles }}...{{/ doubles }}
-                        return try info.tag.render(context: info.context.extendedContext(Box(self)))
+                        return try info.tag.render(context: info.context.extendedContext(Box(value: self)))
                     } else {
                         // {{# double }}...{{/ double }}
                         //
@@ -423,7 +423,7 @@ extension String : MustacheBoxable {
             keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
-                    return Box(self.characters.count)
+                    return Box(value: self.characters.count)
                 default:
                     return Box()
                 }
@@ -507,19 +507,19 @@ extension NSObject: MustacheBoxable {
     public var mustacheBox : MustacheBox {
         switch self {
         case let box as MustacheBox:
-            return Box(box)
+            return Box(value: box)
         case let nsSet as NSSet:
-            return Box(nsSet)
+            return Box(value: nsSet)
         case let nsDictionary as NSDictionary:
-            return Box(nsDictionary)
+            return Box(value: nsDictionary)
         case let nsNumber as NSNumber:
-            return Box(nsNumber)
+            return Box(value: nsNumber)
         case let nsString as NSString:
-            return Box(nsString)
+            return Box(value: nsString)
         case let nsNull as NSNull:
-            return Box(nsNull)
+            return Box(value: nsNull)
         case let nsFormatter as NSFormatter:
-            return Box(nsFormatter)
+            return Box(value: nsFormatter)
         case is NSArray, is NSOrderedSet:
             return handleEnumeration(self)
         default:
@@ -653,31 +653,31 @@ GRMustache provides built-in support for rendering `NSNumber`.
         let objCType = String(cString: number.objCType)
         switch objCType {
         case "c":
-            return Box(Int(number.charValue))
+            return Box(value: Int(number.charValue))
         case "C":
-            return Box(UInt(number.unsignedCharValue))
+            return Box(value: UInt(number.unsignedCharValue))
         case "s":
-            return Box(Int(number.shortValue))
+            return Box(value: Int(number.shortValue))
         case "S":
-            return Box(UInt(number.unsignedShortValue))
+            return Box(value: UInt(number.unsignedShortValue))
         case "i":
-            return Box(Int(number.intValue))
+            return Box(value: Int(number.intValue))
         case "I":
-            return Box(UInt(number.unsignedIntValue))
+            return Box(value: UInt(number.unsignedIntValue))
         case "l":
-            return Box(Int(number.longValue))
+            return Box(value: Int(number.longValue))
         case "L":
-            return Box(UInt(number.unsignedLongValue))
+            return Box(value: UInt(number.unsignedLongValue))
         case "q":
-            return Box(Int(number.longLongValue))          // May fail on 32-bits architectures, right?
+            return Box(value: Int(number.longLongValue))          // May fail on 32-bits architectures, right?
         case "Q":
-            return Box(UInt(number.unsignedLongLongValue)) // May fail on 32-bits architectures, right?
+            return Box(value: UInt(number.unsignedLongLongValue)) // May fail on 32-bits architectures, right?
         case "f":
-            return Box(Double(number.floatValue))
+            return Box(value: Double(number.floatValue))
         case "d":
-            return Box(number.doubleValue)
+            return Box(value: number.doubleValue)
         case "B":
-            return Box(number.boolValue)
+            return Box(value: number.boolValue)
         default:
             NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
             return Box()
@@ -729,7 +729,7 @@ GRMustache provides built-in support for rendering `NSString`.
             return Box()
         }
 
-        return Box(string.bridge())
+        return Box(value: string.bridge())
     }
 
 
@@ -909,7 +909,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
         for (_, element) in mirror.children {
             array.append(element)
         }
-        return Box(array)
+        return Box(value: array)
     }
 
     if mirror.displayStyle == .set {
@@ -917,7 +917,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
         for (_, element) in mirror.children {
             set.add(BoxAny(element))
         }
-        return Box(set)
+        return Box(value: set)
     }
 
     // hanlde Optionals and other enums
@@ -937,7 +937,7 @@ private func BoxAny(object: Any?) -> MustacheBox {
                 }
             }
         }
-        return Box(resultDictionary)
+        return Box(value: resultDictionary)
     }
     //
     // Yet we can not prevent the user from trying to box it, because the
@@ -1118,7 +1118,7 @@ extension Collection where Index.Distance == Int {
                         return Box()
                     }
                 case "count":   // C.Index.Distance == Int
-                    return Box(self.count)
+                    return Box(value: self.count)
                 default:
                     return Box()
                 }
@@ -1174,7 +1174,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
                         return Box()
                     }
                 case "count":   // C.Index.Distance == Int
-                    return Box(self.count)
+                    return Box(value: self.count)
                 default:
                     return Box()
                 }
@@ -1206,7 +1206,7 @@ GRMustache provides built-in support for rendering `NSSet`.
         
         // Renders "213"
         let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
-        try! template.render(Box(["set": Box(set)]))
+        try! template.render(Box(value: ["set": Box(set)]))
         
     
     You should not directly call the `mustacheBox` property. Always use the
@@ -1275,7 +1275,7 @@ Sets of `MustacheBoxable` can feed Mustache templates.
 
     // Renders "132", or "231", etc.
     let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
-    try! template.render(Box(["set": Box(set)]))
+    try! template.render(Box(value: ["set": Box(set)]))
 
 
 ### Rendering
@@ -1312,7 +1312,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let set = value {
-        return set.mustacheBoxWithSetValue(set, box: { Box($0) })
+        return set.mustacheBoxWithSetValue(set, box: { Box(value: $0) })
     } else {
         return Box()
     }
@@ -1325,7 +1325,7 @@ Arrays of `MustacheBoxable` can feed Mustache templates.
 
     // Renders "123"
     let template = try! Template(string: "{{#array}}{{.}}{{/array}}")
-    try! template.render(Box(["array": Box(array)]))
+    try! template.render(Box(value: ["array": Box(array)]))
 
 
 ### Rendering
@@ -1363,7 +1363,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let array = value {
-        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
+        return array.mustacheBoxWithArrayValue(array, box: { Box(value: $0) })
     } else {
         return Box()
     }
@@ -1386,7 +1386,7 @@ Arrays of `MustacheBoxable?` can feed Mustache templates.
 
     // Renders "<1><2><>"
     let template = try! Template(string: "{{#array}}<{{.}}>{{/array}}")
-    try! template.render(Box(["array": Box(array)]))
+    try! template.render(Box(value: ["array": Box(array)]))
 
 
 ### Rendering
@@ -1424,7 +1424,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let array = value {
-        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
+        return array.mustacheBoxWithArrayValue(array, box: { Box(value: $0) })
     } else {
         return Box()
     }
@@ -1445,7 +1445,7 @@ Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
 
     // Renders "Freddy Mercury"
     let template = try! Template(string: "{{firstName}} {{lastName}}")
-    let rendering = try! template.render(Box(dictionary))
+    let rendering = try! template.render(Box(value: dictionary))
 
 
 ### Rendering
@@ -1468,7 +1468,7 @@ filter from the Standard Library:
 
     // Renders "<firstName:Freddy, lastName:Mercury,>"
     let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-    let rendering = try! template.render(Box(["dictionary": dictionary]))
+    let rendering = try! template.render(Box(value: ["dictionary": dictionary]))
 
 
 ### Unwrapping from MustacheBox
@@ -1511,7 +1511,7 @@ can feed Mustache templates. It behaves exactly like Objective-C `NSDictionary`.
 
     // Renders " Zappa"
     let template = try! Template(string: "{{firstName}} {{lastName}}")
-    let rendering = try! template.render(Box(dictionary))
+    let rendering = try! template.render(Box(value: dictionary))
 
 
 ### Rendering
@@ -1534,7 +1534,7 @@ filter from the Standard Library:
 
     // Renders "<firstName:Freddy, lastName:Mercury,>"
     let dictionary: [String: String?] = ["firstName": "Freddy", "lastName": "Mercury"]
-    let rendering = try! template.render(Box(["dictionary": dictionary]))
+    let rendering = try! template.render(Box(value: ["dictionary": dictionary]))
 
 
 ### Unwrapping from MustacheBox
@@ -1593,7 +1593,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
             "firstName": "Freddy",
             "lastName": "Mercury"]
         let template = try! Template(string: "{{firstName}} {{lastName}}")
-        let rendering = try! template.render(Box(dictionary))
+        let rendering = try! template.render(Box(value: dictionary))
     
     
     You should not directly call the `mustacheBox` property. Always use the
@@ -1624,7 +1624,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
 
         // Renders "<name:Arthur, age:36, >"
         let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
-        let rendering = try! template.render(Box(["dictionary": dictionary]))
+        let rendering = try! template.render(Box(value: ["dictionary": dictionary]))
 
 
     ### Unwrapping from MustacheBox
@@ -1671,14 +1671,14 @@ A function that wraps a `FilterFunction` into a `MustacheBox` so that it can
 feed template.
 
     let square: FilterFunction = Filter { (x: Int?) in
-        return Box(x! * x!)
+        return Box(value: x! * x!)
     }
 
     let template = try! Template(string: "{{ square(x) }}")
     template.registerInBaseContext("square", Box(square))
 
     // Renders "100"
-    try! template.render(Box(["x": 10]))
+    try! template.render(Box(value: ["x": 10]))
 
 - parameter filter: A FilterFunction.
 - returns: A MustacheBox that wraps *filter*.
@@ -1699,7 +1699,7 @@ feed template.
 
     // Renders "foo"
     let template = try! Template(string: "{{ foo }}")
-    try! template.render(Box(["foo": Box(foo)]))
+    try! template.render(Box(value: ["foo": Box(foo)]))
 
 - parameter render: A RenderFunction.
 - returns: A MustacheBox that wraps *render*.
@@ -1724,14 +1724,14 @@ feed template.
     // By entering the base context of the template, the logTags function
     // will be notified of all tags.
     let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
-    template.extendBaseContext(Box(logTags))
+    template.extendBaseContext(Box(value: logTags))
 
     // Prints:
     // {{# user }} at line 1 will render { firstName = Errol; lastName = Flynn; }
     // {{ firstName }} at line 1 will render Errol
     // {{ lastName }} at line 1 will render Flynn
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    try! template.render(Box(data))
+    try! template.render(Box(value: data))
 
 - parameter willRender: A WillRenderFunction
 - returns: A MustacheBox that wraps *willRender*.
@@ -1755,7 +1755,7 @@ feed template.
     // By entering the base context of the template, the logRenderings function
     // will be notified of all tags.
     let template = try! Template(string: "{{# user }}{{ firstName }} {{ lastName }}{{/ user }}")
-    template.extendBaseContext(Box(logRenderings))
+    template.extendBaseContext(Box(value: logRenderings))
 
     // Renders "Errol Flynn"
     //
@@ -1764,7 +1764,7 @@ feed template.
     // {{ lastName }} at line 1 did render Flynn as `Flynn`
     // {{# user }} at line 1 did render { firstName = Errol; lastName = Flynn; } as `Errol Flynn`
     let data = ["user": ["firstName": "Errol", "lastName": "Flynn"]]
-    try! template.render(Box(data))
+    try! template.render(Box(value: data))
 
 - parameter didRender: A DidRenderFunction/
 - returns: A MustacheBox that wraps *didRender*.

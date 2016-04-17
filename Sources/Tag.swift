@@ -81,7 +81,7 @@ public protocol Tag: class, CustomStringConvertible {
         let template = try! Template(string: "{{object}}, {{#object}}...{{/object}}")
 
         // Renders "variable, section"
-        try! template.render(Box(["object": Box(render)]))
+        try! template.render(Box(value: ["object": Box(render)]))
     */
     var type: TagType { get }
     
@@ -112,7 +112,7 @@ public protocol Tag: class, CustomStringConvertible {
 
         // Renders "I have 3 cats."
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
-        try! template.render(Box(data))
+        try! template.render(Box(value: data))
     */
     var innerTemplateString: String { get }
     
@@ -139,7 +139,7 @@ public protocol Tag: class, CustomStringConvertible {
         template.registerInBaseContext("strong", Box(strong))
 
         // Renders "<strong>Hello Arthur</strong>"
-        try! template.render(Box(["name": Box("Arthur")]))
+        try! template.render(Box(value: ["name": Box("Arthur")]))
     
     - parameter context: The context stack for evaluating mustache tags.
     - parameter error:   If there is a problem rendering the tag, throws an

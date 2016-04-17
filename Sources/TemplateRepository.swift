@@ -257,7 +257,7 @@ final public class TemplateRepository {
 
         // Renders "Hello Luigi"
         let template = try! repository.template(string: "Hello <%name%>")
-        try! template.render(Box(["name": "Luigi"]))
+        try! template.render(Box(value: ["name": "Luigi"]))
     
     **Warning**: changing the configuration has no effect after the repository
     has loaded one template.

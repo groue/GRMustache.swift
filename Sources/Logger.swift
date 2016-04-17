@@ -35,11 +35,11 @@ extension StandardLibrary {
     
         // Logs all tag renderings with NSLog():
         let logger = StandardLibrary.Logger()
-        template.extendBaseContext(Box(logger))
+        template.extendBaseContext(Box(value: logger))
         
         // Render
         let data = ["name": "Freddy Mercury", "age": 45]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(Box(value: data))
     
         // In NSLog:
         // {{name}} at line 1 did render "Freddy Mercury" as "Freddy Mercury"
