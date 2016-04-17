@@ -527,7 +527,7 @@ extension NSObject: MustacheBoxable {
         }
     }
 
-    private func handleEnumeration(object: NSObject?) -> MustacheBox {
+    private func handleEnumeration(_ object: NSObject?) -> MustacheBox {
     #if os(Linux)
         var selfArray = [AnyObject]()
         if let nsArray = object as? NSArray {
@@ -549,7 +549,7 @@ extension NSObject: MustacheBoxable {
         return array.mustacheBoxWithArrayValue(object, box: { $0 })
     }
 
-    private func handleNonEnumerationObject(object: NSObject?) -> MustacheBox {
+    private func handleNonEnumerationObject(_ object: NSObject?) -> MustacheBox {
         // Generic NSObject
         guard let object = object else {
             return Box()
