@@ -136,7 +136,7 @@ extension StandardLibrary {
             // Push self in the context stack in order to trigger our
             // willRender() method.
             
-            let context = info.context.extendedContext(Box(value: self))
+            let context = info.context.extendedContext(by: Box(value: self))
             
             
             let localizableFormatRendering = try info.tag.render(context)

@@ -152,7 +152,7 @@ final public class Template {
     - returns: The rendered string.
     */
     public func render(box: MustacheBox = Box(value: )) throws -> String {
-        let rendering = try render(baseContext.extendedContext(box))
+        let rendering = try render(baseContext.extendedContext(by: box))
         return rendering.string
     }
     
@@ -230,7 +230,7 @@ final public class Template {
     - Context.extendedContext
     */
     public func extendBaseContext(box: MustacheBox) {
-        baseContext = baseContext.extendedContext(box)
+        baseContext = baseContext.extendedContext(by: box)
     }
     
     /**

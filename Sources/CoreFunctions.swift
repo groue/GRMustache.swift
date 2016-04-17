@@ -440,7 +440,7 @@ The default rendering thus reads:
             // {{# value }}...{{/ value }}
 
             // Push the value on the top of the context stack:
-            let context = info.context.extendedContext(Box(value: value))
+            let context = info.context.extendedContext(by: Box(value: value))
 
             // Renders the inner content of the section tag:
             return try info.tag.render(context)
@@ -689,7 +689,7 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             // {{# lambda }}...{{/ lambda }}
             //
             // Behave as a true object, and render the section.
-            let context = info.context.extendedContext(Box(value: Lambda(lambda)))
+            let context = info.context.extendedContext(by: Box(value: Lambda(lambda)))
             return try info.tag.render(context)
         }
     }
