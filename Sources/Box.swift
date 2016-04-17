@@ -546,7 +546,7 @@ extension NSObject: MustacheBoxable {
         // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
         let array = IteratorSequence(NSFastEnumerationIterator(enumerable)).map(BoxAny)
    #endif
-        return array.mustacheBoxWithArrayValue(object, box: { $0 })
+        return array.mustacheBox(withArrayValue: object, box: { $0 })
     }
 
     private func handleNonEnumerationObject(_ object: NSObject?) -> MustacheBox {
@@ -1104,7 +1104,7 @@ extension Collection where Index.Distance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithSetValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBox(withSetValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1126,7 +1126,7 @@ extension Collection where Index.Distance == Int {
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(context: info.context.extendedContext(by: self.mustacheBoxWithSetValue(value, box: box)))
+                    return try info.tag.render(context: info.context.extendedContext(by: self.mustacheBox(withSetValue: value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -1154,7 +1154,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithArrayValue(value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBox(withArrayValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1182,7 +1182,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
             render: { (info: RenderingInfo) in
                 if info.enumerationItem {
                     // {{# collections }}...{{/ collections }}
-                    return try info.tag.render(context: info.context.extendedContext(by: self.mustacheBoxWithArrayValue(value, box: box)))
+                    return try info.tag.render(context: info.context.extendedContext(by: self.mustacheBox(withArrayValue: value, box: box)))
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
@@ -1263,7 +1263,7 @@ GRMustache provides built-in support for rendering `NSSet`.
         #else
             let array = IteratorSequence(NSFastEnumerationIterator(value)).map(BoxAny)
         #endif
-        return array.mustacheBoxWithSetValue(value, box: { $0 })
+        return array.mustacheBox(withSetValue: value, box: { $0 })
     }
 
 
@@ -1312,7 +1312,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let set = value {
-        return set.mustacheBoxWithSetValue(set, box: { Box(value: $0) })
+        return set.mustacheBox(withSetValue: set, box: { Box(value: $0) })
     } else {
         return Box()
     }
@@ -1363,7 +1363,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let array = value {
-        return array.mustacheBoxWithArrayValue(array, box: { Box(value: $0) })
+        return array.mustacheBox(withArrayValue: array, box: { Box(value: $0) })
     } else {
         return Box()
     }
@@ -1373,7 +1373,7 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 public func Box<C: Collection where C.Index: BidirectionalIndex,
                 C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let array = value {
-        return array.mustacheBoxWithArrayValue(array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
+        return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
     } else {
         return Box()
     }
@@ -1424,7 +1424,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 */
 public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
     if let array = value {
-        return array.mustacheBoxWithArrayValue(array, box: { Box(value: $0) })
+        return array.mustacheBox(withArrayValue: array, box: { Box(value: $0) })
     } else {
         return Box()
     }
