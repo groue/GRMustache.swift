@@ -84,8 +84,8 @@ GRMustache lets you use `NSFormatter` to format your values.
     those well-behaved formatters.
     */
 
-    public func Box(formatter: NSFormatter?) -> MustacheBox {
-        guard let formatter = formatter else {
+    public func Box(value: NSFormatter?) -> MustacheBox {
+        guard let formatter = value else {
             return Box()
         }
 
