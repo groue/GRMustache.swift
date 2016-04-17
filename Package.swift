@@ -1,7 +1,7 @@
 import PackageDescription
 
 let swiftyJsonUrl = "https://github.com/IBM-Swift/SwiftyJSON.git"
-let swiftyJsonVersion = 5
+let swiftyJsonVersion = 6
 
 let package = Package(
   name: "Mustache",
