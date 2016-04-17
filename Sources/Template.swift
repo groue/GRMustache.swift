@@ -151,7 +151,7 @@ final public class Template {
                        that describes the problem.
     - returns: The rendered string.
     */
-    public func render(box: MustacheBox = Box(value: )) throws -> String {
+    public func render(box: MustacheBox = Box()) throws -> String {
         let rendering = try render(baseContext.extendedContext(by: box))
         return rendering.string
     }
