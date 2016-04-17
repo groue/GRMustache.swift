@@ -270,7 +270,7 @@ final public class Context {
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(partialOverride partialOverride: TemplateASTNode.PartialOverride) -> Context {
+    func extendedContext(partialOverride: TemplateASTNode.PartialOverride) -> Context {
         return Context(type: .PartialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
