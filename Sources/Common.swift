@@ -90,7 +90,7 @@ public struct MustacheError: ErrorProtocol {
         self.underlyingError = underlyingError
     }
     
-    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) -> MustacheError {
+    func errorWith(message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) -> MustacheError {
         return MustacheError(
             kind: self.kind,
             message: message ?? self.message,
