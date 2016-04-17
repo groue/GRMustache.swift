@@ -653,25 +653,25 @@ GRMustache provides built-in support for rendering `NSNumber`.
         let objCType = String(cString: number.objCType)
         switch objCType {
         case "c":
-            return Box(value: Int(number.charValue))
+            return Box(value: Int(number.int8Value))
         case "C":
-            return Box(value: UInt(number.unsignedCharValue))
+            return Box(value: UInt(number.uint8Value))
         case "s":
-            return Box(value: Int(number.shortValue))
+            return Box(value: Int(number.int16Value))
         case "S":
-            return Box(value: UInt(number.unsignedShortValue))
+            return Box(value: UInt(number.uint16Value))
         case "i":
-            return Box(value: Int(number.intValue))
+            return Box(value: Int(number.int32Value))
         case "I":
-            return Box(value: UInt(number.unsignedIntValue))
+            return Box(value: UInt(number.uint32Value))
         case "l":
-            return Box(value: Int(number.longValue))
+            return Box(value: Int(number.int32Value))
         case "L":
-            return Box(value: UInt(number.unsignedLongValue))
+            return Box(value: UInt(number.uint32Value))
         case "q":
-            return Box(value: Int(number.longLongValue))          // May fail on 32-bits architectures, right?
+            return Box(value: Int(number.int64Value))          // May fail on 32-bits architectures, right?
         case "Q":
-            return Box(value: UInt(number.unsignedLongLongValue)) // May fail on 32-bits architectures, right?
+            return Box(value: UInt(number.uint64Value)) // May fail on 32-bits architectures, right?
         case "f":
             return Box(value: Double(number.floatValue))
         case "d":
