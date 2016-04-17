@@ -30,7 +30,7 @@ struct ExpressionInvocation {
         return try evaluate(context: context, expression: expression)
     }
     
-    private func evaluate(context context: Context, expression: Expression) throws -> MustacheBox {
+    private func evaluate(context: Context, expression: Expression) throws -> MustacheBox {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
