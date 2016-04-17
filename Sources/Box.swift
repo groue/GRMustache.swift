@@ -1130,7 +1130,7 @@ extension Collection where Index.Distance == Int {
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    return try self.renderItems(info, box: box)
+                    return try self.renderItems(info: info, box: box)
                 }
             }
         )
@@ -1186,7 +1186,7 @@ extension Collection where Index.Distance == Int, Index: BidirectionalIndex {
                 } else {
                     // {{ collection }}
                     // {{# collection }}...{{/ collection }}
-                    return try self.renderItems(info, box: box)
+                    return try self.renderItems(info: info, box: box)
                 }
             }
         )
