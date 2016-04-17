@@ -85,7 +85,7 @@ final class TemplateGenerator {
             // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = ExpressionGenerator().stringFromExpression(section.expression)
+            let expression = ExpressionGenerator().string(from: section.expression)
             if section.inverted {
                 buffer.append("\(tagStartDelimiter)^\(expression)\(tagEndDelimiter)")
             } else {
@@ -102,7 +102,7 @@ final class TemplateGenerator {
             // delimiters.
             let tagStartDelimiter = configuration.tagDelimiterPair.0
             let tagEndDelimiter = configuration.tagDelimiterPair.1
-            let expression = ExpressionGenerator().stringFromExpression(variable.expression)
+            let expression = ExpressionGenerator().string(from: variable.expression)
             if variable.escapesHTML {
                 buffer.append("\(tagStartDelimiter)\(expression)\(tagEndDelimiter)")
             } else if tagStartDelimiter == "{{" && tagEndDelimiter == "}}" {

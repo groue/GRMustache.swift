@@ -24,7 +24,7 @@
 extension Expression : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     var debugDescription: String {
-        let string = ExpressionGenerator().stringFromExpression(self)
+        let string = ExpressionGenerator().string(from: self)
         return "Expression(\(string))"
     }
 }
@@ -36,7 +36,7 @@ final class ExpressionGenerator {
         self.configuration = configuration ?? DefaultConfiguration
     }
     
-    func stringFromExpression(expression: Expression) -> String {
+    func string(from expression: Expression) -> String {
         buffer = ""
         renderExpression(expression)
         return buffer
