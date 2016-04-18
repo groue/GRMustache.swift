@@ -157,7 +157,7 @@ final public class Context {
             let context = Context(Box(value: data))
     
             // "Groucho Marx"
-            context.mustacheBoxForKey("name").value
+            context.mustacheBox(forKey: "name").value
 
     If you want the value for a full Mustache expression such as `user.name` or
     `uppercase(user.name)`, use the `mustacheBoxForExpression` method.
@@ -165,9 +165,9 @@ final public class Context {
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public func mustacheBoxForKey(key: String) -> MustacheBox {
+    public func mustacheBox(forKey key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
-            let box = registeredKeysContext.mustacheBoxForKey(key)
+            let box = registeredKeysContext.mustacheBox(forKey: key)
             if !box.isEmpty {
                 return box
             }
@@ -177,14 +177,14 @@ final public class Context {
         case .Root:
             return Box()
         case .Box(box: let box, parent: let parent):
-            let innerBox = box.mustacheBoxForKey(key)
+             let innerBox = box.mustacheBox(forKey: key)
             if innerBox.isEmpty {
-                return parent.mustacheBoxForKey(key)
+                return parent.mustacheBox(forKey: key)
             } else {
                 return innerBox
             }
         case .PartialOverride(partialOverride: _, parent: let parent):
-            return parent.mustacheBoxForKey(key)
+            return parent.mustacheBox(forKey: key)
         }
     }
     
@@ -195,7 +195,7 @@ final public class Context {
         let context = Context(Box(value: data))
 
         // "Albert Einstein"
-        try! context.mustacheBoxForExpression("person.name").value
+        try! context.mustacheBox(forExpression: "person.name").value
     
     - parameter string: The expression string.
     - parameter error:  If there is a problem parsing or evaluating the
@@ -203,7 +203,7 @@ final public class Context {
     
     - returns: The value of the expression.
     */
-    public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
+    public func mustacheBox(forExpression string: String) throws -> MustacheBox {
         let parser = ExpressionParser()
         var empty = false
         let expression = try parser.parse(string, empty: &empty)
