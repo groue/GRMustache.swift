@@ -206,7 +206,7 @@ final public class Context {
     public func mustacheBox(forExpression string: String) throws -> MustacheBox {
         let parser = ExpressionParser()
         var empty = false
-        let expression = try parser.parse(string, empty: &empty)
+        let expression = try parser.parse(string: string, empty: &empty)
         let invocation = ExpressionInvocation(expression: expression)
         return try invocation.invokeWithContext(self)
     }

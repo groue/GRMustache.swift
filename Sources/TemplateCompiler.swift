@@ -118,7 +118,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -135,7 +135,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -152,7 +152,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -169,7 +169,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     default:
                         var empty = false
                         do {
-                            let expression = try ExpressionParser().parse(content, empty: &empty)
+                            let expression = try ExpressionParser().parse(string: content, empty: &empty)
                             compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
                             compilationState.compilerContentType = .Locked(compilationState.contentType)
                         } catch let error as MustacheError {
@@ -200,7 +200,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var expression: Expression?
                         do {
-                            expression = try ExpressionParser().parse(content, empty: &empty)
+                            expression = try ExpressionParser().parse(string: content, empty: &empty)
                         } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
@@ -230,7 +230,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         var empty: Bool = false
                         var expression: Expression?
                         do {
-                            expression = try ExpressionParser().parse(content, empty: &empty)
+                            expression = try ExpressionParser().parse(string: content, empty: &empty)
                         } catch let error as MustacheError {
                             if empty == false {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
