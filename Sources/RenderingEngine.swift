@@ -172,7 +172,7 @@ final class RenderingEngine {
                     rendering = try box.render(info: info)
                 case (true, false):
                     // {{^ false }}...{{/ false }}
-                    rendering = try tag.render(context)
+                    rendering = try tag.render(context: context)
                 default:
                     // {{^ true }}...{{/ true }}
                     // {{# false }}...{{/ false }}

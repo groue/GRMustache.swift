@@ -443,7 +443,7 @@ The default rendering thus reads:
             let context = info.context.extendedContext(by: Box(value: value))
 
             // Renders the inner content of the section tag:
-            return try info.tag.render(context)
+            return try info.tag.render(context: context)
         }
     }
 

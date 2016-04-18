@@ -139,7 +139,7 @@ extension StandardLibrary {
             let context = info.context.extendedContext(by: Box(value: self))
             
             
-            let localizableFormatRendering = try info.tag.render(context)
+            let localizableFormatRendering = try info.tag.render(context: context)
                 
             // Now perform a second rendering that will fill our
             // formatArguments array with HTML-escaped tag renderings.
@@ -157,7 +157,7 @@ extension StandardLibrary {
                 
             // Render again
                 
-            try! info.tag.render(context)
+            try! info.tag.render(context: context)
                 
                 
             let rendering: Rendering
