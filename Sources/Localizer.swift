@@ -256,7 +256,7 @@ extension StandardLibrary {
             return bundle.localizedString(forKey: key, value:"", table:table)
         }
         
-        private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
+        private func stringWithFormat(format: String, argumentsArray args:[String]) -> String {
             #if os(Linux)
                 // see issue https://bugs.swift.org/browse/SR-957
                 // before the issue is resolved - manually replace %@ string one by one by NSLocalizedString
