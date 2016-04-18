@@ -26,7 +26,7 @@ import Foundation
 struct ExpressionInvocation {
     let expression: Expression
     
-    func invokeWithContext(context: Context) throws -> MustacheBox {
+    func invoke(with context: Context) throws -> MustacheBox {
         return try evaluate(context: context, expression: expression)
     }
     

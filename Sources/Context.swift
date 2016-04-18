@@ -208,7 +208,7 @@ final public class Context {
         var empty = false
         let expression = try parser.parse(string: string, empty: &empty)
         let invocation = ExpressionInvocation(expression: expression)
-        return try invocation.invokeWithContext(self)
+        return try invocation.invoke(with: self)
     }
     
     

@@ -134,7 +134,7 @@ final class RenderingEngine {
         var box: MustacheBox
 
         do {
-            box = try ExpressionInvocation(expression: expression).invokeWithContext(context)
+            box = try ExpressionInvocation(expression: expression).invoke(with: context)
         } catch let error as MustacheError {
             let newMessage: String
             if let oldMessage = error.message {
