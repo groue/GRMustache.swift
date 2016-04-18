@@ -41,7 +41,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
     
     // This function is used for evaluating `javascriptEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
-        return Rendering(JavascriptEscapeHelper.escapeJavascript(rendering.string), rendering.contentType)
+        return Rendering(JavascriptEscapeHelper.escape(javascript: rendering.string), rendering.contentType)
     }
     
     // A WillRenderFunction: this function lets JavascriptEscape change values that
@@ -63,7 +63,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
         }
     }
     
-    private class func escapeJavascript(string: String) -> String {
+    private class func escape(javascript string: String) -> String {
         // This table comes from https://github.com/django/django/commit/8c4a525871df19163d5bfdf5939eff33b544c2e2#django/template/defaultfilters.py
         //
         // Quoting Malcolm Tredinnick:
