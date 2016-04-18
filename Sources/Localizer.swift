@@ -192,7 +192,7 @@ extension StandardLibrary {
                 let localizedFormat = localizedStringForKey(localizableFormat)
                 
                 // Apply arguments
-                let localizedRendering = stringWithFormat(format: localizedFormat, argumentsArray: formatArguments!)
+                let localizedRendering = string(withFormat: localizedFormat, argumentsArray: formatArguments!)
                 
                 // And we have the final rendering
                 rendering = Rendering(localizedRendering, localizableFormatRendering.contentType)
@@ -256,7 +256,7 @@ extension StandardLibrary {
             return bundle.localizedString(forKey: key, value:"", table:table)
         }
         
-        private func stringWithFormat(format: String, argumentsArray args:[String]) -> String {
+        private func string(withFormat format: String, argumentsArray args:[String]) -> String {
             #if os(Linux)
                 // see issue https://bugs.swift.org/browse/SR-957
                 // before the issue is resolved - manually replace %@ string one by one by NSLocalizedString
