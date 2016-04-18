@@ -57,7 +57,7 @@ final class HTMLEscapeHelper : MustacheBoxable {
             // rendering.
             return Box(value: { (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info: info)
-                return try self.filter(rendering)
+                return try self.filter(rendering: rendering)
             })
         case .Section:
             // {{# value }}...{{/ value }}
