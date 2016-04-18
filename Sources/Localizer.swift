@@ -112,7 +112,7 @@ extension StandardLibrary {
         
         // This function is used for evaluating `localize(x)` expressions.
         private func filter(rendering: Rendering) throws -> Rendering {
-            return Rendering(localizedStringForKey(rendering.string), rendering.contentType)
+            return Rendering(localizedString(forKey: rendering.string), rendering.contentType)
         }
         
         // This functionis used to render a {{# localize }}Hello{{/ localize }} section.
@@ -165,7 +165,7 @@ extension StandardLibrary {
             {
                 // There is no format argument, which means no inner
                 // variable tag: {{# localize }}plain text{{/ localize }}
-                rendering = Rendering(localizedStringForKey(localizableFormatRendering.string), localizableFormatRendering.contentType)
+                rendering = Rendering(localizedString(forKey: localizableFormatRendering.string), localizableFormatRendering.contentType)
             }
             else
             {
@@ -189,7 +189,7 @@ extension StandardLibrary {
                 let localizableFormat = localizableFormatRendering.string.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: Placeholder.string, with: "%@")
                 
                 // Now localize the format
-                let localizedFormat = localizedStringForKey(localizableFormat)
+                let localizedFormat = localizedString(forKey: localizableFormat)
                 
                 // Apply arguments
                 let localizedRendering = string(withFormat: localizedFormat, argumentsArray: formatArguments!)
@@ -252,7 +252,7 @@ extension StandardLibrary {
             }
         }
         
-        private func localizedStringForKey(key: String) -> String {
+        private func localizedString(forKey key: String) -> String {
             return bundle.localizedString(forKey: key, value:"", table:table)
         }
         
