@@ -38,11 +38,11 @@ final class ExpressionGenerator {
     
     func string(from expression: Expression) -> String {
         buffer = ""
-        renderExpression(expression)
+        render(expression: expression)
         return buffer
     }
     
-    func renderExpression(expression: Expression) {
+    func render(expression: Expression) {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
@@ -57,7 +57,7 @@ final class ExpressionGenerator {
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            renderExpression(baseExpression)
+            render(expression: baseExpression)
             buffer.append(".")
             buffer.append(identifier)
             
@@ -67,9 +67,9 @@ final class ExpressionGenerator {
             // Support for variadic filters is not implemented:
             // `f(a,b)` is rendered `f(a)(b)`.
             
-            renderExpression(filterExpression)
+            render(expression: filterExpression)
             buffer.append("(")
-            renderExpression(argumentExpression)
+            render(expression: argumentExpression)
             buffer.append(")")
         }
     }
