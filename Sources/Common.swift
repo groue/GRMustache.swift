@@ -176,7 +176,7 @@ HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entitie
 - parameter string: A string.
 - returns: The HTML-escaped string.
 */
-public func escapeHTML(string: String) -> String {
+public func escape(html string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",
         ">": "&gt;",

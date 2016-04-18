@@ -41,7 +41,7 @@ final class HTMLEscapeHelper : MustacheBoxable {
     
     // This function is used for evaluating `HTMLEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
-        return Rendering(escapeHTML(rendering.string), rendering.contentType)
+        return Rendering(escape(html: rendering.string), rendering.contentType)
     }
     
     // A WillRenderFunction: this function lets HTMLEscape change values that

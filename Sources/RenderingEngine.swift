@@ -75,7 +75,7 @@ final class RenderingEngine {
             let rendering = try renderingEngine.render()
             switch (targetContentType, rendering.contentType) {
             case (.HTML, .Text):
-                buffer.append(escapeHTML(rendering.string))
+                buffer.append(escape(html: rendering.string))
             default:
                 buffer.append(rendering.string)
             }
@@ -192,7 +192,7 @@ final class RenderingEngine {
         let string: String
         switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
         case (.HTML, .Text, true):
-            string = escapeHTML(rendering.string)
+            string = escape(html: rendering.string)
         default:
             string = rendering.string
         }
