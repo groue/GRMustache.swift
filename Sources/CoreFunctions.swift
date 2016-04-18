@@ -690,7 +690,7 @@ public func Lambda(_ lambda: () -> String) -> RenderFunction {
             //
             // Behave as a true object, and render the section.
             let context = info.context.extendedContext(by: Box(value: Lambda(lambda)))
-            return try info.tag.render(context)
+            return try info.tag.render(with: context)
         }
     }
 }
