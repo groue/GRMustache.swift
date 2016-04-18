@@ -225,7 +225,7 @@ public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> Fil
             let arguments = arguments + [nextArgument]
             if partialApplication {
                 // Wait for another argument
-                return Box(value: partialFilter(filter, arguments: arguments))
+                return Box(value: partialFilter(filter: filter, arguments: arguments))
             } else {
                 // No more argument: compute final value
                 return try filter(arguments)
@@ -233,7 +233,7 @@ public func VariadicFilter(filter: ([MustacheBox]) throws -> MustacheBox) -> Fil
         }
     }
     
-    return partialFilter(filter, arguments: [])
+    return partialFilter(filter: filter, arguments: [])
 }
 
 
