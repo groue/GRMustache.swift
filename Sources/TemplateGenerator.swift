@@ -46,11 +46,11 @@ final class TemplateGenerator {
     
     func stringFromTemplateAST(templateAST: TemplateAST) -> String {
         buffer = ""
-        renderTemplateAST(templateAST)
+        render(templateAST: templateAST)
         return buffer
     }
     
-    private func renderTemplateAST(templateAST: TemplateAST) {
+    private func render(templateAST: TemplateAST) {
         for node in templateAST.nodes {
             renderTemplateASTNode(node)
         }
@@ -63,7 +63,7 @@ final class TemplateGenerator {
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = block.name
             buffer.append("\(tagStartDelimiter)$\(name)\(tagEndDelimiter)")
-            renderTemplateAST(block.innerTemplateAST)
+            render(templateAST: block.innerTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialOverrideNode(let partialOverride):
@@ -71,7 +71,7 @@ final class TemplateGenerator {
             let tagEndDelimiter = configuration.tagDelimiterPair.1
             let name = partialOverride.parentPartial.name ?? "<null>"
             buffer.append("\(tagStartDelimiter)<\(name)\(tagEndDelimiter)")
-            renderTemplateAST(partialOverride.childTemplateAST)
+            render(templateAST: partialOverride.childTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(name)\(tagEndDelimiter)")
             
         case .PartialNode(let partial):
@@ -91,7 +91,7 @@ final class TemplateGenerator {
             } else {
                 buffer.append("\(tagStartDelimiter)#\(expression)\(tagEndDelimiter)")
             }
-            renderTemplateAST(section.tag.innerTemplateAST)
+            render(templateAST: section.tag.innerTemplateAST)
             buffer.append("\(tagStartDelimiter)/\(expression)\(tagEndDelimiter)")
             
         case .TextNode(let text):

@@ -33,7 +33,7 @@ final class RenderingEngine {
     
     func render() throws -> Rendering {
         buffer = ""
-        try renderTemplateAST(templateAST, inContext: baseContext)
+        try render(templateAST: templateAST, inContext: baseContext)
         return Rendering(buffer, templateAST.contentType)
     }
     
@@ -44,7 +44,7 @@ final class RenderingEngine {
     private let baseContext: Context
     private var buffer: String
 
-    private func renderTemplateAST(templateAST: TemplateAST, inContext context: Context) throws {
+    private func render(templateAST: TemplateAST, inContext context: Context) throws {
         // We must take care of eventual content-type mismatch between the
         // currently rendered AST (defined by init), and the argument.
         //
@@ -89,20 +89,20 @@ final class RenderingEngine {
             //
             // Render the inner content of the resolved block.
             let resolvedBlock = resolveBlock(block, inContext: context)
-            return try renderTemplateAST(resolvedBlock.innerTemplateAST, inContext: context)
+            return try render(templateAST: resolvedBlock.innerTemplateAST, inContext: context)
             
         case .PartialOverrideNode(let partialOverride):
             // {{< name }}...{{/ name }}
             //
             // Extend the inheritance stack, and render the content of the parent partial
             let context = context.extendedContext(partialOverride: partialOverride)
-            return try renderTemplateAST(partialOverride.parentPartial.templateAST, inContext: context)
+            return try render(templateAST: partialOverride.parentPartial.templateAST, inContext: context)
             
         case .PartialNode(let partial):
             // {{> name }}
             //
             // Render the content of the partial
-            return try renderTemplateAST(partial.templateAST, inContext: context)
+            return try render(templateAST: partial.templateAST, inContext: context)
             
         case .SectionNode(let section):
             // {{# name }}...{{/ name }}
