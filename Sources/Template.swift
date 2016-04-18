@@ -151,7 +151,7 @@ final public class Template {
                        that describes the problem.
     - returns: The rendered string.
     */
-    public func render(box: MustacheBox = Box()) throws -> String {
+    public func render(with box: MustacheBox = Box()) throws -> String {
         let rendering = try render(baseContext.extendedContext(by: box))
         return rendering.string
     }
@@ -174,7 +174,7 @@ final public class Template {
     - RenderFunction
     - Template.contentType
     */
-    public func render(context: Context) throws -> Rendering {
+    public func render(with context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return try renderingEngine.render()
     }
@@ -382,7 +382,7 @@ extension Template : MustacheBoxable {
                     // {{ template }} behaves just like {{> partial }}
                     //
                     // Let's simply render the template:
-                    return try self.render(context: info.context)
+                    return try self.render(with: info.context)
                 }
         })
     }

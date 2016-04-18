@@ -443,7 +443,7 @@ The default rendering thus reads:
             let context = info.context.extendedContext(by: Box(value: value))
 
             // Renders the inner content of the section tag:
-            return try info.tag.render(context: context)
+            return try info.tag.render(with: context)
         }
     }
 
@@ -487,7 +487,7 @@ bolded section has already been parsed with its template. You may prefer the raw
 `RenderFunction` type, capable of an equivalent and faster implementation:
 
     let bold: RenderFunction = { (info: RenderingInfo) in
-        let rendering = try info.tag.render(context: info.context)
+        let rendering = try info.tag.render(with: info.context)
         return Rendering("<b>\(rendering.string)</b>", rendering.contentType)
     }
     let data = [
@@ -517,7 +517,7 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             
             let templateString = lambda(info.tag.innerTemplateString)
             let template = try templateRepository.template(string: templateString)
-            return try template.render(context: info.context)
+            return try template.render(with: info.context)
             
             // IMPLEMENTATION NOTE
             //
@@ -561,7 +561,7 @@ public func Lambda(lambda: String -> String) -> RenderFunction {
             //         contentType: contentType
             //         tagDelimiterPair: info.tag.tagDelimiterPair,
             //         baseTemplateID: templateID)
-            //     return try template.render(context: info.context)
+            //     return try template.render(with: info.context)
             //
             // Should we ever implement this, beware the retain cycle between
             // tags and template repositories (which own tags through their
@@ -633,7 +633,7 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             
             let templateString = lambda()
             let template = try templateRepository.template(string: templateString)
-            return try template.render(context: info.context)
+            return try template.render(with: info.context)
             
             // IMPLEMENTATION NOTE
             //
@@ -673,7 +673,7 @@ public func Lambda(lambda: () -> String) -> RenderFunction {
             //         contentType: .Text,
             //         tagDelimiterPair: ("{{", "}}),
             //         baseTemplateID: templateID)
-            //     return try template.render(context: info.context)
+            //     return try template.render(with: info.context)
             //
             // Should we ever implement this, beware the retain cycle between
             // tags and template repositories (which own tags through their

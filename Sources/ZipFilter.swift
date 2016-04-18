@@ -78,7 +78,7 @@ let ZipFilter = VariadicFilter { (boxes) in
         
         let renderFunction: RenderFunction = { (info) -> Rendering in
             var context = zippedBoxes.reduce(info.context) { (context, box) in context.extendedContext(by: box) }
-            return try info.tag.render(context: context)
+            return try info.tag.render(with: context)
         }
         
         renderFunctions.append(renderFunction)

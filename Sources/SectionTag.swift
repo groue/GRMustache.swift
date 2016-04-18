@@ -47,7 +47,7 @@ final class SectionTag: LocatedTag {
         return "\(openingToken.templateSubstring) at \(openingToken.locationDescription)"
     }
     
-    func render(context: Context) throws -> Rendering {
+    func render(with: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
     }

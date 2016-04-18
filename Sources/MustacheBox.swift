@@ -393,7 +393,7 @@ final public class MustacheBox : NSObject {
                             // Perform the default rendering: push self on the top
                             // of the context stack, and render the section:
                             let context = info.context.extendedContext(by: Box(value: self))
-                            return try info.tag.render(context: context)
+                            return try info.tag.render(with: context)
                         }
                     }
                 )
@@ -497,7 +497,7 @@ final public class MustacheBox : NSObject {
                     let context = info.context.extendedContext(by: self)
                     
                     // Renders the inner content of the section tag:
-                    return try info.tag.render(context: context)
+                    return try info.tag.render(with: context)
                 }
             }
         }

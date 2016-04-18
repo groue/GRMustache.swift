@@ -46,7 +46,7 @@ final class VariableTag: LocatedTag {
     }
     
     // Variable have no inner content.
-    func render(context: Context) throws -> Rendering {
+    func render(with context: Context) throws -> Rendering {
         return Rendering("", contentType)
     }
     
