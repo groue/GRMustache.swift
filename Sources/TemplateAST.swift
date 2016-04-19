@@ -84,7 +84,7 @@ final class TemplateAST {
         }
     }
 
-    func updateFromTemplateAST(templateAST: TemplateAST) {
+    func updateFromTemplateAST(_ templateAST: TemplateAST) {
         self.type = templateAST.type
     }
 }
