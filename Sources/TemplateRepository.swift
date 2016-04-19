@@ -374,7 +374,7 @@ final public class TemplateRepository {
         }
     }
     
-    func templateAST(string string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
+    func templateAST(string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
         // A Compiler
         let compiler = TemplateCompiler(
             contentType: lockedConfiguration.contentType,
