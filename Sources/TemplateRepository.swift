@@ -387,7 +387,7 @@ final public class TemplateRepository {
             tagDelimiterPair: lockedConfiguration.tagDelimiterPair)
         
         // Parse...
-        parser.parse(string: string, templateID: templateID)
+        parser.parse(templateString: string, templateID: templateID)
         
         // ...and extract the result from the Compiler
         return try compiler.templateAST()
