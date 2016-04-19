@@ -181,8 +181,8 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .Block(content: let content):
                     var empty: Bool = false
-                    let blockName = try blockNameFromString(content, inToken: token, empty: &empty)
-                    compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockName)))
+                    let blockNameFromContent = try blockName(fromString: content, inToken: token, empty: &empty)
+                    compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockNameFromContent)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     
                 case .PartialOverride(content: let content):
@@ -288,15 +288,15 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         
                     case .Block(openingToken: _, blockName: let closedBlockName):
                         var empty: Bool = false
-                        var blockName: String?
+                        var blockNameFromContent: String?
                         do {
-                            blockName = try blockNameFromString(content, inToken: token, empty: &empty)
+                            blockNameFromContent = try blockName(fromString: content, inToken: token, empty: &empty)
                         } catch {
                             if empty == false {
                                 throw error
                             }
                         }
-                        if blockName != nil && blockName != closedBlockName {
+                        if blockNameFromContent != nil && blockNameFromContent != closedBlockName {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
@@ -389,7 +389,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         }
     }
     
-    private func blockNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+    private func blockName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespacesAndNewlines()
         let blockName = string.trimmingCharacters(in: whiteSpace)
         if blockName.characters.count == 0 {
