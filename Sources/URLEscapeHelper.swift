@@ -41,7 +41,7 @@ final class URLEscapeHelper : MustacheBoxable {
     
     // This function is used for evaluating `URLEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
-        return Rendering(URLEscapeHelper.escapeURL(rendering.string), rendering.contentType)
+        return Rendering(URLEscapeHelper.escapeURL(string: rendering.string), rendering.contentType)
     }
     
     // A WillRenderFunction: this function lets URLEscape change values that
