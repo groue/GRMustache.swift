@@ -376,7 +376,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             self.templateASTNodes = []
         }
         
-        func appendNode(node: TemplateASTNode) {
+        func appendNode(_ node: TemplateASTNode) {
             templateASTNodes.append(node)
         }
         
