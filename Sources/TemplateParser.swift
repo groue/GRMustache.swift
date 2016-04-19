@@ -267,7 +267,7 @@ final class TemplateParser {
                 } else if atString(i, currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = startIndex.advanced(by: currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substring(with: tagInitialIndex..<i)
-                    let newDelimiters = content.componentsSeparatedByCharacters(in: NSCharacterSet.whitespacesAndNewlines()).filter { $0.characters.count > 0 }
+                    let newDelimiters = content.components(separatedBy: NSCharacterSet.whitespacesAndNewlines()).filter { $0.characters.count > 0 }
                     if (newDelimiters.count != 2) {
                         let error = MustacheError(kind: .ParseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
                         tokenConsumer.parser(self, didFailWithError: error)
