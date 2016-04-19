@@ -187,7 +187,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .PartialOverride(content: let content):
                     var empty: Bool = false
-                    let parentPartialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                    let parentPartialName = try partialName(fromString: content, inToken: token, empty: &empty)
                     compilationState.pushScope(Scope(type: .PartialOverride(openingToken: token, parentPartialName: parentPartialName)))
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                     
@@ -258,15 +258,15 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         
                     case .PartialOverride(openingToken: _, parentPartialName: let parentPartialName):
                         var empty: Bool = false
-                        var partialName: String?
+                        var partialNameFromContent: String?
                         do {
-                            partialName = try partialNameFromString(content, inToken: token, empty: &empty)
+                            partialNameFromContent = try partialName(fromString: content, inToken: token, empty: &empty)
                         } catch {
                             if empty == false {
                                 throw error
                             }
                         }
-                        if partialName != nil && partialName != parentPartialName {
+                        if partialNameFromContent != nil && partialNameFromContent != parentPartialName {
                             throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
@@ -309,9 +309,9 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     
                 case .Partial(content: let content):
                     var empty: Bool = false
-                    let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
-                    let partialTemplateAST = try repository.templateAST(named: partialName, relativeToTemplateID: templateID)
-                    let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
+                    let partialNameFromContent = try partialName(fromString: content, inToken: token, empty: &empty)
+                    let partialTemplateAST = try repository.templateAST(named: partialNameFromContent, relativeToTemplateID: templateID)
+                    let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialNameFromContent)
                     compilationState.currentScope.appendNode(partialNode)
                     compilationState.compilerContentType = .Locked(compilationState.contentType)
                 }
@@ -402,7 +402,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
         return blockName
     }
     
-    private func partialNameFromString(string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+    private func partialName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = NSCharacterSet.whitespacesAndNewlines()
         let partialName = string.trimmingCharacters(in: whiteSpace)
         if partialName.characters.count == 0 {
