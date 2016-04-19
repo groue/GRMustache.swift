@@ -349,7 +349,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             scopeStack.removeLast()
         }
         
-        func pushScope(scope: Scope) {
+        func pushScope(_ scope: Scope) {
             scopeStack.append(scope)
         }
         
