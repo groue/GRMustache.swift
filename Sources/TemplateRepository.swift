@@ -71,7 +71,7 @@ public protocol TemplateRepositoryDataSource {
     - parameter baseTemplateID: The template ID of the enclosing template.
     - returns: A template ID.
     */
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
+    func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
     
     /**
     Returns the Mustache template string that matches the template ID.
@@ -81,7 +81,7 @@ public protocol TemplateRepositoryDataSource {
                             throws an error that describes the problem.
     - returns: A Mustache template string.
     */
-    func templateStringForTemplateID(templateID: TemplateID) throws -> String
+    func templateString(for templateID: TemplateID) throws -> String
 }
 
 /**
@@ -342,7 +342,7 @@ final public class TemplateRepository {
             throw MustacheError(kind: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
         }
         
-        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
+        guard let templateID = dataSource.templateID(forName: name, relativeToTemplateID: baseTemplateID) else {
             if let baseTemplateID = baseTemplateID {
                 throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
             } else {
@@ -355,7 +355,7 @@ final public class TemplateRepository {
             return templateAST
         }
         
-        let templateString = try dataSource.templateStringForTemplateID(templateID)
+        let templateString = try dataSource.templateString(for: templateID)
         
         // Cache an empty AST for that name so that we support recursive
         // partials.
@@ -417,11 +417,11 @@ final public class TemplateRepository {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             return name
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+        func templateString(for templateID: TemplateID) throws -> String {
             if let string = templates[templateID] {
                 return string
             } else {
@@ -447,7 +447,7 @@ final public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             // Rebase template names starting with a /
             let normalizedName: String
             let normalizedBaseTemplateID: TemplateID?
@@ -493,7 +493,7 @@ final public class TemplateRepository {
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+        func templateString(for templateID: TemplateID) throws -> String {
             if let nsURL = NSURL(string: templateID) {
                 return try NSString(contentsOf: nsURL, encoding: encoding).bridge()
             }
@@ -516,7 +516,7 @@ final public class TemplateRepository {
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             // Rebase template names starting with a /
             let normalizedName: String
             let normalizedBaseTemplateID: TemplateID?
@@ -539,7 +539,7 @@ final public class TemplateRepository {
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+        func templateString(for templateID: TemplateID) throws -> String {
             return try NSString(contentsOfFile: templateID, encoding: encoding).bridge()
         }
     }
