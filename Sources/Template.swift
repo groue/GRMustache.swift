@@ -152,7 +152,7 @@ final public class Template {
     - returns: The rendered string.
     */
     public func render(with box: MustacheBox = Box()) throws -> String {
-        let rendering = try render(baseContext.extendedContext(by: box))
+        let rendering = try render(with: baseContext.extendedContext(by: box))
         return rendering.string
     }
     
