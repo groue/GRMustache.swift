@@ -52,11 +52,11 @@ final class TemplateGenerator {
     
     private func render(templateAST: TemplateAST) {
         for node in templateAST.nodes {
-            renderTemplateASTNode(node)
+            render(node: node)
         }
     }
     
-    func renderTemplateASTNode(node: TemplateASTNode) {
+    func render(node: TemplateASTNode) {
         switch node {
         case .BlockNode(let block):
             let tagStartDelimiter = configuration.tagDelimiterPair.0
