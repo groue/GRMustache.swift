@@ -24,8 +24,8 @@
 import Foundation
 
 protocol TemplateTokenConsumer {
-    func parser(parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
-    func parser(parser:TemplateParser, didFailWithError error:ErrorProtocol)
+    func parser(_ parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
+    func parser(_ parser:TemplateParser, didFailWithError error:ErrorProtocol)
 }
 
 final class TemplateParser {

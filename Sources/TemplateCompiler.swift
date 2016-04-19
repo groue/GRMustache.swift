@@ -56,11 +56,11 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     // MARK: - TemplateTokenConsumer
     
-    func parser(parser: TemplateParser, didFailWithError error: ErrorProtocol) {
+    func parser(_ parser: TemplateParser, didFailWithError error: ErrorProtocol) {
         state = .Error(error)
     }
     
-    func parser(parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool {
+    func parser(_ parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool {
         switch(state) {
         case .Error:
             return false
