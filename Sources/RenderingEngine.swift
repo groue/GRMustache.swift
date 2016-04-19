@@ -127,7 +127,7 @@ final class RenderingEngine {
         }
     }
     
-    private func renderTag(tag: LocatedTag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
+    private func renderTag(_ tag: LocatedTag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
         
         // 1. Evaluate expression
         
