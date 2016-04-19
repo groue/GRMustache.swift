@@ -82,7 +82,7 @@ final class RenderingEngine {
         }
     }
     
-    private func renderNode(node: TemplateASTNode, inContext context: Context) throws {
+    private func renderNode(_ node: TemplateASTNode, inContext context: Context) throws {
         switch node {
         case .BlockNode(let block):
             // {{$ name }}...{{/ name }}
