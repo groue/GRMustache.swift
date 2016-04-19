@@ -288,7 +288,7 @@ final public class TemplateRepository {
                                 problem.
     - returns: A Mustache Template.
     */
-    public func template(string string: String) throws -> Template {
+    public func template(string: String) throws -> Template {
         let templateAST = try self.templateAST(string: string)
         return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
