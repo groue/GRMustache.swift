@@ -209,7 +209,7 @@ final class RenderingEngine {
     
     // MARK: - Template inheritance
     
-    private func resolveBlock(block: TemplateASTNode.Block, inContext context: Context) -> TemplateASTNode.Block {
+    private func resolveBlock(_ block: TemplateASTNode.Block, inContext context: Context) -> TemplateASTNode.Block {
         // As we iterate partial overrides, block becomes the deepest overriden
         // block. context.partialOverrideStack has been built in
         // renderNode(node:inContext:).
@@ -248,7 +248,7 @@ final class RenderingEngine {
     // Looks for an override for the block argument in a TemplateAST.
     // Returns the resolvedBlock, and a boolean that tells whether the block was
     // actually overriden.
-    private func resolveBlock(block: TemplateASTNode.Block, inChildTemplateAST childTemplateAST: TemplateAST) -> (TemplateASTNode.Block, Bool)
+    private func resolveBlock(_ block: TemplateASTNode.Block, inChildTemplateAST childTemplateAST: TemplateAST) -> (TemplateASTNode.Block, Bool)
     {
         // As we iterate template AST nodes, block becomes the last inherited
         // block in the template AST.
