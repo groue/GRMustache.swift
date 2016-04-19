@@ -24,7 +24,7 @@
 extension TemplateAST : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     var debugDescription: String {
-        let string = TemplateGenerator().stringFromTemplateAST(self)
+        let string = TemplateGenerator().string(from: self)
         return "TemplateAST(\(string.debugDescription))"
     }
 }
@@ -32,7 +32,7 @@ extension TemplateAST : CustomDebugStringConvertible {
 extension Template : CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
-        let string = TemplateGenerator().stringFromTemplateAST(templateAST)
+        let string = TemplateGenerator().string(from: templateAST)
         return "Template(\(string.debugDescription))"
     }
 }
@@ -44,7 +44,7 @@ final class TemplateGenerator {
         self.configuration = configuration ?? DefaultConfiguration
     }
     
-    func stringFromTemplateAST(templateAST: TemplateAST) -> String {
+    func string(from templateAST: TemplateAST) -> String {
         buffer = ""
         render(templateAST: templateAST)
         return buffer
