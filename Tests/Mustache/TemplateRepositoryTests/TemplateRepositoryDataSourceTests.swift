@@ -41,7 +41,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
     
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+            func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 switch name {
                 case "not_found":
                     return nil
@@ -49,7 +49,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                     return name
                 }
             }
-            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            func templateString(for templateID: TemplateID) throws -> String {
                 switch templateID {
                 case "not_found":
                     fatalError("Unexpected")

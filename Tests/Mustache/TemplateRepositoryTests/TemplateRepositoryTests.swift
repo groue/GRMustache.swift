@@ -87,10 +87,10 @@ class TemplateRepositoryTests: XCTestCase {
             init(templates: [String: String]) {
                 self.templates = templates
             }
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+            func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
-            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            func templateString(for templateID: TemplateID) throws -> String {
                 if let string = templates[templateID] {
                     return string
                 } else {
