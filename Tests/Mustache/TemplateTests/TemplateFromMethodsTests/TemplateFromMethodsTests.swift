@@ -103,7 +103,7 @@ class TemplateFromMethodsTests: XCTestCase {
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path! }
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
-    func valueForKey(key: String, inRendering rendering: String) -> Any? {
+    func value(forKey key: String, inRendering rendering: String) -> Any? {
         let data = rendering.data(using: NSUTF8StringEncoding)!
         let json = JSON(data: data)
         return json[key].object
@@ -111,11 +111,11 @@ class TemplateFromMethodsTests: XCTestCase {
 
     
     func valueForStringPropertyInRendering(rendering: String) -> String? {
-        return valueForKey("string", inRendering: rendering) as? String
+        return value(forKey: "string", inRendering: rendering) as? String
     }
     
     func extensionOfTemplateFileInRendering(rendering: String) -> String? {
-        return (valueForKey("fileName", inRendering: rendering) as? String)?.bridge().pathExtension
+        return (value(forKey: "fileName", inRendering: rendering) as? String)?.bridge().pathExtension
     }
     
     func testTemplateFromString() {
