@@ -54,7 +54,7 @@ class LocalizerTests: XCTestCase {
     // END OF GENERATED CODE
     #endif
     
-    lazy var localizableBundle: NSBundle = NSBundle(path: NSBundle(for: self.dynamicType).path(forResource: "LocalizerTestsBundle", ofType: nil)!)!
+    lazy var localizableBundle: NSBundle = NSBundle(path: NSBundle(for: self.dynamicType).pathForResource("LocalizerTestsBundle", ofType: nil)!)!
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
     
     func testLocalizableBundle() {
