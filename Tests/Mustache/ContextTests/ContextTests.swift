@@ -91,16 +91,16 @@ class ContextTests: XCTestCase {
         let context = Context(Box(value))
         
         // '.' is an expression, not a key
-        XCTAssertTrue(context.mustacheBoxForKey(".").isEmpty)
+        XCTAssertTrue(context.mustacheBox(forKey: ".").isEmpty)
         
         // 'name' is a key
-        guard let nameValue = context.mustacheBoxForKey("name").value as? String else {
+        guard let nameValue = context.mustacheBox(forKey: "name").value as? String else {
             XCTFail("value for key name is not String")
             return
         }
         XCTAssertEqual(nameValue, "name1")
         
         // 'a.name' is an expression, not a key
-        XCTAssertTrue(context.mustacheBoxForKey("a.name").isEmpty)
+        XCTAssertTrue(context.mustacheBox(forKey: "a.name").isEmpty)
     }
 }

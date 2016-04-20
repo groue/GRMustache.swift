@@ -52,7 +52,7 @@ class ObjcKeyAccessTests: XCTestCase {
         // test context
         let context = Context(Box(object))
 
-        XCTAssertEqual((context.mustacheBoxForKey("property").value as! String), "property")
+        XCTAssertEqual((context.mustacheBox(forKey: "property").value as! String), "property")
         #endif
     }
 
@@ -66,7 +66,7 @@ class ObjcKeyAccessTests: XCTestCase {
     
         // test context
         let context = Context(Box(object))
-        XCTAssertTrue(context.mustacheBoxForKey("method").value == nil)
+        XCTAssertTrue(context.mustacheBox(forKey: "method").value == nil)
         #endif
     }
 }

@@ -337,7 +337,7 @@ class BoxTests: XCTestCase {
         
         let array = NSArray(object: Class())
         let context = Context(Box(array))
-        let box = try! context.mustacheBoxForExpression("first.foo")
+        let box = try! context.mustacheBox(forExpression: "first.foo")
         XCTAssertEqual((box.value as! String), "foo")
     }
     
@@ -347,7 +347,7 @@ class BoxTests: XCTestCase {
         
         let array = NSArray(object: Class())
         let context = Context(Box(array))
-        let box = context.mustacheBoxForKey("first")
+        let box = context.mustacheBox(forKey: "first")
         XCTAssertTrue(box.value == nil)
     }
 }
