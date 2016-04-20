@@ -110,7 +110,7 @@ class TemplateFromMethodsTests: XCTestCase {
     }
 
     
-    func valueForStringPropertyInRendering(rendering: String) -> String? {
+    func valueForStringProperty(inRendering rendering: String) -> String? {
         return value(forKey: "string", inRendering: rendering) as? String
     }
     
@@ -122,28 +122,28 @@ class TemplateFromMethodsTests: XCTestCase {
         let template = try! Template(string: templateString)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
-        XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
+        XCTAssertEqual(valueForStringProperty(inRendering: rendering)!, "foo")
     }
     
     func testTemplateFromPath() {
         let template = try! Template(path: templatePath)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
-        XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
+        XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
     }
     
     func testTemplateFromURL() {
         let template = try! Template(URL: templateURL)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
-        XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
+        XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
     }
     
     func testTemplateFromResource() {
         let template = try! Template(named: templateName, bundle: testBundle)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
-        XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
+        XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
     }
     
