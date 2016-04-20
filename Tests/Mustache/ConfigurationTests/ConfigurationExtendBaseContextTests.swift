@@ -38,7 +38,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(["name": Box("Arthur")]))
+        configuration.extendBaseContext(by: Box(["name": Box("Arthur")]))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = try! repository.template(string: "{{name}}")
@@ -59,7 +59,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
             return Box("delegate")
         }
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(willRender))
+        configuration.extendBaseContext(by: Box(willRender))
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = try! repository.template(string: "{{name}}")
