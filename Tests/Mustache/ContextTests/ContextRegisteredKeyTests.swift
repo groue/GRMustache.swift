@@ -57,7 +57,7 @@ class ContextRegisteredKeyTests: XCTestCase {
     func testRegisteredKeysCanNotBeShadowed() {
         let template = try! Template(string: "{{safe}}, {{fragile}}")
         template.registerInBaseContext("safe", Box("important"))
-        let rendering = try! template.render(Box(["safe": "error", "fragile": "not important"]))
+        let rendering = try! template.render(with: Box(["safe": "error", "fragile": "not important"]))
         XCTAssertEqual(rendering, "important, not important")
     }
     
@@ -79,7 +79,7 @@ class ContextRegisteredKeyTests: XCTestCase {
         // This is more a caveat than a feature, isn't it?
         let template = try! Template(string: "{{#safe}}{{#evil}}{{name}}{{/evil}}{{/safe}}")
         template.registerInBaseContext("safe", Box(["name": "important"]))
-        let rendering = try! template.render(Box(["evil": ["name": "hacked"]]))
+        let rendering = try! template.render(with: Box(["evil": ["name": "hacked"]]))
         XCTAssertEqual(rendering, "hacked")
     }
 }

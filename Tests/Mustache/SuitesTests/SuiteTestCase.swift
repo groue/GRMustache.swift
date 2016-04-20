@@ -257,7 +257,7 @@ class SuiteTestCase: XCTestCase {
         
         func testRendering(template: Template) {
             do {
-                let rendering = try template.render(renderedValue)
+                let rendering = try template.render(with: renderedValue)
                 if let expectedRendering = expectedRendering as String! {
                     if expectedRendering != rendering {
                         XCTAssertEqual(rendering, expectedRendering, "Unexpected rendering of \(description)")
@@ -265,7 +265,7 @@ class SuiteTestCase: XCTestCase {
                 }
                 testSuccess(replayOnFailure: {
                     do {
-                        try template.render(self.renderedValue)
+                        try template.render(with: self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }
@@ -273,7 +273,7 @@ class SuiteTestCase: XCTestCase {
             } catch {
                 testError(error, replayOnFailure: {
                     do {
-                        try template.render(self.renderedValue)
+                        try template.render(with: self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }

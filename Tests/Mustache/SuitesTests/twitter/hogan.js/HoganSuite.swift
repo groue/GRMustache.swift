@@ -50,7 +50,7 @@ class HoganSuite: SuiteTestCase {
         ]
         let repo = TemplateRepository(templates: templates)
         let template = try! repo.template(named: "template")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(with: Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "altered child1 - altered parent2")
     }
     
@@ -65,7 +65,7 @@ class HoganSuite: SuiteTestCase {
         ]
         let repo = TemplateRepository(templates: templates)
         let template = try! repo.template(named: "template")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(with: Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "changed test2")
     }
 }

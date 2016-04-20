@@ -46,7 +46,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         var rendering = try! template.render()
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = try! template.render(Box(["name": "Bobby"]))
+        rendering = try! template.render(with: Box(["name": "Bobby"]))
         XCTAssertEqual(rendering, "Bobby")
     }
     

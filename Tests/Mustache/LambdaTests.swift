@@ -54,7 +54,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "Hello, world!")
     }
     
@@ -66,7 +66,7 @@ class LambdaTests: XCTestCase {
             "planet": Box("world"),
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "Hello, world!")
     }
     
@@ -80,7 +80,7 @@ class LambdaTests: XCTestCase {
             "planet": Box("world"),
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "Hello, (|planet| => world)!")
     }
     
@@ -92,7 +92,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "1 == 2 == 3")
     }
     
@@ -103,7 +103,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "<&gt;>")
     }
     
@@ -120,7 +120,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "<yes>")
     }
     
@@ -134,7 +134,7 @@ class LambdaTests: XCTestCase {
             "planet": Box("Earth"),
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "<-Earth->")
     }
     
@@ -148,7 +148,7 @@ class LambdaTests: XCTestCase {
             "planet": Box("Earth"),
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "<-{{planet}} => Earth->")
     }
     
@@ -161,7 +161,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "__FILE__ != __LINE__")
     }
     
@@ -174,7 +174,7 @@ class LambdaTests: XCTestCase {
         let data = [
             "lambda": Box(lambda),
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(with: Box(data))
         XCTAssertEqual(rendering, "<>")
     }
     
@@ -188,7 +188,7 @@ class LambdaTests: XCTestCase {
             "lambda": Box(lambda),
         ]
         do {
-            try template.render(Box(data))
+            try template.render(with: Box(data))
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
@@ -207,7 +207,7 @@ class LambdaTests: XCTestCase {
             "lambda": Box(lambda),
         ]
         do {
-            try template.render(Box(data))
+            try template.render(with: Box(data))
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
@@ -219,14 +219,14 @@ class LambdaTests: XCTestCase {
     func testArity0LambdaInSectionTag() {
         let lambda = Lambda { "success" }
         let template = try! Template(string: "{{#lambda}}<{{.}}>{{/lambda}}")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(with: Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "<success>")
     }
     
     func testArity1LambdaInVariableTag() {
         let lambda = Lambda { (string) in string }
         let template = try! Template(string: "<{{lambda}}>")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(with: Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "<(Lambda)>")
     }
 }

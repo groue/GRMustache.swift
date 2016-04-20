@@ -46,7 +46,7 @@ class KeyedSubscriptFunctionTests: XCTestCase {
     
     func testBoxedKeyedSubscriptFunction() {
         let template = try! Template(string: "{{a}},{{b}},{{#self}}{{c}}{{/self}}")
-        let rendering = try! template.render(MustacheBox(keyedSubscript: makeKeyedSubscriptFunction()))
+        let rendering = try! template.render(with: MustacheBox(keyedSubscript: makeKeyedSubscriptFunction()))
         XCTAssertEqual(rendering, "a,b,c")
     }
 }

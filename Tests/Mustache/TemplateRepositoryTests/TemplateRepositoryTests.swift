@@ -62,7 +62,7 @@ class TemplateRepositoryTests: XCTestCase {
     func testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate() {
         let repo = TemplateRepository()
         let template = try! repo.template(string:"{{.}}")
-        let rendering = try! template.render(Box("success"))
+        let rendering = try! template.render(with: Box("success"))
         XCTAssertEqual(rendering, "success")
     }
     

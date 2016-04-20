@@ -164,21 +164,21 @@ class BoxTests: XCTestCase {
 //            "custom": Box(Boxable(name: "custom1")),
 //            "f": Box(Filter(filter1))
 //            ])
-//        let rendering1 = template.render(value1)!
+//        let rendering1 = template.render(with: value1)!
 //        XCTAssertEqual(rendering1, "custom1,other")
 //        
 //        let value2 = Box([
 //            "string": Box("success"),
 //            "custom": Box(value: Boxable(name: "custom2")),
 //            "f": Box(Filter(filter2))])
-//        let rendering2 = template.render(value2)!
+//        let rendering2 = template.render(with: value2)!
 //        XCTAssertEqual(rendering2, "custom2,other")
 //        
 //        let value3 = Box([
 //            "string": Box("success"),
 //            "custom": Box(NSDate()),
 //            "f": Box(Filter(filter3))])
-//        let rendering3 = template.render(value3)!
+//        let rendering3 = template.render(with: value3)!
 //        XCTAssertEqual(rendering3, "custom3,other")
 //    }
     
@@ -186,7 +186,7 @@ class BoxTests: XCTestCase {
         let value: Set<Int> = [0,1,2]
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
@@ -194,7 +194,7 @@ class BoxTests: XCTestCase {
         let value: Set<HashableBoxable> = [HashableBoxable(int:0),HashableBoxable(int:1),HashableBoxable(int:2)]
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
@@ -202,7 +202,7 @@ class BoxTests: XCTestCase {
         let value: Dictionary<String, Int> = ["name": 1]
         let template = try! Template(string: "{{name}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "1")
     }
     
@@ -210,7 +210,7 @@ class BoxTests: XCTestCase {
         let value: Dictionary<String, Int?> = ["name": 1]
         let template = try! Template(string: "{{name}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "1")
     }
     
@@ -218,7 +218,7 @@ class BoxTests: XCTestCase {
         let value: Array<Int> = [0,1,2,3]
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "0123")
     }
     
@@ -226,7 +226,7 @@ class BoxTests: XCTestCase {
         let value: Array<Int?> = [0,1,2,3, nil]
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "0123")
     }
     
@@ -234,7 +234,7 @@ class BoxTests: XCTestCase {
         let value: Array<Array<Int>> = [[0,1],[2,3]]
         let template = try! Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "[0,1,],[2,3,],")
     }
     
@@ -242,7 +242,7 @@ class BoxTests: XCTestCase {
         let value: Array<Array<Array<Int>>> = [[[0,1],[2,3]], [[4,5],[6,7]]]
         let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
     
@@ -250,7 +250,7 @@ class BoxTests: XCTestCase {
         let value: Array<Array<Array<Dictionary<String, Int>>>> = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
         let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
 
@@ -259,7 +259,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "[[[1:1][2:2]][[3:3][4:4]]][[[5:5][6:6]][[7:7][8:8]]]")
     }
     
@@ -267,7 +267,7 @@ class BoxTests: XCTestCase {
         let value = 0..<10
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "0123456789")
     }
     

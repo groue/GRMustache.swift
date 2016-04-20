@@ -43,7 +43,7 @@ class LoggerTests : XCTestCase {
         template.extendBaseContext(Box(logger))
         
         let data = ["people": [["name": "Frank Zappa"], ["name": "Charlie Chaplin"], ["name": "Albert Einstein"]]]
-        try! template.render(Box(data))
+        try! template.render(with: Box(data))
         
         XCTAssertEqual(logMessages.count, 5)
         XCTAssertEqual(logMessages[0], "{{#people}} at line 1 will render [[\"name\":\"Frank Zappa\"],[\"name\":\"Charlie Chaplin\"],[\"name\":\"Albert Einstein\"]]")
@@ -61,7 +61,7 @@ class LoggerTests : XCTestCase {
         template.registerInBaseContext("log", Box(logger))
         
         let data = ["people": [["name": "Frank Zappa"], ["name": "Charlie Chaplin"], ["name": "Albert Einstein"]]]
-        try! template.render(Box(data))
+        try! template.render(with: Box(data))
         
         XCTAssertEqual(logMessages.count, 4)
         XCTAssertEqual(logMessages[0], "{{name}} at line 1 did render \"Frank Zappa\" as \"Frank Zappa\"")
