@@ -147,8 +147,8 @@ public protocol MustacheBoxable {
     var mustacheBox: MustacheBox { get }
 }
 
-public func Box(value: MustacheBox?) -> MustacheBox {
-    return value ?? Box()
+public func Box(box: MustacheBox?) -> MustacheBox {
+    return box ?? Box()
 }
 
 /**
@@ -639,8 +639,8 @@ GRMustache provides built-in support for rendering `NSNumber`.
     
     */
 
-    public func Box(value: NSNumber?) -> MustacheBox {
-        guard let number = value else {
+    public func Box(number: NSNumber?) -> MustacheBox {
+        guard let number = number else {
             return Box()
         }
         // IMPLEMENTATION NOTE
@@ -724,8 +724,8 @@ GRMustache provides built-in support for rendering `NSString`.
     
     */
 
-    public func Box(value: NSString?) -> MustacheBox {
-        guard let string = value else {
+    public func Box(string: NSString?) -> MustacheBox {
+        guard let string = string else {
             return Box()
         }
 
@@ -743,8 +743,8 @@ templates.
 
 - returns: A MustacheBox that wraps *boxable*.
 */
-public func Box(value: MustacheBoxable?) -> MustacheBox {
-    return value?.mustacheBox ?? Box()
+public func Box(boxable: MustacheBoxable?) -> MustacheBox {
+    return boxable?.mustacheBox ?? Box()
 }
 
 
@@ -1310,8 +1310,8 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(value: C?) -> MustacheBox {
-    if let set = value {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+    if let set = set {
         return set.mustacheBox(withSetValue: set, box: { Box($0) })
     } else {
         return Box()
@@ -1361,8 +1361,9 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
-    if let array = value {
+
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
         return Box()
@@ -1371,8 +1372,8 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 
 // any array, other than array of MustacheBoxables
 public func Box<C: Collection where C.Index: BidirectionalIndex,
-                C.Index.Distance == Int>(value: C?) -> MustacheBox {
-    if let array = value {
+                C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(value: element) })
     } else {
         return Box()
@@ -1422,8 +1423,8 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(value: C?) -> MustacheBox {
-    if let array = value {
+public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+    if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
         return Box()
@@ -1483,8 +1484,8 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T>(value: [String: T]?) -> MustacheBox {
-    if let dictionary = value {
+public func Box<T>(dictionary: [String: T]?) -> MustacheBox {
+    if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
@@ -1687,8 +1688,8 @@ See also:
 
 - FilterFunction
 */
-public func Box(value: FilterFunction) -> MustacheBox {
-    return MustacheBox(filter: value)
+public func Box(filter: FilterFunction) -> MustacheBox {
+    return MustacheBox(filter: filter)
 }
 
 /**
@@ -1708,8 +1709,8 @@ See also:
 
 - RenderFunction
 */
-public func Box(value: RenderFunction) -> MustacheBox {
-    return MustacheBox(render: value)
+public func Box(render: RenderFunction) -> MustacheBox {
+    return MustacheBox(render: render)
 }
 
 /**
@@ -1740,8 +1741,8 @@ See also:
 
 - WillRenderFunction
 */
-public func Box(value: WillRenderFunction) -> MustacheBox {
-    return MustacheBox(willRender: value)
+public func Box(willRender: WillRenderFunction) -> MustacheBox {
+    return MustacheBox(willRender: willRender)
 }
 
 /**
@@ -1773,8 +1774,8 @@ See also:
 
 - DidRenderFunction
 */
-public func Box(value: DidRenderFunction) -> MustacheBox {
-    return MustacheBox(didRender: value)
+public func Box(didRender: DidRenderFunction) -> MustacheBox {
+    return MustacheBox(didRender: didRender)
 }
 
 /**
