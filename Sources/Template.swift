@@ -229,7 +229,7 @@ final public class Template {
     - registerInBaseContext
     - Context.extendedContext
     */
-    public func extendBaseContext(box: MustacheBox) {
+    public func extendBaseContext(by box: MustacheBox) {
         baseContext = baseContext.extendedContext(by: box)
     }
     
