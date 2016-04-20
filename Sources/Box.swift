@@ -147,7 +147,7 @@ public protocol MustacheBoxable {
     var mustacheBox: MustacheBox { get }
 }
 
-public func Box(box: MustacheBox?) -> MustacheBox {
+public func Box(_ box: MustacheBox?) -> MustacheBox {
     return box ?? Box()
 }
 
@@ -599,7 +599,7 @@ GRMustache provides built-in support for rendering `NSNull`.
     */
 
 
-   public func Box(value: NSNull) -> MustacheBox {
+   public func Box(_ value: NSNull) -> MustacheBox {
     return MustacheBox(
             value: value,
             boolValue: false,
@@ -639,7 +639,7 @@ GRMustache provides built-in support for rendering `NSNumber`.
     
     */
 
-    public func Box(number: NSNumber?) -> MustacheBox {
+    public func Box(_ number: NSNumber?) -> MustacheBox {
         guard let number = number else {
             return Box()
         }
@@ -724,7 +724,7 @@ GRMustache provides built-in support for rendering `NSString`.
     
     */
 
-    public func Box(string: NSString?) -> MustacheBox {
+    public func Box(_ string: NSString?) -> MustacheBox {
         guard let string = string else {
             return Box()
         }
@@ -743,7 +743,7 @@ templates.
 
 - returns: A MustacheBox that wraps *boxable*.
 */
-public func Box(boxable: MustacheBoxable?) -> MustacheBox {
+public func Box(_ boxable: MustacheBoxable?) -> MustacheBox {
     return boxable?.mustacheBox ?? Box()
 }
 
@@ -781,8 +781,8 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 //
 // For example:
 //
-//      public func Box(boxable: MustacheBoxable?) -> MustacheBox
-//      public func Box(filter: FilterFunction) -> MustacheBox
+//      public func Box(_ boxable: MustacheBoxable?) -> MustacheBox
+//      public func Box(_ filter: FilterFunction) -> MustacheBox
 //
 // Sometimes values come out of Foundation objects:
 //
@@ -797,8 +797,8 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 //     protocol MustacheBoxable {}
 //     class Thing: MustacheBoxable {}
 //
-//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box(x: Any?) -> String { return "Any" }
+//     func Box(_ x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//     func Box(_ x: Any?) -> String { return "Any" }
 //
 //     // error: ambiguous use of 'Box'
 //     Box(Thing())
@@ -809,8 +809,8 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 //     protocol MustacheBoxable {}
 //     class Thing: MustacheBoxable {}
 //
-//     func Box<T: MustacheBoxable>(x: T?) -> String { return "MustacheBoxable" }
-//     func Box(x: Any?) -> String { return "Any" }
+//     func Box<T: MustacheBoxable>(_ x: T?) -> String { return "MustacheBoxable" }
+//     func Box(_ x: Any?) -> String { return "Any" }
 //
 //     // Wrong: uses the Any variant
 //     Box(Thing())
@@ -821,14 +821,14 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 //     // Error: Crash the compiler
 //     Box(Thing() as MustacheBoxable?)
 //
-// And if we turn the func Box(x: Any) into a generic one? Well, it gets
+// And if we turn the func Box(_ x: Any) into a generic one? Well, it gets
 // better:
 //
 //     protocol MustacheBoxable {}
 //     class Thing: MustacheBoxable {}
 //
-//     func Box(x: MustacheBoxable?) -> String { return "MustacheBoxable" }
-//     func Box<T:Any>(object: T?) -> String { return "Any" }
+//     func Box(_ x: MustacheBoxable?) -> String { return "MustacheBoxable" }
+//     func Box<T:Any>(_ object: T?) -> String { return "Any" }
 //
 //     // OK: uses the MustacheBox variant
 //     Box(Thing())
@@ -848,8 +848,8 @@ public func Box(boxable: MustacheBoxable?) -> MustacheBox {
 // This looks OK, doesn't it? Well, it's not satisfying yet.
 //
 // According to http://airspeedvelocity.net/2015/03/26/protocols-and-generics-2/
-// there are reasons for preferring func Box<T: MustacheBoxable>(x: T?) over
-// func Box(x: MustacheBoxable?). The example above have shown that the boxing
+// there are reasons for preferring func Box<T: MustacheBoxable>(_ x: T?) over
+// func Box(_ x: MustacheBoxable?). The example above have shown that the boxing
 // of Any with an overloaded version of Box() would make this choice for
 // us.
 //
@@ -1245,7 +1245,7 @@ GRMustache provides built-in support for rendering `NSSet`.
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
 
-    public func Box(value: NSSet?) -> MustacheBox {
+    public func Box(_ value: NSSet?) -> MustacheBox {
         guard let value = value else {
             return Box()
         }
@@ -1310,7 +1310,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index.Distance == Int>(_ set: C?) -> MustacheBox {
     if let set = set {
         return set.mustacheBox(withSetValue: set, box: { Box($0) })
     } else {
@@ -1362,7 +1362,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 - returns: A MustacheBox that wraps *array*.
 */
 
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
@@ -1372,7 +1372,7 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 
 // any array, other than array of MustacheBoxables
 public func Box<C: Collection where C.Index: BidirectionalIndex,
-                C.Index.Distance == Int>(array: C?) -> MustacheBox {
+                C.Index.Distance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(value: element) })
     } else {
@@ -1423,7 +1423,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.Index.Distance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
@@ -1484,7 +1484,7 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T>(dictionary: [String: T]?) -> MustacheBox {
+public func Box<T>(_ dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
@@ -1634,7 +1634,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
     `dictionaryValue` property: it reliably returns an `[String: MustacheBox]`
     dictionary, whatever the actual type of the raw boxed value.
     */
-    public func Box(value: NSDictionary?) -> MustacheBox {
+    public func Box(_ value: NSDictionary?) -> MustacheBox {
         guard let value = value else {
             return Box()
         }
@@ -1688,7 +1688,7 @@ See also:
 
 - FilterFunction
 */
-public func Box(filter: FilterFunction) -> MustacheBox {
+public func Box(_ filter: FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
 }
 
@@ -1709,7 +1709,7 @@ See also:
 
 - RenderFunction
 */
-public func Box(render: RenderFunction) -> MustacheBox {
+public func Box(_ render: RenderFunction) -> MustacheBox {
     return MustacheBox(render: render)
 }
 
@@ -1741,7 +1741,7 @@ See also:
 
 - WillRenderFunction
 */
-public func Box(willRender: WillRenderFunction) -> MustacheBox {
+public func Box(_ willRender: WillRenderFunction) -> MustacheBox {
     return MustacheBox(willRender: willRender)
 }
 
@@ -1774,7 +1774,7 @@ See also:
 
 - DidRenderFunction
 */
-public func Box(didRender: DidRenderFunction) -> MustacheBox {
+public func Box(_ didRender: DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)
 }
 
