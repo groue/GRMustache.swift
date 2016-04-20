@@ -59,7 +59,7 @@ class SuiteTestCase: XCTestCase {
     }
 // END OF GENERATED CODE
     
-    func runTestsFromResource(name: String, directory: String) {
+    func runTests(fromResource name: String, directory: String) {
         #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once NSBundle(for:) is implemented
             // https://bugs.swift.org/browse/SR-953

@@ -37,7 +37,7 @@ class HoganSuite: SuiteTestCase {
     func testSuite() {
         // This suite contains template inheritance tests taken from
         // https://github.com/twitter/hogan.js/blob/master/test/index.js
-        runTestsFromResource("template_inheritance.json", directory: "HoganSuite")
+        runTests(fromResource: "template_inheritance.json", directory: "HoganSuite")
     }
     
     func testLambdaExpressionInInheritedTemplateSubsections() {
