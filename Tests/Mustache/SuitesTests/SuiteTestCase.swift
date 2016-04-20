@@ -314,7 +314,7 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func pathsAndEncodingsToPartials(partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
+        func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
             var templatesPaths: [(String, NSStringEncoding)] = []
             
             let fm = NSFileManager.defaultManager()
