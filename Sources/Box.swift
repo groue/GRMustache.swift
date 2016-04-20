@@ -560,7 +560,7 @@ extension NSObject: MustacheBoxable {
                 keyedSubscript: { (key: String) in
                     if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: object) {
                         // Use valueForKey: for safe keys
-                        return BoxAny(value: object.valueForKey(key))
+                        return BoxAny(object.valueForKey(key))
                     } else {
                         // Missing key
                         return Box()
@@ -915,7 +915,7 @@ private func BoxAny(value: Any?) -> MustacheBox {
     if mirror.displayStyle == .set {
         let `set` = NSMutableSet() // do not use Set<Any> since Any is not hashable
         for (_, element) in mirror.children {
-            set.add(BoxAny(value: element))
+            set.add(BoxAny(element))
         }
         return Box(set)
     }
@@ -923,7 +923,7 @@ private func BoxAny(value: Any?) -> MustacheBox {
     // hanlde Optionals and other enums
     if mirror.displayStyle == .`enum`  {
         for (_, element) in mirror.children {
-            return BoxAny(value: element)
+            return BoxAny(element)
         }
     }
 
@@ -1374,7 +1374,7 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 public func Box<C: Collection where C.Index: BidirectionalIndex,
                 C.Index.Distance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
-        return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(value: element) })
+        return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
     } else {
         return Box()
     }
@@ -1490,12 +1490,12 @@ public func Box<T>(_ dictionary: [String: T]?) -> MustacheBox {
             converter: MustacheBox.Converter(
                 dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
                     var boxDictionary = boxDictionary
-                    boxDictionary[item.key] = BoxAny(value: item.value)
+                    boxDictionary[item.key] = BoxAny(item.value)
                     return boxDictionary
                 })),
             value: dictionary,
             keyedSubscript: { (key: String) in
-                return BoxAny(value: dictionary[key])
+                return BoxAny(dictionary[key])
         })
     } else {
         return Box()
@@ -1561,7 +1561,7 @@ extension Dictionary: MustacheBoxable {
                                        NSLog("GRMustache found a non-String key in Dictionary (\(item.key)): value is discarded.")
                                        return boxDictionary
                                    }
-                                   boxDictionary[key] = BoxAny(value: item.value)
+                                   boxDictionary[key] = BoxAny(item.value)
                                    return boxDictionary
                                }),
                 value: self,
@@ -1571,7 +1571,7 @@ extension Dictionary: MustacheBoxable {
                         return Box()
                     }
                     if let value = self[typedKey] {
-                        return BoxAny(value: value)
+                        return BoxAny(value)
                     } else {
                         return Box()
                     }
@@ -1642,7 +1642,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
             var dictionary = [String: MustacheBox]()
             let _ = value.allKeys.map { key in
                 if let stringKey = (key as? NSString)?.bridge() {
-                    dictionary[stringKey] = BoxAny(value: value[key])
+                    dictionary[stringKey] = BoxAny(value[key])
                 } else {
                     NSLog("GRMustache found a non-NSString key in NSDictionary (\(key)): value is discarded.")
                 }
@@ -1651,7 +1651,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
             let dictionary = IteratorSequence(NSFastEnumerationIterator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
                 var boxDictionary = boxDictionary
                 if let key = key as? String {
-                    boxDictionary[key] = BoxAny(value: value[key])
+                    boxDictionary[key] = BoxAny(value[key])
                 } else {
                     NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
                 }
@@ -1661,7 +1661,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
         return MustacheBox(
             converter: MustacheBox.Converter(dictionaryValue: dictionary),
             value: value,
-            keyedSubscript: { (key: String) in BoxAny(value: dictionary[key])})
+            keyedSubscript: { (key: String) in BoxAny(dictionary[key])})
     }
 
 // =============================================================================
