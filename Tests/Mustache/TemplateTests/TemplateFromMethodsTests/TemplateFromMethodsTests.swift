@@ -58,7 +58,7 @@ class TemplateFromMethodsTests: XCTestCase {
     }
 // END OF GENERATED CODE
     #endif
-    func makeKeyedSubscriptFunction(string: String) -> KeyedSubscriptFunction {
+    func makeKeyedSubscriptFunction(_ string: String) -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in
             if key == "string" {
                 return Box(string)
