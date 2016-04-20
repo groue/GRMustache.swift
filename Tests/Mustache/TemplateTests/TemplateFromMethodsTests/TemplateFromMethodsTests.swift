@@ -114,7 +114,7 @@ class TemplateFromMethodsTests: XCTestCase {
         return value(forKey: "string", inRendering: rendering) as? String
     }
     
-    func extensionOfTemplateFileInRendering(rendering: String) -> String? {
+    func extensionOfTemplateFile(inRendering rendering: String) -> String? {
         return (value(forKey: "fileName", inRendering: rendering) as? String)?.bridge().pathExtension
     }
     
@@ -144,7 +144,7 @@ class TemplateFromMethodsTests: XCTestCase {
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
-        XCTAssertEqual(extensionOfTemplateFileInRendering(rendering)!, "mustache")
+        XCTAssertEqual(extensionOfTemplateFile(inRendering: rendering)!, "mustache")
     }
     
     func testParserErrorFromString() {
