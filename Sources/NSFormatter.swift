@@ -48,7 +48,7 @@ GRMustache lets you use `NSFormatter` to format your values.
         template.registerInBaseContext("percent", Box(percentFormatter))
 
         // Renders "50%"
-        try! template.render(Box(value: ["x": 0.5]))
+        try! template.render(Box(["x": 0.5]))
     
     
     `NSFormatter` can also format all variable tags in a Mustache section:
@@ -69,7 +69,7 @@ GRMustache lets you use `NSFormatter` to format your values.
                 ["name": "bread", "proportion": 0.5],
                 ["name": "ham", "proportion": 0.35],
                 ["name": "butter", "proportion": 0.15]]]
-        try! template.render(Box(value: data))
+        try! template.render(Box(data))
     
     As seen in the example above, variable tags buried inside inner sections are
     escaped as well, so that you can render loop and conditional sections.
@@ -105,7 +105,7 @@ GRMustache lets you use `NSFormatter` to format your values.
                 // > right class, return a properly formatted and, if necessary,
                 // > localized string.
                 if let object = box.value as? NSObject {
-                    return Box(value: formatter.string(for: object))
+                    return Box(formatter.string(for: object))
                 } else {
                     // Not the correct class: return nil, i.e. empty Box.
                     return Box()
@@ -133,7 +133,7 @@ GRMustache lets you use `NSFormatter` to format your values.
                     // it untouched.
                     
                     if let object = box.value as? NSObject, let formatted = formatter.string(for: object) {
-                        return Box(value: formatted)
+                        return Box(formatted)
                     } else {
                         return box
                     }

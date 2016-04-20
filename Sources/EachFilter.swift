@@ -36,7 +36,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     //     let dictionary = ["firstName": "Charles", "lastName": "Bronson"]
     //     let template = try! Template(string: "{{# each(dictionary) }}{{ @key }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(dictionary) }}.")
     //     template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //     try! template.render(Box(value: ["dictionary": dictionary]))
+    //     try! template.render(Box(["dictionary": dictionary]))
     //
     // The dictionaryValue box property makes sure to return a
     // [String: MustacheBox] whatever the boxed dictionary-like value
@@ -48,20 +48,20 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
                 var position: [String: MustacheBox] = [:]
-                position["@index"] = Box(value: index)
-                position["@indexPlusOne"] = Box(value: index + 1)
-                position["@indexIsEven"] = Box(value: index % 2 == 0)
-                position["@first"] = Box(value: index == 0)
-                position["@last"] = Box(value: (index == count - 1))
-                position["@key"] = Box(value: element.key)
+                position["@index"] = Box(index)
+                position["@indexPlusOne"] = Box(index + 1)
+                position["@indexIsEven"] = Box(index % 2 == 0)
+                position["@first"] = Box(index == 0)
+                position["@last"] = Box((index == count - 1))
+                position["@key"] = Box(element.key)
                 
                 var info = info
-                info.context = info.context.extendedContext(by: Box(value: position))
+                info.context = info.context.extendedContext(by: Box(position))
                 return try element.box.render(info: info)
             }
-            return Box(value: customRenderFunction)
+            return Box(customRenderFunction)
         }
-        return Box(value: transformedBoxes)
+        return Box(transformedBoxes)
     }
     
     
@@ -71,7 +71,7 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     //     let array = ["bread", "ham", "butter"]
     //     let template = try! Template(string: "{{# each(array) }}{{ @indexPlusOne }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(array) }}.")
     //     template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //     try! template.render(Box(value: ["array": array]))
+    //     try! template.render(Box(["array": array]))
     //
     // The arrayValue box property makes sure to return a [MustacheBox] whatever
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
@@ -82,19 +82,19 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
                 var position: [String: MustacheBox] = [:]
-                position["@index"] = Box(value: index)
-                position["@indexPlusOne"] = Box(value: index + 1)
-                position["@indexIsEven"] = Box(value: index % 2 == 0)
-                position["@first"] = Box(value: index == 0)
-                position["@last"] = Box(value: (index == count - 1))
+                position["@index"] = Box(index)
+                position["@indexPlusOne"] = Box(index + 1)
+                position["@indexIsEven"] = Box(index % 2 == 0)
+                position["@first"] = Box(index == 0)
+                position["@last"] = Box((index == count - 1))
                 
                 var info = info
-                info.context = info.context.extendedContext(by: Box(value: position))
+                info.context = info.context.extendedContext(by: Box(position))
                 return try box.render(info: info)
             }
-            return Box(value: customRenderFunction)
+            return Box(customRenderFunction)
         }
-        return Box(value: transformedBoxes)
+        return Box(transformedBoxes)
     }
     
     // Non-iterable value

@@ -171,7 +171,7 @@ public struct Configuration {
     
         // Globally, with Mustache.DefaultConfiguration:
     
-        Mustache.DefaultConfiguration.baseContext = Context(Box(value: ["foo": "bar"]))
+        Mustache.DefaultConfiguration.baseContext = Context(Box(["foo": "bar"]))
 
         // "bar"
         let template1 = try! Template(string: "{{foo}}")
@@ -180,7 +180,7 @@ public struct Configuration {
         // Locally, using a TemplateRepository:
         
         let repository = TemplateRepository(bundle: NSBundle.main())
-        repository.configuration.baseContext = Context(Box(value: ["foo": "bar"]))
+        repository.configuration.baseContext = Context(Box(["foo": "bar"]))
         
         // "bar"
         let template2 = try! repository.template(string: "{{foo}}")
@@ -189,7 +189,7 @@ public struct Configuration {
     The base context can also be set for individual templates:
 
         let template3 = try! Template(string: "{{foo}}")
-        template3.baseContext = Context(Box(value: ["foo": "bar"]))
+        template3.baseContext = Context(Box(["foo": "bar"]))
         
         // "bar"
         try! template3.render()
@@ -207,7 +207,7 @@ public struct Configuration {
     
         // Globally, with Mustache.DefaultConfiguration:
     
-        Mustache.DefaultConfiguration.extendBaseContext(Box(value: ["foo": "bar"]))
+        Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
 
         // "bar"
         let template1 = try! Template(string: "{{foo}}")
@@ -216,7 +216,7 @@ public struct Configuration {
         // Locally, using a TemplateRepository:
         
         let repository = TemplateRepository(bundle: NSBundle.main())
-        repository.configuration.extendBaseContext(Box(value: ["foo": "bar"]))
+        repository.configuration.extendBaseContext(Box(["foo": "bar"]))
         
         // "bar"
         let template2 = try! repository.template(string: "{{foo}}")
@@ -225,7 +225,7 @@ public struct Configuration {
     The base context can also be extended for individual templates:
 
         let template3 = try! Template(string: "{{foo}}")
-        template3.extendBaseContext(Box(value: ["foo": "bar"]))
+        template3.extendBaseContext(Box(["foo": "bar"]))
         
         // "bar"
         try! template3.render()
@@ -256,7 +256,7 @@ public struct Configuration {
         try! template1.render()
 
         // Renders "bar" again, because the registered key "foo" has priority.
-        try! template1.render(Box(value: ["foo": "qux"]))
+        try! template1.render(Box(["foo": "qux"]))
     
         // Locally, using a TemplateRepository:
         

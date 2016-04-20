@@ -204,7 +204,7 @@ final public class Template {
     
         // Renders "bar"
         let template = try! Template(string: "{{foo}}")
-        template.baseContext = Context(Box(value: ["foo": "bar"]))
+        template.baseContext = Context(Box(["foo": "bar"]))
         try! template.render()
     
     See also:
@@ -220,7 +220,7 @@ final public class Template {
     
         // Renders "bar"
         let template = try! Template(string: "{{foo}}")
-        template.extendBaseContext(Box(value: ["foo": "bar"]))
+        template.extendBaseContext(Box(["foo": "bar"]))
         try! template.render()
     
     See also:
@@ -245,7 +245,7 @@ final public class Template {
         try! template.render()
 
         // Renders "bar" again, because the registered key "foo" has priority.
-        try! template.render(Box(value: ["foo": "qux"]))
+        try! template.render(Box(["foo": "qux"]))
     
     See also:
     
@@ -349,7 +349,7 @@ extension Template : MustacheBoxable {
         ]
     
         // <a href='/people/123'>Salvador Dali</a>
-        try! Template(string: "{{template}}").render(Box(value: data))
+        try! Template(string: "{{template}}").render(Box(data))
     
     Note that templates whose contentType is Text are HTML-escaped when they are
     included in an HTML template.

@@ -54,7 +54,7 @@ final class URLEscapeHelper : MustacheBoxable {
         case .Variable:
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box(value: { (info: RenderingInfo) -> Rendering in
+            return Box({ (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info: info)
                 return try self.filter(rendering: rendering)
 

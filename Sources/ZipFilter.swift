@@ -87,5 +87,5 @@ let ZipFilter = VariadicFilter { (boxes) in
     
     // Return a box of those boxed render functions
     
-    return Box(value: renderFunctions.map(Box))
+    return Box(renderFunctions.map(Box))
 }
