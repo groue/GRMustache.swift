@@ -253,7 +253,7 @@ final public class Template {
     - extendBaseContext
     - Context.context(withRegisteredKey:box:)
     */
-    public func registerInBaseContext(key: String, _ box: MustacheBox) {
+    public func registerInBaseContext(_ key: String, _ box: MustacheBox) {
         baseContext = baseContext.context(withRegisteredKey: key, box: box)
     }
     
