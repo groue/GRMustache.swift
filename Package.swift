@@ -9,5 +9,6 @@ let package = Package(
     .Package(url: "https://github.com/IBM-Swift/Bridging.git", majorVersion: 0, minor: 2),
     //TODO make this test dependency once issue https://bugs.swift.org/browse/SR-883 is resolved
     .Package(url: swiftyJsonUrl, majorVersion: swiftyJsonVersion)
-  ]
+  ],
+  exclude: ["Tests/Carthage"]
 )

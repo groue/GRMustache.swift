@@ -57,13 +57,13 @@ clean:
 	@echo --- Invoking swift build --clean
 	swift build --clean
 
-NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests:
+Tests/vendor/groue/GRMustacheSpec/Tests:
 	@echo --- Fetching GRMustacheSpec
 	git submodule init
 	git submodule update
 
 
-copytestresources: NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests
+copytestresources: Tests/vendor/groue/GRMustacheSpec/Tests
 	@echo --- Copying test files
 	mkdir -p ${RESOURCE_DIR}
 	cp Tests/Mustache/*/*.mustache ${RESOURCE_DIR}
@@ -76,6 +76,6 @@ copytestresources: NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests
 	cp -r Tests/Mustache/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
 	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
 	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
-	cp -r NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests ${RESOURCE_DIR}
+	cp -r Tests/vendor/groue/GRMustacheSpec/Tests ${RESOURCE_DIR}
 
 .PHONY: clean build refetch run test 
