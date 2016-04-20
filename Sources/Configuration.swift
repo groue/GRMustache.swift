@@ -207,7 +207,7 @@ public struct Configuration {
     
         // Globally, with Mustache.DefaultConfiguration:
     
-        Mustache.DefaultConfiguration.extendBaseContext(Box(["foo": "bar"]))
+        Mustache.DefaultConfiguration.extendBaseContext(by: Box(["foo": "bar"]))
 
         // "bar"
         let template1 = try! Template(string: "{{foo}}")
@@ -216,7 +216,7 @@ public struct Configuration {
         // Locally, using a TemplateRepository:
         
         let repository = TemplateRepository(bundle: NSBundle.main())
-        repository.configuration.extendBaseContext(Box(["foo": "bar"]))
+        repository.configuration.extendBaseContext(by: Box(["foo": "bar"]))
         
         // "bar"
         let template2 = try! repository.template(string: "{{foo}}")
@@ -225,7 +225,7 @@ public struct Configuration {
     The base context can also be extended for individual templates:
 
         let template3 = try! Template(string: "{{foo}}")
-        template3.extendBaseContext(Box(["foo": "bar"]))
+        template3.extendBaseContext(by: Box(["foo": "bar"]))
         
         // "bar"
         try! template3.render()
@@ -237,7 +237,7 @@ public struct Configuration {
     - baseContext
     - registerInBaseContext
     */
-    public mutating func extendBaseContext(box: MustacheBox) {
+    public mutating func extendBaseContext(by box: MustacheBox) {
         baseContext = baseContext.extendedContext(by: box)
     }
     
