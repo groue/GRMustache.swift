@@ -104,7 +104,7 @@ class TemplateFromMethodsTests: XCTestCase {
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: NSUTF8StringEncoding) }
     
     func valueForKey(key: String, inRendering rendering: String) -> Any? {
-        let data = rendering.data(usingEncoding: NSUTF8StringEncoding)!
+        let data = rendering.data(using: NSUTF8StringEncoding)!
         let json = JSON(data: data)
         return json[key].object
     }
