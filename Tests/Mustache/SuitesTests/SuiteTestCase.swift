@@ -255,7 +255,7 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func testRendering(template: Template) {
+        func testRendering(_ template: Template) {
             do {
                 let rendering = try template.render(with: renderedValue)
                 if let expectedRendering = expectedRendering as String! {
