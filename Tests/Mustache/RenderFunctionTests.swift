@@ -349,7 +349,7 @@ class RenderFunctionTests: XCTestCase {
     
     func testRenderFunctionCanExtendValueContextStackInVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            let context = info.context.extendedContext(Box(["subject2": Box("+++")]))
+            let context = info.context.extendedContext(by: Box(["subject2": Box("+++")]))
             let template = try! Template(string: "{{subject}}{{subject2}}")
             return try template.render(with: context)
         }
@@ -360,7 +360,7 @@ class RenderFunctionTests: XCTestCase {
     
     func testRenderFunctionCanExtendValueContextStackInSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            return try info.tag.render(with: info.context.extendedContext(Box(["subject2": Box("+++")])))
+            return try info.tag.render(with: info.context.extendedContext(by: Box(["subject2": Box("+++")])))
         }
         let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = try! Template(string: "{{#render}}{{subject}}{{subject2}}{{/render}}").render(with: box)
@@ -370,7 +370,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanExtendWillRenderStackInVariableTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
-            let context = info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
+            let context = info.context.extendedContext(by: Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
                 tagWillRenderCount += 1
                 return box
             }))
@@ -386,7 +386,7 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanExtendWillRenderStackInSectionTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
-            return try info.tag.render(with: info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
+            return try info.tag.render(with: info.context.extendedContext(by: Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
                 tagWillRenderCount += 1
                 return box
             })))
@@ -412,7 +412,7 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#render}}{{subject}}{{/render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
+        template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "delegate")
@@ -434,7 +434,7 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
+        template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "delegate")
@@ -456,7 +456,7 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#render}}{{/render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
+        template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let box = Box(["render": Box(render), "subject": Box("---")])
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "delegate")

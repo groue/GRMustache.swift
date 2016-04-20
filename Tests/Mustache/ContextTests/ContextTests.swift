@@ -70,7 +70,7 @@ class ContextTests: XCTestCase {
         var context = Context()
         XCTAssertTrue(context.topBox.isEmpty)
         
-        context = context.extendedContext(Box("object"))
+        context = context.extendedContext(by: Box("object"))
         XCTAssertEqual((context.topBox.value as! String), "object")
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
@@ -79,10 +79,10 @@ class ContextTests: XCTestCase {
 //        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
 //            return box
 //        }
-//        context = context.extendedContext(Box(willRender))
+//        context = context.extendedContext(by: Box(willRender))
 //        XCTAssertEqual(context.topBox.value as String, "object")
 
-        context = context.extendedContext(Box("object2"))
+        context = context.extendedContext(by: Box("object2"))
         XCTAssertEqual((context.topBox.value as! String), "object2")
     }
     

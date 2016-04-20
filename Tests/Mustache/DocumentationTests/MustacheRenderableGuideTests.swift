@@ -143,7 +143,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     let testBundle = NSBundle(for: MustacheRenderableGuideTests.self)
                     #endif
                     let template = try! Template(named: "Person", bundle: testBundle)
-                    let context = info.context.extendedContext(Box(self))
+                    let context = info.context.extendedContext(by: Box(self))
                     return try template.render(with: context)
                 }
                 return MustacheBox(
@@ -176,7 +176,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     let testBundle = NSBundle(for: MustacheRenderableGuideTests.self)
                     #endif
                     let template = try! Template(named: "Movie", bundle: testBundle)
-                    let context = info.context.extendedContext(Box(self))
+                    let context = info.context.extendedContext(by: Box(self))
                     return try template.render(with: context)
                 }
                 return MustacheBox(
@@ -202,7 +202,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             
             var buffer = "<ul>"
             for item in items {
-                let itemContext = info.context.extendedContext(item)
+                let itemContext = info.context.extendedContext(by: item)
                 let itemRendering = try! info.tag.render(with: itemContext)
                 buffer += "<li>\(itemRendering.string)</li>"
             }
@@ -211,7 +211,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")
-        template.baseContext = template.baseContext.extendedContext(Box(["list": Box(Filter(listFilter))]))
+        template.baseContext = template.baseContext.extendedContext(by: Box(["list": Box(Filter(listFilter))]))
         
         let item1 = Box([
             "url": "http://mustache.github.io",
