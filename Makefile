@@ -19,7 +19,7 @@ UNAME = ${shell uname}
 CC_FLAGS =
 SWIFTC_FLAGS =
 LINKER_FLAGS = 
-
+RESOURCE_DIR = ".build/debug/Mustache.xctest/Contents/Resources"
 
 all: build
 
@@ -65,17 +65,17 @@ NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests:
 
 copytestresources: NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests
 	@echo --- Copying test files
-	mkdir -p .build/debug/Package.xctest/Contents/Resources
-	cp Tests/Mustache/*/*.mustache .build/debug/Package.xctest/Contents/Resources
-	cp Tests/Mustache/*/*/*.mustache .build/debug/Package.xctest/Contents/Resources
-	cp Tests/Mustache/*/*/*.text .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/SuitesTests/twitter/hogan.js/HoganSuite .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/ServicesTests/LocalizerTestsBundle .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests .build/debug/Package.xctest/Contents/Resources
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* .build/debug/Package.xctest/Contents/Resources
-	cp -r NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests .build/debug/Package.xctest/Contents/Resources
+	mkdir -p ${RESOURCE_DIR}
+	cp Tests/Mustache/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/Mustache/*/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/Mustache/*/*/*.text ${RESOURCE_DIR}
+	cp -r Tests/Mustache/SuitesTests/twitter/hogan.js/HoganSuite ${RESOURCE_DIR}
+	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests ${RESOURCE_DIR}
+	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial ${RESOURCE_DIR}
+	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources ${RESOURCE_DIR}
+	cp -r Tests/Mustache/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
+	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
+	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
+	cp -r NonSwiftPackageManagerTests/vendor/groue/GRMustacheSpec/Tests ${RESOURCE_DIR}
 
 .PHONY: clean build refetch run test 
