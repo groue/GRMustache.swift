@@ -284,7 +284,7 @@ public struct Configuration {
     - baseContext
     - extendBaseContext
     */
-    public mutating func registerInBaseContext(key: String, _ box: MustacheBox) {
+    public mutating func registerInBaseContext(_ key: String, _ box: MustacheBox) {
         baseContext = baseContext.context(withRegisteredKey: key, box: box)
     }
     
