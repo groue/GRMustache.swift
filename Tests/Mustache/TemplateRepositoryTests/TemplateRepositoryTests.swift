@@ -97,7 +97,7 @@ class TemplateRepositoryTests: XCTestCase {
                     throw MustacheError(kind: .TemplateNotFound)
                 }
             }
-            func setTemplateString(templateString: String, forKey key: String) {
+            func setTemplateString(_ templateString: String, forKey key: String) {
                 templates[key] = templateString
             }
         }
