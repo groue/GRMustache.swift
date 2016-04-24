@@ -5,7 +5,7 @@ GRMustache.swift is a [Mustache](http://mustache.github.io) template engine writ
 
 It extends the genuine Mustache language with built-in goodies and extensibility hooks that let you avoid the strict minimalism of Mustache when you need it.
 
-**December 7, 2015: GRMustache.swift 1.0.0 is out** - [Release notes](CHANGELOG.md). Follow [@GRMustache](http://twitter.com/GRMustache) on Twitter for release announcements and usage tips.
+**April 24, 2016: GRMustache.swift 1.0.1 is out** - [Release notes](CHANGELOG.md). Follow [@GRMustache](http://twitter.com/GRMustache) on Twitter for release announcements and usage tips.
 
 **The last release that supports Swift 2.1** is version v0.11.0, on the [Swift2.1 branch](https://github.com/groue/GRMustache.swift/tree/Swift2.1).
 
@@ -143,7 +143,7 @@ To fiddle with the library, open the `Xcode/Mustache.xcworkspace` workspace: it 
 External links:
 
 - [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Classes/Template.html) on cocoadocs.org
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html) on cocoadocs.org
 
 Rendering templates:
 
@@ -210,8 +210,8 @@ Templates may come from various sources:
 
 For more information, check:
 
-- [Template.swift](Sources/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Classes/Template.html))
-- [TemplateRepository.swift](Sources/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Classes/TemplateRepository.html))
+- [Template.swift](Sources/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html))
+- [TemplateRepository.swift](Sources/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/TemplateRepository.html))
 
 
 Errors
@@ -529,7 +529,7 @@ Generally speaking, partial names are always interpreted by a **Template Reposit
 - `Template(string:...)` uses a template repository that can’t load any partial.
 - `templateRepository.template(named:...)` uses the partial loading mechanism of the template repository.
 
-Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Classes/TemplateRepository.html)).
+Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/TemplateRepository.html)).
 
 
 #### Dynamic partials
@@ -664,7 +664,7 @@ ERB-styled tags: <% name %>
 Default tags again: {{ name }}
 ```
 
-There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Structs/Configuration.html)).
+There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Structs/Configuration.html)).
 
 
 ### Comment Tags
@@ -685,7 +685,7 @@ GRMustache.swift interprets two pragma tags that set the content type of the tem
 
 In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
-For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Structs/Configuration.html)).
+For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Structs/Configuration.html)).
 
 
 The Context Stack and Expressions
@@ -745,7 +745,7 @@ template.render(Box(data))
 
 The base context is usually a good place to register [filters](#filters).
 
-See [Template.swift](Sources/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Classes/Template.html)).
+See [Template.swift](Sources/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html)).
 
 
 ### Expressions
@@ -1137,7 +1137,7 @@ let data = [
 let rendering = try template.render(Box(data))
 ```
 
-Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Sources/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Typealiases.html)).
+Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Sources/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Typealiases.html)).
 
 
 Filters
@@ -1368,7 +1368,7 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try template.render(Box(data))
 ```
 
-As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Sources/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.0/Typealiases.html)).
+As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Sources/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Typealiases.html)).
 
 
 ### Advanced Filters

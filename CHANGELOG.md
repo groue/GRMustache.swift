@@ -1,7 +1,16 @@
 Release Notes
 =============
 
-## v1.0.0rc1
+## v1.0.1
+
+Released on April 24, 2016
+
+**Fixed**
+
+- Restored support for Carthage ([@ariarijp](https://github.com/ariarijp), [#31](https://github.com/groue/GRMustache.swift/issues/31)))
+
+
+## v1.0.0
 
 Released on December 7, 2015
 
