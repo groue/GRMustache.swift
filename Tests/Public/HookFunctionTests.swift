@@ -142,7 +142,7 @@ class HookFunctionTests: XCTestCase {
         var willRenderCount = 0;
         var renderedValue: MustacheBox? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            ++willRenderCount
+            willRenderCount += 1
             renderedValue = box
             return box
         }
@@ -295,14 +295,14 @@ class HookFunctionTests: XCTestCase {
         let willRender1 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             if box.value as? String == "observed" {
                 willRenderIndex1 = willRenderIndex
-                willRenderIndex++
+                willRenderIndex += 1
             }
             return box
         }
         let didRender1 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
             if box.value as? String == "observed" {
                 didRenderIndex1 = didRenderIndex
-                didRenderIndex++
+                didRenderIndex += 1
             }
         }
         
@@ -311,14 +311,14 @@ class HookFunctionTests: XCTestCase {
         let willRender2 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             if box.value as? String == "observed" {
                 willRenderIndex2 = willRenderIndex
-                willRenderIndex++
+                willRenderIndex += 1
             }
             return box
         }
         let didRender2 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
             if box.value as? String == "observed" {
                 didRenderIndex2 = didRenderIndex
-                didRenderIndex++
+                didRenderIndex += 1
             }
         }
         
@@ -327,14 +327,14 @@ class HookFunctionTests: XCTestCase {
         let willRender3 = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             if box.value as? String == "observed" {
                 willRenderIndex3 = willRenderIndex
-                willRenderIndex++
+                willRenderIndex += 1
             }
             return box
         }
         let didRender3 = { (tag: Tag, box: MustacheBox, string: String?) -> Void in
             if box.value as? String == "observed" {
                 didRenderIndex3 = didRenderIndex
-                didRenderIndex++
+                didRenderIndex += 1
             }
         }
         

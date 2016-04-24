@@ -39,12 +39,14 @@ final class TemplateParser {
     
     func parse(templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
+        let templateCharacters = templateString.characters
         
         let atString = { (index: String.Index, string: String?) -> Bool in
             guard let string = string else {
                 return false
             }
-            return templateString.substringFromIndex(index).hasPrefix(string)
+            let endIndex = index.advancedBy(string.characters.count, limit: templateCharacters.endIndex)
+            return templateCharacters[index..<endIndex].startsWith(string.characters)
         }
         
         var state: State = .Start
@@ -59,7 +61,7 @@ final class TemplateParser {
             case .Start:
                 if c == "\n" {
                     state = .Text(startIndex: i, startLineNumber: lineNumber)
-                    ++lineNumber
+                    lineNumber += 1
                 } else if atString(i, currentDelimiters.unescapedTagStart) {
                     state = .UnescapedTag(startIndex: i, startLineNumber: lineNumber)
                     i = i.advancedBy(currentDelimiters.unescapedTagStartLength).predecessor()
@@ -74,7 +76,7 @@ final class TemplateParser {
                 }
             case .Text(let startIndex, let startLineNumber):
                 if c == "\n" {
-                    ++lineNumber
+                    lineNumber += 1
                 } else if atString(i, currentDelimiters.unescapedTagStart) {
                     if startIndex != i {
                         let range = startIndex..<i
@@ -123,7 +125,7 @@ final class TemplateParser {
                 }
             case .Tag(let startIndex, let startLineNumber):
                 if c == "\n" {
-                    ++lineNumber
+                    lineNumber += 1
                 } else if atString(i, currentDelimiters.tagDelimiterPair.1) {
                     let tagInitialIndex = startIndex.advancedBy(currentDelimiters.tagStartLength)
                     let tagInitial = templateString[tagInitialIndex]
@@ -245,7 +247,7 @@ final class TemplateParser {
                 break
             case .UnescapedTag(let startIndex, let startLineNumber):
                 if c == "\n" {
-                    ++lineNumber
+                    lineNumber += 1
                 } else if atString(i, currentDelimiters.unescapedTagEnd) {
                     let tagInitialIndex = startIndex.advancedBy(currentDelimiters.unescapedTagStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)
@@ -263,7 +265,7 @@ final class TemplateParser {
                 }
             case .SetDelimitersTag(let startIndex, let startLineNumber):
                 if c == "\n" {
-                    ++lineNumber
+                    lineNumber += 1
                 } else if atString(i, currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = startIndex.advancedBy(currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substringWithRange(tagInitialIndex..<i)

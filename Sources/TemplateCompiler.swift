@@ -380,7 +380,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
             templateASTNodes.append(node)
         }
         
-        enum Type {
+        enum `Type` {
             case Root
             case Section(openingToken: TemplateToken, expression: Expression)
             case InvertedSection(openingToken: TemplateToken, expression: Expression)
