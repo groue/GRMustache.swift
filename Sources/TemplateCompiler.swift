@@ -220,7 +220,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                            fatalError("Not implemented")
 //                        }
                         let templateString = token.templateString
-                        let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                        let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
                         let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
 
                         compilationState.popCurrentScope()
@@ -250,7 +250,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                            fatalError("Not implemented")
 //                        }
                         let templateString = token.templateString
-                        let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                        let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
                         let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
                         
                         compilationState.popCurrentScope()
