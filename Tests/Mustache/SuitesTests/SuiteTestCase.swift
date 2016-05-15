@@ -317,7 +317,7 @@ class SuiteTestCase: XCTestCase {
         func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
             var templatesPaths: [(String, NSStringEncoding)] = []
             
-            let fm = NSFileManager.defaultManager()
+            let fm = NSFileManager.`default`()
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
                 let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")
