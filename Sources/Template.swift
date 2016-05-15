@@ -68,7 +68,7 @@ final public class Template {
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
             var templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
             if templateName.characters.last == "." {
-                templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
+                templateName = templateName.substringToIndex(templateName.index(before: templateName.endIndex))
             }
         #else
             let templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
@@ -99,7 +99,7 @@ final public class Template {
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
             var templateName = URL.lastPathComponent!.bridge().deletingPathExtension
             if templateName.characters.last == "." {
-                templateName = templateName.substringToIndex(templateName.endIndex.predecessor())
+                templateName = templateName.substringToIndex(templateName.index(before: templateName.endIndex))
             }
         #else
             let templateName = URL.lastPathComponent!.bridge().deletingPathExtension
