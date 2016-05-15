@@ -1138,7 +1138,7 @@ extension Collection where IndexDistance == Int {
 }
 
 // Support for Array
-extension Collection where IndexDistance == Int, Index: BidirectionalIndex {
+extension BidirectionalCollection where IndexDistance == Int {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -1362,7 +1362,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 - returns: A MustacheBox that wraps *array*.
 */
 
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index: BidirectionalIndex, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
@@ -1371,7 +1371,7 @@ public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.Index
 }
 
 // any array, other than array of MustacheBoxables
-public func Box<C: Collection where C.Index: BidirectionalIndex,
+public func Box<C: BidirectionalCollection where
                 C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
@@ -1423,7 +1423,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndex, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
