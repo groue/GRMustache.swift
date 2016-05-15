@@ -348,19 +348,19 @@ final class TemplateParser {
         init(tagDelimiterPair : TagDelimiterPair) {
             self.tagDelimiterPair = tagDelimiterPair
             
-            tagStartLength = tagDelimiterPair.0.startIndex.distance(to: tagDelimiterPair.0.endIndex)
-            tagEndLength = tagDelimiterPair.1.startIndex.distance(to: tagDelimiterPair.1.endIndex)
+            tagStartLength = tagDelimiterPair.0.distance(from: tagDelimiterPair.0.startIndex, to: tagDelimiterPair.0.endIndex)
+            tagEndLength = tagDelimiterPair.1.distance(from: tagDelimiterPair.1.startIndex, to: tagDelimiterPair.1.endIndex)
             
             let usesStandardDelimiters = (tagDelimiterPair.0 == "{{") && (tagDelimiterPair.1 == "}}")
             unescapedTagStart = usesStandardDelimiters ? "{{{" : nil
-            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.startIndex.distance(to: unescapedTagStart!.endIndex) : 0
+            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.distance(from: unescapedTagStart!.startIndex, to: unescapedTagStart!.endIndex) : 0
             unescapedTagEnd = usesStandardDelimiters ? "}}}" : nil
-            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.startIndex.distance(to: unescapedTagEnd!.endIndex) : 0
+            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.distance(from: unescapedTagEnd!.startIndex, to: unescapedTagEnd!.endIndex) : 0
             
             setDelimitersStart = "\(tagDelimiterPair.0)="
-            setDelimitersStartLength = setDelimitersStart.startIndex.distance(to: setDelimitersStart.endIndex)
+            setDelimitersStartLength = setDelimitersStart.distance(from: setDelimitersStart.startIndex, to: setDelimitersStart.endIndex)
             setDelimitersEnd = "=\(tagDelimiterPair.1)"
-            setDelimitersEndLength = setDelimitersEnd.startIndex.distance(to: setDelimitersEnd.endIndex)
+            setDelimitersEndLength = setDelimitersEnd.distance(from: setDelimitersEnd.startIndex, to: setDelimitersEnd.endIndex)
         }
     }
 }
