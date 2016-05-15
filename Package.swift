@@ -11,5 +11,5 @@ let package = Package(
     //TODO make this test dependency once issue https://bugs.swift.org/browse/SR-883 is resolved
     .Package(url: swiftyJsonUrl, majorVersion: swiftyJsonVersion, minor: swiftyJsonMinorVersion)
   ],
-  exclude: ["Tests/Carthage"]
+  exclude: ["Tests/Carthage", "Tests/vendor", "Tests/Info.plist"]
 )
