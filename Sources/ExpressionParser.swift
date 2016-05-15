@@ -261,7 +261,7 @@ final class ExpressionParser {
                 }
             }
             
-            i = i.successor()
+            i = string.index(after: i)
         }
         
         
