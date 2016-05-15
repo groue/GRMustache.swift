@@ -310,7 +310,7 @@ class BoxTests: XCTestCase {
     func testArrayValueForRange() {
         let originalValue = 1...3
         let box = Box(originalValue)
-        let extractedValue = box.value as! Range<Int>
+        let extractedValue = box.value as! CountableClosedRange<Int>
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
