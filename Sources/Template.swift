@@ -94,14 +94,13 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        let baseURL = URL.deletingLastPathComponent!
-        let templateExtension = URL.pathExtension
-        #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-            var templateName = URL.lastPathComponent!.bridge().deletingPathExtension
-            if templateName.characters.last == "." {
-                templateName = templateName.substringToIndex(templateName.index(before: templateName.endIndex))
-            }
-        #else
+        #if os(Linux)
+            let baseURL = URL.URLByDeletingLastPathComponent!
+            let templateExtension = URL.pathExtension
+            let templateName = URL.URLByDeletingPathExtension?.lastPathComponent ?? ""
+       #else
+            let baseURL = URL.deletingLastPathComponent!
+            let templateExtension = URL.pathExtension
             let templateName = URL.lastPathComponent!.bridge().deletingPathExtension
         #endif
 
