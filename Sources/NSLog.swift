@@ -15,7 +15,7 @@
  **/
 
 #if os(Linux)
-    public func NSLog(message: String, functionName: String =  #function,
+    public func NSLog(_ message: String, functionName: String =  #function,
                lineNumber: Int = #line, fileName: String = #file) {
          print ("\(functionName) \(fileName) line \(lineNumber): \(message)")
 }
