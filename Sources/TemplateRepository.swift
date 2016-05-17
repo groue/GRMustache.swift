@@ -489,9 +489,9 @@ final public class TemplateRepository {
             
             let templateURL = NSURL(string: templateFilename, relativeTo: templateBaseURL)!
             #if os(Linux)
-                let absoluteTemplateURL = templateURL.standardizingPath!
-            #else
                 let absoluteTemplateURL = templateURL.URLByStandardizingPath!
+            #else
+                let absoluteTemplateURL = templateURL.standardizingPath!
             #endif
             let templateAbsoluteString = absoluteTemplateURL.absoluteString ?? ""
             
