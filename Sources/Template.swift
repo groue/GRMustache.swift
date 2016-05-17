@@ -62,15 +62,15 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        let nsPath = path.bridge()
-        let directoryPath = nsPath.deletingLastPathComponent
-        let templateExtension = nsPath.pathExtension
-        #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-            var templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
-            if templateName.characters.last == "." {
-                templateName = templateName.substringToIndex(templateName.index(before: templateName.endIndex))
-            }
+        #if os(Linux)
+            let url = NSURL(fileURLWithPath: path, isDirectory: false)
+            let directoryPath = url.URLByDeletingLastPathComponent?.path ?? ""
+            let templateExtension = url.pathExtension ?? ""
+            let templateName = url.URLByDeletingPathExtension?.lastPathComponent ?? ""
         #else
+            let nsPath = path.bridge()
+            let directoryPath = nsPath.deletingLastPathComponent
+            let templateExtension = nsPath.pathExtension
             let templateName = nsPath.lastPathComponent.bridge().deletingPathExtension
         #endif
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
