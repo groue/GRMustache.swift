@@ -1651,7 +1651,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
             let dictionary = IteratorSequence(NSFastEnumerationIterator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
                 var boxDictionary = boxDictionary
                 if let key = key as? String {
-                    boxDictionary[key] = BoxAny(value[key])
+                    boxDictionary[key] = BoxAny(value[key as NSString])
                 } else {
                     NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
                 }

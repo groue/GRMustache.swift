@@ -266,31 +266,32 @@ extension StandardLibrary {
                 }
                 fatalError("GRMustache.swift, Localizer.swift:\(#line) Not implemented: String(format, locale, args)")
             #else
-            switch args.count {
+            let nsargs = args.map({$0 as NSString})
+            switch nsargs.count {
             case 0:
                 return String(format: format)
             case 1:
-                return String(format: format, args[0])
+                return String(format: format, nsargs[0])
             case 2:
-                return String(format: format, args[0], args[1])
+                return String(format: format, nsargs[0], nsargs[1])
             case 3:
-                return String(format: format, args[0], args[1], args[2])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2])
             case 4:
-                return String(format: format, args[0], args[1], args[2], args[3])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3])
             case 5:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4])
             case 6:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4], nsargs[5])
             case 7:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4], nsargs[5], nsargs[6])
             case 8:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4], nsargs[5], nsargs[6], nsargs[7])
             case 9:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4], nsargs[5], nsargs[6], nsargs[7], nsargs[8])
             case 10:
-                return String(format: format, args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9])
+                return String(format: format, nsargs[0], nsargs[1], nsargs[2], nsargs[3], nsargs[4], nsargs[5], nsargs[6], nsargs[7], nsargs[8], nsargs[9])
             default:
-                fatalError("Not implemented: format with \(args.count) parameters")
+                fatalError("Not implemented: format with \(nsargs.count) parameters")
             }
             #endif
         }

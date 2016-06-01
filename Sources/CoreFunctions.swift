@@ -500,7 +500,7 @@ bolded section has already been parsed with its template. You may prefer the raw
 - parameter lambda: A `String -> String` function.
 - returns: A RenderFunction.
 */
-public func Lambda(_ lambda: String -> String) -> RenderFunction {
+public func Lambda(_ lambda: (String) -> String) -> RenderFunction {
     return { (info: RenderingInfo) in
         switch info.tag.type {
         case .Variable:
