@@ -24,6 +24,7 @@
 import Foundation
 
 protocol TemplateTokenConsumer {
+    @discardableResult
     func parser(_ parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
     func parser(_ parser:TemplateParser, didFailWithError error:ErrorProtocol)
 }
