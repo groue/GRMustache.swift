@@ -32,7 +32,7 @@ ifeq ($(UNAME), Linux)
 	@echo --- Checking Linux release
 	-lsb_release -d
 	@echo --- Fetching dependencies
-	swift build --fetch
+	swift package fetch
 endif
 	@echo --- Invoking swift build
 	swift build $(CC_FLAGS) $(SWIFTC_FLAGS) $(LINKER_FLAGS)
@@ -51,7 +51,7 @@ refetch:
 	@echo --- Removing Packages directory
 	rm -rf Packages
 	@echo --- Fetching dependencies
-	swift build --fetch
+	swift package fetch
 
 clean:
 	@echo --- Invoking swift build --clean
