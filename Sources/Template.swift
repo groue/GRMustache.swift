@@ -62,17 +62,11 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(path: String, encoding: String.Encoding = String.Encoding.utf8) throws {
-        #if os(Linux)
-            let url = URL(fileURLWithPath: path, isDirectory: false)
-            let directoryPath = url.URLByDeletingLastPathComponent?.path ?? ""
-            let templateExtension = url.pathExtension ?? ""
-            let templateName = url.URLByDeletingPathExtension?.lastPathComponent ?? ""
-        #else
-            let nsPath = path.bridge()
-            let directoryPath = nsPath.deletingLastPathComponent
-            let templateExtension = nsPath.pathExtension
-            let templateName = nsPath.deletingPathExtension().lastPathComponent
-        #endif
+        let url = URL(fileURLWithPath: path, isDirectory: false)
+        let directoryPath = url.deletingLastPathComponent()
+        let templateExtension = url.pathExtension
+        let templateName = url.deletingPathExtension().lastPathComponent
+
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
