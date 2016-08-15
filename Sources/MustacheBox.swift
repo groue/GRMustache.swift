@@ -335,7 +335,7 @@ final public class MustacheBox : NSObject {
     GRMustache source code ships a few multi-facetted boxes, which may inspire
     you. See for example:
 
-    - NSFormatter.mustacheBox
+    - Formatter.mustacheBox
     - HTMLEscape.mustacheBox
     - StandardLibrary.Localizer.mustacheBox
 

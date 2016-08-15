@@ -227,7 +227,7 @@ extension Int : MustacheBoxable {
 
     - `{{int}}` is rendered with built-in Swift String Interpolation.
       Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
+      `{{format(a)}}` (see `Formatter`).
 
     - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
 
@@ -284,7 +284,7 @@ extension UInt : MustacheBoxable {
 
     - `{{uint}}` is rendered with built-in Swift String Interpolation.
       Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
+      `{{format(a)}}` (see `Formatter`).
 
     - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
 
@@ -341,7 +341,7 @@ extension Double : MustacheBoxable {
 
     - `{{double}}` is rendered with built-in Swift String Interpolation.
       Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
+      `{{format(a)}}` (see `Formatter`).
 
     - `{{#double}}...{{/double}}` renders if and only if `double` is not 0 (zero).
 
@@ -444,7 +444,7 @@ extension NSObject: MustacheBoxable {
     - All other objects
 
     GRMustache ships with a few specific classes that escape the general cases
-    and provide their own rendering behavior: `NSDictionary`, `NSFormatter`,
+    and provide their own rendering behavior: `NSDictionary`, `Formatter`,
     `NSNull`, `NSNumber`, `NSString`, and `NSSet` (see the documentation for
     those classes).
 
@@ -518,7 +518,7 @@ extension NSObject: MustacheBoxable {
             return Box(nsString)
         case let nsNull as NSNull:
             return Box(nsNull)
-        case let nsFormatter as NSFormatter:
+        case let nsFormatter as Formatter:
             return Box(nsFormatter)
         case is NSArray, is NSOrderedSet:
             return handleEnumeration(self)
@@ -631,7 +631,7 @@ GRMustache provides built-in support for rendering `NSNumber`.
 
     - `{{number}}` is rendered with built-in Swift String Interpolation.
       Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
+      `{{format(a)}}` (see `Formatter`).
 
     - `{{#number}}...{{/number}}` renders if and only if `number` is not 0 (zero).
 
