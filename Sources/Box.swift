@@ -1310,7 +1310,8 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int>(_ set: C?) -> MustacheBox {
+public func Box<C: Collection>(_ set: C?) -> MustacheBox where
+    C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
     if let set = set {
         return set.mustacheBox(withSetValue: set, box: { Box($0) })
     } else {
@@ -1362,7 +1363,8 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 - returns: A MustacheBox that wraps *array*.
 */
 
-public func Box<C: BidirectionalCollection where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where
+    C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
@@ -1371,8 +1373,8 @@ public func Box<C: BidirectionalCollection where C.Iterator.Element: MustacheBox
 }
 
 // any array, other than array of MustacheBoxables
-public func Box<C: BidirectionalCollection where
-                C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where
+    C.IndexDistance == Int {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { (element: C.Iterator.Element) -> MustacheBox in return BoxAny(element) })
     } else {
@@ -1423,7 +1425,8 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: BidirectionalCollection, T where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int>(_ array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection, T>(_ array: C?) -> MustacheBox where
+    C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int {
     if let array = array {
         return array.mustacheBox(withArrayValue: array, box: { Box($0) })
     } else {
