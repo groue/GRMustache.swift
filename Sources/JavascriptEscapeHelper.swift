@@ -24,26 +24,26 @@
 import Foundation
 
 final class JavascriptEscapeHelper : MustacheBoxable {
-    
+
     var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because JavascriptEscape interacts in
         // various ways with Mustache rendering.
         return MustacheBox(
             // It has a value:
             value: self,
-            
+
             // JavascriptEscape can be used as a filter: {{ javascriptEscape(x) }}:
             filter: Filter(filter),
-            
+
             // JavascriptEscape escapes all variable tags: {{# javascriptEscape }}...{{ x }}...{{/ javascriptEscape }}
             willRender: willRender)
     }
-    
+
     // This function is used for evaluating `javascriptEscape(x)` expressions.
     private func filter(rendering: Rendering) throws -> Rendering {
         return Rendering(JavascriptEscapeHelper.escape(javascript: rendering.string), rendering.contentType)
     }
-    
+
     // A WillRenderFunction: this function lets JavascriptEscape change values that
     // are about to be rendered to their escaped counterpart.
     //
@@ -55,14 +55,14 @@ final class JavascriptEscapeHelper : MustacheBoxable {
             // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box({ (info: RenderingInfo) -> Rendering in
-                let rendering = try box.render(info: info)
+                let rendering = try box.render(info)
                 return try self.filter(rendering: rendering)
             })
         case .Section:
             return box
         }
     }
-    
+
     private class func escape(javascript string: String) -> String {
         // This table comes from https://github.com/django/django/commit/8c4a525871df19163d5bfdf5939eff33b544c2e2#django/template/defaultfilters.py
         //
@@ -83,7 +83,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
         //
         // The initial django commit used `\xNN` syntax. The \u syntax was
         // introduced later for JSON compatibility.
-        
+
         let escapeTable: [Character: String] = [
             "\0": "\\u0000",
             "\u{01}": "\\u0001",

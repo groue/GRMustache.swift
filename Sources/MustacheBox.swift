@@ -40,7 +40,7 @@ feed templates:
         template.render(Box(["numbers": [1,2,3]]))
 
 - Custom types via the `MustacheBoxable` protocol:
-    
+
         extension User: MustacheBoxable { ... }
         template.render(Box(user))
 
@@ -55,7 +55,7 @@ implementation detail that is enforced by the Swift 2 language itself. This may
 change in the future: do not rely on it.
 */
 final public class MustacheBox : NSObject {
-    
+
     // IMPLEMENTATION NOTE
     //
     // Why is MustacheBox a subclass of NSObject, and not, say, a Swift struct?
@@ -71,15 +71,15 @@ final public class MustacheBox : NSObject {
     // For an example of this limitation, see example below:
     //
     //     import Foundation
-    //     
+    //
     //     // A type that is not compatible with Objective-C
     //     struct MustacheBox { }
-    //     
+    //
     //     // So far so good
     //     extension NSObject {
     //         var mustacheBox: MustacheBox { return MustacheBox() }
     //     }
-    //     
+    //
     //     // Error: declarations in extensions cannot override yet
     //     extension NSNull {
     //         override var mustacheBox: MustacheBox { return MustacheBox() }
@@ -88,42 +88,42 @@ final public class MustacheBox : NSObject {
     // This problem does not apply to Objc-C compatible protocols:
     //
     //     import Foundation
-    //     
+    //
     //     // So far so good
     //     extension NSObject {
     //         var prop: String { return "NSObject" }
     //     }
-    //     
+    //
     //     // No error
     //     extension NSNull {
     //         override var prop: String { return "NSNull" }
     //     }
-    //     
+    //
     //     NSObject().prop // "NSObject"
     //     NSNull().prop   // "NSNull"
     //
     // In order to let the user easily override NSObject.mustacheBox, we had to
     // keep its return type compatible with Objective-C, that is to say make
     // MustacheBox a subclass of NSObject.
-    
+
 
     // -------------------------------------------------------------------------
     // MARK: - The boxed value
-    
+
     /// The boxed value.
     public let value: Any?
-    
+
     /// The only empty box is `Box()`.
     public let isEmpty: Bool
-    
+
     /**
     The boolean value of the box.
-    
+
     It tells whether the Box should trigger or prevent the rendering of regular
     `{{#section}}...{{/}}` and inverted `{{^section}}...{{/}}`.
     */
     public let boolValue: Bool
-    
+
     /**
     If the boxed value can be iterated (Swift collection, NSArray, NSSet, etc.),
     returns an array of `MustacheBox`.
@@ -131,7 +131,7 @@ final public class MustacheBox : NSObject {
     public var arrayValue: [MustacheBox]? {
         return converter?.arrayValue()
     }
-    
+
     /**
     If the boxed value is a dictionary (Swift dictionary, NSDictionary, etc.),
     returns a dictionary `[String: MustacheBox]`.
@@ -139,40 +139,40 @@ final public class MustacheBox : NSObject {
     public var dictionaryValue: [String: MustacheBox]? {
         return converter?.dictionaryValue()
     }
-    
+
     /**
     Extracts a key out of a box.
-    
+
         let box = Box(["firstName": "Arthur"])
         box.mustacheBox(forKey: "firstName").value  // "Arthur"
-    
+
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
     public func mustacheBox(forKey key: String) -> MustacheBox {
-        return keyedSubscript?(key: key) ?? Box()
+        return keyedSubscript?(key) ?? Box()
     }
-    
-    
+
+
     // -------------------------------------------------------------------------
     // MARK: - Other facets
-    
+
     /// See the documentation of `RenderFunction`.
     public private(set) var render: RenderFunction
-    
+
     /// See the documentation of `FilterFunction`.
     public let filter: FilterFunction?
-    
+
     /// See the documentation of `WillRenderFunction`.
     public let willRender: WillRenderFunction?
-    
+
     /// See the documentation of `DidRenderFunction`.
     public let didRender: DidRenderFunction?
-    
-    
+
+
     // -------------------------------------------------------------------------
     // MARK: - Multi-facetted Box Initialization
-    
+
     /**
     This is the most low-level initializer of MustacheBox.
 
@@ -361,17 +361,17 @@ final public class MustacheBox : NSObject {
         // render them:
 
         extension Person : MustacheBoxable {
-            
+
             // MustacheBoxable protocol requires objects to implement this property
             // and return a MustacheBox:
-            
+
             var mustacheBox: MustacheBox {
-                
+
                 // A person is a multi-facetted object:
                 return MustacheBox(
                     // It has a value:
                     value: self,
-                    
+
                     // It lets Mustache extracts properties by name:
                     keyedSubscript: { (key: String) -> MustacheBox in
                         switch key {
@@ -380,7 +380,7 @@ final public class MustacheBox : NSObject {
                         default:          return Box()
                         }
                     },
-                    
+
                     // It performs custom rendering:
                     render: { (info: RenderingInfo) -> Rendering in
                         switch info.tag.type {
@@ -434,13 +434,13 @@ final public class MustacheBox : NSObject {
             didRender: didRender)
     }
 
-    
+
     // -------------------------------------------------------------------------
     // MARK: - Internal
-    
+
     let keyedSubscript: KeyedSubscriptFunction?
     let converter: Converter?
-    
+
     init(
         converter: Converter?,
         value: Any? = nil,
@@ -478,12 +478,12 @@ final public class MustacheBox : NSObject {
             self.hasCustomRenderFunction = false
             super.init()
             self.render = { [unowned self] (info: RenderingInfo) in
-                
+
                 // Default rendering depends on the tag type:
                 switch info.tag.type {
                 case .Variable:
                     // {{ box }} and {{{ box }}}
-                    
+
                     if let value = self.value {
                         // Use the built-in Swift String Interpolation:
                         return Rendering("\(value)", .Text)
@@ -492,25 +492,25 @@ final public class MustacheBox : NSObject {
                     }
                 case .Section:
                     // {{# box }}...{{/ box }}
-                    
+
                     // Push the value on the top of the context stack:
                     let context = info.context.extendedContext(by: self)
-                    
+
                     // Renders the inner content of the section tag:
                     return try info.tag.render(with: context)
                 }
             }
         }
     }
-    
+
     private let hasCustomRenderFunction: Bool
-    
+
     // Converter wraps all the conversion closures that help MustacheBox expose
     // its raw value (typed Any) as useful types.
     struct Converter {
         let arrayValue: (() -> [MustacheBox]?)
         let dictionaryValue: (() -> [String: MustacheBox]?)
-        
+
         init(
             arrayValue: @autoclosure(escaping) () -> [MustacheBox]? = nil,
             dictionaryValue: @autoclosure(escaping) () -> [String: MustacheBox]? = nil)
@@ -546,7 +546,7 @@ extension MustacheBox {
             return "(" + facets.joined(separator: ",") + ")"
         }
     }
-    
+
     var facetsDescriptions: [String] {
         var facets = [String]()
         if let array = arrayValue {
@@ -564,7 +564,7 @@ extension MustacheBox {
         } else if let value = value {
             facets.append(String(reflecting: value))
         }
-        
+
         if let _ = filter {
             facets.append("FilterFunction")
         }
@@ -577,7 +577,7 @@ extension MustacheBox {
         if value == nil && hasCustomRenderFunction {
             facets.append("RenderFunction")
         }
-        
+
         return facets
     }
 }

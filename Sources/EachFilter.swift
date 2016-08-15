@@ -24,12 +24,12 @@
 import Foundation
 
 let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
-    
+
     // {{# each(nothing) }}...{{/ }}
     if box.isEmpty {
         return box
     }
-    
+
     // {{# each(dictionary) }}...{{/ }}
     //
     //     // Renders "firstName: Charles, lastName: Bronson."
@@ -54,17 +54,17 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@first"] = Box(index == 0)
                 position["@last"] = Box((index == count - 1))
                 position["@key"] = Box(element.key)
-                
+
                 var info = info
                 info.context = info.context.extendedContext(by: Box(position))
-                return try element.box.render(info: info)
+                return try element.box.render(info)
             }
             return Box(customRenderFunction)
         }
         return Box(transformedBoxes)
     }
-    
-    
+
+
     // {{# each(array) }}...{{/ }}
     //
     //     // Renders "1: bread, 2: ham, 3: butter"
@@ -87,16 +87,16 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
                 position["@indexIsEven"] = Box(index % 2 == 0)
                 position["@first"] = Box(index == 0)
                 position["@last"] = Box((index == count - 1))
-                
+
                 var info = info
                 info.context = info.context.extendedContext(by: Box(position))
-                return try box.render(info: info)
+                return try box.render(info)
             }
             return Box(customRenderFunction)
         }
         return Box(transformedBoxes)
     }
-    
+
     // Non-iterable value
     throw MustacheError(kind: .RenderError, message: "Non-enumerable argument in each filter: \(box.value)")
 }

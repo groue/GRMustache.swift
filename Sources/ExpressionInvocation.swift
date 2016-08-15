@@ -25,33 +25,33 @@ import Foundation
 
 struct ExpressionInvocation {
     let expression: Expression
-    
+
     func invoke(with context: Context) throws -> MustacheBox {
         return try evaluate(context: context, expression: expression)
     }
-    
+
     private func evaluate(context: Context, expression: Expression) throws -> MustacheBox {
         switch expression {
         case .ImplicitIterator:
             // {{ . }}
-            
+
             return context.topBox
-            
+
         case .Identifier(let identifier):
             // {{ identifier }}
-            
+
             return context.mustacheBox(forKey: identifier)
 
         case .Scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
-            
+
             return try evaluate(context: context, expression: baseExpression).mustacheBox(forKey: identifier)
-            
+
         case .Filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
-            
+
             let filterBox = try evaluate(context: context, expression: filterExpression)
-            
+
             guard let filter = filterBox.filter else {
                 if filterBox.isEmpty {
                     throw MustacheError(kind: .RenderError, message: "Missing filter")
@@ -59,9 +59,9 @@ struct ExpressionInvocation {
                     throw MustacheError(kind: .RenderError, message: "Not a filter")
                 }
             }
-            
+
             let argumentBox = try evaluate(context: context, expression: argumentExpression)
-            return try filter(box: argumentBox, partialApplication: partialApplication)
+            return try filter(argumentBox, partialApplication)
         }
     }
 }

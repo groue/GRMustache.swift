@@ -24,22 +24,22 @@
 import Foundation
 
 final class RenderingEngine {
-    
+
     init(templateAST: TemplateAST, context: Context) {
         self.templateAST = templateAST
         self.baseContext = context
         buffer = ""
     }
-    
+
     func render() throws -> Rendering {
         buffer = ""
         try render(templateAST: templateAST, inContext: baseContext)
         return Rendering(buffer, templateAST.contentType)
     }
-    
-    
+
+
     // MARK: - Rendering
-    
+
     private let templateAST: TemplateAST
     private let baseContext: Context
     private var buffer: String
@@ -55,12 +55,12 @@ final class RenderingEngine {
         // the text_rendering.json test suite.
         //
         // So let's check for a content-type mismatch:
-        
+
         let targetContentType = self.templateAST.contentType!
         if templateAST.contentType == targetContentType
         {
             // Content-type match
-            
+
             for node in templateAST.nodes {
                 try renderNode(node, inContext: context)
             }
@@ -81,7 +81,7 @@ final class RenderingEngine {
             }
         }
     }
-    
+
     private func renderNode(_ node: TemplateASTNode, inContext context: Context) throws {
         switch node {
         case .BlockNode(let block):
@@ -90,20 +90,20 @@ final class RenderingEngine {
             // Render the inner content of the resolved block.
             let resolvedBlock = resolveBlock(block, inContext: context)
             return try render(templateAST: resolvedBlock.innerTemplateAST, inContext: context)
-            
+
         case .PartialOverrideNode(let partialOverride):
             // {{< name }}...{{/ name }}
             //
             // Extend the inheritance stack, and render the content of the parent partial
             let context = context.extendedContext(partialOverride: partialOverride)
             return try render(templateAST: partialOverride.parentPartial.templateAST, inContext: context)
-            
+
         case .PartialNode(let partial):
             // {{> name }}
             //
             // Render the content of the partial
             return try render(templateAST: partial.templateAST, inContext: context)
-            
+
         case .SectionNode(let section):
             // {{# name }}...{{/ name }}
             // {{^ name }}...{{/ name }}
@@ -111,11 +111,11 @@ final class RenderingEngine {
             // We have common rendering for sections and variable tags, yet with
             // a few specific flags:
             return try renderTag(section.tag, escapesHTML: true, inverted: section.inverted, expression: section.expression, inContext: context)
-            
+
         case .TextNode(let text):
             // text is the trivial case:
             buffer.append(text)
-            
+
         case .VariableNode(let variable):
             // {{ name }}
             // {{{ name }}}
@@ -126,11 +126,11 @@ final class RenderingEngine {
             return try renderTag(variable.tag, escapesHTML: variable.escapesHTML, inverted: false, expression: variable.expression, inContext: context)
         }
     }
-    
+
     private func renderTag(_ tag: LocatedTag, escapesHTML: Bool, inverted: Bool, expression: Expression, inContext context: Context) throws {
-        
+
         // 1. Evaluate expression
-        
+
         var box: MustacheBox
 
         do {
@@ -146,30 +146,30 @@ final class RenderingEngine {
         } catch {
             throw MustacheError(kind: .RenderError, message: "Could not evaluate \(tag)", templateID: tag.templateID, lineNumber: tag.lineNumber, underlyingError: error)
         }
-        
-        
+
+
         // 2. Let willRender functions alter the box
-        
+
         for willRender in context.willRenderStack {
-            box = willRender(tag: tag, box: box)
+            box = willRender(tag, box)
         }
-        
-        
+
+
         // 3. Render the box
-        
+
         let rendering: Rendering
         do {
             switch tag.type {
             case .Variable:
                 let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                rendering = try box.render(info: info)
+                rendering = try box.render(info)
             case .Section:
                 switch (inverted, box.boolValue) {
                 case (false, true):
                     // {{# true }}...{{/ true }}
                     // Only case where we trigger the RenderFunction of the Box
                     let info = RenderingInfo(tag: tag, context: context, enumerationItem: false)
-                    rendering = try box.render(info: info)
+                    rendering = try box.render(info)
                 case (true, false):
                     // {{^ false }}...{{/ false }}
                     rendering = try tag.render(with: context)
@@ -181,14 +181,14 @@ final class RenderingEngine {
             }
         } catch {
             for didRender in context.didRenderStack {
-                didRender(tag: tag, box: box, string: nil)
+                didRender(tag, box, nil)
             }
             // TODO? Inject location in error
             throw error
         }
-        
+
         // 4. Extend buffer with the rendering, HTML-escaped if needed.
-        
+
         let string: String
         switch (templateAST.contentType!, rendering.contentType, escapesHTML) {
         case (.HTML, .Text, true):
@@ -197,18 +197,18 @@ final class RenderingEngine {
             string = rendering.string
         }
         buffer.append(string)
-        
-        
+
+
         // 5. Let didRender functions do their job
-        
+
         for didRender in context.didRenderStack {
-            didRender(tag: tag, box: box, string: string)
+            didRender(tag, box, string)
         }
     }
-    
-    
+
+
     // MARK: - Template inheritance
-    
+
     private func resolveBlock(_ block: TemplateASTNode.Block, inContext context: Context) -> TemplateASTNode.Block {
         // As we iterate partial overrides, block becomes the deepest overriden
         // block. context.partialOverrideStack has been built in
@@ -231,7 +231,7 @@ final class RenderingEngine {
             //   },
             //   "expected": "<box><main><box><tweetbox classes=\"tweetbox-largetweetbox-user-styled\" attrs=\"data-rich-text\"></tweetbox></box></main></box>"
             // }
-            
+
             let parentTemplateAST = partialOverride.parentPartial.templateAST
             if (usedParentTemplateASTs.contains { $0 === parentTemplateAST }) {
                 return block
@@ -244,7 +244,7 @@ final class RenderingEngine {
             }
         }
     }
-    
+
     // Looks for an override for the block argument in a TemplateAST.
     // Returns the resolvedBlock, and a boolean that tells whether the block was
     // actually overriden.
@@ -262,7 +262,7 @@ final class RenderingEngine {
                 //
                 // A block is overriden by another block with the same name.
                 return (resolvedBlock, true)
-                
+
             case .PartialOverrideNode(let partialOverride):
                 // {{< partial }}...{{/ partial }}
                 //
@@ -289,11 +289,11 @@ final class RenderingEngine {
                 //       "partial2": "{{$block}}ignored{{/block}}" },
                 //   "expected": "inherited"
                 // }
-                
+
                 let (resolvedBlock1, modified1) = resolveBlock(block, inChildTemplateAST: partialOverride.parentPartial.templateAST)
                 let (resolvedBlock2, modified2) = resolveBlock(resolvedBlock1, inChildTemplateAST: partialOverride.childTemplateAST)
                 return (resolvedBlock2, modified || modified1 || modified2)
-                
+
             case .PartialNode(let partial):
                 // {{> partial }}
                 //
@@ -310,7 +310,7 @@ final class RenderingEngine {
                 // },
                 let (resolvedBlock1, modified1) = resolveBlock(block, inChildTemplateAST: partial.templateAST)
                 return (resolvedBlock1, modified || modified1)
-                
+
             default:
                 // Other nodes can't override the block.
                 return (block, modified)

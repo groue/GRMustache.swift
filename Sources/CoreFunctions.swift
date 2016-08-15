@@ -273,7 +273,7 @@ public func Filter(_ filter: (Rendering) throws -> Rendering) -> FilterFunction 
         }
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
-            let rendering = try box.render(info: info)
+            let rendering = try box.render(info)
             return try filter(rendering)
         }
     }

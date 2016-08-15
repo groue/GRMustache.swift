@@ -1035,7 +1035,7 @@ extension Collection {
         info.enumerationItem = true
 
         for item in self {
-            let boxRendering = try box(item).render(info: info)
+            let boxRendering = try box(item).render(info)
             if contentType == nil
             {
                 // First item: now we know our contentType
@@ -1491,7 +1491,7 @@ public func Box<T>(_ dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: T)) in
                     var boxDictionary = boxDictionary
                     boxDictionary[item.key] = BoxAny(item.value)
                     return boxDictionary
@@ -1651,7 +1651,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
                 }
             }
         #else
-            let dictionary = IteratorSequence(NSFastEnumerationIterator(value)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+            let dictionary = IteratorSequence(NSFastEnumerationIterator(value)).reduce([String: MustacheBox](), { (boxDictionary, key) in
                 var boxDictionary = boxDictionary
                 if let key = key as? String {
                     boxDictionary[key] = BoxAny(value[key as NSString])
