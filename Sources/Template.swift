@@ -61,7 +61,7 @@ final public class Template {
                           partials, throws an error that describes the problem.
     - returns: A new Template.
     */
-    public convenience init(path: String, encoding: String.Encoding = NSUTF8StringEncoding) throws {
+    public convenience init(path: String, encoding: String.Encoding = String.Encoding.utf8) throws {
         #if os(Linux)
             let url = NSURL(fileURLWithPath: path, isDirectory: false)
             let directoryPath = url.URLByDeletingLastPathComponent?.path ?? ""
@@ -93,7 +93,7 @@ final public class Template {
                           partials, throws an error that describes the problem.
     - returns: A new Template.
     */
-    public convenience init(URL: NSURL, encoding: String.Encoding = NSUTF8StringEncoding) throws {
+    public convenience init(URL: NSURL, encoding: String.Encoding = String.Encoding.utf8) throws {
         #if os(Linux)
             let baseURL = URL.URLByDeletingLastPathComponent!
             let templateExtension = URL.pathExtension
@@ -131,7 +131,7 @@ final public class Template {
                                    describes the problem.
     - returns: A new Template.
     */
-    public convenience init(named name: String, bundle: Bundle? = nil, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) throws {
+    public convenience init(named name: String, bundle: Bundle? = nil, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) throws {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: name)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)

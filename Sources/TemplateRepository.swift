@@ -171,10 +171,10 @@ final public class TemplateRepository {
     - parameter templateExtension: The extension of template files. Default
                                    extension is "mustache".
     - parameter encoding:          The encoding of template files. Default
-                                   encoding is NSUTF8StringEncoding.
+                                   encoding is String.Encoding.utf8.
     - returns: A new TemplateRepository.
     */
-    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) {
+    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
         self.init(dataSource: URLDataSource(baseURL: NSURL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
 
@@ -210,10 +210,10 @@ final public class TemplateRepository {
     - parameter templateExtension: The extension of template resources. Default
                                    extension is "mustache".
     - parameter encoding:          The encoding of template resources. Default
-                                   encoding is NSUTF8StringEncoding.
+                                   encoding is String.Encoding.utf8.
     - returns: A new TemplateRepository.
     */
-    convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) {
+    convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
 
@@ -231,10 +231,10 @@ final public class TemplateRepository {
     - parameter templateExtension: The extension of template resources. Default
                                    extension is "mustache".
     - parameter encoding:          The encoding of template resources. Default
-                                   encoding is NSUTF8StringEncoding.
+                                   encoding is String.Encoding.utf8.
     - returns: A new TemplateRepository.
     */
-    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) {
+    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
         self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main(), templateExtension: templateExtension, encoding: encoding))
     }
 
