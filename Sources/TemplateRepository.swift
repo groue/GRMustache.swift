@@ -175,13 +175,13 @@ final public class TemplateRepository {
     - returns: A new TemplateRepository.
     */
     convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: URLDataSource(baseURL: NSURL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
 
     /**
     Returns a TemplateRepository that loads templates from a URL.
 
-        let templatesURL = NSURL.fileURLWithPath("/path/to/templates")!
+        let templatesURL = URL.fileURLWithPath("/path/to/templates")!
         let repository = TemplateRepository(baseURL: templatesURL)
 
         // Loads /path/to/templates/template.mustache
@@ -213,7 +213,7 @@ final public class TemplateRepository {
                                    encoding is String.Encoding.utf8.
     - returns: A new TemplateRepository.
     */
-    convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
+    convenience public init(baseURL: URL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
 
@@ -436,11 +436,11 @@ final public class TemplateRepository {
 
     private class URLDataSource: TemplateRepositoryDataSource {
         let baseURLAbsoluteString: String
-        let baseURL: NSURL
+        let baseURL: URL
         let templateExtension: String?
         let encoding: String.Encoding
 
-        init(baseURL: NSURL, templateExtension: String?, encoding: String.Encoding) {
+        init(baseURL: URL, templateExtension: String?, encoding: String.Encoding) {
             self.baseURL = baseURL
             #if os(Linux)
                 let absolutePath = baseURL.URLByStandardizingPath
@@ -479,15 +479,15 @@ final public class TemplateRepository {
             } else {
                 templateFilename = normalizedName
             }
-            let templateBaseURL: NSURL
+            let templateBaseURL: URL
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                templateBaseURL = NSURL(string: normalizedBaseTemplateID)!
+                templateBaseURL = URL(string: normalizedBaseTemplateID)!
             } else {
                 templateBaseURL = self.baseURL
             }
 
 
-            let templateURL = NSURL(string: templateFilename, relativeTo: templateBaseURL)!
+            let templateURL = URL(string: templateFilename, relativeTo: templateBaseURL)!
             #if os(Linux)
                 let absoluteTemplateURL = templateURL.URLByStandardizingPath!
             #else
@@ -504,7 +504,7 @@ final public class TemplateRepository {
         }
 
         func templateString(for templateID: TemplateID) throws -> String {
-            if let nsURL = NSURL(string: templateID) {
+            if let nsURL = URL(string: templateID) {
                 return try NSString(contentsOf: nsURL, encoding: encoding).bridge()
             }
             return ""
