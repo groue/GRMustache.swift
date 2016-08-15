@@ -234,8 +234,8 @@ final public class TemplateRepository {
                                    encoding is NSUTF8StringEncoding.
     - returns: A new TemplateRepository.
     */
-    convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) {
-        self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.main(), templateExtension: templateExtension, encoding: encoding))
+    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) {
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main(), templateExtension: templateExtension, encoding: encoding))
     }
 
 
@@ -516,11 +516,11 @@ final public class TemplateRepository {
     // MARK: BundleDataSource
 
     private class BundleDataSource: TemplateRepositoryDataSource {
-        let bundle: NSBundle
+        let bundle: Bundle
         let templateExtension: String?
         let encoding: String.Encoding
 
-        init(bundle: NSBundle, templateExtension: String?, encoding: String.Encoding) {
+        init(bundle: Bundle, templateExtension: String?, encoding: String.Encoding) {
             self.bundle = bundle
             self.templateExtension = templateExtension
             self.encoding = encoding

@@ -131,7 +131,7 @@ final public class Template {
                                    describes the problem.
     - returns: A new Template.
     */
-    public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) throws {
+    public convenience init(named name: String, bundle: Bundle? = nil, templateExtension: String? = "mustache", encoding: String.Encoding = NSUTF8StringEncoding) throws {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: name)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)

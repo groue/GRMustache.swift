@@ -55,7 +55,7 @@ extension StandardLibrary {
     */
     public final class Localizer : MustacheBoxable {
         /// The bundle
-        public let bundle: NSBundle
+        public let bundle: Bundle
         
         /// The table
         public let table: String?
@@ -69,8 +69,8 @@ extension StandardLibrary {
                             nil, the default `Localizable.strings` is used.
         - returns: A new Localizer.
         */
-        public init(bundle: NSBundle?, table: String?) {
-            self.bundle = bundle ?? NSBundle.main()
+        public init(bundle: Bundle?, table: String?) {
+            self.bundle = bundle ?? Bundle.main()
             self.table = table
         }
         
