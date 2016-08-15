@@ -26,36 +26,36 @@ import Foundation
 protocol TemplateTokenConsumer {
     @discardableResult
     func parser(_ parser:TemplateParser, shouldContinueAfterParsingToken token:TemplateToken) -> Bool
-    func parser(_ parser:TemplateParser, didFailWithError error:ErrorProtocol)
+    func parser(_ parser:TemplateParser, didFailWithError error:Error)
 }
 
 final class TemplateParser {
     let tokenConsumer: TemplateTokenConsumer
     private let tagDelimiterPair: TagDelimiterPair
-    
+
     init(tokenConsumer: TemplateTokenConsumer, tagDelimiterPair: TagDelimiterPair) {
         self.tokenConsumer = tokenConsumer
         self.tagDelimiterPair = tagDelimiterPair
     }
-    
+
     func parse(templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
-        
+
         let atString = { (index: String.Index, string: String?) -> Bool in
             guard let string = string else {
                 return false
             }
             return templateString.substring(from: index).hasPrefix(string)
         }
-        
+
         var state: State = .Start
         var lineNumber = 1
         var i = templateString.startIndex
         let end = templateString.endIndex
-        
+
         while i < end {
             let c = templateString[i]
-            
+
             switch state {
             case .Start:
                 if c == "\n" {
@@ -282,7 +282,7 @@ final class TemplateParser {
                         tokenConsumer.parser(self, didFailWithError: error)
                         return;
                     }
-                    
+
                     let token = TemplateToken(
                         type: .SetDelimiters,
                         lineNumber: startLineNumber,
@@ -292,20 +292,20 @@ final class TemplateParser {
                     if !tokenConsumer.parser(self, shouldContinueAfterParsingToken: token) {
                         return
                     }
-                    
+
                     state = .Start
                     i = templateString.index(i, offsetBy: currentDelimiters.setDelimitersEndLength)
                     i = templateString.index(before: i)
                     currentDelimiters = ParserTagDelimiters(tagDelimiterPair: (newDelimiters[0], newDelimiters[1]))
                 }
             }
-            
+
             i = templateString.index(after: i)
         }
-        
-        
+
+
         // EOF
-        
+
         switch state {
         case .Start:
             break
@@ -329,10 +329,10 @@ final class TemplateParser {
             tokenConsumer.parser(self, didFailWithError: error)
         }
     }
-    
-    
+
+
     // MARK: - Private
-    
+
     private enum State {
         case Start
         case Text(startIndex: String.Index, startLineNumber: Int)
@@ -340,7 +340,7 @@ final class TemplateParser {
         case UnescapedTag(startIndex: String.Index, startLineNumber: Int)
         case SetDelimitersTag(startIndex: String.Index, startLineNumber: Int)
     }
-    
+
     private struct ParserTagDelimiters {
         let tagDelimiterPair : TagDelimiterPair
         let tagStartLength: Int
@@ -353,19 +353,19 @@ final class TemplateParser {
         let setDelimitersStartLength: Int
         let setDelimitersEnd: String
         let setDelimitersEndLength: Int
-        
+
         init(tagDelimiterPair : TagDelimiterPair) {
             self.tagDelimiterPair = tagDelimiterPair
-            
+
             tagStartLength = tagDelimiterPair.0.distance(from: tagDelimiterPair.0.startIndex, to: tagDelimiterPair.0.endIndex)
             tagEndLength = tagDelimiterPair.1.distance(from: tagDelimiterPair.1.startIndex, to: tagDelimiterPair.1.endIndex)
-            
+
             let usesStandardDelimiters = (tagDelimiterPair.0 == "{{") && (tagDelimiterPair.1 == "}}")
             unescapedTagStart = usesStandardDelimiters ? "{{{" : nil
             unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.distance(from: unescapedTagStart!.startIndex, to: unescapedTagStart!.endIndex) : 0
             unescapedTagEnd = usesStandardDelimiters ? "}}}" : nil
             unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.distance(from: unescapedTagEnd!.startIndex, to: unescapedTagEnd!.endIndex) : 0
-            
+
             setDelimitersStart = "\(tagDelimiterPair.0)="
             setDelimitersStartLength = setDelimitersStart.distance(from: setDelimitersStart.startIndex, to: setDelimitersStart.endIndex)
             setDelimitersEnd = "=\(tagDelimiterPair.1)"
