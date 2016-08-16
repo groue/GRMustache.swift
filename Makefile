@@ -18,7 +18,7 @@ UNAME = ${shell uname}
 
 CC_FLAGS =
 SWIFTC_FLAGS =
-LINKER_FLAGS = 
+LINKER_FLAGS =
 RESOURCE_DIR = ".build/debug/MustacheTests.xctest/Contents/Resources"
 
 all: build
@@ -66,16 +66,16 @@ Tests/vendor/groue/GRMustacheSpec/Tests:
 copytestresources: Tests/vendor/groue/GRMustacheSpec/Tests
 	@echo --- Copying test files
 	mkdir -p ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*.mustache ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*/*.mustache ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*/*.text ${RESOURCE_DIR}
-	cp -r Tests/Mustache/SuitesTests/twitter/hogan.js/HoganSuite ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources ${RESOURCE_DIR}
-	cp -r Tests/Mustache/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*/*.text ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/SuitesTests/twitter/hogan.js/HoganSuite ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
 	cp -r Tests/vendor/groue/GRMustacheSpec/Tests ${RESOURCE_DIR}
 
-.PHONY: clean build refetch run test 
+.PHONY: clean build refetch run test
