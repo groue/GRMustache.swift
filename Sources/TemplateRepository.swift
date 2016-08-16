@@ -445,7 +445,7 @@ final public class TemplateRepository {
             #if os(Linux)
                 let absolutePath = baseURL.URLByStandardizingPath
             #else
-                let absolutePath = baseURL.standardizingPath
+                let absolutePath = baseURL.standardized
             #endif
             self.baseURLAbsoluteString = absolutePath?.absoluteString ?? ""
             self.templateExtension = templateExtension
@@ -491,7 +491,7 @@ final public class TemplateRepository {
             #if os(Linux)
                 let absoluteTemplateURL = templateURL.URLByStandardizingPath!
             #else
-                let absoluteTemplateURL = templateURL.standardizingPath!
+                let absoluteTemplateURL = templateURL.standardized
             #endif
             let templateAbsoluteString = absoluteTemplateURL.absoluteString ?? ""
 
