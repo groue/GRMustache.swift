@@ -447,7 +447,7 @@ final public class TemplateRepository {
             #else
                 let absolutePath = baseURL.standardized
             #endif
-            self.baseURLAbsoluteString = absolutePath.absoluteString ??  ""
+            self.baseURLAbsoluteString = absolutePath.absoluteString
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
@@ -493,7 +493,7 @@ final public class TemplateRepository {
             #else
                 let absoluteTemplateURL = templateURL.standardized
             #endif
-            let templateAbsoluteString = absoluteTemplateURL.absoluteString ?? ""
+            let templateAbsoluteString = absoluteTemplateURL.absoluteString
 
             // Make sure partial relative paths can not escape repository root
             if templateAbsoluteString.range(of: baseURLAbsoluteString)?.lowerBound == templateAbsoluteString.startIndex {
