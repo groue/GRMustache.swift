@@ -77,7 +77,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                     break
 
                 case .Pragma(content: let content):
-                     let pragma = content.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines())
+                     let pragma = content.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
                      if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatch(in: pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
@@ -390,7 +390,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     }
 
     private func blockName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
-        let whiteSpace = NSCharacterSet.whitespacesAndNewlines()
+        let whiteSpace = NSCharacterSet.whitespacesAndNewlines
         let blockName = string.trimmingCharacters(in: whiteSpace)
         if blockName.characters.count == 0 {
             empty = true
@@ -403,7 +403,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     }
 
     private func partialName(fromString string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
-        let whiteSpace = NSCharacterSet.whitespacesAndNewlines()
+        let whiteSpace = NSCharacterSet.whitespacesAndNewlines
         let partialName = string.trimmingCharacters(in: whiteSpace)
         if partialName.characters.count == 0 {
             empty = true

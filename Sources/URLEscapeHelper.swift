@@ -65,7 +65,7 @@ final class URLEscapeHelper : MustacheBoxable {
     }
     
     private class func escapeURL(string: String) -> String {
-        let s = NSCharacterSet.urlQueryAllowed().mutableCopy() as! NSMutableCharacterSet
+        let s = NSCharacterSet.urlQueryAllowed.mutableCopy() as! NSMutableCharacterSet
         s.removeCharacters(in: "?&=")
         return string.addingPercentEncoding(withAllowedCharacters: s) ?? ""
     }
