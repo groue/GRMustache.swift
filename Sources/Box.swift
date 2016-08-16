@@ -1104,7 +1104,7 @@ extension Collection where IndexDistance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBox(withSetValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBox(withSetValue value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1154,7 +1154,7 @@ extension BidirectionalCollection where IndexDistance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBox(withArrayValue value: Any?, box: (Iterator.Element) -> MustacheBox) -> MustacheBox {
+    private func mustacheBox(withArrayValue value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,

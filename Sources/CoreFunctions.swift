@@ -145,7 +145,7 @@ MustacheError of type RenderError.
 - parameter filter: A function `(MustacheBox) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func Filter(_ filter: (MustacheBox) throws -> MustacheBox) -> FilterFunction {
+public func Filter(_ filter: @escaping (MustacheBox) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
@@ -179,7 +179,7 @@ MustacheError of type RenderError.
 - parameter filter: A function `(T?) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func Filter<T>(_ filter: (T?) throws -> MustacheBox) -> FilterFunction {
+public func Filter<T>(_ filter: @escaping (T?) throws -> MustacheBox) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
@@ -211,7 +211,7 @@ For example:
 - parameter filter: A function `([MustacheBox]) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func VariadicFilter(_ filter: ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+public func VariadicFilter(_ filter: @escaping ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
 
     // f(a,b,c) is implemented as f(a)(b)(c).
     //
@@ -220,7 +220,7 @@ public func VariadicFilter(_ filter: ([MustacheBox]) throws -> MustacheBox) -> F
     //
     // It is the partialApplication flag the tells when it's time to return the
     // final result.
-    func partialFilter(filter: ([MustacheBox]) throws -> MustacheBox, arguments: [MustacheBox]) -> FilterFunction {
+    func partialFilter(filter: @escaping ([MustacheBox]) throws -> MustacheBox, arguments: [MustacheBox]) -> FilterFunction {
         return { (nextArgument: MustacheBox, partialApplication: Bool) in
             let arguments = arguments + [nextArgument]
             if partialApplication {
@@ -265,7 +265,7 @@ allows you to chain pre-rendering filters without mangling HTML entities.
 - parameter filter: A function `(Rendering) throws -> Rendering`.
 - returns: A FilterFunction.
 */
-public func Filter(_ filter: (Rendering) throws -> Rendering) -> FilterFunction {
+public func Filter(_ filter: @escaping (Rendering) throws -> Rendering) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
@@ -296,7 +296,7 @@ This example processes `T?` instead of `MustacheBox`, but the idea is the same.
 - parameter filter: A function `(MustacheBox, RenderingInfo) throws -> Rendering`.
 - returns: A FilterFunction.
 */
-public func Filter(_ filter: (MustacheBox, RenderingInfo) throws -> Rendering) -> FilterFunction {
+public func Filter(_ filter: @escaping (MustacheBox, RenderingInfo) throws -> Rendering) -> FilterFunction {
     return Filter { (box: MustacheBox) in
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
@@ -343,7 +343,7 @@ the `RenderingInfo` and `Rendering` types.
 - parameter filter: A function `(T?, RenderingInfo) throws -> Rendering`.
 - returns: A FilterFunction.
 */
-public func Filter<T>(_ filter: (T?, RenderingInfo) throws -> Rendering) -> FilterFunction {
+public func Filter<T>(_ filter: @escaping (T?, RenderingInfo) throws -> Rendering) -> FilterFunction {
     return Filter { (t: T?) in
         // Box a RenderFunction
         return Box { (info: RenderingInfo) in
@@ -500,7 +500,7 @@ bolded section has already been parsed with its template. You may prefer the raw
 - parameter lambda: A `String -> String` function.
 - returns: A RenderFunction.
 */
-public func Lambda(_ lambda: (String) -> String) -> RenderFunction {
+public func Lambda(_ lambda: @escaping (String) -> String) -> RenderFunction {
     return { (info: RenderingInfo) in
         switch info.tag.type {
         case .Variable:
@@ -617,7 +617,7 @@ using a Template instead of a lambda (see the documentation of
 - parameter lambda: A `() -> String` function.
 - returns: A RenderFunction.
 */
-public func Lambda(_ lambda: () -> String) -> RenderFunction {
+public func Lambda(_ lambda: @escaping () -> String) -> RenderFunction {
     return { (info: RenderingInfo) in
         switch info.tag.type {
         case .Variable:
