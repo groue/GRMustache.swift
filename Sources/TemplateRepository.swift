@@ -235,7 +235,7 @@ final public class TemplateRepository {
     - returns: A new TemplateRepository.
     */
     convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main(), templateExtension: templateExtension, encoding: encoding))
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main, templateExtension: templateExtension, encoding: encoding))
     }
 
 
