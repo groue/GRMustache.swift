@@ -505,7 +505,7 @@ final public class TemplateRepository {
 
         func templateString(for templateID: TemplateID) throws -> String {
             if let nsURL = URL(string: templateID) {
-                return try NSString(contentsOf: nsURL, encoding: encoding).bridge()
+                return try String(contentsOf: nsURL, encoding: encoding)
             }
             return ""
         }
@@ -550,7 +550,7 @@ final public class TemplateRepository {
         }
 
         func templateString(for templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfFile: templateID, encoding: encoding).bridge()
+            return try String(contentsOfFile: templateID, encoding: encoding)
         }
     }
 }
