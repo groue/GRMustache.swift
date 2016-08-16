@@ -78,14 +78,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
                 case .Pragma(content: let content):
                      let pragma = content.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
-                     if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
+                     if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.Text)
                         case .Locked(_):
                             throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                     } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
+                     } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma.bridge().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.HTML)
