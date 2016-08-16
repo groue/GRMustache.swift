@@ -447,7 +447,7 @@ final public class TemplateRepository {
             #else
                 let absolutePath = baseURL.standardized
             #endif
-            self.baseURLAbsoluteString = absolutePath?.absoluteString ?? ""
+            self.baseURLAbsoluteString = absolutePath.absoluteString ??  ""
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
