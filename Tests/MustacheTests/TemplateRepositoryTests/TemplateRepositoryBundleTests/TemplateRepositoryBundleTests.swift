@@ -54,7 +54,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         #endif
 
         do {
-            try repo.template(named: "notFound")
+            let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -86,7 +86,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: String.Encoding.utf8)
         
         do {
-            try repo.template(named: "notFound")
+            let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -102,7 +102,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         repo = TemplateRepository(bundle: testBundle, templateExtension: "", encoding: String.Encoding.utf8)
         
         do {
-            try repo.template(named: "notFound")
+            let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }

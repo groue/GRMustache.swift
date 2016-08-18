@@ -162,7 +162,7 @@ class RenderFunctionTests: XCTestCase {
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
         }
         do {
-            try Template(string: "{{.}}").render(with: Box(render))
+            let _ = try Template(string: "{{.}}").render(with: Box(render))
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
@@ -175,7 +175,7 @@ class RenderFunctionTests: XCTestCase {
             throw CustomError.Error
         }
         do {
-            try Template(string: "\n\n{{.}}").render(with: Box(render))
+            let _ = try Template(string: "\n\n{{.}}").render(with: Box(render))
             XCTAssert(false)
         } catch CustomError.Error {
             XCTAssert(true)
@@ -193,7 +193,7 @@ class RenderFunctionTests: XCTestCase {
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
         }
         do {
-            try Template(string: "{{#.}}{{/.}}").render(with: Box(render))
+            let _ = try Template(string: "{{#.}}{{/.}}").render(with: Box(render))
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
@@ -206,7 +206,7 @@ class RenderFunctionTests: XCTestCase {
             throw CustomError.Error
         }
         do {
-            try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(with: Box(render))
+            let _ = try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(with: Box(render))
             XCTAssert(false)
         } catch CustomError.Error {
             XCTAssert(true)
@@ -226,7 +226,7 @@ class RenderFunctionTests: XCTestCase {
             }
             return Rendering("")
         }
-        try! Template(string: "{{.}}").render(with: Box(render))
+        let _ = try! Template(string: "{{.}}").render(with: Box(render))
         XCTAssertEqual(variableTagDetections, 1)
     }
     
@@ -241,7 +241,7 @@ class RenderFunctionTests: XCTestCase {
             }
             return Rendering("")
         }
-        try! Template(string: "{{#.}}{{/.}}").render(with: Box(render))
+        let _ = try! Template(string: "{{#.}}{{/.}}").render(with: Box(render))
         XCTAssertEqual(sectionTagDetections, 1)
     }
     
@@ -251,7 +251,7 @@ class RenderFunctionTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        try! Template(string: "{{#.}}{{subject}}{{/.}}").render(with: Box(render))
+        let _ = try! Template(string: "{{#.}}{{subject}}{{/.}}").render(with: Box(render))
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
@@ -261,7 +261,7 @@ class RenderFunctionTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        try! Template(string: "{{.}}").render(with: Box(render))
+        let _ = try! Template(string: "{{.}}").render(with: Box(render))
         XCTAssertEqual(innerTemplateString!, "")
     }
     
@@ -273,7 +273,7 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let box = Box(["render": Box(render), "subject": Box("-")])
-        try! Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}").render(with: box)
+        let _ = try! Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}").render(with: box)
         XCTAssertEqual(tagRendering!.string, "-=-")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
     }
@@ -285,7 +285,7 @@ class RenderFunctionTests: XCTestCase {
             return tagRendering!
         }
         
-        try! Template(string: "{{.}}").render(with: Box(render))
+        let _ = try! Template(string: "{{.}}").render(with: Box(render))
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
     }
@@ -297,7 +297,7 @@ class RenderFunctionTests: XCTestCase {
             return tagRendering!
         }
         
-        try! Template(string: "{{{.}}}").render(with: Box(render))
+        let _ = try! Template(string: "{{{.}}}").render(with: Box(render))
         
         XCTAssertEqual(tagRendering!.string, "")
         XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
@@ -543,7 +543,7 @@ class RenderFunctionTests: XCTestCase {
         }
         let box = Box(["items": Box([Box(render1), Box(render2)])])
         do {
-            try Template(string: "{{items}}").render(with: box)
+            let _ = try Template(string: "{{items}}").render(with: box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
@@ -561,7 +561,7 @@ class RenderFunctionTests: XCTestCase {
         }
         let box = Box(["items": Box([Box(render1), Box(render2)])])
         do {
-            try Template(string: "{{#items}}{{/items}}").render(with: box)
+            let _ = try Template(string: "{{#items}}{{/items}}").render(with: box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)

@@ -173,7 +173,7 @@ class SuiteTestCase: XCTestCase {
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
+                                    let _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -195,7 +195,7 @@ class SuiteTestCase: XCTestCase {
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
+                                    let _ = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -212,7 +212,7 @@ class SuiteTestCase: XCTestCase {
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
+                                    let _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -225,7 +225,7 @@ class SuiteTestCase: XCTestCase {
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                                    let _ = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -249,7 +249,7 @@ class SuiteTestCase: XCTestCase {
                     } catch {
                         testError(error, replayOnFailure: {
                             do {
-                                try TemplateRepository().template(string: templateString)
+                                let _ = try TemplateRepository().template(string: templateString)
                             } catch {
                                 // ignore error on replay
                             }
@@ -273,7 +273,7 @@ class SuiteTestCase: XCTestCase {
                 }
                 testSuccess(replayOnFailure: {
                     do {
-                        try template.render(with: self.renderedValue)
+                        let _ = try template.render(with: self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }
@@ -281,7 +281,7 @@ class SuiteTestCase: XCTestCase {
             } catch {
                 testError(error, replayOnFailure: {
                     do {
-                        try template.render(with: self.renderedValue)
+                        let _ = try template.render(with: self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }

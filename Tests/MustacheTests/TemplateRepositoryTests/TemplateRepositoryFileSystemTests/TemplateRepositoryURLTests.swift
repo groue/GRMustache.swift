@@ -162,7 +162,7 @@ class TemplateRepositoryURLTests: XCTestCase {
         XCTAssertEqual(rendering, "success")
         
         do {
-            try repo.template(named: "up")
+            let _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)

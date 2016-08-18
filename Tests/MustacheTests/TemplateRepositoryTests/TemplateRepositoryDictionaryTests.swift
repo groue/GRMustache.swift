@@ -45,7 +45,7 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         var rendering: String
         
         do {
-            try repo.template(named: "not_found")
+            let _ = try repo.template(named: "not_found")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
@@ -54,7 +54,7 @@ class TemplateRepositoryDictionaryTests: XCTestCase {
         }
         
         do {
-            try repo.template(string: "{{>not_found}}")
+            let _ = try repo.template(string: "{{>not_found}}")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)

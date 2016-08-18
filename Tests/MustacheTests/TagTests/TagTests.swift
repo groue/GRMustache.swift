@@ -52,21 +52,21 @@ class TagTests: XCTestCase {
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: "{{name}}")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "{{#name}}{{/name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: "{{#name}}")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "{{  name\t}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: "{{  name\t}}")
         XCTAssertTrue(range != nil)
     }
@@ -81,21 +81,21 @@ class TagTests: XCTestCase {
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: "line 1")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "\n {{\nname}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: "line 2")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "\n\n  {{#\nname}}\n\n{{/name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: "line 3")
         XCTAssertTrue(range != nil)
     }
@@ -120,14 +120,14 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! Template(named: "TagTests", bundle: bundle)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
@@ -151,14 +151,14 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! Template(URL: bundle.url(forResource: "TagTests", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
@@ -183,14 +183,14 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(path: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
@@ -215,21 +215,21 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! Template(named: "TagTests_wrapper", bundle: bundle)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
@@ -254,21 +254,21 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(URL: bundle.url(forResource: "TagTests_wrapper", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
@@ -291,21 +291,21 @@ class TagTests: XCTestCase {
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(path: bundle.path(forResource: "TagTests_wrapper", ofType: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
-        try! template.render()
+        let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }

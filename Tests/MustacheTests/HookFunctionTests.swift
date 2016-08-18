@@ -276,7 +276,7 @@ class HookFunctionTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(by: Box(didRender))
         failedRendering = false
         do {
-            try template.render(with: Box({ (info: RenderingInfo) -> Rendering in
+            let _ = try template.render(with: Box({ (info: RenderingInfo) -> Rendering in
                 throw NSError(domain: "TagObserverError", code: 1, userInfo: nil)
             }))
             XCTAssert(false)
@@ -298,7 +298,7 @@ class HookFunctionTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(by: Box(didRender))
         failedRendering = false
         do {
-            try template.render(with: Box({ (info: RenderingInfo) -> Rendering in
+            let _ = try template.render(with: Box({ (info: RenderingInfo) -> Rendering in
                 throw CustomError.Error
             }))
             XCTAssert(false)
@@ -369,7 +369,7 @@ class HookFunctionTests: XCTestCase {
             "observer3": MustacheBox(willRender: willRender3, didRender: didRender3),
             "observed": Box("observed")
             ])
-        try! template.render(with: box)
+        let _ = try! template.render(with: box)
 
         XCTAssertEqual(willRenderIndex1, 2)
         XCTAssertEqual(willRenderIndex2, 1)
@@ -395,7 +395,7 @@ class HookFunctionTests: XCTestCase {
 
         let template = try! Template(string: "{{#items}}{{.}}{{/items}}")
         let box = Box(["items": Box([Box(willRender1), Box(willRender2)])])
-        try! template.render(with: box)
+        let _ = try! template.render(with: box)
 
         XCTAssertTrue(willRenderCalled1)
         XCTAssertTrue(willRenderCalled2)

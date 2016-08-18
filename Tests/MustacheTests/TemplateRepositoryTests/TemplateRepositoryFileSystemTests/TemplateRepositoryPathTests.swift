@@ -52,7 +52,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         var rendering: String
         
         do {
-            try repo.template(named: "notFound")
+            let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -157,7 +157,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         XCTAssertEqual(rendering, "success")
         
         do {
-            try repo.template(named: "up")
+            let _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
