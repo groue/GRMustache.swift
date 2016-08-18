@@ -314,11 +314,11 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
-            var templatesPaths: [(String, NSStringEncoding)] = []
+        func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, String.Encoding)] {
+            var templatesPaths: [(String, String.Encoding)] = []
             
             let fm = FileManager.`default`()
-            let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
+            let encodings: [String.Encoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
                 let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")
                 if fm.fileExists(atPath: templatesPath) {
