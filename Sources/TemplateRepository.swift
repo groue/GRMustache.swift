@@ -174,8 +174,8 @@ final public class TemplateRepository {
                                    encoding is String.Encoding.utf8.
     - returns: A new TemplateRepository.
     */
-    convenience public init(directoryPath: URL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath.path, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
+        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
 
     /**
