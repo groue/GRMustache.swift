@@ -156,7 +156,7 @@ class TagTests: XCTestCase {
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
-        template = try! Template(URL: bundle.urlForResource("TagTests", withExtension: "mustache")!)
+        template = try! Template(URL: bundle.url(forResource: "TagTests", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
@@ -266,7 +266,7 @@ class TagTests: XCTestCase {
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
-        template = try! Template(URL: bundle.urlForResource("TagTests_wrapper", withExtension: "mustache")!)
+        template = try! Template(URL: bundle.url(forResource: "TagTests_wrapper", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
