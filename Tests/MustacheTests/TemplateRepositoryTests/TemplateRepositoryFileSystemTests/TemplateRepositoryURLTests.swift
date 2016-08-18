@@ -44,7 +44,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: self.dynamicType)
+             let testBundle = NSBundle(for: type(of: self))
         #endif
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
@@ -80,7 +80,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: self.dynamicType)
+             let testBundle = NSBundle(for: type(of: self))
         #endif
         var URL: NSURL
         var repo: TemplateRepository
@@ -130,7 +130,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: self.dynamicType)
+            let testBundle = NSBundle(for: type(of: self))
         #endif
 
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
@@ -146,7 +146,7 @@ class TemplateRepositoryURLTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: self.dynamicType)
+             let testBundle = NSBundle(for: type(of: self))
         #endif
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
         let baseURL = URL.appendingPathComponent("partials")

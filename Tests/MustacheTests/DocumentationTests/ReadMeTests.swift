@@ -56,7 +56,7 @@ class ReadMeTests: XCTestCase {
              // issue https://bugs.swift.org/browse/SR-953
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: self.dynamicType)
+            let testBundle = NSBundle(for: type(of: self))
         #endif
 
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
@@ -98,7 +98,7 @@ class ReadMeTests: XCTestCase {
              // issue https://bugs.swift.org/browse/SR-953
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: self.dynamicType)
+            let testBundle = NSBundle(for: type(of: self))
         #endif
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]

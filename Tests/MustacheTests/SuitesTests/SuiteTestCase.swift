@@ -65,7 +65,7 @@ class SuiteTestCase: XCTestCase {
             // https://bugs.swift.org/browse/SR-953
         let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-        let testBundle = NSBundle(for: self.dynamicType)
+        let testBundle = NSBundle(for: type(of: self))
         #endif
 
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-794

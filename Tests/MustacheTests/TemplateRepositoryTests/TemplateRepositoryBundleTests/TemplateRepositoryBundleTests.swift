@@ -50,7 +50,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let repo = TemplateRepository(bundle: NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!)
         #else
-            let repo = TemplateRepository(bundle: NSBundle(for: self.dynamicType))
+            let repo = TemplateRepository(bundle: NSBundle(for: type(of: self)))
         #endif
 
         do {
@@ -81,7 +81,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: self.dynamicType)
+            let testBundle = NSBundle(for: type(of: self))
         #endif
         var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: NSUTF8StringEncoding)
         

@@ -74,7 +74,7 @@ class TemplateFromMethodsTests: XCTestCase {
             // issue https://bugs.swift.org/browse/SR-794
             return NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-        return NSBundle(for: self.dynamicType)
+        return NSBundle(for: type(of: self))
         #endif
     }
     
