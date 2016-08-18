@@ -60,12 +60,12 @@ class SuiteTestCase: XCTestCase {
 // END OF GENERATED CODE
     
     func runTests(fromResource name: String, directory: String) {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // https://bugs.swift.org/browse/SR-953
-        let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+        let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-        let testBundle = NSBundle(for: type(of: self))
+        let testBundle = Bundle(for: type(of: self))
         #endif
 
         #if os(Linux) // issue https://bugs.swift.org/browse/SR-794
@@ -181,13 +181,13 @@ class SuiteTestCase: XCTestCase {
                                 }
                                 let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateByDeletingPathExtension)
                             #else
-                                 let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
+                                 let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
                              #endif
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
+                                    try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -212,12 +212,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                            let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                                    try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -317,7 +317,7 @@ class SuiteTestCase: XCTestCase {
         func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
             var templatesPaths: [(String, NSStringEncoding)] = []
             
-            let fm = NSFileManager.`default`()
+            let fm = FileManager.`default`()
             let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
             for encoding in encodings {
                 let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")

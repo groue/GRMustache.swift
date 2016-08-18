@@ -109,12 +109,12 @@ class TagTests: XCTestCase {
         
         tagDescription = nil
 
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let bundle = NSBundle(for: type(of: self))
+            let bundle = Bundle(for: type(of: self))
         #endif
 
         let templateRepository = TemplateRepository(bundle: bundle)
@@ -140,12 +140,12 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let bundle = NSBundle(for: type(of: self))
+            let bundle = Bundle(for: type(of: self))
         #endif
 
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
@@ -172,12 +172,12 @@ class TagTests: XCTestCase {
         
         tagDescription = nil
 
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let bundle = NSBundle(for: type(of: self))
+            let bundle = Bundle(for: type(of: self))
         #endif
 
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
@@ -204,12 +204,12 @@ class TagTests: XCTestCase {
         
         tagDescription = nil
 
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let bundle = NSBundle(for: type(of: self))
+            let bundle = Bundle(for: type(of: self))
         #endif
 
         let templateRepository = TemplateRepository(bundle: bundle)
@@ -243,12 +243,12 @@ class TagTests: XCTestCase {
         
         tagDescription = nil
 
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let bundle = NSBundle(for: type(of: self))
+            let bundle = Bundle(for: type(of: self))
         #endif
 
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
@@ -281,12 +281,12 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        #if os(Linux)// NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-953
-            let bundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let bundle = NSBundle(for: type(of: self))
+             let bundle = Bundle(for: type(of: self))
         #endif
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")

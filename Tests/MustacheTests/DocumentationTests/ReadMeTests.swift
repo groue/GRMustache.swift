@@ -51,12 +51,12 @@ class ReadMeTests: XCTestCase {
     #endif
     
     func testReadmeExample1() {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: type(of: self))
+            let testBundle = Bundle(for: type(of: self))
         #endif
 
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
@@ -93,12 +93,12 @@ class ReadMeTests: XCTestCase {
         
         
         // I have 3 cats.
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
              // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: type(of: self))
+            let testBundle = Bundle(for: type(of: self))
         #endif
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
@@ -133,8 +133,8 @@ class ReadMeTests: XCTestCase {
     }
     
     func testReadMeExampleNSFormatter1() {
-        let percentFormatter = NSNumberFormatter()
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        let percentFormatter = NumberFormatter()
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .percentStyle
         
         let template = try! Template(string: "{{ percent(x) }}")
@@ -146,8 +146,8 @@ class ReadMeTests: XCTestCase {
     }
     
     func testReadMeExampleNSFormatter2() {
-        let percentFormatter = NSNumberFormatter()
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        let percentFormatter = NumberFormatter()
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .percentStyle
         
         let template = try! Template(string: "{{# percent }}{{ x }}{{/ }}")
@@ -165,7 +165,7 @@ class ReadMeTests: XCTestCase {
         "Well, on {{format(real_date)}} due to Martian attack.\n" +
         "{{/late}}"
         
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .mediumStyle
         
         let template = try! Template(string: templateString)

@@ -58,9 +58,9 @@ class NSFormatterTests: XCTestCase {
 // END OF GENERATED CODE
     
     func testFormatterIsAFilterForProcessableValues() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         // test that number is processable
         XCTAssertEqual(percentFormatter.string(from: 0.5)!, "50%")
@@ -73,9 +73,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterIsAFilterForUnprocessableValues() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         // test that number is processable
         XCTAssertTrue(percentFormatter.string(for: NSString(string: "foo")) == nil)
@@ -88,9 +88,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterSectionFormatsInnerVariableTags() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let template = try! Template(string: "{{# percent }}{{ number }} {{ number }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "percent": Box(percentFormatter)])
@@ -99,9 +99,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let template = try! Template(string: "{{# percent }}{{ value }}{{/ percent }}")
         let box = Box(["value": Box("foo"), "percent": Box(percentFormatter)])
@@ -110,9 +110,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterAsSectionFormatsDeepInnerVariableTags() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let template = try! Template(string: "{{# percent }}{{# number }}Number is {{ number }}.{{/ number }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "percent": Box(percentFormatter)])
@@ -121,9 +121,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterAsSectionDoesNotFormatInnerSectionTags() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let template = try! Template(string: "NO is {{ NO }}. {{^ NO }}NO is false.{{/ NO }} percent(NO) is {{ percent(NO) }}. {{# percent(NO) }}percent(NO) is true.{{/ percent(NO) }} {{# percent }}{{^ NO }}NO is now {{ NO }} and is still false.{{/ NO }}{{/ percent }}")
         let box = Box(["number": Box(0.5), "NO": Box(0), "percent": Box(percentFormatter)])
@@ -148,12 +148,12 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testNumberFormatterRendersNothingForMissingValue() {
-        // Check that NSNumberFormatter does not have surprising behavior, and
+        // Check that NumberFormatter does not have surprising behavior, and
         // does not format nil.
         
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let box = Box(["format": Box(percentFormatter)])
         
@@ -167,9 +167,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testNumberFormatterRendersNothingForNSNull() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let box = Box(["format": Box(percentFormatter), "value": Box(NSNull())])
         
@@ -183,9 +183,9 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testNumberFormatterRendersNothingForNSString() {
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         var box = Box(["format": Box(percentFormatter), "value": Box("1")])
         
@@ -219,12 +219,12 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testNumberFormatterRendersNothingForNSDate() {
-        // Check that NSNumberFormatter does not have surprising behavior, and
+        // Check that NumberFormatter does not have surprising behavior, and
         // does not format NSDate.
         
-        let percentFormatter = NSNumberFormatter()
+        let percentFormatter = NumberFormatter()
         percentFormatter.numberStyle = .percentStyle
-        percentFormatter.locale = NSLocale(localeIdentifier: "en_US_POSIX")
+        percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         
         let box = Box(["format": Box(percentFormatter), "value": Box(NSDate())])
         
@@ -238,10 +238,10 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testDateFormatterRendersNothingForMissingValue() {
-        // Check that NSDateFormatter does not have surprising behavior, and
+        // Check that DateFormatter does not have surprising behavior, and
         // does not format nil.
         
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .fullStyle
         
         let box = Box(["format": Box(dateFormatter)])
@@ -256,7 +256,7 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testDateFormatterRendersNothingForNSNull() {
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .fullStyle
         
         let box = Box(["format": Box(dateFormatter), "value": Box(NSNull())])
@@ -271,7 +271,7 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testDateFormatterRendersNothingForNSString() {
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .fullStyle
         
         var box = Box(["format": Box(dateFormatter), "value": Box("1")])
@@ -306,10 +306,10 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testDateFormatterRendersNothingForNSNumber() {
-        // Check that NSDateFormatter does not have surprising behavior, and
+        // Check that DateFormatter does not have surprising behavior, and
         // does not format NSNumber.
         
-        let dateFormatter = NSDateFormatter()
+        let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .fullStyle
         
         let box = Box(["format": Box(dateFormatter), "value": Box(0)])

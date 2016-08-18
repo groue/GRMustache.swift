@@ -135,12 +135,12 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-                        //TODO remove this ifdef once NSBundle(for:) is implemented
+                    #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+                        //TODO remove this ifdef once Bundle(for:) is implemented
                         // issue https://bugs.swift.org/browse/SR-953
-                    let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+                    let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
                     #else
-                    let testBundle = NSBundle(for: MustacheRenderableGuideTests.self)
+                    let testBundle = Bundle(for: MustacheRenderableGuideTests.self)
                     #endif
                     let template = try! Template(named: "Person", bundle: testBundle)
                     let context = info.context.extendedContext(by: Box(self))
@@ -168,12 +168,12 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-                        //TODO remove this ifdef once NSBundle(for:) is implemented
+                    #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+                        //TODO remove this ifdef once Bundle(for:) is implemented
                         // issue https://bugs.swift.org/browse/SR-953
-                    let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+                    let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
                     #else
-                    let testBundle = NSBundle(for: MustacheRenderableGuideTests.self)
+                    let testBundle = Bundle(for: MustacheRenderableGuideTests.self)
                     #endif
                     let template = try! Template(named: "Movie", bundle: testBundle)
                     let context = info.context.extendedContext(by: Box(self))

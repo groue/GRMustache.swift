@@ -39,12 +39,12 @@ class TemplateRepositoryURLTests: XCTestCase {
 // END OF GENERATED CODE
     
     func testTemplateRepositoryWithURL() {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: type(of: self))
+             let testBundle = Bundle(for: type(of: self))
         #endif
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
@@ -75,14 +75,14 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: type(of: self))
+             let testBundle = Bundle(for: type(of: self))
         #endif
-        var URL: NSURL
+        var URL: URL
         var repo: TemplateRepository
         var template: Template
         var rendering: String
@@ -125,12 +125,12 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testAbsolutePartialName() {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-            let testBundle = NSBundle(for: type(of: self))
+            let testBundle = Bundle(for: type(of: self))
         #endif
 
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
@@ -141,12 +141,12 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
     
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
-        #if os(Linux) // NSBundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once NSBundle(for:) is implemented
+        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
+            //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = NSBundle(path: ".build/debug/Package.xctest/Contents/Resources")!
+            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
         #else
-             let testBundle = NSBundle(for: type(of: self))
+             let testBundle = Bundle(for: type(of: self))
         #endif
         let URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
         let baseURL = URL.appendingPathComponent("partials")
