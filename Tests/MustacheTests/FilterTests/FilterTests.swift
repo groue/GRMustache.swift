@@ -51,7 +51,7 @@ class FilterTests: XCTestCase {
     }
 // END OF GENERATED CODE
     
-    enum CustomError : ErrorProtocol {
+    enum CustomError : Error {
         case Error
     }
     

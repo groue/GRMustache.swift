@@ -77,7 +77,7 @@ class RenderFunctionTests: XCTestCase {
     }
 // END OF GENERATED CODE
 
-    enum CustomError : ErrorProtocol {
+    enum CustomError : Error {
         case Error
     }
     
