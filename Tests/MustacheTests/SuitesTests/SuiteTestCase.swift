@@ -79,8 +79,16 @@ class SuiteTestCase: XCTestCase {
             }
         #endif
 
-        let data: NSData! = NSData(contentsOfFile:path)
-        if data == nil {
+        let data: Data!
+
+        guard let url = URL(string: path) else {
+            XCTFail("invalid path \(path)")
+            return
+        }
+
+        do {
+            try data = Data(contentsOf: url)
+        } catch {
             XCTFail("No test suite in \(path)")
             return
         }
