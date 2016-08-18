@@ -56,7 +56,7 @@ See also:
 - TemplateRepository
 - RenderFunction
 */
-final public class Context: CustomDebugStringConvertible {
+final public class Context {
 
     // =========================================================================
     // MARK: - Creating Contexts
@@ -271,7 +271,9 @@ final public class Context: CustomDebugStringConvertible {
     func extendedContext(partialOverride: TemplateASTNode.PartialOverride) -> Context {
         return Context(type: .PartialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
     }
+}
 
+extension Context: CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         switch type {

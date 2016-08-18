@@ -531,7 +531,9 @@ final public class MustacheBox : NSObject {
             return "MustacheBox(\(content))"
         }
     }
+}
 
+extension MustacheBox {
     /// A textual representation of the boxed value. Useful for debugging.
     public var valueDescription: String {
         let facets = self.facetsDescriptions
