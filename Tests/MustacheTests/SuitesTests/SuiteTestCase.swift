@@ -72,33 +72,25 @@ class SuiteTestCase: XCTestCase {
             //TODO remove this ifdef once the issue is resolved
             let path = ".build/debug/Package.xctest/Contents/Resources/" + directory + "/" + name
         #else
-            let path: String! = testBundle.path(forResource: name, ofType: nil, inDirectory: directory)
-            if path == nil {
+             guard let path = testBundle.path(forResource: name, ofType: nil, inDirectory: directory) else {
+                print("bundle resource path is \(testBundle.resourcePath)")
                 XCTFail("No such test suite \(directory)/\(name)")
                 return
             }
         #endif
 
-        let data: Data!
-
-        guard let url = URL(string: path) else {
-            XCTFail("invalid path \(path)")
-            return
-        }
-
         do {
-            try data = Data(contentsOf: url)
+            let data = try Data(contentsOf: URL(fileURLWithPath: path))
+            let testSuite = JSON(data: data)
+
+            for (_, testDictionaryJSON) in testSuite["tests"] {
+                let test = Test(path: path, dictionary: testDictionaryJSON.dictionaryValue)
+                test.run()
+            }
         } catch {
-            XCTFail("No test suite in \(path)")
-            return
-        }
-
-        let testSuite = JSON(data: data)
-
-        for (_, testDictionaryJSON) in testSuite["tests"] {
-            let test = Test(path: path, dictionary: testDictionaryJSON.dictionaryValue)
-            test.run()
-        }
+             XCTFail("Error reading data from\(path): \(error)")
+             return
+         }
     }
 
     class Test {
