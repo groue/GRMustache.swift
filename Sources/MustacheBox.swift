@@ -503,7 +503,7 @@ final public class MustacheBox : NSObject {
         }
     }
 
-    private let hasCustomRenderFunction: Bool
+    fileprivate let hasCustomRenderFunction: Bool
 
     // Converter wraps all the conversion closures that help MustacheBox expose
     // its raw value (typed Any) as useful types.
