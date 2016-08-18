@@ -58,7 +58,7 @@ class SuiteTestCase: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
+
     func runTests(fromResource name: String, directory: String) {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -78,35 +78,35 @@ class SuiteTestCase: XCTestCase {
                 return
             }
         #endif
-        
+
         let data: NSData! = NSData(contentsOfFile:path)
         if data == nil {
             XCTFail("No test suite in \(path)")
             return
         }
-        
+
         let testSuite = JSON(data: data)
-        
+
         for (_, testDictionaryJSON) in testSuite["tests"] {
             let test = Test(path: path, dictionary: testDictionaryJSON.dictionaryValue)
             test.run()
         }
     }
-    
+
     class Test {
         let path: String
         let dictionary: [String: JSON]
-        
+
         init(path: String, dictionary: [String: JSON]) {
             self.path = path
             self.dictionary = dictionary
         }
-        
+
         func run() {
             let name = dictionary["name"]!.stringValue
             NSLog("Run test \(name)")
             for template in templates {
-                
+
                 // Standard Library
                 template.registerInBaseContext("each", Box(StandardLibrary.each))
                 template.registerInBaseContext("zip", Box(StandardLibrary.zip))
@@ -114,18 +114,18 @@ class SuiteTestCase: XCTestCase {
                 template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
                 template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
                 template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
-                
+
                 // Support for filters.json
                 template.registerInBaseContext("capitalized", Box(Filter({ (string: String?) -> MustacheBox in
                     return Box(string?.capitalized)
                 })))
-                
+
                 testRendering(template)
             }
         }
-        
+
         //
-        
+
         var description: String { return "test `\(name)` at \(path)" }
         var name: String { return dictionary["name"]!.stringValue }
         var partialsDictionary: [String: String]? {
@@ -143,7 +143,7 @@ class SuiteTestCase: XCTestCase {
         var renderedValue: MustacheBox { return Box(dictionary["data"]) }
         var expectedRendering: String? { return dictionary["expected"]?.string }
         var expectedError: String? { return dictionary["expected_error"]?.string }
-        
+
         var templates: [Template] {
             if let partialsDictionary = partialsDictionary {
                 if let templateName = templateName {
@@ -171,7 +171,7 @@ class SuiteTestCase: XCTestCase {
                                 }
                             })
                         }
-                        
+
                         do {
                             #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
                                 //TODO remove once the issue is resolved
@@ -210,7 +210,7 @@ class SuiteTestCase: XCTestCase {
                                 }
                             })
                         }
-                        
+
                         do {
                             let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
@@ -254,7 +254,7 @@ class SuiteTestCase: XCTestCase {
                 }
             }
         }
-        
+
         func testRendering(_ template: Template) {
             do {
                 let rendering = try template.render(with: renderedValue)
@@ -280,7 +280,7 @@ class SuiteTestCase: XCTestCase {
                 })
             }
         }
-        
+
         func testError(_ error: Error, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 do {
@@ -306,18 +306,18 @@ class SuiteTestCase: XCTestCase {
                 replayBlock()
             }
         }
-        
+
         func testSuccess(replayOnFailure replayBlock: ()->()) {
             if expectedError != nil {
                 XCTFail("Unexpected success in \(description)")
                 replayBlock()
             }
         }
-        
+
         func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, String.Encoding)] {
             var templatesPaths: [(String, String.Encoding)] = []
-            
-            let fm = FileManager.`default`()
+
+            let fm = FileManager.`default`
             let encodings: [String.Encoding] = [String.Encoding.utf8, String.Encoding.utf16]
             for encoding in encodings {
                 let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")
@@ -337,10 +337,10 @@ class SuiteTestCase: XCTestCase {
                         return []
                     }
                 }
-                
+
                 templatesPaths.append(templatesPath, encoding)
             }
-            
+
             return templatesPaths
         }
     }
