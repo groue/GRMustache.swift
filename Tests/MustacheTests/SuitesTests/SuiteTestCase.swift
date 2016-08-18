@@ -72,7 +72,7 @@ class SuiteTestCase: XCTestCase {
             //TODO remove this ifdef once the issue is resolved
             let path = ".build/debug/Package.xctest/Contents/Resources/" + directory + "/" + name
         #else
-            let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
+            let path: String! = testBundle.path(forResource: name, ofType: nil, inDirectory: directory)
             if path == nil {
                 XCTFail("No such test suite \(directory)/\(name)")
                 return
