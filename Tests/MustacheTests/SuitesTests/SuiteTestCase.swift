@@ -286,7 +286,7 @@ class SuiteTestCase: XCTestCase {
                 do {
                     let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpression.Options(rawValue: 0))
                     let errorMessage = "\(error)"
-                    let matches = reg.matches(in: errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage.bridge().length))
+                    let matches = reg.matches(in: errorMessage, options: NSRegularExpression.MatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage.bridge().length))
                     if matches.count == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
