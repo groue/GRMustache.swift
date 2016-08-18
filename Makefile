@@ -19,7 +19,7 @@ UNAME = ${shell uname}
 CC_FLAGS =
 SWIFTC_FLAGS =
 LINKER_FLAGS =
-RESOURCE_DIR = ".build/debug/MustacheTests.xctest/Contents/Resources"
+RESOURCE_DIR = ".build/debug/MustachePackageTests.xctest/Contents/Resources"
 
 all: build
 
