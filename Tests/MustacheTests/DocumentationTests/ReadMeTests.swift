@@ -33,8 +33,8 @@ class ReadMeTests: XCTestCase {
             ("testReadmeExample1", testReadmeExample1),
             ("testReadmeExample2", testReadmeExample2),
             ("testReadmeExample3", testReadmeExample3),
-            ("testReadMeExampleNSFormatter1", testReadMeExampleNSFormatter1),
-            ("testReadMeExampleNSFormatter2", testReadMeExampleNSFormatter2),
+            ("testReadMeExampleFormatter1", testReadMeExampleFormatter1),
+            ("testReadMeExampleFormatter2", testReadMeExampleFormatter2),
             ("testDemo", testDemo),
         ]
     }
@@ -132,7 +132,7 @@ class ReadMeTests: XCTestCase {
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     
-    func testReadMeExampleNSFormatter1() {
+    func testReadMeExampleFormatter1() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .percentStyle
@@ -145,7 +145,7 @@ class ReadMeTests: XCTestCase {
         XCTAssertEqual(rendering, "50%")
     }
     
-    func testReadMeExampleNSFormatter2() {
+    func testReadMeExampleFormatter2() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(localeIdentifier: "en_US_POSIX")
         percentFormatter.numberStyle = .percentStyle

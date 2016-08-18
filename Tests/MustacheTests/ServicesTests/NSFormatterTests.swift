@@ -25,7 +25,7 @@ import XCTest
 import Mustache
 import Foundation
 
-class NSFormatterTests: XCTestCase {
+class FormatterTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
 
@@ -132,7 +132,7 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterIsTruthy() {
-        let formatter = NSFormatter()
+        let formatter = Formatter()
         let template = try! Template(string: "{{# formatter }}Formatter is true.{{/ formatter }}{{^ formatter }}Formatter is false.{{/ formatter }}")
         let box = Box(["formatter": Box(formatter)])
         let rendering = try! template.render(with: box)
@@ -140,7 +140,7 @@ class NSFormatterTests: XCTestCase {
     }
     
     func testFormatterRendersSelfAsSomething() {
-        let formatter = NSFormatter()
+        let formatter = Formatter()
         let template = try! Template(string: "{{ formatter }}")
         let box = Box(["formatter": Box(formatter)])
         let rendering = try! template.render(with: box)
