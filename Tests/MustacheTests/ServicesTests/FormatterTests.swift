@@ -242,7 +242,7 @@ class FormatterTests: XCTestCase {
         // does not format nil.
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .fullStyle
+        dateFormatter.dateStyle = .full
         
         let box = Box(["format": Box(dateFormatter)])
         
@@ -257,7 +257,7 @@ class FormatterTests: XCTestCase {
     
     func testDateFormatterRendersNothingForNSNull() {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .fullStyle
+        dateFormatter.dateStyle = .full
         
         let box = Box(["format": Box(dateFormatter), "value": Box(NSNull())])
         
@@ -272,7 +272,7 @@ class FormatterTests: XCTestCase {
     
     func testDateFormatterRendersNothingForNSString() {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .fullStyle
+        dateFormatter.dateStyle = .full
         
         var box = Box(["format": Box(dateFormatter), "value": Box("1")])
         
@@ -310,7 +310,7 @@ class FormatterTests: XCTestCase {
         // does not format NSNumber.
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .fullStyle
+        dateFormatter.dateStyle = .full
         
         let box = Box(["format": Box(dateFormatter), "value": Box(0)])
         

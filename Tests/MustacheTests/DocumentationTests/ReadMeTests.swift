@@ -166,7 +166,7 @@ class ReadMeTests: XCTestCase {
         "{{/late}}"
         
         let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .mediumStyle
+        dateFormatter.dateStyle = .medium
         
         let template = try! Template(string: templateString)
         template.registerInBaseContext("format", Box(dateFormatter))
