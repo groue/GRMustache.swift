@@ -88,37 +88,37 @@ class TemplateRepositoryURLTests: XCTestCase {
         var rendering: String
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: NSISOLatin1StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: NSISOLatin1StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
         URL = testBundle.urlForResource("TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
-        repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: NSISOLatin1StringEncoding)
+        repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")

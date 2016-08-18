@@ -83,7 +83,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         #else
             let testBundle = Bundle(for: type(of: self))
         #endif
-        var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: NSUTF8StringEncoding)
+        var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: String.Encoding.utf8)
         
         do {
             try repo.template(named: "notFound")
@@ -99,7 +99,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
-        repo = TemplateRepository(bundle: testBundle, templateExtension: "", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(bundle: testBundle, templateExtension: "", encoding: String.Encoding.utf8)
         
         do {
             try repo.template(named: "notFound")
