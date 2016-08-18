@@ -284,7 +284,7 @@ class SuiteTestCase: XCTestCase {
         func testError(_ error: Error, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 do {
-                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))
+                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpression.Options(rawValue: 0))
                     let errorMessage = "\(error)"
                     let matches = reg.matches(in: errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage.bridge().length))
                     if matches.count == 0 {
