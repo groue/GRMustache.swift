@@ -320,7 +320,7 @@ class SuiteTestCase: XCTestCase {
             let fm = FileManager.`default`
             let encodings: [String.Encoding] = [String.Encoding.utf8, String.Encoding.utf16]
             for encoding in encodings {
-                let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding)")
+                let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding.rawValue)")
                 if fm.fileExists(atPath: templatesPath) {
                     try! fm.removeItem(atPath: templatesPath)
                 }
