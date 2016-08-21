@@ -486,13 +486,8 @@ final public class TemplateRepository {
                 templateBaseURL = self.baseURL
             }
 
-
             let templateURL = URL(string: templateFilename, relativeTo: templateBaseURL)!
-            #if os(Linux)
-                let absoluteTemplateURL = templateURL.URLByStandardizingPath!
-            #else
-                let absoluteTemplateURL = templateURL.standardized
-            #endif
+            let absoluteTemplateURL = URL(fileURLWithPath: templateURL.path)
             let templateAbsoluteString = absoluteTemplateURL.absoluteString
 
             // Make sure partial relative paths can not escape repository root
