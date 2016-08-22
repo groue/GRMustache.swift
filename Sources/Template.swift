@@ -63,7 +63,7 @@ final public class Template {
     */
     public convenience init(path: String, encoding: String.Encoding = String.Encoding.utf8) throws {
         let url = URL(fileURLWithPath: path, isDirectory: false)
-        let directoryPath = url.deletingLastPathComponent().path
+        let directoryPath = FoundationAdapter.getPath(from: url.deletingLastPathComponent()) ?? "."
         let templateExtension = url.pathExtension
         let templateName = url.deletingPathExtension().lastPathComponent
 
