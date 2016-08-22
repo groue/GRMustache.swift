@@ -1691,7 +1691,7 @@ See also:
 
 - FilterFunction
 */
-public func Box(_ filter: FilterFunction) -> MustacheBox {
+public func Box(_ filter: @escaping FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
 }
 
@@ -1712,7 +1712,7 @@ See also:
 
 - RenderFunction
 */
-public func Box(_ render: RenderFunction) -> MustacheBox {
+public func Box(_ render: @escaping RenderFunction) -> MustacheBox {
     return MustacheBox(render: render)
 }
 
@@ -1744,7 +1744,7 @@ See also:
 
 - WillRenderFunction
 */
-public func Box(_ willRender: WillRenderFunction) -> MustacheBox {
+public func Box(_ willRender: @escaping WillRenderFunction) -> MustacheBox {
     return MustacheBox(willRender: willRender)
 }
 
@@ -1777,7 +1777,7 @@ See also:
 
 - DidRenderFunction
 */
-public func Box(_ didRender: DidRenderFunction) -> MustacheBox {
+public func Box(_ didRender: @escaping DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)
 }
 
