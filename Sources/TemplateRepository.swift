@@ -466,7 +466,7 @@ final public class TemplateRepository {
 
             let templateFilename: String
             if let templateExtension = self.templateExtension, !templateExtension.isEmpty {
-                templateFilename = normalizedName.bridge().appendingPathExtension(templateExtension)!
+                templateFilename = (URL(string: normalizedName)?.appendingPathExtension(templateExtension).absoluteString)!
             } else {
                 templateFilename = normalizedName
             }
