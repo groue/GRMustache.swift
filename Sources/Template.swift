@@ -88,15 +88,9 @@ final public class Template {
     - returns: A new Template.
     */
     public convenience init(URL: URL, encoding: String.Encoding = String.Encoding.utf8) throws {
-        #if os(Linux)
-            let baseURL = URL.URLByDeletingLastPathComponent!
-            let templateExtension = URL.pathExtension
-            let templateName = URL.URLByDeletingPathExtension?.lastPathComponent ?? ""
-       #else
-            let baseURL = URL.deletingLastPathComponent()
-            let templateExtension = URL.pathExtension
-            let templateName = URL.deletingPathExtension().lastPathComponent
-        #endif
+        let baseURL = URL.deletingLastPathComponent()
+        let templateExtension = URL.pathExtension
+        let templateName = URL.deletingPathExtension().lastPathComponent
 
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)

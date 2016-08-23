@@ -442,11 +442,7 @@ final public class TemplateRepository {
 
         init(baseURL: URL, templateExtension: String?, encoding: String.Encoding) {
             self.baseURL = baseURL
-            #if os(Linux)
-                let absolutePath = baseURL.URLByStandardizingPath
-            #else
-                let absolutePath = baseURL.standardized
-            #endif
+            let absolutePath = baseURL.standardized
             self.baseURLAbsoluteString = absolutePath.absoluteString
             self.templateExtension = templateExtension
             self.encoding = encoding
@@ -470,12 +466,7 @@ final public class TemplateRepository {
 
             let templateFilename: String
             if let templateExtension = self.templateExtension, !templateExtension.isEmpty {
-            #if os(Linux) //handle issue https://bugs.swift.org/browse/SR-999
-                 //TODO remove this ifdef once the issue is resolved
-                 templateFilename = normalizedName.bridge().stringByAppendingPathExtension("." + templateExtension)!
-            #else
-                 templateFilename = normalizedName.bridge().appendingPathExtension(templateExtension)!
-            #endif
+                templateFilename = normalizedName.bridge().appendingPathExtension(templateExtension)!
             } else {
                 templateFilename = normalizedName
             }
