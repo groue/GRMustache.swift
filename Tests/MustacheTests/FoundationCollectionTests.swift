@@ -86,7 +86,7 @@ class FoundationCollectionTests: XCTestCase {
             let array = NSMutableArray()
             array.add(["key": "value"])
             let data = NSMutableDictionary()
-            data.setObject(array, forKey: "collection".bridge())
+            data.setObject(array, forKey: NSString(string: "collection"))
             return Box(data)
         }()
         boxedSet = {
@@ -97,14 +97,14 @@ class FoundationCollectionTests: XCTestCase {
             let set = NSMutableSet()
             set.add(["key": "value"])
             let data = NSMutableDictionary()
-            data.setObject(set, forKey: "collection".bridge())
+            data.setObject(set, forKey: NSString(string: "collection"))
             return Box(data)
             }()
         boxedNSOrderedSet = {
             let orderedSet = NSMutableOrderedSet()
             orderedSet.add(["key": "value"])
             let data = NSMutableDictionary()
-            data.setObject(orderedSet, forKey: "collection".bridge())
+            data.setObject(orderedSet, forKey: NSString(string: "collection"))
             return Box(data)
             }()
     }
@@ -130,7 +130,7 @@ class FoundationCollectionTests: XCTestCase {
         let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
         XCTAssertEqual(try! Template(string: templateString).render(), "Not empty")
         XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSArray()])), "Not empty")
-        XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSArray(object: "foo".bridge())])), "Not empty")
+        XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSArray(object: NSString(string: "foo"))])), "Not empty")
     }
 
     func testNSArrayCountKey() {
@@ -208,7 +208,7 @@ class FoundationCollectionTests: XCTestCase {
         let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
         XCTAssertEqual(try! Template(string: templateString).render(), "Not empty")
         XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSSet()])), "Not empty")
-        XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSSet(object: "foo".bridge())])), "Not empty")
+        XCTAssertEqual(try! Template(string: templateString).render(with: Box(["collection":NSSet(object: NSString(string: "foo"))])), "Not empty")
     }
 
     func testNSSetCountKey() {
