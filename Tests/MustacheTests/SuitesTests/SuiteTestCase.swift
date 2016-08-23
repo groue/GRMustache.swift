@@ -1,3 +1,4 @@
+
 // The MIT License
 //
 // Copyright (c) 2015 Gwendal Roué
@@ -148,46 +149,17 @@ class SuiteTestCase: XCTestCase {
             if let partialsDictionary = partialsDictionary {
                 if let templateName = templateName {
                     var templates: [Template] = []
-                    let templateExtension = templateName.bridge().pathExtension
+                    let templateURL = URL(string: templateName)
+                    let templateExtension = templateURL?.pathExtension ?? ""
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
+                        let templateNameWithoutPathExtension = (templateURL?.deletingPathExtension())?.absoluteString ?? templateName
                         do {
-                            #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-                                //TODO remove once the issue is resolved
-                                var templateByDeletingPathExtension = templateName.bridge().deletingPathExtension
-                                if templateByDeletingPathExtension.characters.last == "." {
-                                    templateByDeletingPathExtension = templateByDeletingPathExtension.substringToIndex(templateByDeletingPathExtension.endIndex.predecessor())
-                                }
-                                let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateByDeletingPathExtension)
-                            #else
-                                 let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
-                            #endif
+                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateNameWithoutPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    let _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
-                                } catch {
-                                    // ignore error on replay
-                                }
-                            })
-                        }
-
-                        do {
-                            #if os(Linux) // issue https://bugs.swift.org/browse/SR-999
-                                //TODO remove once the issue is resolved
-                                var templateByDeletingPathExtension = templateName.bridge().deletingPathExtension
-                                if templateByDeletingPathExtension.characters.last == "." {
-                                    templateByDeletingPathExtension = templateByDeletingPathExtension.substringToIndex(templateByDeletingPathExtension.endIndex.predecessor())
-                                }
-                                let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateByDeletingPathExtension)
-                            #else
-                                 let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
-                             #endif
-                            templates.append(template)
-                        } catch {
-                            testError(error, replayOnFailure: {
-                                do {
-                                    let _ = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: templateName.bridge().deletingPathExtension)
+                                    let _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: templateNameWithoutPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -329,7 +301,7 @@ class SuiteTestCase: XCTestCase {
                     let partialURL = templatesURL?.appendingPathComponent(partialName)
                     let partialPath = partialURL?.path ?? "."
                     do {
-                        try fm.createDirectory(atPath: partialPath.bridge().deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
+                        try fm.createDirectory(atPath: (partialURL?.deletingLastPathComponent())?.path ?? ".", withIntermediateDirectories: true, attributes: nil)
                         if !fm.createFile(atPath: partialPath, contents: partialString.data(using: encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []

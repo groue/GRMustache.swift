@@ -67,7 +67,7 @@ class TemplateFromMethodsTests: XCTestCase {
             }
         }
     }
-    
+
     var testBundle: Bundle {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
         //TODO remove this ifdef once Bundle(for:) is implemented
@@ -77,68 +77,71 @@ class TemplateFromMethodsTests: XCTestCase {
         return Bundle(for: type(of: self))
         #endif
     }
-    
+
     let templateName = "TemplateFromMethodsTests"
     var templateURL: URL { return testBundle.url(forResource: templateName, withExtension: "mustache")! }
     var templatePath: String { return templateURL.path }
     var templateString: String { return try! String(contentsOfFile: templatePath, encoding: String.Encoding.utf8) }
-    
+
     let parserErrorTemplateName = "TemplateFromMethodsTests_parserError"
     var parserErrorTemplateURL: URL { return testBundle.url(forResource: parserErrorTemplateName, withExtension: "mustache")! }
     var parserErrorTemplatePath: String { return parserErrorTemplateURL.path }
     var parserErrorTemplateString: String { return try! String(contentsOfFile: parserErrorTemplatePath, encoding: String.Encoding.utf8) }
-    
+
     let parserErrorTemplateWrapperName = "TemplateFromMethodsTests_parserErrorWrapper"
     var parserErrorTemplateWrapperURL: URL { return testBundle.url(forResource: parserErrorTemplateWrapperName, withExtension: "mustache")! }
     var parserErrorTemplateWrapperPath: String { return parserErrorTemplateWrapperURL.path }
     var parserErrorTemplateWrapperString: String { return try! String(contentsOfFile: parserErrorTemplateWrapperPath, encoding: String.Encoding.utf8) }
-    
+
     let compilerErrorTemplateName = "TemplateFromMethodsTests_compilerError"
     var compilerErrorTemplateURL: URL { return testBundle.url(forResource: compilerErrorTemplateName, withExtension: "mustache")! }
     var compilerErrorTemplatePath: String { return compilerErrorTemplateURL.path }
     var compilerErrorTemplateString: String { return try! String(contentsOfFile: compilerErrorTemplatePath, encoding: String.Encoding.utf8) }
-    
+
     let compilerErrorTemplateWrapperName = "TemplateFromMethodsTests_compilerErrorWrapper"
     var compilerErrorTemplateWrapperURL: URL { return testBundle.url(forResource: compilerErrorTemplateWrapperName, withExtension: "mustache")! }
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path }
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: String.Encoding.utf8) }
-    
+
     func value(forKey key: String, inRendering rendering: String) -> Any? {
         let data = rendering.data(using: String.Encoding.utf8)!
         let json = JSON(data: data)
         return json[key].object
     }
 
-    
+
     func valueForStringProperty(inRendering rendering: String) -> String? {
         return value(forKey: "string", inRendering: rendering) as? String
     }
-    
+
     func extensionOfTemplateFile(inRendering rendering: String) -> String? {
-        return (value(forKey: "fileName", inRendering: rendering) as? String)?.bridge().pathExtension
+        guard let fileName = value(forKey: "fileName", inRendering: rendering) as? String else {
+            return nil
+        }
+        return URL(string: fileName)?.pathExtension
     }
-    
+
     func testTemplateFromString() {
         let template = try! Template(string: templateString)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringProperty(inRendering: rendering)!, "foo")
     }
-    
+
     func testTemplateFromPath() {
         let template = try! Template(path: templatePath)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
     }
-    
+
     func testTemplateFromURL() {
         let template = try! Template(URL: templateURL)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
         let rendering = try! template.render(with: MustacheBox(keyedSubscript: keyedSubscript))
         XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
     }
-    
+
     func testTemplateFromResource() {
         let template = try! Template(named: templateName, bundle: testBundle)
         let keyedSubscript = makeKeyedSubscriptFunction("foo")
@@ -146,7 +149,7 @@ class TemplateFromMethodsTests: XCTestCase {
         XCTAssertEqual(valueForStringProperty(inRendering:rendering)!, "foo")
         XCTAssertEqual(extensionOfTemplateFile(inRendering: rendering)!, "mustache")
     }
-    
+
     func testParserErrorFromString() {
         do {
             let _ = try Template(string: parserErrorTemplateString)
@@ -158,7 +161,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testParserErrorFromPath() {
         do {
             let _ = try Template(path: parserErrorTemplatePath)
@@ -170,7 +173,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(path: parserErrorTemplateWrapperPath)
             XCTFail("Expected MustacheError")
@@ -182,7 +185,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testParserErrorFromURL() {
         do {
             let _ = try Template(URL: parserErrorTemplateURL)
@@ -194,7 +197,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(URL: parserErrorTemplateWrapperURL)
             XCTFail("Expected MustacheError")
@@ -206,7 +209,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testParserErrorFromResource() {
         do {
             let _ = try Template(named: parserErrorTemplateName, bundle: testBundle)
@@ -218,7 +221,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(named: parserErrorTemplateWrapperName, bundle: testBundle)
             XCTFail("Expected MustacheError")
@@ -230,7 +233,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testCompilerErrorFromString() {
         do {
             let _ = try Template(string: compilerErrorTemplateString)
@@ -242,7 +245,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testCompilerErrorFromPath() {
         do {
             let _ = try Template(path: compilerErrorTemplatePath)
@@ -254,7 +257,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(path: compilerErrorTemplateWrapperPath)
             XCTFail("Expected MustacheError")
@@ -266,7 +269,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testCompilerErrorFromURL() {
         do {
             let _ = try Template(URL: compilerErrorTemplateURL)
@@ -278,7 +281,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(URL: compilerErrorTemplateWrapperURL)
             XCTFail("Expected MustacheError")
@@ -290,7 +293,7 @@ class TemplateFromMethodsTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testCompilerErrorFromResource() {
         do {
             let _ = try Template(named: compilerErrorTemplateName, bundle: testBundle)
@@ -302,7 +305,7 @@ class TemplateFromMethodsTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         do {
             let _ = try Template(named: compilerErrorTemplateWrapperName, bundle: testBundle)
             XCTFail("Expected MustacheError")
