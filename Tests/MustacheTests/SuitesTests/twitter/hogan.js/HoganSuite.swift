@@ -26,7 +26,7 @@ import Mustache
 
 class HoganSuite: SuiteTestCase {
 
-    override var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (HoganSuite) -> () throws -> Void)] {
         return [
             ("testSuite", testSuite),
             ("testLambdaExpressionInInheritedTemplateSubsections", testLambdaExpressionInInheritedTemplateSubsections),
@@ -39,7 +39,7 @@ class HoganSuite: SuiteTestCase {
         // https://github.com/twitter/hogan.js/blob/master/test/index.js
         runTests(fromResource: "template_inheritance.json", directory: "HoganSuite")
     }
-    
+
     func testLambdaExpressionInInheritedTemplateSubsections() {
         // Test "Lambda expression in inherited template subsections" from hogan.js tests
 
@@ -53,10 +53,10 @@ class HoganSuite: SuiteTestCase {
         let rendering = try! template.render(with: Box(["lambda": Box(lambda)]))
         XCTAssertEqual(rendering, "altered child1 - altered parent2")
     }
-    
+
     func testBlah() {
         // Test "Lambda expression in included partial templates" from hogan.js tests
-        
+
         let lambda = Lambda { return "changed \($0)" }
         let templates = [
             "parent": "{{$section}}{{/section}}",

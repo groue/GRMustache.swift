@@ -28,7 +28,7 @@ import Foundation
 class TemplateRepositoryPathTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (TemplateRepositoryPathTests) -> () throws -> Void)] {
         return [
             ("testTemplateRepositoryWithURL", testTemplateRepositoryWithURL),
             ("testTemplateRepositoryWithURLTemplateExtensionEncoding", testTemplateRepositoryWithURLTemplateExtensionEncoding),

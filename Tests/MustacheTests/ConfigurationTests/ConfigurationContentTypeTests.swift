@@ -27,7 +27,7 @@ import Mustache
 class ConfigurationContentTypeTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ConfigurationContentTypeTests) -> () throws -> Void)] {
         return [
             ("testFactoryConfigurationHasHTMLContentTypeRegardlessOfDefaultConfiguration", testFactoryConfigurationHasHTMLContentTypeRegardlessOfDefaultConfiguration),
             ("testDefaultConfigurationContentTypeHTMLHasTemplateRenderEscapedInput", testDefaultConfigurationContentTypeHTMLHasTemplateRenderEscapedInput),

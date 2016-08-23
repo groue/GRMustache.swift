@@ -29,7 +29,7 @@ import Bridging
 class ReadMeTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ReadMeTests) -> () throws -> Void)] {
         return [
             ("testReadmeExample1", testReadmeExample1),
             ("testReadmeExample2", testReadmeExample2),

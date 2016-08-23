@@ -27,7 +27,7 @@ import Mustache
 class TemplateRepositoryDictionaryTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (TemplateRepositoryDictionaryTests) -> () throws -> Void)] {
         return [
             ("testTemplateRepositoryWithDictionary", testTemplateRepositoryWithDictionary),
             ("testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation", testTemplateRepositoryWithDictionaryIgnoresDictionaryMutation),

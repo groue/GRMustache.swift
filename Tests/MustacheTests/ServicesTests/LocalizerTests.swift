@@ -31,12 +31,12 @@ class LocalizerTests: XCTestCase {
     // do not run these tests until the following feature is implemented
     // https://bugs.swift.org/browse/SR-957
     //TODO remove this ifdef once the feature is implemented
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (LocalizerTests) -> () throws -> Void)] {
         return []
     }
     #else
     // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (LocalizerTests) -> () throws -> Void)] {
         return [
             ("testLocalizableBundle", testLocalizableBundle),
             ("testLocalizer", testLocalizer),

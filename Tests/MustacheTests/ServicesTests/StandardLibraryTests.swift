@@ -27,7 +27,7 @@ import Mustache
 class StandardLibraryTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (StandardLibraryTests) -> () throws -> Void)] {
         return [
             ("testStandardLibraryHTMLEscapeDoesEscapeText", testStandardLibraryHTMLEscapeDoesEscapeText),
             ("testStandardLibraryHTMLEscapeDoesEscapeHTML", testStandardLibraryHTMLEscapeDoesEscapeHTML),

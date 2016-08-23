@@ -27,7 +27,7 @@ import Mustache
 class ContextTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ContextTests) -> () throws -> Void)] {
         return [
             ("testContextWithValueConstructor", testContextWithValueConstructor),
             ("testContextWithProtectedObjectConstructor", testContextWithProtectedObjectConstructor),

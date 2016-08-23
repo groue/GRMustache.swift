@@ -28,7 +28,7 @@ import Foundation
 class FilterTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (FilterTests) -> () throws -> Void)] {
         return [
             ("testFilterCanChain", testFilterCanChain),
             ("testScopedValueAreExtractedOutOfAFilterExpression", testScopedValueAreExtractedOutOfAFilterExpression),

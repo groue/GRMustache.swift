@@ -27,7 +27,7 @@ import Mustache
 class ContextValueForMustacheExpressionTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ContextValueForMustacheExpressionTests) -> () throws -> Void)] {
         return [
             ("testImplicitIteratorExpression", testImplicitIteratorExpression),
             ("testIdentifierExpression", testIdentifierExpression),

@@ -27,7 +27,7 @@ import Mustache
 class KeyedSubscriptFunctionTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (KeyedSubscriptFunctionTests) -> () throws -> Void)] {
         return [
             ("testBoxedKeyedSubscriptFunction", testBoxedKeyedSubscriptFunction),
         ]

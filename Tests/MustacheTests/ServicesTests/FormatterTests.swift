@@ -30,7 +30,7 @@ class FormatterTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
 
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (FormatterTests) -> () throws -> Void)] {
         #if os(Linux) // do not perfrom the tests before snapshot DEVELOPMENT-SNAPSHOT-2016-03-16
                 //TODO remove this ifdef once snapshot DEVELOPMENT-SNAPSHOT-2016-03-16 is used
         return []

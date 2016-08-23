@@ -27,7 +27,7 @@ import Mustache
 class LambdaTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (LambdaTests) -> () throws -> Void)] {
         return [
             ("testMustacheSpecInterpolation", testMustacheSpecInterpolation),
             ("testMustacheSpecInterpolationExpansion", testMustacheSpecInterpolationExpansion),

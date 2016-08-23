@@ -28,7 +28,7 @@ import Foundation
 class TemplateRepositoryDataSourceTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (TemplateRepositoryDataSourceTests) -> () throws -> Void)] {
         return [
             ("testTemplateRepositoryDataSource", testTemplateRepositoryDataSource),
         ]

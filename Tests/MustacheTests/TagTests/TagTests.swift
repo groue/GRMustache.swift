@@ -28,7 +28,7 @@ import Foundation
 class TagTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (TagTests) -> () throws -> Void)] {
         return [
             ("testTagDescriptionContainsTagToken", testTagDescriptionContainsTagToken),
             ("testTagDescriptionContainsLineNumber", testTagDescriptionContainsLineNumber),

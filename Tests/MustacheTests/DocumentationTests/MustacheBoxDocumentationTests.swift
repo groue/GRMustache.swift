@@ -27,7 +27,7 @@ import Mustache
 class MustacheBoxDocumentationTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (MustacheBoxDocumentationTests) -> () throws -> Void)] {
         return [
             ("testRenderingDocumentation", testRenderingDocumentation),
             ("testRenderingInfoDocumentation", testRenderingInfoDocumentation),

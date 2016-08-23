@@ -30,7 +30,7 @@ class TemplateFromMethodsTests: XCTestCase {
 
     #if os(Linux) // do not run tests due to the following issue https://bugs.swift.org/browse/SR-585
         //TODO remove this ifdef once the issue is resolved
-        var allTests : [(String, () throws -> Void)] {
+        static var allTests : [(String, (TemplateFromMethodsTests) -> () throws -> Void)] {
          return [
              ("testTemplateFromString", testTemplateFromString),
              ("testTemplateFromPath", testTemplateFromPath),
@@ -40,7 +40,7 @@ class TemplateFromMethodsTests: XCTestCase {
        }
         #else
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (TemplateFromMethodsTests) -> () throws -> Void)] {
         return [
             ("testTemplateFromString", testTemplateFromString),
             ("testTemplateFromPath", testTemplateFromPath),

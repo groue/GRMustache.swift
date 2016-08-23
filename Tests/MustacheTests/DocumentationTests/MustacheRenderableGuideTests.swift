@@ -28,7 +28,7 @@ import Foundation
 class MustacheRenderableGuideTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (MustacheRenderableGuideTests) -> () throws -> Void)] {
         return [
             ("testExample1", testExample1),
             ("testExample6", testExample6),

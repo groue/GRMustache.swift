@@ -28,7 +28,7 @@ import Foundation
 class ObjcKeyAccessTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ObjcKeyAccessTests) -> () throws -> Void)] {
         return [
             ("testPropertiesAreSafeAndAvailable", testPropertiesAreSafeAndAvailable),
             ("testMethodsAreUnsafeAndNotAvailable", testMethodsAreUnsafeAndNotAvailable),

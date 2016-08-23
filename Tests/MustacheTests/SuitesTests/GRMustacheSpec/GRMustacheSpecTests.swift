@@ -26,7 +26,7 @@ import Mustache
 
 class GRMustacheSpecTests: SuiteTestCase {
 
-    override var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (GRMustacheSpecTests) -> () throws -> Void)] {
         return [
             ("testSuite", testSuite),
         ]
@@ -43,27 +43,27 @@ class GRMustacheSpecTests: SuiteTestCase {
         runTests(fromResource: "inverted_sections.json", directory: "Tests/general")
         runTests(fromResource: "text_rendering.json", directory: "Tests/general")
         runTests(fromResource: "variables.json", directory: "Tests/general")
-        
+
         // Errors
         runTests(fromResource: "expression_parsing_errors.json", directory: "Tests/errors")
         runTests(fromResource: "tag_parsing_errors.json", directory: "Tests/errors")
-        
+
         // Expressions
         runTests(fromResource: "compound_keys.json", directory: "Tests/expressions")
         runTests(fromResource: "filters.json", directory: "Tests/expressions")
         runTests(fromResource: "implicit_iterator.json", directory: "Tests/expressions")
-        
+
         // Inheritance
         runTests(fromResource: "blocks.json", directory: "Tests/inheritance")
         runTests(fromResource: "partial_overrides.json", directory: "Tests/inheritance")
-        
+
         // Standard library
         runTests(fromResource: "each.json", directory: "Tests/standard_library")
         runTests(fromResource: "HTMLEscape.json", directory: "Tests/standard_library")
         runTests(fromResource: "javascriptEscape.json", directory: "Tests/standard_library")
         runTests(fromResource: "URLEscape.json", directory: "Tests/standard_library")
         runTests(fromResource: "zip.json", directory: "Tests/standard_library")
-        
+
         // Values
         runTests(fromResource: "array.json", directory: "Tests/values")
         runTests(fromResource: "bool.json", directory: "Tests/values")

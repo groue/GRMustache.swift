@@ -27,7 +27,7 @@ import Mustache
 class ConfigurationExtendBaseContextTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ConfigurationExtendBaseContextTests) -> () throws -> Void)] {
         return [
             ("testConfigurationExtendBaseContextWithValue", testConfigurationExtendBaseContextWithValue),
             ("testConfigurationExtendBaseContextWithProtectedObject", testConfigurationExtendBaseContextWithProtectedObject),

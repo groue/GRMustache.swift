@@ -28,7 +28,7 @@ import Foundation
 class RenderFunctionTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (RenderFunctionTests) -> () throws -> Void)] {
         return [
             ("testRenderFunctionInVariableTag", testRenderFunctionInVariableTag),
             ("testRenderFunctionInSectionTag", testRenderFunctionInSectionTag),

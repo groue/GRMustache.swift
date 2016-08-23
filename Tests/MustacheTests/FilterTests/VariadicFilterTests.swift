@@ -27,7 +27,7 @@ import Mustache
 class VariadicFilterTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (VariadicFilterTests) -> () throws -> Void)] {
         return [
             ("testVariadicFilterCanAccessArguments", testVariadicFilterCanAccessArguments),
             ("testVariadicFilterCanReturnFilter", testVariadicFilterCanReturnFilter),

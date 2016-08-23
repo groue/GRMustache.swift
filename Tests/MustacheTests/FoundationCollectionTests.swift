@@ -29,7 +29,7 @@ import Foundation
 class FoundationCollectionTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (FoundationCollectionTests) -> () throws -> Void)] {
         return [
             ("testNSArrayIsIterated", testNSArrayIsIterated),
             ("testNSArrayIsNotIteratedWithValueForKey", testNSArrayIsNotIteratedWithValueForKey),

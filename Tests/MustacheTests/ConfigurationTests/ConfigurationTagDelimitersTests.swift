@@ -27,7 +27,7 @@ import Mustache
 class ConfigurationTagDelimitersTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (ConfigurationTagDelimitersTests) -> () throws -> Void)] {
         return [
             ("testFactoryConfigurationHasTagDelimitersRegardlessOfDefaultConfiguration", testFactoryConfigurationHasTagDelimitersRegardlessOfDefaultConfiguration),
             ("testDefaultConfigurationTagDelimiters", testDefaultConfigurationTagDelimiters),

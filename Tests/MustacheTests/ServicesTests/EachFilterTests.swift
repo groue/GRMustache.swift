@@ -28,7 +28,7 @@ import Foundation
 class EachFilterTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (EachFilterTests) -> () throws -> Void)] {
         return [
             ("testEachFilterEnumeratesSet", testEachFilterEnumeratesSet),
             ("testEachFilterEnumeratesNSSet", testEachFilterEnumeratesNSSet),

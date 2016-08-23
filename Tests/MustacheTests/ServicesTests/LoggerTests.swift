@@ -27,7 +27,7 @@ import Mustache
 class LoggerTests : XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
-    var allTests : [(String, () throws -> Void)] {
+    static var allTests : [(String, (LoggerTests) -> () throws -> Void)] {
         return [
             ("testFullTemplateLogging", testFullTemplateLogging),
             ("testPartialTemplateLogging", testPartialTemplateLogging),
