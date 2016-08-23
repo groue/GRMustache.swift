@@ -26,6 +26,7 @@ import XCTest
 import Mustache
 import Foundation
 import SwiftyJSON
+import Bridging
 
 extension JSON: MustacheBoxable {
     public var mustacheBox: MustacheBox {
@@ -256,9 +257,9 @@ class SuiteTestCase: XCTestCase {
         func testError(_ error: Error, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 do {
-                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpression.Options(rawValue: 0))
+                    let reg = try FoundationAdapter.RegularExpression(pattern: expectedError, options: FoundationAdapter.RegularExpression.Options(rawValue: 0))
                     let errorMessage = "\(error)"
-                    let matches = reg.matches(in: errorMessage, options: NSRegularExpression.MatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage._bridgeToObjectiveC().length))
+                    let matches = reg.matches(in: errorMessage, options: FoundationAdapter.NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, errorMessage._bridgeToObjectiveC().length))
                     if matches.count == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
