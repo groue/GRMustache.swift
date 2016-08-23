@@ -43,135 +43,129 @@ class ConfigurationBaseContextTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
-    #if os(Linux) //fix until swift snapshot of 16-th of March 2016
-        func tearDown() {
-         DefaultConfiguration = Configuration()
-     }
-    #else
-         override func tearDown() {
+
+    override func tearDown() {
         DefaultConfiguration = Configuration()
     }
-    #endif
-    
+
     func testDefaultConfigurationCustomBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let template = try! Template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testTemplateBaseContextOverridesDefaultConfigurationBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
-        
+
         let template = try! Template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testDefaultRepositoryConfigurationHasDefaultConfigurationBaseContext() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let repository = TemplateRepository()
         let template = try! repository.template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let repository = TemplateRepository()
         repository.configuration = configuration
-        
+
         let template = try! repository.template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let template = try! repository.template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenSettingTheWholeConfiguration() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
-        
+
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let repository = TemplateRepository()
         repository.configuration = configuration
-        
+
         let template = try! repository.template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testRepositoryConfigurationBaseContextOverridesDefaultConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
-        
+
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "success"]))
-        
+
         let template = try! repository.template(string: "{{foo}}")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenSettingTheWholeConfiguration() {
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "failure"]))
-        
+
         let repository = TemplateRepository()
         repository.configuration = configuration
-        
+
         let template = try! repository.template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
-        
+
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testTemplateBaseContextOverridesRepositoryConfigurationBaseContextWhenUpdatingRepositoryConfiguration() {
         let repository = TemplateRepository()
         repository.configuration.baseContext = Context(Box(["foo": "failure"]))
-        
+
         let template = try! repository.template(string: "{{foo}}")
         template.baseContext = Context(Box(["foo": "success"]))
-        
+
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
-        
+
         var rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
-        
+
         DefaultConfiguration.baseContext = Context(Box(["foo": "failure"]))
         rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
-        
+
         var rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
-        
+
         repository.configuration.baseContext = Context(Box(["foo": "failure"]))
         rendering = try! repository.template(string: "{{^foo}}success{{/foo}}").render()
         XCTAssertEqual(rendering, "success")
-        
+
         var configuration = Configuration()
         configuration.baseContext = Context(Box(["foo": "failure"]))
         repository.configuration = configuration

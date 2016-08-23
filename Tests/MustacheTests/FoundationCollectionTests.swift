@@ -70,15 +70,9 @@ class FoundationCollectionTests: XCTestCase {
     var boxedNSSet: MustacheBox!
     var boxedNSOrderedSet: MustacheBox!
 
-    #if os(Linux) //fix until swift snapshot of 16-th of March 2016
-        func setUp() {
-            doSetUp()
-        }
-    #else
-        override func setUp() {
-            doSetUp()
-        }
-    #endif
+    override func setUp() {
+        doSetUp()
+    }
 
     func doSetUp() {
         boxedArray = Box(["collection": [["key": "value"]]])

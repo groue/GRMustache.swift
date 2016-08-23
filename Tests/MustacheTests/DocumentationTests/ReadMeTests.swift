@@ -40,15 +40,9 @@ class ReadMeTests: XCTestCase {
     }
 // END OF GENERATED CODE
 
-    #if os(Linux) //fix until swift snapshot of 16-th of March 2016
-    func tearDown() {
-        DefaultConfiguration = Configuration()
-    }
-    #else
     override func tearDown() {
         DefaultConfiguration = Configuration()
     }
-    #endif
 
     func testReadmeExample1() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
