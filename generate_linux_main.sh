@@ -18,7 +18,7 @@
 
 PKG_DIR=.
 TESTS_DIR="${PKG_DIR}/Tests"
-OUTPUT_FILE=${TESTS_DIR}/LinuxMain.swift 
+OUTPUT_FILE=${TESTS_DIR}/LinuxMain.swift
 
 if ! [ -d "${TESTS_DIR}" ]; then
     echo "The directory containing the tests must be named Tests"
@@ -45,11 +45,11 @@ cat << 'EOF' > ${OUTPUT_FILE}
 import XCTest
 EOF
 
-find ${TESTS_DIR} -maxdepth 1 -mindepth 1 -type d -printf '@testable import %fTestSuite\n' >> ${OUTPUT_FILE}
+echo '@testable import MustacheTests' >> ${OUTPUT_FILE}
 
 echo >> ${OUTPUT_FILE}
 echo XCTMain\(\[ >> ${OUTPUT_FILE}
-for FILE in `find ${TESTS_DIR}/*/ -name "*.swift"`; do
+for FILE in `find ${TESTS_DIR}/MustacheTests/ -name "*.swift"`; do
     FILE_NAME=`basename ${FILE}`
     FILE_NAME="${FILE_NAME%.*}"
     echo "    testCase(${FILE_NAME}.allTests)," >> ${OUTPUT_FILE}
