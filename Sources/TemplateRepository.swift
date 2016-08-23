@@ -528,7 +528,12 @@ final public class TemplateRepository {
             }
 
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = normalizedBaseTemplateID.bridge().deletingLastPathComponent.replacingOccurrences(of: bundle.resourcePath!, with:"")
+                var templateIDWithoutLastComponent = (URL(string: normalizedBaseTemplateID)?.deletingLastPathComponent().absoluteString)!
+                if templateIDWithoutLastComponent.hasSuffix("/") {
+                    templateIDWithoutLastComponent = templateIDWithoutLastComponent.substring(to:
+                        templateIDWithoutLastComponent.index(before: templateIDWithoutLastComponent.endIndex))
+                }
+                let relativePath = templateIDWithoutLastComponent.replacingOccurrences(of: bundle.resourcePath!, with:"")
                 return bundle.path(forResource: normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
                 return bundle.path(forResource: normalizedName, ofType: templateExtension)
