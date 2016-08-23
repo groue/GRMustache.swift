@@ -53,6 +53,10 @@ refetch:
 	@echo --- Fetching dependencies
 	swift package fetch
 
+update:
+	@echo --- Updating dependencies
+	swift package update
+
 clean:
 	@echo --- Invoking swift build --clean
 	swift build --clean
