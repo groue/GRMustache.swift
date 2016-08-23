@@ -31,10 +31,6 @@ class FormatterTests: XCTestCase {
 // GENERATED: allTests required for Swift 3.0
 
     static var allTests : [(String, (FormatterTests) -> () throws -> Void)] {
-        #if os(Linux) // do not perfrom the tests before snapshot DEVELOPMENT-SNAPSHOT-2016-03-16
-                //TODO remove this ifdef once snapshot DEVELOPMENT-SNAPSHOT-2016-03-16 is used
-        return []
-        #else
         return [
             ("testFormatterIsAFilterForProcessableValues", testFormatterIsAFilterForProcessableValues),
             ("testFormatterIsAFilterForUnprocessableValues", testFormatterIsAFilterForUnprocessableValues),
@@ -53,7 +49,6 @@ class FormatterTests: XCTestCase {
             ("testDateFormatterRendersNothingForNSString", testDateFormatterRendersNothingForNSString),
             ("testDateFormatterRendersNothingForNSNumber", testDateFormatterRendersNothingForNSNumber),
         ]
-        #endif
     }
 
 // END OF GENERATED CODE
