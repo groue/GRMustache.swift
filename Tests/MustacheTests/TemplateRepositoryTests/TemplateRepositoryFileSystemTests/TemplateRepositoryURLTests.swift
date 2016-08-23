@@ -37,7 +37,7 @@ class TemplateRepositoryURLTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
+
     func testTemplateRepositoryWithURL() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -50,30 +50,30 @@ class TemplateRepositoryURLTests: XCTestCase {
         let repo = TemplateRepository(baseURL: URL)
         var template: Template
         var rendering: String
-        
+
         do {
             template = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
-        
+
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>dir/file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "dir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>dir/dir/file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "dir/dir/é1.mustache\ndir/dir/é2.mustache\n\n")
     }
-    
+
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -86,44 +86,44 @@ class TemplateRepositoryURLTests: XCTestCase {
         var repo: TemplateRepository
         var template: Template
         var rendering: String
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "mustache", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "txt", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
-        
+
         URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", withExtension: nil)!
         repo = TemplateRepository(baseURL: URL, templateExtension: "", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
     }
-    
+
     func testAbsolutePartialName() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -139,7 +139,7 @@ class TemplateRepositoryURLTests: XCTestCase {
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -150,17 +150,12 @@ class TemplateRepositoryURLTests: XCTestCase {
         #endif
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
         let baseURL = URL.appendingPathComponent("partials")
-        #if os(Linux) // see issue https://bugs.swift.org/browse/SR-996
-            //TODO remove #if os(Linux) once the issue is resolved
-            let repo = TemplateRepository(baseURL: baseURL!)
-        #else
-            let repo = TemplateRepository(baseURL: baseURL)
-        #endif
+        let repo = TemplateRepository(baseURL: baseURL)
 
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
-        
+
         do {
             let _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
