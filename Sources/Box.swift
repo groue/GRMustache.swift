@@ -529,9 +529,9 @@ extension NSObject: MustacheBoxable {
 
     private func handleEnumeration(_ object: NSObject?) -> MustacheBox {
     #if os(Linux)
-        var selfArray = [AnyObject]()
+        var selfArray = [Any]()
         if let nsArray = object as? NSArray {
-            selfArray = nsArray.bridge()
+            selfArray = nsArray._bridgeToSwift()
         } else if let orderedSet = object as? NSOrderedSet {
             // NSOrderedSet.array is not implemented yet
             for element in orderedSet {
