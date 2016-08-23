@@ -320,12 +320,14 @@ class SuiteTestCase: XCTestCase {
             let fm = FileManager.`default`
             let encodings: [String.Encoding] = [String.Encoding.utf8, String.Encoding.utf16]
             for encoding in encodings {
-                let templatesPath = NSTemporaryDirectory().bridge().appendingPathComponent("GRMustacheTest").bridge().appendingPathComponent("encoding_\(encoding.rawValue)")
+                let templatesURL = (URL(string: NSTemporaryDirectory())?.appendingPathComponent("GRMustacheTest"))?.appendingPathComponent("encoding_\(encoding.rawValue)")
+                let templatesPath = templatesURL?.path ?? "."
                 if fm.fileExists(atPath: templatesPath) {
                     try! fm.removeItem(atPath: templatesPath)
                 }
                 for (partialName, partialString) in partialsDictionary {
-                    let partialPath = templatesPath.bridge().appendingPathComponent(partialName)
+                    let partialURL = templatesURL?.appendingPathComponent(partialName)
+                    let partialPath = partialURL?.path ?? "."
                     do {
                         try fm.createDirectory(atPath: partialPath.bridge().deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
                         if !fm.createFile(atPath: partialPath, contents: partialString.data(using: encoding, allowLossyConversion: false), attributes: nil) {

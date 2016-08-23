@@ -37,7 +37,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
+
     func testTemplateRepositoryWithURL() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -50,30 +50,30 @@ class TemplateRepositoryPathTests: XCTestCase {
         let repo = TemplateRepository(directoryPath: directoryPath)
         var template: Template
         var rendering: String
-        
+
         do {
             let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
-        
+
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>dir/file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "dir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n")
-        
+
         template = try! repo.template(string: "{{>dir/dir/file1}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "dir/dir/é1.mustache\ndir/dir/é2.mustache\n\n")
     }
-    
+
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -87,44 +87,44 @@ class TemplateRepositoryPathTests: XCTestCase {
         var repo: TemplateRepository
         var template: Template
         var rendering: String
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
-        
+
         directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
         repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
     }
-    
+
     func testAbsolutePartialName() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -139,7 +139,7 @@ class TemplateRepositoryPathTests: XCTestCase {
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
     }
-    
+
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
@@ -150,12 +150,13 @@ class TemplateRepositoryPathTests: XCTestCase {
         #endif
 
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
-        let repo = TemplateRepository(directoryPath: directoryPath.bridge().appendingPathComponent("partials"))
-        
+        let directoryURL = URL(string: directoryPath)?.appendingPathComponent("partials")
+        let repo = TemplateRepository(directoryPath: directoryURL?.path ?? ".")
+
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
-        
+
         do {
             let _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
