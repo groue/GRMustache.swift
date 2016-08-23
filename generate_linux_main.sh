@@ -45,13 +45,13 @@ cat << 'EOF' > ${OUTPUT_FILE}
 import XCTest
 EOF
 
-find ${TESTS_DIR} -maxdepth 1 -mindepth 1 -type d -printf '@testable import %ftest\n' >> ${OUTPUT_FILE}
+find ${TESTS_DIR} -maxdepth 1 -mindepth 1 -type d -printf '@testable import %fTestSuite\n' >> ${OUTPUT_FILE}
 
 echo >> ${OUTPUT_FILE}
 echo XCTMain\(\[ >> ${OUTPUT_FILE}
 for FILE in `find ${TESTS_DIR}/*/ -name "*.swift"`; do
     FILE_NAME=`basename ${FILE}`
     FILE_NAME="${FILE_NAME%.*}"
-    echo "    ${FILE_NAME}()," >> ${OUTPUT_FILE}
+    echo "    testCase(${FILE_NAME}.allTests)," >> ${OUTPUT_FILE}
 done
 echo "])" >> ${OUTPUT_FILE}
