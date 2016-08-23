@@ -29,22 +29,17 @@ class TemplateRepositoryBundleTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
     static var allTests : [(String, (TemplateRepositoryBundleTests) -> () throws -> Void)] {
-        #if os(Linux) //disable the tests due to issue https://bugs.swift.org/browse/SR-794?jql=text%20~%20%22pathForResource%22
-            //TODO remove once the issue is resolved
-            return []
-        #else
         return [
             ("testTemplateRepositoryWithBundle", testTemplateRepositoryWithBundle),
             ("testTemplateRepositoryWithBundleTemplateExtensionEncoding", testTemplateRepositoryWithBundleTemplateExtensionEncoding),
         ]
-        #endif
     }
 // END OF GENERATED CODE
-    
+
     func testTemplateRepositoryWithBundle() {
         var template: Template
         var rendering: String
-        
+
         #if os(Linux) // Bundle(for:) is not yet implemented on Linux
             //TODO remove this ifdef once Bundle(for:) is implemented
             // issue https://bugs.swift.org/browse/SR-794
@@ -58,20 +53,20 @@ class TemplateRepositoryBundleTests: XCTestCase {
             XCTAssert(false)
         } catch {
         }
-        
+
         template = try! repo.template(named: "TemplateRepositoryBundleTests")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
-        
+
         template = try! repo.template(string: "{{>TemplateRepositoryBundleTests}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
-        
+
         template = try! repo.template(string: "{{>TemplateRepositoryBundleTestsResources/partial}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "partial sibling TemplateRepositoryBundleTests.mustache TemplateRepositoryBundleTests_partial.mustache")
     }
-    
+
     func testTemplateRepositoryWithBundleTemplateExtensionEncoding() {
         var template: Template
         var rendering: String
@@ -84,33 +79,33 @@ class TemplateRepositoryBundleTests: XCTestCase {
             let testBundle = Bundle(for: type(of: self))
         #endif
         var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: String.Encoding.utf8)
-        
+
         do {
             let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
-        
+
         template = try! repo.template(named: "TemplateRepositoryBundleTests")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
-        
+
         template = try! repo.template(string: "{{>TemplateRepositoryBundleTests}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
-        
+
         repo = TemplateRepository(bundle: testBundle, templateExtension: "", encoding: String.Encoding.utf8)
-        
+
         do {
             let _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
-        
+
         template = try! repo.template(named: "TemplateRepositoryBundleTests")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests TemplateRepositoryBundleTests_partial")
-        
+
         template = try! repo.template(string: "{{>TemplateRepositoryBundleTests}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests TemplateRepositoryBundleTests_partial")
