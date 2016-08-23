@@ -79,14 +79,14 @@ final class TemplateCompiler: TemplateTokenConsumer {
 
                 case .Pragma(content: let content):
                      let pragma = content.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines)
-                     if (try! FoundationAdapter.RegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: FoundationAdapter.RegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: FoundationAdapter.RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma._bridgeToObjectiveC().length)) != nil {
+                     if (try! FoundationAdapter.RegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: FoundationAdapter.RegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: FoundationAdapter.NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma._bridgeToObjectiveC().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.Text)
                         case .Locked(_):
                             throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                     } else if (try! FoundationAdapter.RegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: FoundationAdapter.RegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: FoundationAdapter.RegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma._bridgeToObjectiveC().length)) != nil {
+                     } else if (try! FoundationAdapter.RegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: FoundationAdapter.RegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: FoundationAdapter.NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, pragma._bridgeToObjectiveC().length)) != nil {
                         switch compilationState.compilerContentType {
                         case .Unlocked:
                             compilationState.compilerContentType = .Unlocked(.HTML)
