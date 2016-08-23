@@ -729,7 +729,7 @@ GRMustache provides built-in support for rendering `NSString`.
             return Box()
         }
 
-        return Box(string.bridge())
+        return Box(string._bridgeToSwift())
     }
 
 
@@ -1644,7 +1644,7 @@ GRMustache provides built-in support for rendering `NSDictionary`.
         #if os(Linux)
             var dictionary = [String: MustacheBox]()
             let _ = value.allKeys.map { key in
-                if let stringKey = (key as? NSString)?.bridge() {
+             if let stringKey = (key as? NSString)?._bridgeToSwift() {
                     dictionary[stringKey] = BoxAny(value[key])
                 } else {
                     NSLog("GRMustache found a non-NSString key in NSDictionary (\(key)): value is discarded.")
