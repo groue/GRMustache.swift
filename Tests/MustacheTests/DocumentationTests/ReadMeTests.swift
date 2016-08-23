@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class ReadMeTests: XCTestCase {
 
@@ -129,7 +130,7 @@ class ReadMeTests: XCTestCase {
     func testReadMeExampleFormatter1() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
-        percentFormatter.numberStyle = .percent
+        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
 
         let template = try! Template(string: "{{ percent(x) }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
@@ -142,7 +143,7 @@ class ReadMeTests: XCTestCase {
     func testReadMeExampleFormatter2() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
-        percentFormatter.numberStyle = .percent
+        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
 
         let template = try! Template(string: "{{# percent }}{{ x }}{{/ }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
