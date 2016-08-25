@@ -27,48 +27,41 @@ import Foundation
 
 class LocalizerTests: XCTestCase {
 
-    #if os(Linux)
-    // do not run these tests until the following feature is implemented
-    // https://bugs.swift.org/browse/SR-957
-    //TODO remove this ifdef once the feature is implemented
+    // allTests required for Swift 3.0
     static var allTests : [(String, (LocalizerTests) -> () throws -> Void)] {
+        if TestConfiguration.sharedInstance.localizerTestsEnabled {
+            return [
+                ("testLocalizableBundle", testLocalizableBundle),
+                ("testLocalizer", testLocalizer),
+                ("testLocalizerFromTable", testLocalizerFromTable),
+                ("testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString),
+                ("testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString),
+                ("testLocalizerAsFilter", testLocalizerAsFilter),
+                ("testLocalizerAsRenderable", testLocalizerAsRenderable),
+                ("testLocalizerAsRenderableWithArgument", testLocalizerAsRenderableWithArgument),
+                ("testLocalizerAsRenderableWithArgumentAndConditions", testLocalizerAsRenderableWithArgumentAndConditions),
+                ("testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates", testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates),
+                ("testLocalizerRendersUnescapedValuesOfTextTemplates", testLocalizerRendersUnescapedValuesOfTextTemplates),
+            ]
+        }
         return []
     }
-    #else
-    // GENERATED: allTests required for Swift 3.0
-    static var allTests : [(String, (LocalizerTests) -> () throws -> Void)] {
-        return [
-            ("testLocalizableBundle", testLocalizableBundle),
-            ("testLocalizer", testLocalizer),
-            ("testLocalizerFromTable", testLocalizerFromTable),
-            ("testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentDoesNotNeedPercentEscapedLocalizedString),
-            ("testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString", testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString),
-            ("testLocalizerAsFilter", testLocalizerAsFilter),
-            ("testLocalizerAsRenderable", testLocalizerAsRenderable),
-            ("testLocalizerAsRenderableWithArgument", testLocalizerAsRenderableWithArgument),
-            ("testLocalizerAsRenderableWithArgumentAndConditions", testLocalizerAsRenderableWithArgumentAndConditions),
-            ("testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates", testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates),
-            ("testLocalizerRendersUnescapedValuesOfTextTemplates", testLocalizerRendersUnescapedValuesOfTextTemplates),
-        ]
-    }
-    // END OF GENERATED CODE
-    #endif
-    
+
     lazy var localizableBundle: Bundle = Bundle(path: Bundle(for: type(of: self)).path(forResource: "LocalizerTestsBundle", ofType: nil)!)!
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
-    
+
     func testLocalizableBundle() {
         let testable = localizableBundle.localizedString(forKey: "testable?", value:"", table:nil)
         XCTAssertEqual(testable, "YES")
     }
-    
+
     func testLocalizer() {
         let template = try! Template(string: "{{localize(string)}}")
         let box = Box(["localize": Box(localizer), "string": Box("testable?")])
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "YES")
     }
-    
+
     func testLocalizerFromTable() {
         let template = try! Template(string: "{{localize(string)}}")
         let localizer = StandardLibrary.Localizer(bundle: localizableBundle, table: "Table")
@@ -83,14 +76,14 @@ class LocalizerTests: XCTestCase {
         var rendering = try! template.render()
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%d", value: nil, table: nil), "ha ha percent d %d")
         XCTAssertEqual(rendering, "ha ha percent d %d")
-        
+
         template = try! Template(string: "{{#localize}}%@{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
         rendering = try! template.render()
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%@", value: nil, table: nil), "ha ha percent @ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@")
     }
-    
+
     func testLocalizerAsRenderingObjectWithoutArgumentNeedsPercentEscapedLocalizedString() {
         var template = try! Template(string: "{{#localize}}%d {{foo}}{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -104,7 +97,7 @@ class LocalizerTests: XCTestCase {
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "%%@ %@", value: nil, table: nil), "ha ha percent @ %%@ %@")
         XCTAssertEqual(rendering, "ha ha percent @ %@ bar")
     }
-    
+
     func testLocalizerAsFilter() {
         let template = try! Template(string: "{{localize(foo)}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -112,7 +105,7 @@ class LocalizerTests: XCTestCase {
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
-    
+
     func testLocalizerAsRenderable() {
         let template = try! Template(string: "{{#localize}}bar{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -120,7 +113,7 @@ class LocalizerTests: XCTestCase {
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "bar", value: nil, table: nil), "translated_bar")
         XCTAssertEqual(rendering, "translated_bar")
     }
-    
+
     func testLocalizerAsRenderableWithArgument() {
         let template = try! Template(string: "{{#localize}}..{{foo}}..{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -128,7 +121,7 @@ class LocalizerTests: XCTestCase {
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: "..%@..", value: nil, table: nil), "!!%@!!")
         XCTAssertEqual(rendering, "!!bar!!")
     }
-    
+
     func testLocalizerAsRenderableWithArgumentAndConditions() {
         let template = try! Template(string: "{{#localize}}.{{foo}}.{{^false}}{{baz}}{{/}}.{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -136,7 +129,7 @@ class LocalizerTests: XCTestCase {
         XCTAssertEqual(self.localizer.bundle.localizedString(forKey: ".%@.%@.", value: nil, table: nil), "!%@!%@!")
         XCTAssertEqual(rendering, "!bar!truc!")
     }
-    
+
     func testLocalizerRendersHTMLEscapedValuesOfHTMLTemplates() {
         var template = try! Template(string: "{{#localize}}..{{foo}}..{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
@@ -148,13 +141,13 @@ class LocalizerTests: XCTestCase {
         rendering = try! template.render(with: Box(["foo": "&"]))
         XCTAssertEqual(rendering, "!!&!!")
     }
-    
+
     func testLocalizerRendersUnescapedValuesOfTextTemplates() {
         var template = try! Template(string: "{{% CONTENT_TYPE:TEXT }}{{#localize}}..{{foo}}..{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
         var rendering = try! template.render(with: Box(["foo": "&"]))
         XCTAssertEqual(rendering, "!!&!!")
-        
+
         template = try! Template(string: "{{% CONTENT_TYPE:TEXT }}{{#localize}}..{{{foo}}}..{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["localize": Box(localizer)]))
         rendering = try! template.render(with: Box(["foo": "&"]))

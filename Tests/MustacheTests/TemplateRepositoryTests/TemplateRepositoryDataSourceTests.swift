@@ -27,18 +27,17 @@ import Foundation
 
 class TemplateRepositoryDataSourceTests: XCTestCase {
 
-// GENERATED: allTests required for Swift 3.0
+    //allTests required for Swift 3.0
     static var allTests : [(String, (TemplateRepositoryDataSourceTests) -> () throws -> Void)] {
-        return [
-            ("testTemplateRepositoryDataSource", testTemplateRepositoryDataSource),
-        ]
+        return (TestConfiguration.sharedInstance.nsErrorTestsEnabled ?
+               [("testTemplateRepositoryDataSource", testTemplateRepositoryDataSource)] :
+                [(String, (TemplateRepositoryDataSourceTests) -> () throws -> Void)]())
     }
-// END OF GENERATED CODE
-    
+
     enum CustomError : Error {
         case Error
     }
-    
+
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
             func templateID(forName name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
@@ -64,19 +63,19 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                 }
             }
         }
-        
+
         let repo = TemplateRepository(dataSource: TestedDataSource())
         var template: Template
         var rendering: String
-        
+
         template = try! repo.template(named: "foo")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "foo")
-        
+
         template = try! repo.template(string: "{{>foo}}")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "foo")
-        
+
         do {
             let _ = try repo.template(string: "{{>not_found}}")
             XCTFail("Expected MustacheError")
@@ -86,17 +85,13 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
 
-        #if os(Linux) // catching NSError not yet implemented - see https://bugs.swift.org/browse/SR-585
-            //TODO remove this ifdef once the issue is resolved
-        #else
         do {
             let _ = try repo.template(string: "{{>CustomNSError}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "CustomNSError")
         }
-        #endif
-        
+
         do {
             let _ = try repo.template(string: "{{>CustomError}}")
             XCTAssert(false)
@@ -105,7 +100,7 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         } catch {
             XCTAssert(false)
         }
-        
+
         do {
             let _ = try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
             XCTFail("Expected MustacheError")
@@ -115,5 +110,5 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
 }

@@ -27,7 +27,7 @@ import Foundation
 
 class FilterTests: XCTestCase {
 
-// GENERATED: allTests required for Swift 3.0
+    // allTests required for Swift 3.0
     static var allTests : [(String, (FilterTests) -> () throws -> Void)] {
         return [
             ("testFilterCanChain", testFilterCanChain),
@@ -45,16 +45,15 @@ class FilterTests: XCTestCase {
             ("testFilterOfOptionalInt", testFilterOfOptionalInt),
             ("testFilterOfOptionalString", testFilterOfOptionalString),
             ("testFilterCanThrowMustacheError", testFilterCanThrowMustacheError),
-            ("testFilterCanThrowCustomNSError", testFilterCanThrowCustomNSError),
             ("testFilterCanThrowCustomError", testFilterCanThrowCustomError),
-        ]
+        ] + (TestConfiguration.sharedInstance.nsErrorTestsEnabled ?
+            [("testFilterCanThrowCustomNSError", testFilterCanThrowCustomNSError)] : [(String, (FilterTests) -> () throws -> Void)]())
     }
-// END OF GENERATED CODE
-    
+
     enum CustomError : Error {
         case Error
     }
-    
+
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
@@ -69,12 +68,12 @@ class FilterTests: XCTestCase {
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<Name> <prefixName> <NAME> <prefixNAME> <PREFIXNAME>")
     }
-    
+
     func testScopedValueAreExtractedOutOfAFilterExpression() {
         let template = try! Template(string:"<{{f(object).name}}> {{#f(object)}}<{{name}}>{{/f(object)}}")
         var box: MustacheBox
         var rendering: String
-        
+
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
@@ -84,7 +83,7 @@ class FilterTests: XCTestCase {
             ])
         rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<objectName> <objectName>")
-        
+
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
@@ -94,7 +93,7 @@ class FilterTests: XCTestCase {
             ])
         rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<filterName> <filterName>")
-        
+
         box = Box([
             "object": Box(["name": "objectName"]),
             "name": Box("rootName"),
@@ -105,7 +104,7 @@ class FilterTests: XCTestCase {
         rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<> <rootName>")
     }
-    
+
     func testFilterArgumentsDoNotEnterSectionContextStack() {
         let box = Box([
             "test": Box("success"),
@@ -117,7 +116,7 @@ class FilterTests: XCTestCase {
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<success instead of failure>")
     }
-    
+
     func testFilterNameSpace() {
         let doubleFilter = Box(Filter { (x: Int?) -> MustacheBox in
             return Box((x ?? 0) * 2)
@@ -130,7 +129,7 @@ class FilterTests: XCTestCase {
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "2")
     }
-    
+
     func testFilterCanReturnFilter() {
         let filterValue = Box(Filter { (string1: String?) -> MustacheBox in
             return Box(Filter { (string2: String?) -> MustacheBox in
@@ -145,7 +144,7 @@ class FilterTests: XCTestCase {
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "prefixvalue")
     }
-    
+
     func testImplicitIteratorCanReturnFilter() {
         let box = Box(Filter { (_: MustacheBox) -> MustacheBox in
             return Box("filter")
@@ -154,7 +153,7 @@ class FilterTests: XCTestCase {
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "filter")
     }
-    
+
     func testMissingFilterError() {
         let box = Box([
             "name": Box("Name"),
@@ -162,7 +161,7 @@ class FilterTests: XCTestCase {
                 return Box("replace")
             })
         ])
-        
+
         var template = try! Template(string:"<{{missing(missing)}}>")
         do {
             let _ = try template.render(with: box)
@@ -172,7 +171,7 @@ class FilterTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         template = try! Template(string:"<{{missing(name)}}>")
         do {
             let _ = try template.render(with: box)
@@ -182,7 +181,7 @@ class FilterTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         template = try! Template(string:"<{{replace(missing(name))}}>")
         do {
             let _ = try template.render(with: box)
@@ -192,7 +191,7 @@ class FilterTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-        
+
         template = try! Template(string:"<{{missing(replace(name))}}>")
         do {
             let _ = try template.render(with: box)
@@ -203,13 +202,13 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testNotAFilterError() {
         let box = Box([
             "name": "Name",
             "filter": "filter"
             ])
-        
+
         let template = try! Template(string:"<{{filter(name)}}>")
         do {
             let _ = try template.render(with: box)
@@ -220,7 +219,7 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     // TODO: port this test to Objective-C GRMustache
     func testMissingFilterErrorDescriptionContainsLineNumber() {
         let template = try! Template(string: "\n{{f(x)}}")
@@ -235,12 +234,12 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     // TODO: port this test to Objective-C GRMustache
     func testMissingFilterErrorDescriptionContainsTemplatePath() {
         // TODO
     }
-    
+
     // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsLineNumber() {
         let template = try! Template(string: "\n{{f(x)}}")
@@ -255,12 +254,12 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     // TODO: port this test to Objective-C GRMustache
     func testNotAFilterErrorDescriptionContainsTemplatePath() {
         // TODO
     }
-    
+
     func testFilterOfOptionalInt() {
         let square = Filter { (x: Int?) in
             if let x = x {
@@ -271,22 +270,22 @@ class FilterTests: XCTestCase {
         }
         let template = try! Template(string: "{{square(x)}}")
         template.registerInBaseContext("square", Box(square))
-        
+
         var rendering: String
-        
+
         rendering = try! template.render(with: Box(["x": 10]))
         XCTAssertEqual(rendering, "100")
-        
+
         rendering = try! template.render(with: Box())
         XCTAssertEqual(rendering, "Nil")
-        
+
         rendering = try! template.render(with: Box(["x": NSNull()]))
         XCTAssertEqual(rendering, "Nil")
-        
+
         rendering = try! template.render(with: Box(["x": "foo"]))
         XCTAssertEqual(rendering, "Nil")
     }
-    
+
     func testFilterOfOptionalString() {
         let twice = Filter { (x: String?) in
             if let x = x {
@@ -297,35 +296,35 @@ class FilterTests: XCTestCase {
         }
         let template = try! Template(string: "{{twice(x)}}")
         template.registerInBaseContext("twice", Box(twice))
-        
+
         var rendering: String
-        
+
         rendering = try! template.render(with: Box(["x": "A"]))
         XCTAssertEqual(rendering, "AA")
-        
+
         rendering = try! template.render(with: Box(["x": "A" as NSString]))
         XCTAssertEqual(rendering, "AA")
-        
+
         rendering = try! template.render(with: Box())
         XCTAssertEqual(rendering, "Nil")
-        
+
         rendering = try! template.render(with: Box(["x": NSNull()]))
         XCTAssertEqual(rendering, "Nil")
-        
+
         rendering = try! template.render(with: Box(["x": 1]))
         XCTAssertEqual(rendering, "Nil")
     }
-    
+
     // TODO: import ValueTests.testCustomValueFilter(): testFilterOfOptionalXXX, testFilterOfXXX, etc. for all supported types
-    
+
     func testFilterCanThrowMustacheError() {
         let filter = Filter { (box: MustacheBox) in
             throw MustacheError(kind: .RenderError, message: "CustomMessage")
         }
-        
+
         let template = try! Template(string: "\n\n{{f(x)}}")
         template.registerInBaseContext("f", Box(filter))
-        
+
         do {
             let _ = try template.render()
             XCTFail("Expected MustacheError")
@@ -338,19 +337,15 @@ class FilterTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
-    
+
     func testFilterCanThrowCustomNSError() {
-        #if os(Linux) // the test causes segmentation fault on Linux due to the following issue https://bugs.swift.org/browse/SR-585
-              //TODO remove this ifdef once the issue is resolved
-            return
-        #else
         let filter = Filter { (box: MustacheBox) in
             throw NSError(domain: "CustomErrorDomain", code: 0, userInfo: [NSLocalizedDescriptionKey: "CustomMessage"])
         }
-        
+
         let template = try! Template(string: "\n\n{{f(x)}}")
         template.registerInBaseContext("f", Box(filter))
-        
+
         do {
             let _ = try template.render()
             XCTFail("Expected MustacheError")
@@ -364,17 +359,16 @@ class FilterTests: XCTestCase {
         } catch {
             XCTFail("Expected MustacheError")
         }
-       #endif
     }
-    
+
     func testFilterCanThrowCustomError() {
         let filter = Filter { (box: MustacheBox) in
             throw CustomError.Error
         }
-        
+
         let template = try! Template(string: "\n\n{{f(x)}}")
         template.registerInBaseContext("f", Box(filter))
-        
+
         do {
             let _ = try template.render()
             XCTFail("Expected MustacheError")
