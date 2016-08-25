@@ -62,24 +62,13 @@ class SuiteTestCase: XCTestCase {
 // END OF GENERATED CODE
 
     func runTests(fromResource name: String, directory: String) {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // https://bugs.swift.org/browse/SR-953
-        let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-        let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
 
-        #if os(Linux) // issue https://bugs.swift.org/browse/SR-794
-            //TODO remove this ifdef once the issue is resolved
-            let path = ".build/debug/Package.xctest/Contents/Resources/" + directory + "/" + name
-        #else
-             guard let path = testBundle.path(forResource: name, ofType: nil, inDirectory: directory) else {
-                print("bundle resource path is \(testBundle.resourcePath)")
-                XCTFail("No such test suite \(directory)/\(name)")
-                return
-            }
-        #endif
+        guard let path = testBundle.path(forResource: name, ofType: nil, inDirectory: directory) else {
+            print("bundle resource path is \(testBundle.resourcePath)")
+            XCTFail("No such test suite \(directory)/\(name)")
+            return
+        }
 
         do {
             let data = try Data(contentsOf: URL(fileURLWithPath: path))
