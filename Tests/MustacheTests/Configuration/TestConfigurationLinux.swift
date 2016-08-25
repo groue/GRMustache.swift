@@ -18,13 +18,11 @@ class TestConfigurationLinux: TestConfigurationProtocol {
     var nsErrorTestsEnabled: Bool {
         // Error tests cause segmentation faults due to the following issue https://bugs.swift.org/browse/SR-585
         //TODO: return true once the issue is resolved
-        print("Warning: Error tests are disabled due to issue https://bugs.swift.org/browse/SR-585")
         return false
     }
     var localizerTestsEnabled: Bool {
         // Localizer tests are disabled due to issue https://bugs.swift.org/browse/SR-957
         //TODO: return true once the issue is resolved
-        print("Warning: Localizer tests are disabled due to issue https://bugs.swift.org/browse/SR-957")
         return false
     }
 }
