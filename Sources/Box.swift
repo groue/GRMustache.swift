@@ -528,7 +528,7 @@ extension NSObject: MustacheBoxable {
     }
 
     private func handleEnumeration(_ object: NSObject?) -> MustacheBox {
-    #if os(Linux)
+   #if os(Linux) //TODO: remove the Linux case once NSFastEnumerationIterator becomes available
         var selfArray = [Any]()
         if let nsArray = object as? NSArray {
             selfArray = nsArray._bridgeToSwift()
@@ -1258,7 +1258,7 @@ GRMustache provides built-in support for rendering `NSSet`.
         //
         // So turn NSSet into a Swift Array of MustacheBoxes, and ask the array
         // to return a set-like box:
-        #if os(Linux) //TODO - remove the Linux case once NSFastEnumerationIterator becomes available
+        #if os(Linux) //TODO: remove the Linux case once NSFastEnumerationIterator becomes available
             let array = value.allObjects.map(BoxAny)
         #else
             let array = IteratorSequence(NSFastEnumerationIterator(value)).map(BoxAny)
@@ -1641,7 +1641,8 @@ GRMustache provides built-in support for rendering `NSDictionary`.
         guard let value = value else {
             return Box()
         }
-        #if os(Linux)
+
+        #if os(Linux) //TODO: remove the Linux case once NSFastEnumerationIterator becomes available
             var dictionary = [String: MustacheBox]()
             let _ = value.allKeys.map { key in
              if let stringKey = (key as? NSString)?._bridgeToSwift() {
