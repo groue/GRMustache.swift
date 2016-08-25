@@ -28,17 +28,6 @@ import SwiftyJSON
 
 class TemplateFromMethodsTests: XCTestCase {
 
-    #if os(Linux) // do not run tests due to the following issue https://bugs.swift.org/browse/SR-585
-        //TODO remove this ifdef once the issue is resolved
-        static var allTests : [(String, (TemplateFromMethodsTests) -> () throws -> Void)] {
-         return [
-             ("testTemplateFromString", testTemplateFromString),
-             ("testTemplateFromPath", testTemplateFromPath),
-             ("testTemplateFromURL", testTemplateFromURL),
-             ("testTemplateFromResource", testTemplateFromResource),
-         ]
-       }
-        #else
 // GENERATED: allTests required for Swift 3.0
     static var allTests : [(String, (TemplateFromMethodsTests) -> () throws -> Void)] {
         return [
@@ -57,7 +46,7 @@ class TemplateFromMethodsTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    #endif
+
     func makeKeyedSubscriptFunction(_ string: String) -> KeyedSubscriptFunction {
         return { (key: String) -> MustacheBox in
             if key == "string" {
