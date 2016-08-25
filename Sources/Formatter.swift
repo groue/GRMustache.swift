@@ -31,16 +31,16 @@ GRMustache lets you use `Formatter` to format your values.
     /**
     `Formatter` adopts the `MustacheBoxable` protocol so that it can feed
     Mustache templates.
-    
+
     You should not directly call the `mustacheBox` property. Always use the
     `Box()` function instead:
-    
+
         formatter.mustacheBox   // Valid, but discouraged
         Box(formatter)          // Preferred
-    
-    
+
+
     `Formatter` can be used as a filter:
-    
+
         let percentFormatter = NSNumberFormatter()
         percentFormatter.numberStyle = .PercentStyle
 
@@ -49,10 +49,10 @@ GRMustache lets you use `Formatter` to format your values.
 
         // Renders "50%"
         try! template.render(Box(["x": 0.5]))
-    
-    
+
+
     `Formatter` can also format all variable tags in a Mustache section:
-    
+
         template = try! Template(string:
             "{{# percent }}" +
               "{{#ingredients}}" +
@@ -70,15 +70,15 @@ GRMustache lets you use `Formatter` to format your values.
                 ["name": "ham", "proportion": 0.35],
                 ["name": "butter", "proportion": 0.15]]]
         try! template.render(Box(data))
-    
+
     As seen in the example above, variable tags buried inside inner sections are
     escaped as well, so that you can render loop and conditional sections.
     However, values that can't be formatted are left untouched.
-    
+
     Precisely speaking, "values that can't be formatted" are the ones for which
     the `-[Formatter stringForObjectValue:]` method return nil, as stated by
     Formatter documentation https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/Formatter_Class/index.html#//apple_ref/occ/instm/Formatter/stringForObjectValue:
-    
+
     Typically, `NSNumberFormatter` only formats numbers, and `NSDateFormatter`,
     dates: you can safely mix various data types in a section controlled by
     those well-behaved formatters.
@@ -91,11 +91,11 @@ GRMustache lets you use `Formatter` to format your values.
 
         // Return a multi-facetted box, because Formatter interacts in
         // various ways with Mustache rendering.
-        
+
         return MustacheBox(
             // Let user extract the formatter out of the box:
             value: formatter,
-            
+
             // This function is used for evaluating `formatter(x)` expressions.
             filter: Filter { (box: MustacheBox) in
                 // Formatter documentation for stringForObjectValue: states:
@@ -104,14 +104,14 @@ GRMustache lets you use `Formatter` to format your values.
                 // > correct class. If it isn’t, return nil; but if it is of the
                 // > right class, return a properly formatted and, if necessary,
                 // > localized string.
-                if let object = box.value as? NSObject {
+                if let object = box.value {
                     return Box(formatter.string(for: object))
                 } else {
                     // Not the correct class: return nil, i.e. empty Box.
                     return Box()
                 }
             },
-            
+
             // This function lets formatter change values that are about to be
             // rendered to their formatted counterpart.
             //
@@ -131,19 +131,19 @@ GRMustache lets you use `Formatter` to format your values.
                     //
                     // So nil result means that object is not of the correct class. Leave
                     // it untouched.
-                    
+
                     if let object = box.value as? NSObject, let formatted = formatter.string(for: object) {
                         return Box(formatted)
                     } else {
                         return box
                     }
-                    
+
                 case .Section:
                     // {{# value }}...{{/ value }}
                     // {{^ value }}...{{/ value }}
                     // Leave sections untouched, so that loops and conditions are not
                     // affected by the formatter.
-                    
+
                     return box
                 }
         })
