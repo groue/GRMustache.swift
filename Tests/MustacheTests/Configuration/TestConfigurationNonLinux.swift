@@ -19,4 +19,5 @@ class TestConfigurationNonLinux: TestConfigurationProtocol {
     let localizerTestsEnabled = true
     let caretNewLineTestsEnabled = true
     let boxedNSSetTestsEnabled = true
+    let numberFormatterTestsEnabled = true
 }

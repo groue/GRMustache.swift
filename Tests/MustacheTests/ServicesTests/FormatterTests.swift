@@ -31,13 +31,9 @@ class FormatterTests: XCTestCase {
 // GENERATED: allTests required for Swift 3.0
 
     static var allTests : [(String, (FormatterTests) -> () throws -> Void)] {
-        return [
-            ("testFormatterIsAFilterForProcessableValues", testFormatterIsAFilterForProcessableValues),
+        var tests: [(String, (FormatterTests) -> () throws -> Void)] = [
             ("testFormatterIsAFilterForUnprocessableValues", testFormatterIsAFilterForUnprocessableValues),
-            ("testFormatterSectionFormatsInnerVariableTags", testFormatterSectionFormatsInnerVariableTags),
             ("testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags", testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags),
-            ("testFormatterAsSectionFormatsDeepInnerVariableTags", testFormatterAsSectionFormatsDeepInnerVariableTags),
-            ("testFormatterAsSectionDoesNotFormatInnerSectionTags", testFormatterAsSectionDoesNotFormatInnerSectionTags),
             ("testFormatterIsTruthy", testFormatterIsTruthy),
             ("testFormatterRendersSelfAsSomething", testFormatterRendersSelfAsSomething),
             ("testNumberFormatterRendersNothingForMissingValue", testNumberFormatterRendersNothingForMissingValue),
@@ -49,6 +45,13 @@ class FormatterTests: XCTestCase {
             ("testDateFormatterRendersNothingForNSString", testDateFormatterRendersNothingForNSString),
             ("testDateFormatterRendersNothingForNSNumber", testDateFormatterRendersNothingForNSNumber),
         ]
+        if TestConfiguration.sharedInstance.numberFormatterTestsEnabled {
+            tests.append(("testFormatterAsSectionFormatsDeepInnerVariableTags", testFormatterAsSectionFormatsDeepInnerVariableTags))
+            tests.append(("testFormatterAsSectionDoesNotFormatInnerSectionTags", testFormatterAsSectionDoesNotFormatInnerSectionTags))
+            tests.append(("testFormatterIsAFilterForProcessableValues", testFormatterIsAFilterForProcessableValues))
+            tests.append(("testFormatterSectionFormatsInnerVariableTags", testFormatterSectionFormatsInnerVariableTags))
+        }
+        return tests
     }
 
 // END OF GENERATED CODE

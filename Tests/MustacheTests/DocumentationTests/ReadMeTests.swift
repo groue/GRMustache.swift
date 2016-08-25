@@ -30,14 +30,18 @@ class ReadMeTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
     static var allTests : [(String, (ReadMeTests) -> () throws -> Void)] {
-        return [
+        var tests: [(String, (ReadMeTests) -> () throws -> Void)] = [
             ("testReadmeExample1", testReadmeExample1),
             ("testReadmeExample2", testReadmeExample2),
             ("testReadmeExample3", testReadmeExample3),
-            ("testReadMeExampleFormatter1", testReadMeExampleFormatter1),
-            ("testReadMeExampleFormatter2", testReadMeExampleFormatter2),
             ("testDemo", testDemo),
         ]
+
+        if TestConfiguration.sharedInstance.numberFormatterTestsEnabled {
+            tests.append(("testReadMeExampleFormatter1", testReadMeExampleFormatter1))
+            tests.append(("testReadMeExampleFormatter2", testReadMeExampleFormatter2))
+        }
+        return tests
     }
 // END OF GENERATED CODE
 
