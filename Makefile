@@ -21,7 +21,7 @@ SWIFTC_FLAGS =
 LINKER_FLAGS =
 
 ifeq ($(UNAME), Linux)
-RESOURCE_DIR = ".build/debug/Package.xctest/Contents/Resources"
+RESOURCE_DIR = ".build/debug/Resources"
 else
 RESOURCE_DIR = ".build/debug/MustachePackageTests.xctest/Contents/Resources"
 endif

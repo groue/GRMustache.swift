@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class TemplateRepositoryBundleTests: XCTestCase {
 
@@ -40,13 +41,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         var template: Template
         var rendering: String
 
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let repo = TemplateRepository(bundle: Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!)
-        #else
-            let repo = TemplateRepository(bundle: Bundle(for: type(of: self)))
-        #endif
+        let repo = TemplateRepository(bundle: FoundationAdapter.getBundle(for: type(of: self)))
 
         do {
             let _ = try repo.template(named: "notFound")
@@ -71,13 +66,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         var template: Template
         var rendering: String
 
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         var repo = TemplateRepository(bundle: testBundle, templateExtension: "text", encoding: String.Encoding.utf8)
 
         do {

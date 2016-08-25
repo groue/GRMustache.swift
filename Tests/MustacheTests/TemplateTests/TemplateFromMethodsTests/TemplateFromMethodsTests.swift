@@ -25,6 +25,7 @@ import XCTest
 import Mustache
 import Foundation
 import SwiftyJSON
+import Bridging
 
 class TemplateFromMethodsTests: XCTestCase {
 
@@ -58,13 +59,7 @@ class TemplateFromMethodsTests: XCTestCase {
     }
 
     var testBundle: Bundle {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-        //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            return Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-        return Bundle(for: type(of: self))
-        #endif
+        return FoundationAdapter.getBundle(for: type(of: self))
     }
 
     let templateName = "TemplateFromMethodsTests"

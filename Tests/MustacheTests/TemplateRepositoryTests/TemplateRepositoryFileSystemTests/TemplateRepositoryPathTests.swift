@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class TemplateRepositoryPathTests: XCTestCase {
 
@@ -39,13 +40,7 @@ class TemplateRepositoryPathTests: XCTestCase {
 // END OF GENERATED CODE
 
     func testTemplateRepositoryWithURL() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-        let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-        let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         var template: Template
@@ -75,14 +70,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
 
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // https://bugs.swift.org/browse/SR-794
-        let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-        let testBundle = Bundle(for: type(of: self))
-        #endif
-
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         var directoryPath: String
         var repo: TemplateRepository
         var template: Template
@@ -126,13 +114,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
 
     func testAbsolutePartialName() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         let template = try! repo.template(named: "base")
@@ -141,14 +123,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
 
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
-
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let directoryURL = URL(string: directoryPath)?.appendingPathComponent("partials")
         let repo = TemplateRepository(directoryPath: directoryURL?.path ?? ".")

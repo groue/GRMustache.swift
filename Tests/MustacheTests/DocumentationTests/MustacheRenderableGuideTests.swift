@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class MustacheRenderableGuideTests: XCTestCase {
 
@@ -37,7 +38,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         ]
     }
 // END OF GENERATED CODE
-    
+
     func testExample1() {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
@@ -47,36 +48,36 @@ class MustacheRenderableGuideTests: XCTestCase {
                 return Rendering("I'm rendering a {{# section }}...{{/ }} tag.")
             }
         }
-        
+
         var rendering = try! Template(string: "{{.}}").render(with: Box(render))
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
-        
+
         rendering = try! Template(string: "{{#.}}{{/}}").render(with: Box(render))
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
-    
+
     func textExample2() {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("Arthur & Cie")
         }
-        
+
         let rendering = try! Template(string: "{{.}}|{{{.}}}").render(with: Box(render))
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
-    
+
     func textExample3() {
         let render = { (info: RenderingInfo) -> Rendering in
             let rendering = try! info.tag.render(with: info.context)
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
-        
+
         let box = Box([
             "strong": Box(render),
             "name": Box("Arthur")])
         let rendering = try! Template(string: "{{#strong}}{{name}}{{/strong}}").render(with: box)
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
-    
+
     func textExample4() {
         let render = { (info: RenderingInfo) -> Rendering in
             let rendering = try! info.tag.render(with: info.context)
@@ -99,7 +100,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         let rendering = try! Template(string: "{{# link }}{{ name }}{{/ link }}").render(with: box)
         XCTAssertEqual(rendering, "<a href=\"/people/123\">Arthur</a>")
     }
-    
+
     func testExample6() {
         let repository = TemplateRepository(templates: [
             "movieLink": "<a href=\"{{url}}\">{{title}}</a>",
@@ -118,7 +119,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         let rendering = try! Template(string: "{{#items}}{{link}}{{/items}}").render(with: box)
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
     }
-    
+
     func testExample7() {
         struct Person : MustacheBoxable {
             let firstName: String
@@ -135,13 +136,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-                        //TODO remove this ifdef once Bundle(for:) is implemented
-                        // issue https://bugs.swift.org/browse/SR-953
-                    let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-                    #else
-                    let testBundle = Bundle(for: MustacheRenderableGuideTests.self)
-                    #endif
+                    let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
                     let template = try! Template(named: "Person", bundle: testBundle)
                     let context = info.context.extendedContext(by: Box(self))
                     return try template.render(with: context)
@@ -152,7 +147,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     render: render)
             }
         }
-        
+
         struct Movie : MustacheBoxable {
             let title: String
             let director: Person
@@ -168,13 +163,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-                        //TODO remove this ifdef once Bundle(for:) is implemented
-                        // issue https://bugs.swift.org/browse/SR-953
-                    let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-                    #else
-                    let testBundle = Bundle(for: MustacheRenderableGuideTests.self)
-                    #endif
+                    let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
                     let template = try! Template(named: "Movie", bundle: testBundle)
                     let context = info.context.extendedContext(by: Box(self))
                     return try template.render(with: context)
@@ -185,21 +174,21 @@ class MustacheRenderableGuideTests: XCTestCase {
                     render: render)
             }
         }
-        
+
         let director = Person(firstName: "Orson", lastName: "Welles")
         let movie = Movie(title:"Citizen Kane", director: director)
-        
+
         let template = try! Template(string: "{{ movie }}")
         let rendering = try! template.render(with: Box(["movie": Box(movie)]))
         XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
-    
+
     func testExample8() {
         let listFilter = { (box: MustacheBox, info: RenderingInfo) -> Rendering in
             guard let items = box.arrayValue else {
                 return Rendering("")
             }
-            
+
             var buffer = "<ul>"
             for item in items {
                 let itemContext = info.context.extendedContext(by: item)
@@ -209,10 +198,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             buffer += "</ul>"
             return Rendering(buffer, .HTML)
         }
-        
+
         let template = try! Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(["list": Box(Filter(listFilter))]))
-        
+
         let item1 = Box([
             "url": "http://mustache.github.io",
             "title": "Mustache"])
@@ -220,7 +209,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             "url": "http://github.com/groue/GRMustache.swift",
             "title": "GRMustache.swift"])
         let box = Box(["nav": Box([item1, item2])])
-        
+
         let rendering = try! template.render(with: box)
         XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")
     }

@@ -46,14 +46,7 @@ class ReadMeTests: XCTestCase {
     }
 
     func testReadmeExample1() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-             // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
-
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
         let data: [String: Any] = [
             "name": "Chris",
@@ -88,13 +81,7 @@ class ReadMeTests: XCTestCase {
 
 
         // I have 3 cats.
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-             // issue https://bugs.swift.org/browse/SR-953
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = try! template.render(with: Box(data))

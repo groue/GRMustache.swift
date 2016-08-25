@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class TemplateRepositoryURLTests: XCTestCase {
 
@@ -39,13 +40,7 @@ class TemplateRepositoryURLTests: XCTestCase {
 // END OF GENERATED CODE
 
     func testTemplateRepositoryWithURL() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-             let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests_UTF8", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         var template: Template
@@ -75,13 +70,7 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
 
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-             let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
         var URL: URL
         var repo: TemplateRepository
         var template: Template
@@ -125,14 +114,7 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
 
     func testAbsolutePartialName() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let testBundle = Bundle(for: type(of: self))
-        #endif
-
+        let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
         let repo = TemplateRepository(baseURL: URL)
         let template = try! repo.template(named: "base")
@@ -141,13 +123,7 @@ class TemplateRepositoryURLTests: XCTestCase {
     }
 
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
-        #if os(Linux) // Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-794
-            let testBundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-             let testBundle = Bundle(for: type(of: self))
-        #endif
+        let testBundle = FoundationAdapter.getBundle(for: MustacheRenderableGuideTests.self)
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
         let baseURL = URL.appendingPathComponent("partials")
         let repo = TemplateRepository(baseURL: baseURL)

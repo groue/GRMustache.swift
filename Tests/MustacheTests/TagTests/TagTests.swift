@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class TagTests: XCTestCase {
 
@@ -48,21 +49,21 @@ class TagTests: XCTestCase {
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         var range = tagDescription?.range(of: "{{name}}")
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(string: "{{#name}}{{/name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         range = tagDescription?.range(of: "{{#name}}")
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(string: "{{  name\t}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -77,21 +78,21 @@ class TagTests: XCTestCase {
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         var range = tagDescription?.range(of: "line 1")
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(string: "\n {{\nname}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         range = tagDescription?.range(of: "line 2")
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(string: "\n\n  {{#\nname}}\n\n{{/name}}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -99,24 +100,17 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: "line 3")
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsResourceBasedTemplatePath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
 
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let bundle = Bundle(for: type(of: self))
-        #endif
-
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -131,22 +125,16 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsURLBasedTemplatePath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let bundle = Bundle(for: type(of: self))
-        #endif
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
 
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests")
@@ -162,31 +150,24 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsPathBasedTemplatePath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
 
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let bundle = Bundle(for: type(of: self))
-        #endif
-
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(path: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -194,24 +175,17 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsResourceBasedPartialPath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
 
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let bundle = Bundle(for: type(of: self))
-        #endif
-
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -233,38 +207,31 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsURLBasedPartialPath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
 
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-            let bundle = Bundle(for: type(of: self))
-        #endif
-
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(URL: bundle.url(forResource: "TagTests_wrapper", withExtension: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
@@ -272,36 +239,31 @@ class TagTests: XCTestCase {
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
-    
+
     func testTagDescriptionContainsPathBasedPartialPath() {
         var tagDescription: String? = nil
         let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
             tagDescription = tag.description
             return box
         }
-        
+
         tagDescription = nil
-        #if os(Linux)// Bundle(for:) is not yet implemented on Linux
-            //TODO remove this ifdef once Bundle(for:) is implemented
-            // issue https://bugs.swift.org/browse/SR-953
-            let bundle = Bundle(path: ".build/debug/Package.xctest/Contents/Resources")!
-        #else
-             let bundle = Bundle(for: type(of: self))
-        #endif
+        let bundle = FoundationAdapter.getBundle(for: type(of: self))
+
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
         let _ = try! template.render()
         range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
-        
+
         tagDescription = nil
         template = try! Template(path: bundle.path(forResource: "TagTests_wrapper", ofType: "mustache")!)
         template.baseContext = template.baseContext.extendedContext(by: Box(willRender))
