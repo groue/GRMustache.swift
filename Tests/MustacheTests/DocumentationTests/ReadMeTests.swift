@@ -117,7 +117,7 @@ class ReadMeTests: XCTestCase {
     func testReadMeExampleFormatter1() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
 
         let template = try! Template(string: "{{ percent(x) }}")
         template.registerInBaseContext("percent", Box(percentFormatter))
@@ -130,7 +130,7 @@ class ReadMeTests: XCTestCase {
     func testReadMeExampleFormatter2() {
         let percentFormatter = NumberFormatter()
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
 
         let template = try! Template(string: "{{# percent }}{{ x }}{{/ }}")
         template.registerInBaseContext("percent", Box(percentFormatter))

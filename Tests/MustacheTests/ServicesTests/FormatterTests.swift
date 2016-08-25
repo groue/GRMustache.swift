@@ -55,7 +55,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterIsAFilterForProcessableValues() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         // test that number is processable
@@ -70,7 +70,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterIsAFilterForUnprocessableValues() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         // test that number is processable
@@ -85,7 +85,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterSectionFormatsInnerVariableTags() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let template = try! Template(string: "{{# percent }}{{ number }} {{ number }}{{/ percent }}")
@@ -96,7 +96,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterSectionDoesNotFormatUnprocessableInnerVariableTags() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let template = try! Template(string: "{{# percent }}{{ value }}{{/ percent }}")
@@ -107,7 +107,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterAsSectionFormatsDeepInnerVariableTags() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let template = try! Template(string: "{{# percent }}{{# number }}Number is {{ number }}.{{/ number }}{{/ percent }}")
@@ -118,7 +118,7 @@ class FormatterTests: XCTestCase {
 
     func testFormatterAsSectionDoesNotFormatInnerSectionTags() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let template = try! Template(string: "NO is {{ NO }}. {{^ NO }}NO is false.{{/ NO }} percent(NO) is {{ percent(NO) }}. {{# percent(NO) }}percent(NO) is true.{{/ percent(NO) }} {{# percent }}{{^ NO }}NO is now {{ NO }} and is still false.{{/ NO }}{{/ percent }}")
@@ -148,7 +148,7 @@ class FormatterTests: XCTestCase {
         // does not format nil.
 
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let box = Box(["format": Box(percentFormatter)])
@@ -164,7 +164,7 @@ class FormatterTests: XCTestCase {
 
     func testNumberFormatterRendersNothingForNSNull() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let box = Box(["format": Box(percentFormatter), "value": Box(NSNull())])
@@ -180,7 +180,7 @@ class FormatterTests: XCTestCase {
 
     func testNumberFormatterRendersNothingForNSString() {
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         var box = Box(["format": Box(percentFormatter), "value": Box("1")])
@@ -219,7 +219,7 @@ class FormatterTests: XCTestCase {
         // does not format NSDate.
 
         let percentFormatter = NumberFormatter()
-        percentFormatter.numberStyle = FoundationAdapter.getNumberFormatterPercentStyle()
+        percentFormatter.numberStyle = .percent
         percentFormatter.locale = Locale(identifier: "en_US_POSIX")
 
         let box = Box(["format": Box(percentFormatter), "value": Box(NSDate())])
