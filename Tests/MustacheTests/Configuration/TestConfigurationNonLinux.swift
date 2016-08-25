@@ -17,4 +17,5 @@
 class TestConfigurationNonLinux: TestConfigurationProtocol {
     let nsErrorTestsEnabled = true
     let localizerTestsEnabled = true
+    let caretNewLineTestsEnabled = true
 }

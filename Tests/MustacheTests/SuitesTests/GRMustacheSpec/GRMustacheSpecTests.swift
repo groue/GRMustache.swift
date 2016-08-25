@@ -27,9 +27,12 @@ import Mustache
 class GRMustacheSpecTests: SuiteTestCase {
 
     static var allTests : [(String, (GRMustacheSpecTests) -> () throws -> Void)] {
-        return [
-            ("testSuite", testSuite),
-        ]
+        if TestConfiguration.sharedInstance.caretNewLineTestsEnabled {
+            return [
+                ("testSuite", testSuite),
+            ]
+        }
+        return []
     }
 
     func testSuite() {
