@@ -20,4 +20,5 @@ protocol TestConfigurationProtocol {
     var nsErrorTestsEnabled: Bool { get }
     var localizerTestsEnabled: Bool { get }
     var caretNewLineTestsEnabled: Bool { get }
+    var boxedNSSetTestsEnabled: Bool { get }
 }
