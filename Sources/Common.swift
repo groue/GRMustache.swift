@@ -55,42 +55,42 @@ public enum ContentType {
 // MARK: - Errors
 
 /// The errors thrown by Mustache.swift
-public struct MustacheError: ErrorProtocol {
-    
+public struct MustacheError: Error {
+
     /// MustacheError types
     public enum Kind : Int {
         case TemplateNotFound
         case ParseError
         case RenderError
     }
-    
+
     /// The error type
     public let kind: Kind
-    
+
     /// Eventual error message
     public let message: String?
-    
+
     /// TemplateID of the eventual template at the origin of the error
     public let templateID: String?
-    
+
     /// Eventual line number where the error occurred.
     public let lineNumber: Int?
-    
+
     /// Eventual underlying error
-    public let underlyingError: ErrorProtocol?
-    
-    
+    public let underlyingError: Error?
+
+
     // Not public
-    
-    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) {
+
+    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) {
         self.kind = kind
         self.message = message
         self.templateID = templateID
         self.lineNumber = lineNumber
         self.underlyingError = underlyingError
     }
-    
-    func errorWith(message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorProtocol? = nil) -> MustacheError {
+
+    func errorWith(message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) -> MustacheError {
         return MustacheError(
             kind: self.kind,
             message: message ?? self.message,
@@ -101,7 +101,7 @@ public struct MustacheError: ErrorProtocol {
 }
 
 extension MustacheError : CustomStringConvertible {
-    
+
     var locationDescription: String? {
         if let templateID = templateID {
             if let lineNumber = lineNumber {
@@ -117,7 +117,7 @@ extension MustacheError : CustomStringConvertible {
             }
         }
     }
-    
+
     /// A textual representation of `self`.
     public var description: String {
         var description: String
@@ -137,7 +137,7 @@ extension MustacheError : CustomStringConvertible {
                 description = "Rendering error"
             }
         }
-        
+
         if let message = message {
             if description.characters.count > 0 {
                 description += ": \(message)"
@@ -145,11 +145,11 @@ extension MustacheError : CustomStringConvertible {
                 description = message
             }
         }
-        
+
         if let underlyingError = underlyingError {
             description += " (\(underlyingError))"
         }
-        
+
         return description
     }
 }

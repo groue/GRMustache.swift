@@ -18,8 +18,13 @@ UNAME = ${shell uname}
 
 CC_FLAGS =
 SWIFTC_FLAGS =
-LINKER_FLAGS = 
-RESOURCE_DIR = ".build/debug/Mustache.xctest/Contents/Resources"
+LINKER_FLAGS =
+
+ifeq ($(UNAME), Linux)
+RESOURCE_DIR = ".build/debug/Resources"
+else
+RESOURCE_DIR = ".build/debug/MustachePackageTests.xctest/Contents/Resources"
+endif
 
 all: build
 
@@ -32,7 +37,7 @@ ifeq ($(UNAME), Linux)
 	@echo --- Checking Linux release
 	-lsb_release -d
 	@echo --- Fetching dependencies
-	swift build --fetch
+	swift package fetch
 endif
 	@echo --- Invoking swift build
 	swift build $(CC_FLAGS) $(SWIFTC_FLAGS) $(LINKER_FLAGS)
@@ -51,7 +56,11 @@ refetch:
 	@echo --- Removing Packages directory
 	rm -rf Packages
 	@echo --- Fetching dependencies
-	swift build --fetch
+	swift package fetch
+
+update:
+	@echo --- Updating dependencies
+	swift package update
 
 clean:
 	@echo --- Invoking swift build --clean
@@ -66,16 +75,16 @@ Tests/vendor/groue/GRMustacheSpec/Tests:
 copytestresources: Tests/vendor/groue/GRMustacheSpec/Tests
 	@echo --- Copying test files
 	mkdir -p ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*.mustache ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*/*.mustache ${RESOURCE_DIR}
-	cp Tests/Mustache/*/*/*.text ${RESOURCE_DIR}
-	cp -r Tests/Mustache/SuitesTests/twitter/hogan.js/HoganSuite ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources ${RESOURCE_DIR}
-	cp -r Tests/Mustache/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
-	cp -r Tests/Mustache/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*/*.mustache ${RESOURCE_DIR}
+	cp Tests/MustacheTests/*/*/*.text ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/SuitesTests/twitter/hogan.js/HoganSuite ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTests_partial ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryBundleTests/TemplateRepositoryBundleTestsResources ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/ServicesTests/LocalizerTestsBundle ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests ${RESOURCE_DIR}
+	cp -r Tests/MustacheTests/TemplateRepositoryTests/TemplateRepositoryFileSystemTests/TemplateRepositoryFileSystemTests_* ${RESOURCE_DIR}
 	cp -r Tests/vendor/groue/GRMustacheSpec/Tests ${RESOURCE_DIR}
 
-.PHONY: clean build refetch run test 
+.PHONY: clean build refetch run test

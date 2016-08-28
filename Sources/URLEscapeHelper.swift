@@ -55,7 +55,7 @@ final class URLEscapeHelper : MustacheBoxable {
             // We don't know if the box contains a String, so let's escape its
             // rendering.
             return Box({ (info: RenderingInfo) -> Rendering in
-                let rendering = try box.render(info: info)
+                let rendering = try box.render(info)
                 return try self.filter(rendering: rendering)
 
             })
@@ -65,8 +65,8 @@ final class URLEscapeHelper : MustacheBoxable {
     }
     
     private class func escapeURL(string: String) -> String {
-        let s = NSCharacterSet.urlQueryAllowed().mutableCopy() as! NSMutableCharacterSet
-        s.removeCharacters(in: "?&=")
+        var s = CharacterSet.urlQueryAllowed
+        s.remove(charactersIn: "?&=")
         return string.addingPercentEncoding(withAllowedCharacters: s) ?? ""
     }
 }
