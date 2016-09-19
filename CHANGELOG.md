@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+## v1.1.0
+
+Released on September 19, 2016
+
+**New**
+
+- Swift 2.3
+
+
 ## v1.0.1
 
 Released on April 24, 2016

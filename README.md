@@ -3,7 +3,7 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-2.3-orange.svg?sty
 
 ### Mustache templates for Swift
 
-**Latest release**: April 24, 2016 &bull; version 1.0.1 &bull; [CHANGELOG](CHANGELOG.md)
+**Latest release**: September 19, 2016 &bull; version 1.1.0 &bull; [CHANGELOG](CHANGELOG.md)
 
 **Requirements**: iOS 8.0+ / OSX 10.9+ / tvOS 9.0+ &bull; Xcode 8+ &bull; Swift 2.3
 
@@ -82,11 +82,6 @@ let rendering = try template.render(Box(data))
 Installation
 ------------
 
-### iOS7
-
-To use GRMustache.swift in a project targetting iOS7, you must include the source files directly in your project. Check the Docs/DemoApps/MustacheDemoiOS7 application for an example of integration.
-
-
 ### CocoaPods
 
 [CocoaPods](http://cocoapods.org/) is a dependency manager for Xcode projects.
@@ -97,7 +92,7 @@ To use GRMustache.swift with CocoaPods, specify in your Podfile:
 source 'https://github.com/CocoaPods/Specs.git'
 use_frameworks!
 
-pod 'GRMustache.swift', '~> 1.0'
+pod 'GRMustache.swift', '~> 1.1.0'
 ```
 
 
@@ -108,7 +103,7 @@ pod 'GRMustache.swift', '~> 1.0'
 To use GRMustache.swift with Carthage, specify in your Cartfile:
 
 ```
-github "groue/GRMustache.swift" ~> 1.0
+github "groue/GRMustache.swift" ~> 1.1.0
 ```
 
 
@@ -125,7 +120,7 @@ let package = Package(
     name: "MyPackage",
     targets: [],
     dependencies: [
-        .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 1, minor: 0),
+        .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 1, minor: 1),
     ]
 )
 ```
@@ -135,7 +130,12 @@ Check [groue/GRMustacheSPM](https://github.com/groue/GRMustacheSPM) for a sample
 
 ### Manually
 
-Download a copy of GRMustache.swift, embed the `Xcode/Mustache.xcodeproj` project in your own project, and add the `MustacheOSX` or `MustacheiOS` target as a dependency of your own target.
+1. Download a copy of GRMustache.swift.
+2. Embed the `Mustache.xcodeproj` project in your own project.
+3. Add the `MustacheOSX`, `MustacheiOS`, or `MustacheWatchOS` target in the **Target Dependencies** section of the **Build Phases** tab of your application target.
+4. Add the the `Mustache.framework` from the targetted platform to the **Embedded Binaries** section of the **General**  tab of your target.
+
+See [MustacheDemoiOS](Docs/DemoApps/MustacheDemoiOS) for an example of such integration.
 
 
 Documentation
@@ -146,7 +146,7 @@ To fiddle with the library, open the `Xcode/Mustache.xcworkspace` workspace: it 
 External links:
 
 - [The Mustache Language](http://mustache.github.io/mustache.5.html): the Mustache language itself. You should start here.
-- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html) on cocoadocs.org
+- [GRMustache.swift Reference](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/Template.html) on cocoadocs.org
 
 Rendering templates:
 
@@ -213,8 +213,8 @@ Templates may come from various sources:
 
 For more information, check:
 
-- [Template.swift](Sources/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html))
-- [TemplateRepository.swift](Sources/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/TemplateRepository.html))
+- [Template.swift](Sources/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/Template.html))
+- [TemplateRepository.swift](Sources/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/TemplateRepository.html))
 
 
 Errors
@@ -532,7 +532,7 @@ Generally speaking, partial names are always interpreted by a **Template Reposit
 - `Template(string:...)` uses a template repository that can’t load any partial.
 - `templateRepository.template(named:...)` uses the partial loading mechanism of the template repository.
 
-Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/TemplateRepository.html)).
+Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/TemplateRepository.html)).
 
 
 #### Dynamic partials
@@ -667,7 +667,7 @@ ERB-styled tags: <% name %>
 Default tags again: {{ name }}
 ```
 
-There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Structs/Configuration.html)).
+There are also APIs for setting those delimiters. Check `Configuration.tagDelimiterPair` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Structs/Configuration.html)).
 
 
 ### Comment Tags
@@ -688,7 +688,7 @@ GRMustache.swift interprets two pragma tags that set the content type of the tem
 
 In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
-For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Structs/Configuration.html)).
+For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Structs/Configuration.html)).
 
 
 The Context Stack and Expressions
@@ -748,7 +748,7 @@ template.render(Box(data))
 
 The base context is usually a good place to register [filters](#filters).
 
-See [Template.swift](Sources/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Classes/Template.html)).
+See [Template.swift](Sources/Template.swift) for more information on the base context ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/Template.html)).
 
 
 ### Expressions
@@ -1140,7 +1140,7 @@ let data = [
 let rendering = try template.render(Box(data))
 ```
 
-Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Sources/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Typealiases.html)).
+Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Sources/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Typealiases.html)).
 
 
 Filters
@@ -1371,7 +1371,7 @@ let data = ["cats": ["Kitty", "Pussy", "Melba"]]
 let rendering = try template.render(Box(data))
 ```
 
-As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Sources/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.0.1/Typealiases.html)).
+As those filters perform custom rendering, they are based on `RenderFunction`, just like [lambdas](#lambdas). Check the `RenderFunction` type in [CoreFunctions.swift](Sources/CoreFunctions.swift) for more information about the `RenderingInfo` and `Rendering` types ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Typealiases.html)).
 
 
 ### Advanced Filters
