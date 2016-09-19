@@ -7,7 +7,7 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-2.3-orange.svg?sty
 
 **Requirements**: iOS 8.0+ / OSX 10.9+ / tvOS 9.0+ &bull; Xcode 8+ &bull; Swift 2.3
 
-- Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/v1.0.1)
+- Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/1.0.1)
 
 Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 
