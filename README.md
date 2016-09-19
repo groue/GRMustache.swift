@@ -32,7 +32,7 @@ GRMustache extends the genuine Mustache language with built-in goodies and exten
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
-- Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime. It lets you feed your templates with ad-hoc values or your existing models, without forcing you to refactor your Swift code into Objective-C objects.
+- GRMustache.swift does not rely on the Objective-C runtime. It lets you feed your templates with ad-hoc values or your existing models, without forcing you to refactor your Swift code into Objective-C objects.
 
 
 Usage
