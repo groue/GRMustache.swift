@@ -112,7 +112,7 @@ class TemplateRepositoryURLTests: XCTestCase {
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
         let testBundle = NSBundle(forClass: self.dynamicType)
         let URL = testBundle.URLForResource("TemplateRepositoryFileSystemTests", withExtension: nil)!
-        let repo = TemplateRepository(baseURL: URL.URLByAppendingPathComponent("partials"))
+        let repo = TemplateRepository(baseURL: URL.URLByAppendingPathComponent("partials")!)
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()

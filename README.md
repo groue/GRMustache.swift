@@ -1,35 +1,38 @@
-GRMustache.swift
+GRMustache.swift [![Swift](https://img.shields.io/badge/swift-2.3-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Platforms](https://img.shields.io/cocoapods/p/GRMustache.swift.svg)](https://developer.apple.com/swift/) [![License](https://img.shields.io/github/license/groue/GRMustache.swift.svg?maxAge=2592000)](/LICENSE)
 ================
 
-GRMustache.swift is a [Mustache](http://mustache.github.io) template engine written in Swift 2, from the author of the Objective-C [GRMustache](https://github.com/groue/GRMustache).
+### Mustache templates for Swift
 
-It extends the genuine Mustache language with built-in goodies and extensibility hooks that let you avoid the strict minimalism of Mustache when you need it.
+**Latest release**: April 24, 2016 &bull; version 1.0.1 &bull; [CHANGELOG](CHANGELOG.md)
 
-**April 24, 2016: GRMustache.swift 1.0.1 is out** - [Release notes](CHANGELOG.md). Follow [@GRMustache](http://twitter.com/GRMustache) on Twitter for release announcements and usage tips.
+**Requirements**: iOS 8.0+ / OSX 10.9+ / tvOS 9.0+ &bull; Xcode 8+ &bull; Swift 2.3
 
-**The last release that supports Swift 2.1** is version v0.11.0, on the [Swift2.1 branch](https://github.com/groue/GRMustache.swift/tree/Swift2.1).
+- Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/v1.0.1)
 
-Jump to:
+Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 
-- [Usage](#usage)
-- [Installation](#installation)
-- [Documentation](#documentation)
+---
+
+<p align="center">
+    <a href="#features">Features</a> &bull;
+    <a href="#usage">Usage</a> &bull;
+    <a href="#installation">Installation</a> &bull;
+    <a href="#documentation">Documentation</a> &bull;
+</p>
+
+---
+
 
 Features
 --------
+
+GRMustache extends the genuine Mustache language with built-in goodies and extensibility hooks that let you avoid the strict minimalism of Mustache when you need it.
 
 - Support for the full [Mustache syntax](http://mustache.github.io/mustache.5.html)
 - Filters, as `{{ uppercase(name) }}`
 - Template inheritance, as in [hogan.js](http://twitter.github.com/hogan.js/), [mustache.java](https://github.com/spullara/mustache.java) and [mustache.php](https://github.com/bobthecow/mustache.php).
 - Built-in [goodies](Docs/Guides/goodies.md)
 - Unlike many Swift template engines, GRMustache.swift does not rely on the Objective-C runtime. It lets you feed your templates with ad-hoc values or your existing models, without forcing you to refactor your Swift code into Objective-C objects.
-
-
-Requirements
-------------
-
-- iOS 7.0+ / OSX 10.9+
-- Xcode 7
 
 
 Usage

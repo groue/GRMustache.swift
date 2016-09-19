@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		561AF22A1D906435007BD01B /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 561AF2211D906402007BD01B /* Mustache.framework */; };
+		561AF22B1D906435007BD01B /* Mustache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 561AF2211D906402007BD01B /* Mustache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		56966A461A8BEA3C00BFBB56 /* Model.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56966A451A8BEA3C00BFBB56 /* Model.swift */; };
 		56966A501A8BFE0F00BFBB56 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 56966A521A8BFE0F00BFBB56 /* Localizable.strings */; };
 		56E8B5671A8BE267000DCC81 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56E8B5661A8BE267000DCC81 /* AppDelegate.swift */; };
@@ -16,44 +18,80 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		56E8B58A1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+		561AF21C1D906402007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 563AE19719FBE47A0028C6C1;
 			remoteInfo = MustacheiOS;
 		};
-		56E8B58C1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+		561AF21E1D906402007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 563AE1A219FBE47A0028C6C1;
 			remoteInfo = MustacheiOSTests;
 		};
-		56E8B58E1A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+		561AF2201D906402007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 561E725C1A8BDC2B004ED48B;
 			remoteInfo = MustacheOSX;
 		};
-		56E8B5901A8BE278000DCC81 /* PBXContainerItemProxy */ = {
+		561AF2221D906402007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 561E72661A8BDC2B004ED48B;
 			remoteInfo = MustacheOSXTests;
 		};
-		56E8B5921A8BE284000DCC81 /* PBXContainerItemProxy */ = {
+		561AF2241D906402007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A89DCE1BF58489003A695E;
+			remoteInfo = MustacheTVOS;
+		};
+		561AF2261D906402007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A89DDA1BF584EE003A695E;
+			remoteInfo = MustacheTVOSTests;
+		};
+		561AF2281D906408007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 561E725B1A8BDC2B004ED48B;
+			remoteInfo = MustacheOSX;
+		};
+		561AF22C1D906436007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 561E725B1A8BDC2B004ED48B;
 			remoteInfo = MustacheOSX;
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		561AF22E1D906436007BD01B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				561AF22B1D906435007BD01B /* Mustache.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		561AF2131D906401007BD01B /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../../Xcode/Mustache.xcodeproj; sourceTree = "<group>"; };
 		56966A451A8BEA3C00BFBB56 /* Model.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Model.swift; sourceTree = "<group>"; };
 		56966A511A8BFE0F00BFBB56 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		56E8B5611A8BE267000DCC81 /* MustacheDemoOSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheDemoOSX.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -62,7 +100,6 @@
 		56E8B5681A8BE267000DCC81 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		56E8B56A1A8BE267000DCC81 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		56E8B56D1A8BE267000DCC81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../Mustache.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,12 +107,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				561AF22A1D906435007BD01B /* Mustache.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		561AF2141D906401007BD01B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				561AF21D1D906402007BD01B /* Mustache.framework */,
+				561AF21F1D906402007BD01B /* MustacheiOSTests.xctest */,
+				561AF2211D906402007BD01B /* Mustache.framework */,
+				561AF2231D906402007BD01B /* MustacheOSXTests.xctest */,
+				561AF2251D906402007BD01B /* Mustache.framework */,
+				561AF2271D906402007BD01B /* MustacheTVOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		56E8B5581A8BE267000DCC81 = {
 			isa = PBXGroup;
 			children = (
@@ -113,21 +164,10 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		56E8B5841A8BE278000DCC81 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				56E8B58B1A8BE278000DCC81 /* Mustache.framework */,
-				56E8B58D1A8BE278000DCC81 /* MustacheiOSTests.xctest */,
-				56E8B58F1A8BE278000DCC81 /* Mustache.framework */,
-				56E8B5911A8BE278000DCC81 /* MustacheOSXTests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		56E8B5961A8BE3C2000DCC81 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */,
+				561AF2131D906401007BD01B /* Mustache.xcodeproj */,
 			);
 			name = Frameworks;
 			path = ..;
@@ -153,11 +193,13 @@
 				56E8B55D1A8BE267000DCC81 /* Sources */,
 				56E8B55E1A8BE267000DCC81 /* Frameworks */,
 				56E8B55F1A8BE267000DCC81 /* Resources */,
+				561AF22E1D906436007BD01B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				56E8B5931A8BE284000DCC81 /* PBXTargetDependency */,
+				561AF2291D906408007BD01B /* PBXTargetDependency */,
+				561AF22D1D906436007BD01B /* PBXTargetDependency */,
 			);
 			name = MustacheDemoOSX;
 			productName = MustacheDemoOSX;
@@ -171,11 +213,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Gwendal Roué";
 				TargetAttributes = {
 					56E8B5601A8BE267000DCC81 = {
 						CreatedOnToolsVersion = 6.1.1;
+						LastSwiftMigration = 0800;
 					};
 				};
 			};
@@ -192,8 +235,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 56E8B5841A8BE278000DCC81 /* Products */;
-					ProjectRef = 56E8B5831A8BE278000DCC81 /* Mustache.xcodeproj */;
+					ProductGroup = 561AF2141D906401007BD01B /* Products */;
+					ProjectRef = 561AF2131D906401007BD01B /* Mustache.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -204,32 +247,46 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		56E8B58B1A8BE278000DCC81 /* Mustache.framework */ = {
+		561AF21D1D906402007BD01B /* Mustache.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Mustache.framework;
-			remoteRef = 56E8B58A1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			remoteRef = 561AF21C1D906402007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56E8B58D1A8BE278000DCC81 /* MustacheiOSTests.xctest */ = {
+		561AF21F1D906402007BD01B /* MustacheiOSTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = MustacheiOSTests.xctest;
-			remoteRef = 56E8B58C1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			remoteRef = 561AF21E1D906402007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56E8B58F1A8BE278000DCC81 /* Mustache.framework */ = {
+		561AF2211D906402007BD01B /* Mustache.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Mustache.framework;
-			remoteRef = 56E8B58E1A8BE278000DCC81 /* PBXContainerItemProxy */;
+			remoteRef = 561AF2201D906402007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56E8B5911A8BE278000DCC81 /* MustacheOSXTests.xctest */ = {
+		561AF2231D906402007BD01B /* MustacheOSXTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = MustacheOSXTests.xctest;
-			remoteRef = 56E8B5901A8BE278000DCC81 /* PBXContainerItemProxy */;
+			remoteRef = 561AF2221D906402007BD01B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		561AF2251D906402007BD01B /* Mustache.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Mustache.framework;
+			remoteRef = 561AF2241D906402007BD01B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		561AF2271D906402007BD01B /* MustacheTVOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MustacheTVOSTests.xctest;
+			remoteRef = 561AF2261D906402007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -261,10 +318,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		56E8B5931A8BE284000DCC81 /* PBXTargetDependency */ = {
+		561AF2291D906408007BD01B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MustacheOSX;
-			targetProxy = 56E8B5921A8BE284000DCC81 /* PBXContainerItemProxy */;
+			targetProxy = 561AF2281D906408007BD01B /* PBXContainerItemProxy */;
+		};
+		561AF22D1D906436007BD01B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MustacheOSX;
+			targetProxy = 561AF22C1D906436007BD01B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -301,8 +363,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -311,6 +375,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -328,6 +393,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -344,8 +410,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "-";
@@ -354,6 +422,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -363,12 +432,15 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.10;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Release;
 		};
 		56E8B57E1A8BE267000DCC81 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MustacheDemoOSX/Info.plist;
@@ -381,6 +453,7 @@
 		56E8B57F1A8BE267000DCC81 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = MustacheDemoOSX/Info.plist;

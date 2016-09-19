@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		561AF2461D906463007BD01B /* Mustache.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 561AF2391D906444007BD01B /* Mustache.framework */; };
+		561AF2471D906463007BD01B /* Mustache.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 561AF2391D906444007BD01B /* Mustache.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		56FD0F441AAED3C3005C55A7 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD0F431AAED3C3005C55A7 /* AppDelegate.swift */; };
 		56FD0F461AAED3C3005C55A7 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FD0F451AAED3C3005C55A7 /* ViewController.swift */; };
 		56FD0F491AAED3C3005C55A7 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 56FD0F471AAED3C3005C55A7 /* Main.storyboard */; };
@@ -17,44 +19,80 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		56FD0F6B1AAED4EC005C55A7 /* PBXContainerItemProxy */ = {
+		561AF2381D906444007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 563AE19719FBE47A0028C6C1;
 			remoteInfo = MustacheiOS;
 		};
-		56FD0F6D1AAED4EC005C55A7 /* PBXContainerItemProxy */ = {
+		561AF23A1D906444007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 563AE1A219FBE47A0028C6C1;
 			remoteInfo = MustacheiOSTests;
 		};
-		56FD0F6F1AAED4EC005C55A7 /* PBXContainerItemProxy */ = {
+		561AF23C1D906444007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 561E725C1A8BDC2B004ED48B;
 			remoteInfo = MustacheOSX;
 		};
-		56FD0F711AAED4EC005C55A7 /* PBXContainerItemProxy */ = {
+		561AF23E1D906444007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 			proxyType = 2;
 			remoteGlobalIDString = 561E72661A8BDC2B004ED48B;
 			remoteInfo = MustacheOSXTests;
 		};
-		56FD0F731AAED500005C55A7 /* PBXContainerItemProxy */ = {
+		561AF2401D906444007BD01B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A89DCE1BF58489003A695E;
+			remoteInfo = MustacheTVOS;
+		};
+		561AF2421D906444007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 09A89DDA1BF584EE003A695E;
+			remoteInfo = MustacheTVOSTests;
+		};
+		561AF2441D906455007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 563AE19619FBE47A0028C6C1;
+			remoteInfo = MustacheiOS;
+		};
+		561AF2481D906463007BD01B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 			proxyType = 1;
 			remoteGlobalIDString = 563AE19619FBE47A0028C6C1;
 			remoteInfo = MustacheiOS;
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		561AF24A1D906463007BD01B /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				561AF2471D906463007BD01B /* Mustache.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		561AF22F1D906444007BD01B /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../../../Xcode/Mustache.xcodeproj; sourceTree = "<group>"; };
 		56FD0F3E1AAED3C3005C55A7 /* MustacheDemoiOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MustacheDemoiOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		56FD0F421AAED3C3005C55A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		56FD0F431AAED3C3005C55A7 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -62,7 +100,6 @@
 		56FD0F481AAED3C3005C55A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		56FD0F4A1AAED3C3005C55A7 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		56FD0F4D1AAED3C3005C55A7 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
-		56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Mustache.xcodeproj; path = ../../../Mustache.xcodeproj; sourceTree = "<group>"; };
 		56FD0F751AAED6BE005C55A7 /* Document.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Document.mustache; sourceTree = "<group>"; };
 		56FD0F771AAED70F005C55A7 /* Layout.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Layout.mustache; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,12 +109,26 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				561AF2461D906463007BD01B /* Mustache.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		561AF2301D906444007BD01B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				561AF2391D906444007BD01B /* Mustache.framework */,
+				561AF23B1D906444007BD01B /* MustacheiOSTests.xctest */,
+				561AF23D1D906444007BD01B /* Mustache.framework */,
+				561AF23F1D906444007BD01B /* MustacheOSXTests.xctest */,
+				561AF2411D906444007BD01B /* Mustache.framework */,
+				561AF2431D906444007BD01B /* MustacheTVOSTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		56EB0B761BCE273400A3DC55 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -129,20 +180,9 @@
 		56FD0F631AAED4D7005C55A7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */,
+				561AF22F1D906444007BD01B /* Mustache.xcodeproj */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		56FD0F651AAED4EC005C55A7 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				56FD0F6C1AAED4EC005C55A7 /* Mustache.framework */,
-				56FD0F6E1AAED4EC005C55A7 /* MustacheiOSTests.xctest */,
-				56FD0F701AAED4EC005C55A7 /* Mustache.framework */,
-				56FD0F721AAED4EC005C55A7 /* MustacheOSXTests.xctest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -155,11 +195,13 @@
 				56FD0F3A1AAED3C3005C55A7 /* Sources */,
 				56FD0F3B1AAED3C3005C55A7 /* Frameworks */,
 				56FD0F3C1AAED3C3005C55A7 /* Resources */,
+				561AF24A1D906463007BD01B /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				56FD0F741AAED500005C55A7 /* PBXTargetDependency */,
+				561AF2451D906455007BD01B /* PBXTargetDependency */,
+				561AF2491D906463007BD01B /* PBXTargetDependency */,
 			);
 			name = MustacheDemoiOS;
 			productName = MustacheDemoiOS;
@@ -173,11 +215,12 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0700;
-				LastUpgradeCheck = 0700;
+				LastUpgradeCheck = 0800;
 				ORGANIZATIONNAME = "Gwendal Roué";
 				TargetAttributes = {
 					56FD0F3D1AAED3C3005C55A7 = {
 						CreatedOnToolsVersion = 6.2;
+						DevelopmentTeam = AMD8W895CT;
 					};
 				};
 			};
@@ -194,8 +237,8 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 56FD0F651AAED4EC005C55A7 /* Products */;
-					ProjectRef = 56FD0F641AAED4EC005C55A7 /* Mustache.xcodeproj */;
+					ProductGroup = 561AF2301D906444007BD01B /* Products */;
+					ProjectRef = 561AF22F1D906444007BD01B /* Mustache.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -206,32 +249,46 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		56FD0F6C1AAED4EC005C55A7 /* Mustache.framework */ = {
+		561AF2391D906444007BD01B /* Mustache.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Mustache.framework;
-			remoteRef = 56FD0F6B1AAED4EC005C55A7 /* PBXContainerItemProxy */;
+			remoteRef = 561AF2381D906444007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56FD0F6E1AAED4EC005C55A7 /* MustacheiOSTests.xctest */ = {
+		561AF23B1D906444007BD01B /* MustacheiOSTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = MustacheiOSTests.xctest;
-			remoteRef = 56FD0F6D1AAED4EC005C55A7 /* PBXContainerItemProxy */;
+			remoteRef = 561AF23A1D906444007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56FD0F701AAED4EC005C55A7 /* Mustache.framework */ = {
+		561AF23D1D906444007BD01B /* Mustache.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Mustache.framework;
-			remoteRef = 56FD0F6F1AAED4EC005C55A7 /* PBXContainerItemProxy */;
+			remoteRef = 561AF23C1D906444007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		56FD0F721AAED4EC005C55A7 /* MustacheOSXTests.xctest */ = {
+		561AF23F1D906444007BD01B /* MustacheOSXTests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = MustacheOSXTests.xctest;
-			remoteRef = 56FD0F711AAED4EC005C55A7 /* PBXContainerItemProxy */;
+			remoteRef = 561AF23E1D906444007BD01B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		561AF2411D906444007BD01B /* Mustache.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Mustache.framework;
+			remoteRef = 561AF2401D906444007BD01B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		561AF2431D906444007BD01B /* MustacheTVOSTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = MustacheTVOSTests.xctest;
+			remoteRef = 561AF2421D906444007BD01B /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -264,10 +321,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		56FD0F741AAED500005C55A7 /* PBXTargetDependency */ = {
+		561AF2451D906455007BD01B /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MustacheiOS;
-			targetProxy = 56FD0F731AAED500005C55A7 /* PBXContainerItemProxy */;
+			targetProxy = 561AF2441D906455007BD01B /* PBXContainerItemProxy */;
+		};
+		561AF2491D906463007BD01B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MustacheiOS;
+			targetProxy = 561AF2481D906463007BD01B /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -304,8 +366,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -314,6 +378,7 @@
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -331,6 +396,7 @@
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 2.3;
 			};
 			name = Debug;
 		};
@@ -347,8 +413,10 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -356,6 +424,7 @@
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -365,6 +434,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 8.2;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_VERSION = 2.3;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -372,7 +443,9 @@
 		56FD0F5E1AAED3C3005C55A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = AMD8W895CT;
 				INFOPLIST_FILE = MustacheDemoiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
@@ -383,7 +456,9 @@
 		56FD0F5F1AAED3C3005C55A7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = AMD8W895CT;
 				INFOPLIST_FILE = MustacheDemoiOS/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "com.github.groue.$(PRODUCT_NAME:rfc1034identifier)";
