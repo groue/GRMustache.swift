@@ -44,7 +44,7 @@ class StandardLibraryTests: XCTestCase {
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
         let render = Box({ (info: RenderingInfo) -> Rendering in
-            return Rendering("<br>", .HTML)
+            return Rendering("<br>", .html)
         })
         
         var template = try! Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")

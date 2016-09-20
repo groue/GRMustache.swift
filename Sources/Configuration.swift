@@ -96,7 +96,7 @@ public struct Configuration {
 
     */
     public init() {
-        contentType = .HTML
+        contentType = .html
         baseContext = Context()
         tagDelimiterPair = ("{{", "}}")
     }
@@ -237,7 +237,7 @@ public struct Configuration {
     - baseContext
     - registerInBaseContext
     */
-    public mutating func extendBaseContext(box: MustacheBox) {
+    public mutating func extendBaseContext(_ box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
     
@@ -284,7 +284,7 @@ public struct Configuration {
     - baseContext
     - extendBaseContext
     */
-    public mutating func registerInBaseContext(key: String, _ box: MustacheBox) {
+    public mutating func registerInBaseContext(_ key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
     

@@ -149,8 +149,8 @@ final public class MustacheBox : NSObject {
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public func mustacheBoxForKey(key: String) -> MustacheBox {
-        return keyedSubscript?(key: key) ?? Box()
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox {
+        return keyedSubscript?(key) ?? Box()
     }
     
     
@@ -158,7 +158,7 @@ final public class MustacheBox : NSObject {
     // MARK: - Other facets
     
     /// See the documentation of `RenderFunction`.
-    public private(set) var render: RenderFunction
+    public fileprivate(set) var render: RenderFunction
     
     /// See the documentation of `FilterFunction`.
     public let filter: FilterFunction?
@@ -481,16 +481,16 @@ final public class MustacheBox : NSObject {
                 
                 // Default rendering depends on the tag type:
                 switch info.tag.type {
-                case .Variable:
+                case .variable:
                     // {{ box }} and {{{ box }}}
                     
                     if let value = self.value {
                         // Use the built-in Swift String Interpolation:
-                        return Rendering("\(value)", .Text)
+                        return Rendering("\(value)", .text)
                     } else {
-                        return Rendering("", .Text)
+                        return Rendering("", .text)
                     }
-                case .Section:
+                case .section:
                     // {{# box }}...{{/ box }}
                     
                     // Push the value on the top of the context stack:
@@ -503,7 +503,7 @@ final public class MustacheBox : NSObject {
         }
     }
     
-    private let hasCustomRenderFunction: Bool
+    fileprivate let hasCustomRenderFunction: Bool
     
     // Converter wraps all the conversion closures that help MustacheBox expose
     // its raw value (typed Any) as useful types.
@@ -512,8 +512,8 @@ final public class MustacheBox : NSObject {
         let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            @autoclosure(escaping) arrayValue: () -> [MustacheBox]? = nil,
-            @autoclosure(escaping) dictionaryValue: () -> [String: MustacheBox]? = nil)
+            arrayValue: @autoclosure @escaping () -> [MustacheBox]? = nil,
+            dictionaryValue: @autoclosure @escaping () -> [String: MustacheBox]? = nil)
         {
             self.arrayValue = arrayValue
             self.dictionaryValue = dictionaryValue
@@ -529,7 +529,7 @@ extension MustacheBox {
         case 0:
             return "MustacheBox(Empty)"
         default:
-            let content = facets.joinWithSeparator(",")
+            let content = facets.joined(separator: ",")
             return "MustacheBox(\(content))"
         }
     }
@@ -545,14 +545,14 @@ extension MustacheBox {
         case 1:
             return facets.first!
         default:
-            return "(" + facets.joinWithSeparator(",") + ")"
+            return "(" + facets.joined(separator: ",") + ")"
         }
     }
     
     var facetsDescriptions: [String] {
         var facets = [String]()
         if let array = arrayValue {
-            let items = array.map { $0.valueDescription }.joinWithSeparator(",")
+            let items = array.map { $0.valueDescription }.joined(separator: ",")
             facets.append("[\(items)]")
         } else if let dictionary = dictionaryValue {
             if dictionary.isEmpty {
@@ -560,7 +560,7 @@ extension MustacheBox {
             } else {
                 let items = dictionary.map { (key, box) in
                     return "\(key.debugDescription):\(box.valueDescription)"
-                }.joinWithSeparator(",")
+                }.joined(separator: ",")
                 facets.append("[\(items)]")
             }
         } else if let value = value {

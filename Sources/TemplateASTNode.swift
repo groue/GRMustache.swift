@@ -24,12 +24,12 @@
 import Foundation
 
 enum TemplateASTNode {
-    case BlockNode(Block)                       // {{$ name }}...{{/ name }}
-    case PartialOverrideNode(PartialOverride)   // {{< name }}...{{/ name }}
-    case PartialNode(Partial)                   // {{> name }}
-    case SectionNode(Section)                   // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
-    case TextNode(String)                       // text
-    case VariableNode(Variable)                 // {{ name }}, {{{ name }}}, {{& name }}
+    case blockNode(Block)                       // {{$ name }}...{{/ name }}
+    case partialOverrideNode(PartialOverride)   // {{< name }}...{{/ name }}
+    case partialNode(Partial)                   // {{> name }}
+    case sectionNode(Section)                   // {{# name }}...{{/ name }}, {{^ name }}...{{/ name }}
+    case textNode(String)                       // text
+    case variableNode(Variable)                 // {{ name }}, {{{ name }}}, {{& name }}
     
     
     // Define structs instead of long tuples
@@ -66,29 +66,29 @@ enum TemplateASTNode {
     
     // Factory methods
     
-    static func block(innerTemplateAST innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
-        return .BlockNode(Block(innerTemplateAST: innerTemplateAST, name: name))
+    static func block(innerTemplateAST: TemplateAST, name: String) -> TemplateASTNode {
+        return .blockNode(Block(innerTemplateAST: innerTemplateAST, name: name))
     }
     
-    static func partialOverride(childTemplateAST childTemplateAST: TemplateAST, parentTemplateAST: TemplateAST, parentPartialName: String? = nil) -> TemplateASTNode {
-        return .PartialOverrideNode(PartialOverride(childTemplateAST: childTemplateAST, parentPartial: Partial(templateAST: parentTemplateAST, name: parentPartialName)))
+    static func partialOverride(childTemplateAST: TemplateAST, parentTemplateAST: TemplateAST, parentPartialName: String? = nil) -> TemplateASTNode {
+        return .partialOverrideNode(PartialOverride(childTemplateAST: childTemplateAST, parentPartial: Partial(templateAST: parentTemplateAST, name: parentPartialName)))
     }
     
-    static func partial(templateAST templateAST: TemplateAST, name: String?) -> TemplateASTNode {
-        return .PartialNode(Partial(templateAST: templateAST, name: name))
+    static func partial(templateAST: TemplateAST, name: String?) -> TemplateASTNode {
+        return .partialNode(Partial(templateAST: templateAST, name: name))
     }
     
-    static func section(templateAST templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
+    static func section(templateAST: TemplateAST, expression: Expression, inverted: Bool, openingToken: TemplateToken, innerTemplateString: String) -> TemplateASTNode {
         let tag = SectionTag(innerTemplateAST: templateAST, openingToken: openingToken, innerTemplateString: innerTemplateString)
-        return .SectionNode(Section(tag: tag, expression: expression, inverted: inverted))
+        return .sectionNode(Section(tag: tag, expression: expression, inverted: inverted))
     }
     
-    static func text(text text: String) -> TemplateASTNode {
-        return .TextNode(text)
+    static func text(text: String) -> TemplateASTNode {
+        return .textNode(text)
     }
     
-    static func variable(expression expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
+    static func variable(expression: Expression, contentType: ContentType, escapesHTML: Bool, token: TemplateToken) -> TemplateASTNode {
         let tag = VariableTag(contentType: contentType, token: token)
-        return .VariableNode(Variable(tag: tag, expression: expression, escapesHTML: escapesHTML))
+        return .variableNode(Variable(tag: tag, expression: expression, escapesHTML: escapesHTML))
     }
 }

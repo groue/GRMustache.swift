@@ -31,7 +31,7 @@ class EachFilterTests: XCTestCase {
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].index(of: rendering) != nil)
     }
     
     func testEachFilterEnumeratesNSSet() {
@@ -39,7 +39,7 @@ class EachFilterTests: XCTestCase {
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].index(of: rendering) != nil)
     }
     
     func testEachFilterTriggersRenderFunctionsInArray() {

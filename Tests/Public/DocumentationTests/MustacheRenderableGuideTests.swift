@@ -29,9 +29,9 @@ class MustacheRenderableGuideTests: XCTestCase {
     func testExample1() {
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
-            case .Variable:
+            case .variable:
                 return Rendering("I'm rendering a {{ variable }} tag.")
-            case .Section:
+            case .section:
                 return Rendering("I'm rendering a {{# section }}...{{/ }} tag.")
             }
         }
@@ -123,7 +123,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    let template = try! Template(named: "Person", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
+                    let template = try! Template(named: "Person", bundle: Bundle(for: MustacheRenderableGuideTests.self))
                     let context = info.context.extendedContext(Box(self))
                     return try template.render(context)
                 }
@@ -149,7 +149,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    let template = try! Template(named: "Movie", bundle: NSBundle(forClass: MustacheRenderableGuideTests.self))
+                    let template = try! Template(named: "Movie", bundle: Bundle(for: MustacheRenderableGuideTests.self))
                     let context = info.context.extendedContext(Box(self))
                     return try template.render(context)
                 }
@@ -181,7 +181,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                 buffer += "<li>\(itemRendering.string)</li>"
             }
             buffer += "</ul>"
-            return Rendering(buffer, .HTML)
+            return Rendering(buffer, .html)
         }
         
         let template = try! Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")

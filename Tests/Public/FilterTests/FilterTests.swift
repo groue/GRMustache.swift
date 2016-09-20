@@ -26,15 +26,15 @@ import Mustache
 
 class FilterTests: XCTestCase {
     
-    enum CustomError : ErrorType {
-        case Error
+    enum CustomError : Error {
+        case error
     }
     
     func testFilterCanChain() {
         let box = Box([
             "name": Box("Name"),
             "uppercase": Box(Filter { (string: String?) -> MustacheBox in
-                return Box(string?.uppercaseString)
+                return Box(string?.uppercased())
             }),
             "prefix": Box(Filter { (string: String?) -> MustacheBox in
                 return Box("prefix\(string!)")
@@ -140,40 +140,40 @@ class FilterTests: XCTestCase {
         
         var template = try! Template(string:"<{{missing(missing)}}>")
         do {
-            try template.render(box)
+            _ = try template.render(box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         template = try! Template(string:"<{{missing(name)}}>")
         do {
-            try template.render(box)
+            _ = try template.render(box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         template = try! Template(string:"<{{replace(missing(name))}}>")
         do {
-            try template.render(box)
+            _ = try template.render(box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         template = try! Template(string:"<{{missing(replace(name))}}>")
         do {
-            try template.render(box)
+            _ = try template.render(box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -187,10 +187,10 @@ class FilterTests: XCTestCase {
         
         let template = try! Template(string:"<{{filter(name)}}>")
         do {
-            try template.render(box)
+            _ = try template.render(box)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -200,12 +200,12 @@ class FilterTests: XCTestCase {
     func testMissingFilterErrorDescriptionContainsLineNumber() {
         let template = try! Template(string: "\n{{f(x)}}")
         do {
-            try template.render()
+            _ = try template.render()
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("Missing filter") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
+            XCTAssertTrue(error.description.range(of: "Missing filter") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -220,12 +220,12 @@ class FilterTests: XCTestCase {
     func testNotAFilterErrorDescriptionContainsLineNumber() {
         let template = try! Template(string: "\n{{f(x)}}")
         do {
-            try template.render(Box(["f": "foo"]))
+            _ = try template.render(Box(["f": "foo"]))
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("Not a filter") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 2") != nil)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
+            XCTAssertTrue(error.description.range(of: "Not a filter") != nil)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -295,20 +295,20 @@ class FilterTests: XCTestCase {
     
     func testFilterCanThrowMustacheError() {
         let filter = Filter { (box: MustacheBox) in
-            throw MustacheError(kind: .RenderError, message: "CustomMessage")
+            throw MustacheError(kind: .renderError, message: "CustomMessage")
         }
         
         let template = try! Template(string: "\n\n{{f(x)}}")
         template.registerInBaseContext("f", Box(filter))
         
         do {
-            try template.render()
+            _ = try template.render()
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
-            XCTAssertTrue(error.description.rangeOfString("CustomMessage") != nil)
-            XCTAssertTrue(error.description.rangeOfString("line 3") != nil)
-            XCTAssertTrue(error.description.rangeOfString("{{f(x)}}") != nil)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
+            XCTAssertTrue(error.description.range(of: "CustomMessage") != nil)
+            XCTAssertTrue(error.description.range(of: "line 3") != nil)
+            XCTAssertTrue(error.description.range(of: "{{f(x)}}") != nil)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -323,10 +323,10 @@ class FilterTests: XCTestCase {
         template.registerInBaseContext("f", Box(filter))
         
         do {
-            try template.render()
+            _ = try template.render()
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
             if let nserror = error.underlyingError as? NSError {
                 XCTAssertEqual(nserror.domain, "CustomErrorDomain")
             } else {
@@ -339,17 +339,17 @@ class FilterTests: XCTestCase {
     
     func testFilterCanThrowCustomError() {
         let filter = Filter { (box: MustacheBox) in
-            throw CustomError.Error
+            throw CustomError.error
         }
         
         let template = try! Template(string: "\n\n{{f(x)}}")
         template.registerInBaseContext("f", Box(filter))
         
         do {
-            try template.render()
+            _ = try template.render()
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
             if let _ = error.underlyingError as? CustomError {
             } else {
                 XCTFail("Expected NSError")

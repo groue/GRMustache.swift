@@ -37,7 +37,7 @@ class FoundationCollectionTests: XCTestCase {
         boxedArray = Box(["collection": [["key": "value"]]])
         boxedNSArray = {
             let array = NSMutableArray()
-            array.addObject(["key": "value"])
+            array.add(["key": "value"])
             let data = NSMutableDictionary()
             data.setObject(array, forKey: "collection")
             return Box(data)
@@ -45,14 +45,14 @@ class FoundationCollectionTests: XCTestCase {
         boxedSet = Box(["collection": Set([["key": "value"]])])
         boxedNSSet = {
             let set = NSMutableSet()
-            set.addObject(["key": "value"])
+            set.add(["key": "value"])
             let data = NSMutableDictionary()
             data.setObject(set, forKey: "collection")
             return Box(data)
             }()
         boxedNSOrderedSet = {
             let orderedSet = NSMutableOrderedSet()
-            orderedSet.addObject(["key": "value"])
+            orderedSet.add(["key": "value"])
             let data = NSMutableDictionary()
             data.setObject(orderedSet, forKey: "collection")
             return Box(data)

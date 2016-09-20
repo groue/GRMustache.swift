@@ -27,14 +27,14 @@ import Mustache
 class TemplateRepositoryPathTests: XCTestCase {
     
     func testTemplateRepositoryWithURL() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
-        let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
+        let testBundle = Bundle(for: type(of: self))
+        let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         var template: Template
         var rendering: String
         
         do {
-            try repo.template(named: "notFound")
+            _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -57,52 +57,52 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
+        let testBundle = Bundle(for: type(of: self))
         var directoryPath: String
         var repo: TemplateRepository
         var template: Template
         var rendering: String
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: NSUTF8StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: NSUTF8StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: NSUTF8StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: String.Encoding.utf8)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: NSISOLatin1StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "mustache", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.mustache\ndir/é1.mustache\ndir/dir/é1.mustache\ndir/dir/é2.mustache\n\n\ndir/é2.mustache\n\n\né2.mustache\n\n")
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: NSISOLatin1StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "txt", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1.txt\ndir/é1.txt\ndir/dir/é1.txt\ndir/dir/é2.txt\n\n\ndir/é2.txt\n\n\né2.txt\n\n")
         
-        directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
-        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: NSISOLatin1StringEncoding)
+        directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_ISOLatin1", ofType: nil)!
+        repo = TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: String.Encoding.isoLatin1)
         template = try! repo.template(named: "file1")
         rendering = try! template.render()
         XCTAssertEqual(rendering, "é1\ndir/é1\ndir/dir/é1\ndir/dir/é2\n\n\ndir/é2\n\n\né2\n\n")
     }
     
     func testAbsolutePartialName() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
-        let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests", ofType: nil)!
+        let testBundle = Bundle(for: type(of: self))
+        let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         let template = try! repo.template(named: "base")
         let rendering = try! template.render()
@@ -110,19 +110,19 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
     
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
-        let testBundle = NSBundle(forClass: self.dynamicType)
-        let directoryPath = testBundle.pathForResource("TemplateRepositoryFileSystemTests", ofType: nil)!
-        let repo = TemplateRepository(directoryPath: (directoryPath as NSString).stringByAppendingPathComponent("partials"))
+        let testBundle = Bundle(for: type(of: self))
+        let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
+        let repo = TemplateRepository(directoryPath: (directoryPath as NSString).appendingPathComponent("partials"))
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
         
         do {
-            try repo.template(named: "up")
+            _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }

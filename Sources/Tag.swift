@@ -33,10 +33,10 @@ information.
 public enum TagType {
     
     /// The type of tags such as `{{name}}` and `{{{body}}}`.
-    case Variable
+    case variable
     
     /// The type of section tags such as `{{#user}}...{{/user}}`.
-    case Section
+    case section
 }
 
 
@@ -147,5 +147,5 @@ public protocol Tag: class, CustomStringConvertible {
     - returns: The rendering of the tag.
     
     */
-    func render(context: Context) throws -> Rendering
+    func render(_ context: Context) throws -> Rendering
 }

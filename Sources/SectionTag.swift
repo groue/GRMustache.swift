@@ -39,7 +39,7 @@ final class SectionTag: LocatedTag {
     
     // Mark: - Tag protocol
     
-    let type: TagType = .Section
+    let type: TagType = .section
     let innerTemplateString: String
     var tagDelimiterPair: TagDelimiterPair { return openingToken.tagDelimiterPair! }
     
@@ -47,7 +47,7 @@ final class SectionTag: LocatedTag {
         return "\(openingToken.templateSubstring) at \(openingToken.locationDescription)"
     }
     
-    func render(context: Context) throws -> Rendering {
+    func render(_ context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: innerTemplateAST, context: context)
         return try renderingEngine.render()
     }

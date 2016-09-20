@@ -65,7 +65,7 @@ final public class Context {
     Builds an empty Context.
     */
     public convenience init() {
-        self.init(type: .Root)
+        self.init(type: .root)
     }
     
     /**
@@ -75,7 +75,7 @@ final public class Context {
     - returns: A new context that contains *box*.
     */
     public convenience init(_ box: MustacheBox) {
-        self.init(type: .Box(box: box, parent: Context()))
+        self.init(type: .box(box: box, parent: Context()))
     }
     
     /**
@@ -88,7 +88,7 @@ final public class Context {
     */
     public convenience init(registeredKey key: String, box: MustacheBox) {
         let d = [key: box]
-        self.init(type: .Root, registeredKeysContext: Context(Box(d)))
+        self.init(type: .root, registeredKeysContext: Context(Box(d)))
     }
     
     
@@ -102,9 +102,9 @@ final public class Context {
     - parameter box: A box.
     - returns: A new context with *box* pushed at the top of the stack.
     */
-    @warn_unused_result(message="Context.extendedContext returns a new Context.")
-    public func extendedContext(box: MustacheBox) -> Context {
-        return Context(type: .Box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
+    
+    public func extendedContext(_ box: MustacheBox) -> Context {
+        return Context(type: .box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     /**
@@ -115,8 +115,8 @@ final public class Context {
     - parameter box: A box.
     - returns: A new context with *box* registered for *key*.
     */
-    @warn_unused_result(message="Context.contextWithRegisteredKey returns a new Context.")
-    public func contextWithRegisteredKey(key: String, box: MustacheBox) -> Context {
+    
+    public func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context {
         let d = [key: box]
         let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(d))
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
@@ -132,11 +132,11 @@ final public class Context {
     */
     public var topBox: MustacheBox {
         switch type {
-        case .Root:
+        case .root:
             return Box()
-        case .Box(box: let box, parent: _):
+        case .box(box: let box, parent: _):
             return box
-        case .PartialOverride(partialOverride: _, parent: let parent):
+        case .partialOverride(partialOverride: _, parent: let parent):
             return parent.topBox
         }
     }
@@ -165,7 +165,7 @@ final public class Context {
     - parameter key: A key.
     - returns: The MustacheBox for *key*.
     */
-    public func mustacheBoxForKey(key: String) -> MustacheBox {
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox {
         if let registeredKeysContext = registeredKeysContext {
             let box = registeredKeysContext.mustacheBoxForKey(key)
             if !box.isEmpty {
@@ -174,16 +174,16 @@ final public class Context {
         }
         
         switch type {
-        case .Root:
+        case .root:
             return Box()
-        case .Box(box: let box, parent: let parent):
+        case .box(box: let box, parent: let parent):
             let innerBox = box.mustacheBoxForKey(key)
             if innerBox.isEmpty {
                 return parent.mustacheBoxForKey(key)
             } else {
                 return innerBox
             }
-        case .PartialOverride(partialOverride: _, parent: let parent):
+        case .partialOverride(partialOverride: _, parent: let parent):
             return parent.mustacheBoxForKey(key)
         }
     }
@@ -203,7 +203,7 @@ final public class Context {
     
     - returns: The value of the expression.
     */
-    public func mustacheBoxForExpression(string: String) throws -> MustacheBox {
+    public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox {
         let parser = ExpressionParser()
         var empty = false
         let expression = try parser.parse(string, empty: &empty)
@@ -215,63 +215,63 @@ final public class Context {
     // =========================================================================
     // MARK: - Not public
     
-    private enum `Type` {
-        case Root
-        case Box(box: MustacheBox, parent: Context)
-        case PartialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
+    fileprivate enum `Type` {
+        case root
+        case box(box: MustacheBox, parent: Context)
+        case partialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
     }
     
-    private var registeredKeysContext: Context?
-    private let type: Type
+    fileprivate var registeredKeysContext: Context?
+    fileprivate let type: Type
     
     var willRenderStack: [WillRenderFunction] {
         switch type {
-        case .Root:
+        case .root:
             return []
-        case .Box(box: let box, parent: let parent):
+        case .box(box: let box, parent: let parent):
             if let willRender = box.willRender {
                 return [willRender] + parent.willRenderStack
             } else {
                 return parent.willRenderStack
             }
-        case .PartialOverride(partialOverride: _, parent: let parent):
+        case .partialOverride(partialOverride: _, parent: let parent):
             return parent.willRenderStack
         }
     }
     
     var didRenderStack: [DidRenderFunction] {
         switch type {
-        case .Root:
+        case .root:
             return []
-        case .Box(box: let box, parent: let parent):
+        case .box(box: let box, parent: let parent):
             if let didRender = box.didRender {
                 return parent.didRenderStack + [didRender]
             } else {
                 return parent.didRenderStack
             }
-        case .PartialOverride(partialOverride: _, parent: let parent):
+        case .partialOverride(partialOverride: _, parent: let parent):
             return parent.didRenderStack
         }
     }
     
     var partialOverrideStack: [TemplateASTNode.PartialOverride] {
         switch type {
-        case .Root:
+        case .root:
             return []
-        case .Box(box: _, parent: let parent):
+        case .box(box: _, parent: let parent):
             return parent.partialOverrideStack
-        case .PartialOverride(partialOverride: let partialOverride, parent: let parent):
+        case .partialOverride(partialOverride: let partialOverride, parent: let parent):
             return [partialOverride] + parent.partialOverrideStack
         }
     }
     
-    private init(type: Type, registeredKeysContext: Context? = nil) {
+    fileprivate init(type: Type, registeredKeysContext: Context? = nil) {
         self.type = type
         self.registeredKeysContext = registeredKeysContext
     }
 
-    func extendedContext(partialOverride partialOverride: TemplateASTNode.PartialOverride) -> Context {
-        return Context(type: .PartialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
+    func extendedContext(partialOverride: TemplateASTNode.PartialOverride) -> Context {
+        return Context(type: .partialOverride(partialOverride: partialOverride, parent: self), registeredKeysContext: registeredKeysContext)
     }
 }
 
@@ -279,11 +279,11 @@ extension Context: CustomDebugStringConvertible {
     /// A textual representation of `self`, suitable for debugging.
     public var debugDescription: String {
         switch type {
-        case .Root:
+        case .root:
             return "Context.Root"
-        case .Box(box: let box, parent: let parent):
+        case .box(box: let box, parent: let parent):
             return "Context.Box(\(box)):\(parent.debugDescription)"
-        case .PartialOverride(partialOverride: _, parent: let parent):
+        case .partialOverride(partialOverride: _, parent: let parent):
             return "Context.PartialOverride:\(parent.debugDescription)"
         }
     }

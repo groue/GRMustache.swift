@@ -27,12 +27,12 @@ import Mustache
 class TemplateRepositoryBundleTests: XCTestCase {
     
     func testTemplateRepositoryWithBundle() {
-        let repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType))
+        let repo = TemplateRepository(bundle: Bundle(for: type(of: self)))
         var template: Template
         var rendering: String
         
         do {
-            try repo.template(named: "notFound")
+            _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -51,12 +51,12 @@ class TemplateRepositoryBundleTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithBundleTemplateExtensionEncoding() {
-        var repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "text", encoding: NSUTF8StringEncoding)
+        var repo = TemplateRepository(bundle: Bundle(for: type(of: self)), templateExtension: "text", encoding: String.Encoding.utf8)
         var template: Template
         var rendering: String
         
         do {
-            try repo.template(named: "notFound")
+            _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }
@@ -69,10 +69,10 @@ class TemplateRepositoryBundleTests: XCTestCase {
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
-        repo = TemplateRepository(bundle: NSBundle(forClass: self.dynamicType), templateExtension: "", encoding: NSUTF8StringEncoding)
+        repo = TemplateRepository(bundle: Bundle(for: type(of: self)), templateExtension: "", encoding: String.Encoding.utf8)
         
         do {
-            try repo.template(named: "notFound")
+            _ = try repo.template(named: "notFound")
             XCTAssert(false)
         } catch {
         }

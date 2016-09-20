@@ -60,11 +60,11 @@ final public class Template {
                           partials, throws an error that describes the problem.
     - returns: A new Template.
     */
-    public convenience init(path: String, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+    public convenience init(path: String, encoding: String.Encoding = String.Encoding.utf8) throws {
         let nsPath = path as NSString
-        let directoryPath = nsPath.stringByDeletingLastPathComponent
+        let directoryPath = nsPath.deletingLastPathComponent
         let templateExtension = nsPath.pathExtension
-        let templateName = (nsPath.lastPathComponent as NSString).stringByDeletingPathExtension
+        let templateName = (nsPath.lastPathComponent as NSString).deletingPathExtension
         let repository = TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -85,10 +85,10 @@ final public class Template {
                           partials, throws an error that describes the problem.
     - returns: A new Template.
     */
-    public convenience init(URL: NSURL, encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
-        let baseURL = URL.URLByDeletingLastPathComponent!
+    public convenience init(URL: Foundation.URL, encoding: String.Encoding = String.Encoding.utf8) throws {
+        let baseURL = URL.deletingLastPathComponent()
         let templateExtension = URL.pathExtension
-        let templateName = (URL.lastPathComponent! as NSString).stringByDeletingPathExtension
+        let templateName = (URL.lastPathComponent as NSString).deletingPathExtension
         let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -116,7 +116,7 @@ final public class Template {
                                    describes the problem.
     - returns: A new Template.
     */
-    public convenience init(named name: String, bundle: NSBundle? = nil, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) throws {
+    public convenience init(named name: String, bundle: Bundle? = nil, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) throws {
         let repository = TemplateRepository(bundle: bundle, templateExtension: templateExtension, encoding: encoding)
         let templateAST = try repository.templateAST(named: name)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
@@ -135,7 +135,7 @@ final public class Template {
                        that describes the problem.
     - returns: The rendered string.
     */
-    public func render(box: MustacheBox = Box()) throws -> String {
+    public func render(_ box: MustacheBox = Box()) throws -> String {
         let rendering = try render(baseContext.extendedContext(box))
         return rendering.string
     }
@@ -158,7 +158,7 @@ final public class Template {
     - RenderFunction
     - Template.contentType
     */
-    public func render(context: Context) throws -> Rendering {
+    public func render(_ context: Context) throws -> Rendering {
         let renderingEngine = RenderingEngine(templateAST: templateAST, context: context)
         return try renderingEngine.render()
     }
@@ -213,7 +213,7 @@ final public class Template {
     - registerInBaseContext
     - Context.extendedContext
     */
-    public func extendBaseContext(box: MustacheBox) {
+    public func extendBaseContext(_ box: MustacheBox) {
         baseContext = baseContext.extendedContext(box)
     }
     
@@ -237,7 +237,7 @@ final public class Template {
     - extendBaseContext
     - Context.contextWithRegisteredKey
     */
-    public func registerInBaseContext(key: String, _ box: MustacheBox) {
+    public func registerInBaseContext(_ key: String, _ box: MustacheBox) {
         baseContext = baseContext.contextWithRegisteredKey(key, box: box)
     }
     

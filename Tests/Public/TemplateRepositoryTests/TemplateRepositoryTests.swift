@@ -30,19 +30,19 @@ class TemplateRepositoryTests: XCTestCase {
         let repo = TemplateRepository()
         
         do {
-            try repo.template(named:"partial")
+            _ = try repo.template(named:"partial")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         do {
-            try repo.template(string:"{{>partial}}")
+            _ = try repo.template(string:"{{>partial}}")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -76,17 +76,17 @@ class TemplateRepositoryTests: XCTestCase {
             init(templates: [String: String]) {
                 self.templates = templates
             }
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+            func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
-            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
                 if let string = templates[templateID] {
                     return string
                 } else {
-                    throw MustacheError(kind: .TemplateNotFound)
+                    throw MustacheError(kind: .templateNotFound)
                 }
             }
-            func setTemplateString(templateString: String, forKey key: String) {
+            func setTemplateString(_ templateString: String, forKey key: String) {
                 templates[key] = templateString
             }
         }

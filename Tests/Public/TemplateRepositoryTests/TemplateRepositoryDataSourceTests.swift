@@ -26,13 +26,13 @@ import Mustache
 
 class TemplateRepositoryDataSourceTests: XCTestCase {
     
-    enum CustomError : ErrorType {
-        case Error
+    enum CustomError : Error {
+        case error
     }
     
     func testTemplateRepositoryDataSource() {
         class TestedDataSource: TemplateRepositoryDataSource {
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+            func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 switch name {
                 case "not_found":
                     return nil
@@ -40,16 +40,16 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
                     return name
                 }
             }
-            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
                 switch templateID {
                 case "not_found":
                     fatalError("Unexpected")
                 case "CustomError":
-                    throw CustomError.Error
+                    throw CustomError.error
                 case "CustomNSError":
                     throw NSError(domain: "CustomNSError", code: 0, userInfo: nil)
                 case "MustacheErrorCodeTemplateNotFound":
-                    throw MustacheError(kind: .TemplateNotFound, message: "Custom Not Found Error")
+                    throw MustacheError(kind: .templateNotFound, message: "Custom Not Found Error")
                 default:
                     return templateID
                 }
@@ -69,35 +69,35 @@ class TemplateRepositoryDataSourceTests: XCTestCase {
         XCTAssertEqual(rendering, "foo")
         
         do {
-            try repo.template(string: "{{>not_found}}")
+            _ = try repo.template(string: "{{>not_found}}")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         do {
-            try repo.template(string: "{{>CustomNSError}}")
+            _ = try repo.template(string: "{{>CustomNSError}}")
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, "CustomNSError")
         }
         
         do {
-            try repo.template(string: "{{>CustomError}}")
+            _ = try repo.template(string: "{{>CustomError}}")
             XCTAssert(false)
-        } catch CustomError.Error {
+        } catch CustomError.error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
         }
         
         do {
-            try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
+            _ = try repo.template(string: "{{>MustacheErrorCodeTemplateNotFound}}")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }

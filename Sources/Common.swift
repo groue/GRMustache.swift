@@ -46,8 +46,8 @@ See also:
 - Rendering
 */
 public enum ContentType {
-    case Text
-    case HTML
+    case text
+    case html
 }
 
 
@@ -55,13 +55,13 @@ public enum ContentType {
 // MARK: - Errors
 
 /// The errors thrown by Mustache.swift
-public struct MustacheError: ErrorType {
+public struct MustacheError: Error {
     
     /// MustacheError types
     public enum Kind : Int {
-        case TemplateNotFound
-        case ParseError
-        case RenderError
+        case templateNotFound
+        case parseError
+        case renderError
     }
     
     /// The error type
@@ -77,12 +77,12 @@ public struct MustacheError: ErrorType {
     public let lineNumber: Int?
     
     /// Eventual underlying error
-    public let underlyingError: ErrorType?
+    public let underlyingError: Error?
     
     
     // Not public
     
-    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) {
         self.kind = kind
         self.message = message
         self.templateID = templateID
@@ -90,7 +90,7 @@ public struct MustacheError: ErrorType {
         self.underlyingError = underlyingError
     }
     
-    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> MustacheError {
+    func errorWith(message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) -> MustacheError {
         return MustacheError(
             kind: self.kind,
             message: message ?? self.message,
@@ -122,15 +122,15 @@ extension MustacheError : CustomStringConvertible {
     public var description: String {
         var description: String
         switch kind {
-        case .TemplateNotFound:
+        case .templateNotFound:
             description = ""
-        case .ParseError:
+        case .parseError:
             if let locationDescription = locationDescription {
                 description = "Parse error at \(locationDescription)"
             } else {
                 description = "Parse error"
             }
-        case .RenderError:
+        case .renderError:
             if let locationDescription = locationDescription {
                 description = "Rendering error at \(locationDescription)"
             } else {
@@ -176,7 +176,7 @@ HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entitie
 - parameter string: A string.
 - returns: The HTML-escaped string.
 */
-public func escapeHTML(string: String) -> String {
+public func escapeHTML(_ string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",
         ">": "&gt;",

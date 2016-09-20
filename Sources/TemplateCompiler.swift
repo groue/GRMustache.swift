@@ -23,32 +23,32 @@
 import Foundation
 
 final class TemplateCompiler: TemplateTokenConsumer {
-    private var state: CompilerState
-    private let repository: TemplateRepository
-    private let templateID: TemplateID?
+    fileprivate var state: CompilerState
+    fileprivate let repository: TemplateRepository
+    fileprivate let templateID: TemplateID?
     
     init(contentType: ContentType, repository: TemplateRepository, templateID: TemplateID?) {
-        self.state = .Compiling(CompilationState(contentType: contentType))
+        self.state = .compiling(CompilationState(contentType: contentType))
         self.repository = repository
         self.templateID = templateID
     }
     
     func templateAST() throws -> TemplateAST {
         switch(state) {
-        case .Compiling(let compilationState):
+        case .compiling(let compilationState):
             switch compilationState.currentScope.type {
-            case .Root:
+            case .root:
                 return TemplateAST(nodes: compilationState.currentScope.templateASTNodes, contentType: compilationState.contentType)
-            case .Section(openingToken: let openingToken, expression: _):
-                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
-            case .InvertedSection(openingToken: let openingToken, expression: _):
-                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
-            case .PartialOverride(openingToken: let openingToken, parentPartialName: _):
-                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
-            case .Block(openingToken: let openingToken, blockName: _):
-                throw MustacheError(kind: .ParseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+            case .section(openingToken: let openingToken, expression: _):
+                throw MustacheError(kind: .parseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+            case .invertedSection(openingToken: let openingToken, expression: _):
+                throw MustacheError(kind: .parseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+            case .partialOverride(openingToken: let openingToken, parentPartialName: _):
+                throw MustacheError(kind: .parseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
+            case .block(openingToken: let openingToken, blockName: _):
+                throw MustacheError(kind: .parseError, message: "Unclosed Mustache tag", templateID: openingToken.templateID, lineNumber: openingToken.lineNumber)
             }
-        case .Error(let compilationError):
+        case .error(let compilationError):
             throw compilationError
         }
     }
@@ -56,47 +56,47 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     // MARK: - TemplateTokenConsumer
     
-    func parser(parser: TemplateParser, didFailWithError error: ErrorType) {
-        state = .Error(error)
+    func parser(_ parser: TemplateParser, didFailWithError error: Error) {
+        state = .error(error)
     }
     
-    func parser(parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool {
+    func parser(_ parser: TemplateParser, shouldContinueAfterParsingToken token: TemplateToken) -> Bool {
         switch(state) {
-        case .Error:
+        case .error:
             return false
-        case .Compiling(let compilationState):
+        case .compiling(let compilationState):
             do {
                 switch(token.type) {
                     
-                case .SetDelimiters:
+                case .setDelimiters:
                     // noop
                     break
                     
-                case .Comment:
+                case .comment:
                     // noop
                     break
                     
-                case .Pragma(content: let content):
-                    let pragma = content.stringByTrimmingCharactersInSet(NSCharacterSet.whitespaceAndNewlineCharacterSet())
-                    if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                case .pragma(content: let content):
+                    let pragma = content.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
+                    if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*TEXT$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                         switch compilationState.compilerContentType {
-                        case .Unlocked:
-                            compilationState.compilerContentType = .Unlocked(.Text)
-                        case .Locked(_):
-                            throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                        case .unlocked:
+                            compilationState.compilerContentType = .unlocked(.text)
+                        case .locked(_):
+                            throw MustacheError(kind: .parseError, message:"CONTENT_TYPE:TEXT pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
-                    } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpressionOptions(rawValue: 0))).firstMatchInString(pragma, options: NSMatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
+                    } else if (try! NSRegularExpression(pattern: "^CONTENT_TYPE\\s*:\\s*HTML$", options: NSRegularExpression.Options(rawValue: 0))).firstMatch(in: pragma, options: NSRegularExpression.MatchingOptions(rawValue: 0), range: NSMakeRange(0, (pragma as NSString).length)) != nil {
                         switch compilationState.compilerContentType {
-                        case .Unlocked:
-                            compilationState.compilerContentType = .Unlocked(.HTML)
-                        case .Locked(_):
-                            throw MustacheError(kind: .ParseError, message:"CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                        case .unlocked:
+                            compilationState.compilerContentType = .unlocked(.html)
+                        case .locked(_):
+                            throw MustacheError(kind: .parseError, message:"CONTENT_TYPE:HTML pragma tag must prepend any Mustache variable, section, or partial tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                     }
                     
-                case .Text(text: let text):
+                case .text(text: let text):
                     switch compilationState.currentScope.type {
-                    case .PartialOverride:
+                    case .partialOverride:
                         // Text inside a partial override tag is not rendered.
                         //
                         // We could throw an error, like we do for illegal tags
@@ -111,92 +111,92 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(TemplateASTNode.text(text: text))
                     }
                     
-                case .EscapedVariable(content: let content, tagDelimiterPair: _):
+                case .escapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .PartialOverride:
-                        throw MustacheError(kind: .ParseError, message:"Illegal tag inside a partial override tag.", templateID: token.templateID, lineNumber: token.lineNumber)
+                    case .partialOverride:
+                        throw MustacheError(kind: .parseError, message:"Illegal tag inside a partial override tag.", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: true, token: token))
-                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                            compilationState.compilerContentType = .locked(compilationState.contentType)
                         } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
-                case .UnescapedVariable(content: let content, tagDelimiterPair: _):
+                case .unescapedVariable(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .PartialOverride:
-                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                    case .partialOverride:
+                        throw MustacheError(kind: .parseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
                             compilationState.currentScope.appendNode(TemplateASTNode.variable(expression: expression, contentType: compilationState.contentType, escapesHTML: false, token: token))
-                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                            compilationState.compilerContentType = .locked(compilationState.contentType)
                         } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
-                case .Section(content: let content, tagDelimiterPair: _):
+                case .section(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .PartialOverride:
-                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                    case .partialOverride:
+                        throw MustacheError(kind: .parseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
-                            compilationState.pushScope(Scope(type: .Section(openingToken: token, expression: expression)))
-                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                            compilationState.pushScope(Scope(type: .section(openingToken: token, expression: expression)))
+                            compilationState.compilerContentType = .locked(compilationState.contentType)
                         } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
-                case .InvertedSection(content: let content, tagDelimiterPair: _):
+                case .invertedSection(content: let content, tagDelimiterPair: _):
                     switch compilationState.currentScope.type {
-                    case .PartialOverride:
-                        throw MustacheError(kind: .ParseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
+                    case .partialOverride:
+                        throw MustacheError(kind: .parseError, message: "Illegal tag inside a partial override tag: \(token.templateSubstring)", templateID: token.templateID, lineNumber: token.lineNumber)
                     default:
                         var empty = false
                         do {
                             let expression = try ExpressionParser().parse(content, empty: &empty)
-                            compilationState.pushScope(Scope(type: .InvertedSection(openingToken: token, expression: expression)))
-                            compilationState.compilerContentType = .Locked(compilationState.contentType)
+                            compilationState.pushScope(Scope(type: .invertedSection(openingToken: token, expression: expression)))
+                            compilationState.compilerContentType = .locked(compilationState.contentType)
                         } catch let error as MustacheError {
                             throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                     }
                     
-                case .Block(content: let content):
+                case .block(content: let content):
                     var empty: Bool = false
                     let blockName = try blockNameFromString(content, inToken: token, empty: &empty)
-                    compilationState.pushScope(Scope(type: .Block(openingToken: token, blockName: blockName)))
-                    compilationState.compilerContentType = .Locked(compilationState.contentType)
+                    compilationState.pushScope(Scope(type: .block(openingToken: token, blockName: blockName)))
+                    compilationState.compilerContentType = .locked(compilationState.contentType)
                     
-                case .PartialOverride(content: let content):
+                case .partialOverride(content: let content):
                     var empty: Bool = false
                     let parentPartialName = try partialNameFromString(content, inToken: token, empty: &empty)
-                    compilationState.pushScope(Scope(type: .PartialOverride(openingToken: token, parentPartialName: parentPartialName)))
-                    compilationState.compilerContentType = .Locked(compilationState.contentType)
+                    compilationState.pushScope(Scope(type: .partialOverride(openingToken: token, parentPartialName: parentPartialName)))
+                    compilationState.compilerContentType = .locked(compilationState.contentType)
                     
-                case .Close(content: let content):
+                case .close(content: let content):
                     switch compilationState.currentScope.type {
-                    case .Root:
-                        throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                    case .root:
+                        throw MustacheError(kind: .parseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         
-                    case .Section(openingToken: let openingToken, expression: let closedExpression):
+                    case .section(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
                         var expression: Expression?
                         do {
@@ -206,10 +206,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                         if expression != nil && expression != closedExpression {
-                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .parseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -220,13 +220,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                            fatalError("Not implemented")
 //                        }
                         let templateString = token.templateString
-                        let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                        let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
                         let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
 
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
                         
-                    case .InvertedSection(openingToken: let openingToken, expression: let closedExpression):
+                    case .invertedSection(openingToken: let openingToken, expression: let closedExpression):
                         var empty: Bool = false
                         var expression: Expression?
                         do {
@@ -236,10 +236,10 @@ final class TemplateCompiler: TemplateTokenConsumer {
                                 throw error.errorWith(templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         } catch {
-                            throw MustacheError(kind: .ParseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
+                            throw MustacheError(kind: .parseError, templateID: token.templateID, lineNumber: token.lineNumber, underlyingError: error)
                         }
                         if expression != nil && expression != closedExpression {
-                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .parseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -250,13 +250,13 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                            fatalError("Not implemented")
 //                        }
                         let templateString = token.templateString
-                        let innerContentRange = openingToken.range.endIndex..<token.range.startIndex
+                        let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
                         let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
                         
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
                         
-                    case .PartialOverride(openingToken: _, parentPartialName: let parentPartialName):
+                    case .partialOverride(openingToken: _, parentPartialName: let parentPartialName):
                         var empty: Bool = false
                         var partialName: String?
                         do {
@@ -267,16 +267,16 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if partialName != nil && partialName != parentPartialName {
-                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .parseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let parentTemplateAST = try repository.templateAST(named: parentPartialName, relativeToTemplateID:templateID)
                         switch parentTemplateAST.type {
-                        case .Undefined:
+                        case .undefined:
                             break
-                        case .Defined(nodes: _, contentType: let partialContentType):
+                        case .defined(nodes: _, contentType: let partialContentType):
                             if partialContentType != compilationState.contentType {
-                                throw MustacheError(kind: .ParseError, message: "Content type mismatch", templateID: token.templateID, lineNumber: token.lineNumber)
+                                throw MustacheError(kind: .parseError, message: "Content type mismatch", templateID: token.templateID, lineNumber: token.lineNumber)
                             }
                         }
                         
@@ -286,7 +286,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(partialOverrideNode)
                         
-                    case .Block(openingToken: _, blockName: let closedBlockName):
+                    case .block(openingToken: _, blockName: let closedBlockName):
                         var empty: Bool = false
                         var blockName: String?
                         do {
@@ -297,7 +297,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
                             }
                         }
                         if blockName != nil && blockName != closedBlockName {
-                            throw MustacheError(kind: .ParseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
+                            throw MustacheError(kind: .parseError, message: "Unmatched closing tag", templateID: token.templateID, lineNumber: token.lineNumber)
                         }
                         
                         let templateASTNodes = compilationState.currentScope.templateASTNodes
@@ -307,18 +307,18 @@ final class TemplateCompiler: TemplateTokenConsumer {
                         compilationState.currentScope.appendNode(blockNode)
                     }
                     
-                case .Partial(content: let content):
+                case .partial(content: let content):
                     var empty: Bool = false
                     let partialName = try partialNameFromString(content, inToken: token, empty: &empty)
                     let partialTemplateAST = try repository.templateAST(named: partialName, relativeToTemplateID: templateID)
                     let partialNode = TemplateASTNode.partial(templateAST: partialTemplateAST, name: partialName)
                     compilationState.currentScope.appendNode(partialNode)
-                    compilationState.compilerContentType = .Locked(compilationState.contentType)
+                    compilationState.compilerContentType = .locked(compilationState.contentType)
                 }
                 
                 return true
             } catch {
-                state = .Error(error)
+                state = .error(error)
                 return false
             }
         }
@@ -327,47 +327,47 @@ final class TemplateCompiler: TemplateTokenConsumer {
     
     // MARK: - Private
     
-    private class CompilationState {
+    fileprivate class CompilationState {
         var currentScope: Scope {
             return scopeStack[scopeStack.endIndex - 1]
         }
         var contentType: ContentType {
             switch compilerContentType {
-            case .Unlocked(let contentType):
+            case .unlocked(let contentType):
                 return contentType
-            case .Locked(let contentType):
+            case .locked(let contentType):
                 return contentType
             }
         }
         
         init(contentType: ContentType) {
-            self.compilerContentType = .Unlocked(contentType)
-            self.scopeStack = [Scope(type: .Root)]
+            self.compilerContentType = .unlocked(contentType)
+            self.scopeStack = [Scope(type: .root)]
         }
         
         func popCurrentScope() {
             scopeStack.removeLast()
         }
         
-        func pushScope(scope: Scope) {
+        func pushScope(_ scope: Scope) {
             scopeStack.append(scope)
         }
         
         enum CompilerContentType {
-            case Unlocked(ContentType)
-            case Locked(ContentType)
+            case unlocked(ContentType)
+            case locked(ContentType)
         }
         
         var compilerContentType: CompilerContentType
-        private var scopeStack: [Scope]
+        fileprivate var scopeStack: [Scope]
     }
     
-    private enum CompilerState {
-        case Compiling(CompilationState)
-        case Error(ErrorType)
+    fileprivate enum CompilerState {
+        case compiling(CompilationState)
+        case error(Error)
     }
     
-    private class Scope {
+    fileprivate class Scope {
         let type: Type
         var templateASTNodes: [TemplateASTNode]
         
@@ -376,41 +376,41 @@ final class TemplateCompiler: TemplateTokenConsumer {
             self.templateASTNodes = []
         }
         
-        func appendNode(node: TemplateASTNode) {
+        func appendNode(_ node: TemplateASTNode) {
             templateASTNodes.append(node)
         }
         
         enum `Type` {
-            case Root
-            case Section(openingToken: TemplateToken, expression: Expression)
-            case InvertedSection(openingToken: TemplateToken, expression: Expression)
-            case PartialOverride(openingToken: TemplateToken, parentPartialName: String)
-            case Block(openingToken: TemplateToken, blockName: String)
+            case root
+            case section(openingToken: TemplateToken, expression: Expression)
+            case invertedSection(openingToken: TemplateToken, expression: Expression)
+            case partialOverride(openingToken: TemplateToken, parentPartialName: String)
+            case block(openingToken: TemplateToken, blockName: String)
         }
     }
     
-    private func blockNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
-        let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        let blockName = string.stringByTrimmingCharactersInSet(whiteSpace)
+    fileprivate func blockNameFromString(_ string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+        let whiteSpace = CharacterSet.whitespacesAndNewlines
+        let blockName = string.trimmingCharacters(in: whiteSpace)
         if blockName.characters.count == 0 {
             empty = true
-            throw MustacheError(kind: .ParseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if (blockName.rangeOfCharacterFromSet(whiteSpace) != nil) {
+            throw MustacheError(kind: .parseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
+        } else if (blockName.rangeOfCharacter(from: whiteSpace) != nil) {
             empty = false
-            throw MustacheError(kind: .ParseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .parseError, message: "Invalid block name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
         return blockName
     }
     
-    private func partialNameFromString(string: String, inToken token: TemplateToken, inout empty: Bool) throws -> String {
-        let whiteSpace = NSCharacterSet.whitespaceAndNewlineCharacterSet()
-        let partialName = string.stringByTrimmingCharactersInSet(whiteSpace)
+    fileprivate func partialNameFromString(_ string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
+        let whiteSpace = CharacterSet.whitespacesAndNewlines
+        let partialName = string.trimmingCharacters(in: whiteSpace)
         if partialName.characters.count == 0 {
             empty = true
-            throw MustacheError(kind: .ParseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
-        } else if (partialName.rangeOfCharacterFromSet(whiteSpace) != nil) {
+            throw MustacheError(kind: .parseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
+        } else if (partialName.rangeOfCharacter(from: whiteSpace) != nil) {
             empty = false
-            throw MustacheError(kind: .ParseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
+            throw MustacheError(kind: .parseError, message: "Invalid template name", templateID: token.templateID, lineNumber: token.lineNumber)
         }
         return partialName
     }

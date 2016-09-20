@@ -71,7 +71,7 @@ public protocol TemplateRepositoryDataSource {
     - parameter baseTemplateID: The template ID of the enclosing template.
     - returns: A template ID.
     */
-    func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
+    func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID?
     
     /**
     Returns the Mustache template string that matches the template ID.
@@ -81,7 +81,7 @@ public protocol TemplateRepositoryDataSource {
                             throws an error that describes the problem.
     - returns: A Mustache template string.
     */
-    func templateStringForTemplateID(templateID: TemplateID) throws -> String
+    func templateStringForTemplateID(_ templateID: TemplateID) throws -> String
 }
 
 /**
@@ -174,8 +174,8 @@ final public class TemplateRepository {
                                    encoding is NSUTF8StringEncoding.
     - returns: A new TemplateRepository.
     */
-    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: URLDataSource(baseURL: NSURL.fileURLWithPath(directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
+        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
     }
     
     /**
@@ -213,7 +213,7 @@ final public class TemplateRepository {
                                    encoding is NSUTF8StringEncoding.
     - returns: A new TemplateRepository.
     */
-    convenience public init(baseURL: NSURL, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
+    convenience public init(baseURL: URL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
         self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
     }
     
@@ -234,8 +234,8 @@ final public class TemplateRepository {
                                    encoding is NSUTF8StringEncoding.
     - returns: A new TemplateRepository.
     */
-    convenience public init(bundle: NSBundle?, templateExtension: String? = "mustache", encoding: NSStringEncoding = NSUTF8StringEncoding) {
-        self.init(dataSource: BundleDataSource(bundle: bundle ?? NSBundle.mainBundle(), templateExtension: templateExtension, encoding: encoding))
+    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main, templateExtension: templateExtension, encoding: encoding))
     }
     
     
@@ -288,7 +288,7 @@ final public class TemplateRepository {
                                 problem.
     - returns: A Mustache Template.
     */
-    public func template(string string: String) throws -> Template {
+    public func template(string: String) throws -> Template {
         let templateAST = try self.templateAST(string: string)
         return Template(repository: self, templateAST: templateAST, baseContext: lockedConfiguration.baseContext)
     }
@@ -339,14 +339,14 @@ final public class TemplateRepository {
     
     func templateAST(named name: String, relativeToTemplateID baseTemplateID: TemplateID? = nil) throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
-            throw MustacheError(kind: .TemplateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
+            throw MustacheError(kind: .templateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
         }
         
         guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
             if let baseTemplateID = baseTemplateID {
-                throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
+                throw MustacheError(kind: .templateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
             } else {
-                throw MustacheError(kind: .TemplateNotFound, message: "Template not found: \"\(name)\"")
+                throw MustacheError(kind: .templateNotFound, message: "Template not found: \"\(name)\"")
             }
         }
         
@@ -369,12 +369,12 @@ final public class TemplateRepository {
             return templateAST
         } catch {
             // Failure: remove the empty AST
-            templateASTCache.removeValueForKey(templateID)
+            templateASTCache.removeValue(forKey: templateID)
             throw error
         }
     }
     
-    func templateAST(string string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
+    func templateAST(string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
         // A Compiler
         let compiler = TemplateCompiler(
             contentType: lockedConfiguration.contentType,
@@ -394,8 +394,8 @@ final public class TemplateRepository {
     }
     
     
-    private var _lockedConfiguration: Configuration?
-    private var lockedConfiguration: Configuration {
+    fileprivate var _lockedConfiguration: Configuration?
+    fileprivate var lockedConfiguration: Configuration {
         // Changing mutable values within the repository's configuration no
         // longer has any effect.
         if _lockedConfiguration == nil {
@@ -404,28 +404,28 @@ final public class TemplateRepository {
         return _lockedConfiguration!
     }
     
-    private var templateASTCache: [TemplateID: TemplateAST]
+    fileprivate var templateASTCache: [TemplateID: TemplateAST]
     
     
     // -------------------------------------------------------------------------
     // MARK: DictionaryDataSource
     
-    private class DictionaryDataSource: TemplateRepositoryDataSource {
+    fileprivate class DictionaryDataSource: TemplateRepositoryDataSource {
         let templates: [String: String]
         
         init(templates: [String: String]) {
             self.templates = templates
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             return name
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+        func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
             if let string = templates[templateID] {
                 return string
             } else {
-                throw MustacheError(kind: .TemplateNotFound, templateID: templateID)
+                throw MustacheError(kind: .templateNotFound, templateID: templateID)
             }
         }
     }
@@ -434,25 +434,25 @@ final public class TemplateRepository {
     // -------------------------------------------------------------------------
     // MARK: URLDataSource
     
-    private class URLDataSource: TemplateRepositoryDataSource {
+    fileprivate class URLDataSource: TemplateRepositoryDataSource {
         let baseURLAbsoluteString: String
-        let baseURL: NSURL
+        let baseURL: URL
         let templateExtension: String?
-        let encoding: NSStringEncoding
+        let encoding: String.Encoding
         
-        init(baseURL: NSURL, templateExtension: String?, encoding: NSStringEncoding) {
+        init(baseURL: URL, templateExtension: String?, encoding: String.Encoding) {
             self.baseURL = baseURL
-            self.baseURLAbsoluteString = baseURL.URLByStandardizingPath!.absoluteString!
+            self.baseURLAbsoluteString = baseURL.standardizedFileURL.absoluteString
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             // Rebase template names starting with a /
             let normalizedName: String
             let normalizedBaseTemplateID: TemplateID?
             if !name.isEmpty && name[name.startIndex] == "/" {
-                normalizedName = name.substringFromIndex(name.startIndex.successor())
+                normalizedName = name.substring(from: name.characters.index(after: name.startIndex))
                 normalizedBaseTemplateID = nil
             } else {
                 normalizedName = name
@@ -464,32 +464,32 @@ final public class TemplateRepository {
             }
             
             let templateFilename: String
-            if let templateExtension = self.templateExtension where !templateExtension.isEmpty {
-                templateFilename = (normalizedName as NSString).stringByAppendingPathExtension(templateExtension)!
+            if let templateExtension = self.templateExtension , !templateExtension.isEmpty {
+                templateFilename = (normalizedName as NSString).appendingPathExtension(templateExtension)!
             } else {
                 templateFilename = normalizedName
             }
             
-            let templateBaseURL: NSURL
+            let templateBaseURL: URL
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                templateBaseURL = NSURL(string: normalizedBaseTemplateID)!
+                templateBaseURL = URL(string: normalizedBaseTemplateID)!
             } else {
                 templateBaseURL = self.baseURL
             }
             
-            let templateURL = NSURL(string: templateFilename, relativeToURL: templateBaseURL)!.URLByStandardizingPath!
-            let templateAbsoluteString = templateURL.absoluteString!
+            let templateURL = URL(string: templateFilename, relativeTo: templateBaseURL)!.standardizedFileURL
+            let templateAbsoluteString = templateURL.absoluteString
             
             // Make sure partial relative paths can not escape repository root
-            if templateAbsoluteString.rangeOfString(baseURLAbsoluteString)?.startIndex == templateAbsoluteString.startIndex {
+            if templateAbsoluteString.range(of: baseURLAbsoluteString)?.lowerBound == templateAbsoluteString.startIndex {
                 return templateAbsoluteString
             } else {
                 return nil
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfURL: NSURL(string: templateID)!, encoding: encoding) as String
+        func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
+            return try NSString(contentsOf: URL(string: templateID)!, encoding: encoding.rawValue) as String
         }
     }
     
@@ -497,23 +497,23 @@ final public class TemplateRepository {
     // -------------------------------------------------------------------------
     // MARK: BundleDataSource
     
-    private class BundleDataSource: TemplateRepositoryDataSource {
-        let bundle: NSBundle
+    fileprivate class BundleDataSource: TemplateRepositoryDataSource {
+        let bundle: Bundle
         let templateExtension: String?
-        let encoding: NSStringEncoding
+        let encoding: String.Encoding
         
-        init(bundle: NSBundle, templateExtension: String?, encoding: NSStringEncoding) {
+        init(bundle: Bundle, templateExtension: String?, encoding: String.Encoding) {
             self.bundle = bundle
             self.templateExtension = templateExtension
             self.encoding = encoding
         }
         
-        func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+        func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
             // Rebase template names starting with a /
             let normalizedName: String
             let normalizedBaseTemplateID: TemplateID?
             if !name.isEmpty && name[name.startIndex] == "/" {
-                normalizedName = name.substringFromIndex(name.startIndex.successor())
+                normalizedName = name.substring(from: name.characters.index(after: name.startIndex))
                 normalizedBaseTemplateID = nil
             } else {
                 normalizedName = name
@@ -525,15 +525,15 @@ final public class TemplateRepository {
             }
             
             if let normalizedBaseTemplateID = normalizedBaseTemplateID {
-                let relativePath = (normalizedBaseTemplateID as NSString).stringByDeletingLastPathComponent.stringByReplacingOccurrencesOfString(bundle.resourcePath!, withString:"")
-                return bundle.pathForResource(normalizedName, ofType: templateExtension, inDirectory: relativePath)
+                let relativePath = (normalizedBaseTemplateID as NSString).deletingLastPathComponent.replacingOccurrences(of: bundle.resourcePath!, with:"")
+                return bundle.path(forResource: normalizedName, ofType: templateExtension, inDirectory: relativePath)
             } else {
-                return bundle.pathForResource(normalizedName, ofType: templateExtension)
+                return bundle.path(forResource: normalizedName, ofType: templateExtension)
             }
         }
         
-        func templateStringForTemplateID(templateID: TemplateID) throws -> String {
-            return try NSString(contentsOfFile: templateID, encoding: encoding) as String
+        func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
+            return try NSString(contentsOfFile: templateID, encoding: encoding.rawValue) as String
         }
     }
 }

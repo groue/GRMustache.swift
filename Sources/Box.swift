@@ -180,10 +180,10 @@ extension Bool : MustacheBoxable {
             boolValue: self,
             render: { (info: RenderingInfo) in
                 switch info.tag.type {
-                case .Variable:
+                case .variable:
                     // {{ bool }}
                     return Rendering("\(self ? 1 : 0)") // Behave like [NSNumber numberWithBool:]
-                case .Section:
+                case .section:
                     if info.enumerationItem {
                         // {{# bools }}...{{/ bools }}
                         return try info.tag.render(info.context.extendedContext(Box(self)))
@@ -237,10 +237,10 @@ extension Int : MustacheBoxable {
             boolValue: (self != 0),
             render: { (info: RenderingInfo) in
                 switch info.tag.type {
-                case .Variable:
+                case .variable:
                     // {{ int }}
                     return Rendering("\(self)")
-                case .Section:
+                case .section:
                     if info.enumerationItem {
                         // {{# ints }}...{{/ ints }}
                         return try info.tag.render(info.context.extendedContext(Box(self)))
@@ -294,10 +294,10 @@ extension UInt : MustacheBoxable {
             boolValue: (self != 0),
             render: { (info: RenderingInfo) in
                 switch info.tag.type {
-                case .Variable:
+                case .variable:
                     // {{ uint }}
                     return Rendering("\(self)")
-                case .Section:
+                case .section:
                     if info.enumerationItem {
                         // {{# uints }}...{{/ uints }}
                         return try info.tag.render(info.context.extendedContext(Box(self)))
@@ -351,10 +351,10 @@ extension Double : MustacheBoxable {
             boolValue: (self != 0.0),
             render: { (info: RenderingInfo) in
                 switch info.tag.type {
-                case .Variable:
+                case .variable:
                     // {{ double }}
                     return Rendering("\(self)")
-                case .Section:
+                case .section:
                     if info.enumerationItem {
                         // {{# doubles }}...{{/ doubles }}
                         return try info.tag.render(info.context.extendedContext(Box(self)))
@@ -518,7 +518,7 @@ extension NSObject : MustacheBoxable {
             // Enumerable
             
             // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-            let array = GeneratorSequence(NSFastGenerator(enumerable)).map(BoxAnyObject)
+            let array = IteratorSequence(NSFastEnumerationIterator(enumerable)).map(BoxAnyObject)
             return array.mustacheBoxWithArrayValue(self, box: { $0 })
             
         } else {
@@ -528,9 +528,9 @@ extension NSObject : MustacheBoxable {
             return MustacheBox(
                 value: self,
                 keyedSubscript: { (key: String) in
-                    if GRMustacheKeyAccess.isSafeMustacheKey(key, forObject: self) {
+                    if GRMustacheKeyAccess.isSafeMustacheKey(key, for: self) {
                         // Use valueForKey: for safe keys
-                        return BoxAnyObject(self.valueForKey(key))
+                        return BoxAnyObject(self.value(forKey: key))
                     } else {
                         // Missing key
                         return Box()
@@ -618,28 +618,28 @@ extension NSNumber {
         // This would make template rendering depend on the size of Int, and
         // yield very weird platform-related issues. So keep it simple, stupid.
         
-        let objCType = String.fromCString(self.objCType)!
+        let objCType = String(cString: self.objCType)
         switch objCType {
         case "c":
-            return Box(Int(charValue))
+            return Box(Int(int8Value))
         case "C":
-            return Box(UInt(unsignedCharValue))
+            return Box(UInt(uint8Value))
         case "s":
-            return Box(Int(shortValue))
+            return Box(Int(int16Value))
         case "S":
-            return Box(UInt(unsignedShortValue))
+            return Box(UInt(uint16Value))
         case "i":
-            return Box(Int(intValue))
+            return Box(Int(int32Value))
         case "I":
-            return Box(UInt(unsignedIntValue))
+            return Box(UInt(uint32Value))
         case "l":
-            return Box(Int(longValue))
+            return Box(Int(intValue))
         case "L":
-            return Box(UInt(unsignedLongValue))
+            return Box(UInt(uintValue))
         case "q":
-            return Box(Int(longLongValue))          // May fail on 32-bits architectures, right?
+            return Box(Int(int64Value))          // May fail on 32-bits architectures, right?
         case "Q":
-            return Box(UInt(unsignedLongLongValue)) // May fail on 32-bits architectures, right?
+            return Box(UInt(uint64Value)) // May fail on 32-bits architectures, right?
         case "f":
             return Box(Double(floatValue))
         case "d":
@@ -708,7 +708,7 @@ templates.
 
 - returns: A MustacheBox that wraps *boxable*.
 */
-public func Box(boxable: MustacheBoxable?) -> MustacheBox {
+public func Box(_ boxable: MustacheBoxable?) -> MustacheBox {
     return boxable?.mustacheBox ?? Box()
 }
 
@@ -741,7 +741,7 @@ See the documentation of `NSObject.mustacheBox`.
 - parameter object: An NSObject.
 - returns: A MustacheBox that wraps *object*.
 */
-public func Box(object: NSObject?) -> MustacheBox {
+public func Box(_ object: NSObject?) -> MustacheBox {
     return object?.mustacheBox ?? Box()
 }
 
@@ -870,40 +870,11 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 - parameter object: An object.
 - returns: A MustacheBox that wraps *object*.
 */
-private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
+private func BoxAnyObject(_ object: Any?) -> MustacheBox {
     if let boxable = object as? MustacheBoxable {
         return boxable.mustacheBox
-    } else if let object: AnyObject = object {
-        
-        // IMPLEMENTATION NOTE
-        //
-        // In the example below, the Thing class can not be turned into any
-        // relevant MustacheBox.
-        // 
-        // Yet we can not prevent the user from trying to box it, because the
-        // Thing class adopts the AnyObject protocol, just as all Swift classes.
-        //
-        //     class Thing { }
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(Thing)'
-        //     Box(Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(Thing())
-        //
-        //     // Foundation collections can also contain unsupported classes:
-        //     let array = NSArray(object: Thing())
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     Box(array)
-        //
-        //     // Compilation error (OK): cannot find an overload for 'Box' that accepts an argument list of type '(AnyObject)'
-        //     Box(array[0])
-        //
-        //     // Runtime warning (Not OK but unavoidable): value `Thing` is not NSObject and does not conform to MustacheBoxable: it is discarded.
-        //     BoxAnyObject(array[0])
-        
-        NSLog("Mustache.BoxAnyObject(): value `\(object)` is does not conform to MustacheBoxable: it is discarded.")
+    } else if let object = object {
+        NSLog("Mustache.BoxAnyObject(): value `\(object)` does not conform to MustacheBoxable: it is discarded.")
         return Box()
     } else {
         return Box()
@@ -930,7 +901,7 @@ private func BoxAnyObject(object: AnyObject?) -> MustacheBox {
 // So we don't support boxing of sequences.
 
 // Support for all collections
-extension CollectionType {
+extension Collection {
     
     /**
     Concatenates the rendering of the collection items.
@@ -956,7 +927,7 @@ extension CollectionType {
                      whatever the type of the collection items.
     - returns: A Rendering
     */
-    private func renderItems(info: RenderingInfo, @noescape box: (Generator.Element) -> MustacheBox) throws -> Rendering {
+    fileprivate func renderItems(_ info: RenderingInfo, box: (Iterator.Element) -> MustacheBox) throws -> Rendering {
         // Prepare the rendering. We don't known the contentType yet: it depends on items
         var buffer = ""
         var contentType: ContentType? = nil
@@ -978,7 +949,7 @@ extension CollectionType {
         info.enumerationItem = true
         
         for item in self {
-            let boxRendering = try box(item).render(info: info)
+            let boxRendering = try box(item).render(info)
             if contentType == nil
             {
                 // First item: now we know our contentType
@@ -994,7 +965,7 @@ extension CollectionType {
             {
                 // Inconsistent content type: this is an error. How are we
                 // supposed to mix Text and HTML?
-                throw MustacheError(kind: .RenderError, message: "Content type mismatch")
+                throw MustacheError(kind: .renderError, message: "Content type mismatch")
             }
         }
         
@@ -1032,7 +1003,7 @@ extension CollectionType {
 }
 
 // Support for Set
-extension CollectionType where Index.Distance == Int {
+extension Collection where IndexDistance == Int {
     /**
     This function returns a MustacheBox that wraps a set-like collection.
     
@@ -1047,7 +1018,7 @@ extension CollectionType where Index.Distance == Int {
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithSetValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    fileprivate func mustacheBoxWithSetValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1060,7 +1031,7 @@ extension CollectionType where Index.Distance == Int {
                     } else {
                         return Box()
                     }
-                case "count":   // C.Index.Distance == Int
+                case "count":   // C.IndexDistance == Int
                     return Box(self.count)
                 default:
                     return Box()
@@ -1081,7 +1052,7 @@ extension CollectionType where Index.Distance == Int {
 }
 
 // Support for Array
-extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexType {
+extension BidirectionalCollection where IndexDistance == Int {
     /**
     This function returns a MustacheBox that wraps an array-like collection.
     
@@ -1097,7 +1068,7 @@ extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexT
                        whatever the type of the collection items.
     - returns: A MustacheBox that wraps the collection.
     */
-    private func mustacheBoxWithArrayValue(value: Any?, box: (Generator.Element) -> MustacheBox) -> MustacheBox {
+    fileprivate func mustacheBoxWithArrayValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
             value: value,
@@ -1116,7 +1087,7 @@ extension CollectionType where Index.Distance == Int, Index: BidirectionalIndexT
                     } else {
                         return Box()
                     }
-                case "count":   // C.Index.Distance == Int
+                case "count":   // C.IndexDistance == Int
                     return Box(self.count)
                 default:
                     return Box()
@@ -1199,7 +1170,7 @@ extension NSSet {
         //
         // So turn NSSet into a Swift Array of MustacheBoxes, and ask the array
         // to return a set-like box:
-        let array = GeneratorSequence(NSFastGenerator(self)).map(BoxAnyObject)
+        let array = IteratorSequence(NSFastEnumerationIterator(self)).map(BoxAnyObject)
         return array.mustacheBoxWithSetValue(self, box: { $0 })
     }
 }
@@ -1247,7 +1218,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index.Distance == Int>(set: C?) -> MustacheBox {
+public func Box<C: Collection>(_ set: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
     if let set = set {
         return set.mustacheBoxWithSetValue(set, box: { Box($0) })
     } else {
@@ -1298,7 +1269,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType where C.Generator.Element: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
@@ -1349,7 +1320,7 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: CollectionType, T where C.Generator.Element == Optional<T>, T: MustacheBoxable, C.Index: BidirectionalIndexType, C.Index.Distance == Int>(array: C?) -> MustacheBox {
+public func Box<C: BidirectionalCollection, T>(_ array: C?) -> MustacheBox where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int {
     if let array = array {
         return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
     } else {
@@ -1410,11 +1381,11 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(dictionary: [String: T]?) -> MustacheBox {
+public func Box<T: MustacheBoxable>(_ dictionary: [String: T]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: T)) in
                     var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
@@ -1476,11 +1447,11 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(dictionary: [String: T?]?) -> MustacheBox {
+public func Box<T: MustacheBoxable>(_ dictionary: [String: T?]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), combine: { (boxDictionary, item: (key: String, value: T?)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: T?)) in
                     var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
@@ -1557,7 +1528,7 @@ extension NSDictionary {
     public override var mustacheBox: MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: GeneratorSequence(NSFastGenerator(self)).reduce([String: MustacheBox](), combine: { (boxDictionary, key) in
+                dictionaryValue: IteratorSequence(NSFastEnumerationIterator(self)).reduce([String: MustacheBox](), { (boxDictionary, key) in
                     var boxDictionary = boxDictionary
                     if let key = key as? String {
                         boxDictionary[key] = BoxAnyObject(self[key])
@@ -1597,7 +1568,7 @@ See also:
 
 - FilterFunction
 */
-public func Box(filter: FilterFunction) -> MustacheBox {
+public func Box(_ filter: @escaping FilterFunction) -> MustacheBox {
     return MustacheBox(filter: filter)
 }
 
@@ -1618,7 +1589,7 @@ See also:
 
 - RenderFunction
 */
-public func Box(render: RenderFunction) -> MustacheBox {
+public func Box(_ render: @escaping RenderFunction) -> MustacheBox {
     return MustacheBox(render: render)
 }
 
@@ -1650,7 +1621,7 @@ See also:
 
 - WillRenderFunction
 */
-public func Box(willRender: WillRenderFunction) -> MustacheBox {
+public func Box(_ willRender: @escaping WillRenderFunction) -> MustacheBox {
     return MustacheBox(willRender: willRender)
 }
 
@@ -1683,7 +1654,7 @@ See also:
 
 - DidRenderFunction
 */
-public func Box(didRender: DidRenderFunction) -> MustacheBox {
+public func Box(_ didRender: @escaping DidRenderFunction) -> MustacheBox {
     return MustacheBox(didRender: didRender)
 }
 

@@ -70,28 +70,28 @@ class BoxTests: XCTestCase {
         let boxableStruct = BoxableStruct(name: "BoxableStruct")
         let boxableClass = BoxableClass(name: "BoxableClass")
         let optionalBoxableClass: BoxableClass? = BoxableClass(name: "BoxableClass")
-        let NSObject = NSDate()
+        let object = Date()
         
         let boxedBoxableStruct = boxableStruct.mustacheBox()
         let boxedStruct = MustacheBox(value: Struct(name: "Struct"))
         let boxedBoxableClass = boxableClass.mustacheBox()
         let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
         let boxedClass = MustacheBox(value: Class(name: "Class"))
-        let boxedNSObject = Box(NSObject)
+        let boxedObject = Box(object)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as! BoxableStruct
         let extractedStruct = boxedStruct.value as! Struct
         let extractedBoxableClass = boxedBoxableClass.value as! BoxableClass
         let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
         let extractedClass = boxedClass.value as! Class
-        let extractedNSObject = boxedNSObject.value as! NSDate
+        let extractedObject = boxedObject.value as! Date
         
         XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
         XCTAssertEqual(extractedStruct.name, "Struct")
         XCTAssertEqual(extractedBoxableClass.name, "BoxableClass")
         XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
         XCTAssertEqual(extractedClass.name, "Class")
-        XCTAssertEqual(extractedNSObject, NSObject)
+        XCTAssertEqual(extractedObject, object)
     }
     
     // TODO: why is this test commented out?
@@ -159,7 +159,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
-        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
     func testSetOfMustacheBoxable() {
@@ -167,7 +167,7 @@ class BoxTests: XCTestCase {
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
-        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].indexOf(rendering) != nil)
+        XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
     }
     
     func testDictionaryOfInt() {
@@ -282,14 +282,14 @@ class BoxTests: XCTestCase {
     func testArrayValueForRange() {
         let originalValue = 1...3
         let box = Box(originalValue)
-        let extractedValue = box.value as! Range<Int>
+        let extractedValue = box.value as! CountableRange<Int>
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
     }
     
     func testDictionaryValueForNSDictionary() {
-        let originalValue = NSDictionary(object: "value", forKey: "key")
+        let originalValue = NSDictionary(object: "value", forKey: "key" as NSCopying)
         let box = Box(originalValue)
         let extractedValue = box.value as! NSDictionary
         XCTAssertEqual(extractedValue, originalValue)

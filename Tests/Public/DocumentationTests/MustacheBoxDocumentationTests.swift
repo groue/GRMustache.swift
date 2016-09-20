@@ -39,11 +39,11 @@ class MustacheBoxDocumentationTests: XCTestCase {
     func testRenderingInfoDocumentation() {
         let render: RenderFunction = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
-            case .Variable:
+            case .variable:
                 // Render a {{object}} variable tag
                 return Rendering("variable")
                 
-            case .Section:
+            case .section:
                 // Render a {{#object}}...{{/object}} section tag.
                 //
                 // Extend the current context with ["value": "foo"], and proceed

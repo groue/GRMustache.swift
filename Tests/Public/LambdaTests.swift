@@ -167,10 +167,10 @@ class LambdaTests: XCTestCase {
             "lambda": Box(lambda),
         ]
         do {
-            try template.render(Box(data))
+            _ = try template.render(Box(data))
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -186,10 +186,10 @@ class LambdaTests: XCTestCase {
             "lambda": Box(lambda),
         ]
         do {
-            try template.render(Box(data))
+            _ = try template.render(Box(data))
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
