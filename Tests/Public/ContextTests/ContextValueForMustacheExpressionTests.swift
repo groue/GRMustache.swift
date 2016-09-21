@@ -41,7 +41,7 @@ class ContextValueForMustacheExpressionTests: XCTestCase {
     }
     
     func testScopedExpression() {
-        let context = Context(Box(["a": ["name": "success"]]))
+        let context = Context(Box(["a": ["name": "success"]] as NSDictionary))
         let box = try! context.mustacheBoxForExpression("a.name")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")

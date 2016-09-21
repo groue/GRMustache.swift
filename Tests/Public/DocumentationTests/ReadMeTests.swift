@@ -54,11 +54,11 @@ class ReadMeTests: XCTestCase {
     func testReadmeExample1() {
         let testBundle = Bundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
-        let data = [
+        let data: [String: MustacheBoxable?] = [
             "name": "Chris",
             "value": 10000,
             "taxed_value": 10000 - (10000 * 0.4),
-            "in_ca": true] as [String : Any]
+            "in_ca": true]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
@@ -90,7 +90,7 @@ class ReadMeTests: XCTestCase {
         
         let testBundle = Bundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
-        let data = ["cats": ["Kitty", "Pussy", "Melba"]]
+        let data: NSDictionary = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "I have 3 cats.")
     }
@@ -160,12 +160,12 @@ class ReadMeTests: XCTestCase {
         let template = try! Template(string: templateString)
         template.registerInBaseContext("format", Box(dateFormatter))
         
-        let data = [
+        let data: NSDictionary = [
             "name": "Arthur",
             "date": Date(),
             "real_date": Date().addingTimeInterval(60*60*24*3),
             "late": true
-        ] as [String : Any]
+        ]
         let rendering = try! template.render(Box(data))
         XCTAssert(rendering.characters.count > 0)
     }

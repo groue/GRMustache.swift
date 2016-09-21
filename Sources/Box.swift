@@ -545,6 +545,31 @@ extension NSObject : MustacheBoxable {
 
 
 /**
+ */
+
+extension ReferenceConvertible where Self: MustacheBoxable {
+    public var mustacheBox: MustacheBox {
+        if let object = self as? ReferenceType {
+            return object.mustacheBox
+        } else {
+            NSLog("Value `\(self)` can not feed Mustache templates: it is discarded.")
+            return Box()
+        }
+    }
+}
+
+extension Data : MustacheBoxable { }
+extension Date : MustacheBoxable { }
+extension DateComponents : MustacheBoxable { }
+extension IndexPath : MustacheBoxable { }
+extension IndexSet : MustacheBoxable { }
+extension URL : MustacheBoxable { }
+extension URLComponents : MustacheBoxable { }
+extension URLQueryItem : MustacheBoxable { }
+extension URLRequest : MustacheBoxable { }
+extension UUID : MustacheBoxable { }
+
+/**
 GRMustache provides built-in support for rendering `NSNull`.
 */
 
@@ -713,37 +738,37 @@ public func Box(_ boxable: MustacheBoxable?) -> MustacheBox {
 }
 
 
-// IMPLEMENTATION NOTE
+//// IMPLEMENTATION NOTE
+////
+//// Why is there a Box(NSObject?) function, when Box(MustacheBoxable?) should be
+//// enough, given NSObject adopts MustacheBoxable?
+////
+//// Well, this is another Swift oddity.
+////
+//// Without this explicit NSObject support, many compound values like the ones
+//// below could not be boxed:
+////
+//// - ["cats": ["Kitty", "Pussy", "Melba"]]
+//// - [[0,1],[2,3]]
+////
+//// It looks like Box(object: NSObject?) triggers the silent conversion of those
+//// values to NSArray and NSDictionary.
+////
+//// It's an extra commodity we want to keep, in order to prevent the user to
+//// rewrite them as:
+////
+//// - ["cats": Box([Box("Kitty"), Box("Pussy"), Box("Melba")])]
+//// - [Box([0,1]), Box([2,3])]
 //
-// Why is there a Box(NSObject?) function, when Box(MustacheBoxable?) should be
-// enough, given NSObject adopts MustacheBoxable?
+///**
+//See the documentation of `NSObject.mustacheBox`.
 //
-// Well, this is another Swift oddity.
-//
-// Without this explicit NSObject support, many compound values like the ones
-// below could not be boxed:
-//
-// - ["cats": ["Kitty", "Pussy", "Melba"]]
-// - [[0,1],[2,3]]
-//
-// It looks like Box(object: NSObject?) triggers the silent conversion of those
-// values to NSArray and NSDictionary.
-//
-// It's an extra commodity we want to keep, in order to prevent the user to
-// rewrite them as:
-//
-// - ["cats": Box([Box("Kitty"), Box("Pussy"), Box("Melba")])]
-// - [Box([0,1]), Box([2,3])]
-
-/**
-See the documentation of `NSObject.mustacheBox`.
-
-- parameter object: An NSObject.
-- returns: A MustacheBox that wraps *object*.
-*/
-public func Box(_ object: NSObject?) -> MustacheBox {
-    return object?.mustacheBox ?? Box()
-}
+//- parameter object: An NSObject.
+//- returns: A MustacheBox that wraps *object*.
+//*/
+//public func Box(_ object: NSObject?) -> MustacheBox {
+//    return object?.mustacheBox ?? Box()
+//}
 
 
 // IMPLEMENTATION NOTE
@@ -1381,11 +1406,11 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(_ dictionary: [String: T]?) -> MustacheBox {
+public func Box(_ dictionary: [String: MustacheBoxable]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: T)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: MustacheBoxable)) in
                     var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary
@@ -1447,11 +1472,11 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box<T: MustacheBoxable>(_ dictionary: [String: T?]?) -> MustacheBox {
+public func Box(_ dictionary: [String: MustacheBoxable?]?) -> MustacheBox {
     if let dictionary = dictionary {
         return MustacheBox(
             converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: T?)) in
+                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: MustacheBoxable?)) in
                     var boxDictionary = boxDictionary
                     boxDictionary[item.key] = Box(item.value)
                     return boxDictionary

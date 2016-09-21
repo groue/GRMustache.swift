@@ -30,7 +30,7 @@ class EachFilterTests: XCTestCase {
         let set = Set(["a", "b"])
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["set": set]))
+        let rendering = try! template.render(Box(["set": Box(set)]))
         XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].index(of: rendering) != nil)
     }
     
@@ -74,7 +74,7 @@ class EachFilterTests: XCTestCase {
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{increment(.)}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         template.registerInBaseContext("increment", Box(increment))
-        let rendering = try! template.render(Box(["items": items]))
+        let rendering = try! template.render(Box(["items": Box(items)]))
         XCTAssertEqual(rendering, "(0,2)(1,3)(2,4)")
     }
     
@@ -82,7 +82,7 @@ class EachFilterTests: XCTestCase {
         let items = ["a","bb","ccc"]
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{length}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["items": items]))
+        let rendering = try! template.render(Box(["items": Box(items)]))
         XCTAssertEqual(rendering, "(0,1)(1,2)(2,3)")
     }
     
@@ -91,7 +91,7 @@ class EachFilterTests: XCTestCase {
         let items = [Box(item)]
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{.}}){{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["items": items]))
+        let rendering = try! template.render(Box(["items": Box(items)]))
         XCTAssertEqual(rendering, "(0,foo)")
     }
 }

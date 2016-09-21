@@ -70,28 +70,32 @@ class BoxTests: XCTestCase {
         let boxableStruct = BoxableStruct(name: "BoxableStruct")
         let boxableClass = BoxableClass(name: "BoxableClass")
         let optionalBoxableClass: BoxableClass? = BoxableClass(name: "BoxableClass")
-        let object = Date()
+        let nsObject = NSDate()
+        let referenceConvertible = Date()
         
         let boxedBoxableStruct = boxableStruct.mustacheBox()
         let boxedStruct = MustacheBox(value: Struct(name: "Struct"))
         let boxedBoxableClass = boxableClass.mustacheBox()
         let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
         let boxedClass = MustacheBox(value: Class(name: "Class"))
-        let boxedObject = Box(object)
+        let boxedNSObject = Box(nsObject)
+        let boxedReferenceConvertible = Box(referenceConvertible)
         
         let extractedBoxableStruct = boxedBoxableStruct.value as! BoxableStruct
         let extractedStruct = boxedStruct.value as! Struct
         let extractedBoxableClass = boxedBoxableClass.value as! BoxableClass
         let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
         let extractedClass = boxedClass.value as! Class
-        let extractedObject = boxedObject.value as! Date
+        let extractedNSObject = boxedNSObject.value as! NSDate
+        let extractedReferenceConvertible = boxedNSObject.value as! Date
         
         XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
         XCTAssertEqual(extractedStruct.name, "Struct")
         XCTAssertEqual(extractedBoxableClass.name, "BoxableClass")
         XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
         XCTAssertEqual(extractedClass.name, "Class")
-        XCTAssertEqual(extractedObject, object)
+        XCTAssertEqual(extractedNSObject, nsObject)
+        XCTAssertEqual(extractedReferenceConvertible, referenceConvertible)
     }
     
     // TODO: why is this test commented out?
@@ -202,32 +206,32 @@ class BoxTests: XCTestCase {
         XCTAssertEqual(rendering, "0123")
     }
     
-    func testArrayOfArrayOfInt() {
-        let value: Array<Array<Int>> = [[0,1],[2,3]]
+    func testNSArrayOfArrayOfInt() {
+        let value: NSArray = [[0,1],[2,3]]
         let template = try! Template(string: "{{#.}}[{{#.}}{{.}},{{/}}],{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[0,1,],[2,3,],")
     }
     
-    func testArrayOfArrayOfArrayOfInt() {
-        let value: Array<Array<Array<Int>>> = [[[0,1],[2,3]], [[4,5],[6,7]]]
+    func testNSArrayOfArrayOfArrayOfInt() {
+        let value: NSArray = [[[0,1],[2,3]], [[4,5],[6,7]]]
         let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{.}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
     
-    func testArrayOfArrayOfArrayOfDictionaryOfInt() {
-        let value: Array<Array<Array<Dictionary<String, Int>>>> = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
+    func testNSArrayOfArrayOfArrayOfDictionaryOfInt() {
+        let value: NSArray = [[[["a":0],["a":1]],[["a":2],["a":3]]], [[["a":4],["a":5]],[["a":6],["a":7]]]]
         let template = try! Template(string: "{{#.}}[{{#.}}[{{#.}}{{a}},{{/}}],{{/}}],{{/}}")
         let box = Box(value)
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "[[0,1,],[2,3,],],[[4,5,],[6,7,],],")
     }
 
-    func testDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
-        let value: Dictionary<String, Array<Array<Array<Dictionary<String, Int>>>>> = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
+    func testNSDictionaryOfArrayOfArrayOfArrayOfDictionaryOfInt() {
+        let value: NSDictionary = ["a": [[[["1": 1], ["2": 2]], [["3": 3], ["4": 4]]], [[["5": 5], ["6": 6]], [["7": 7], ["8": 8]]]]]
         let template = try! Template(string: "{{#a}}[{{#.}}[{{#.}}[{{#each(.)}}{{@key}}:{{.}}{{/}}]{{/}}]{{/}}]{{/}}")
         template.registerInBaseContext("each", Box(StandardLibrary.each))
         let box = Box(value)
@@ -282,7 +286,7 @@ class BoxTests: XCTestCase {
     func testArrayValueForRange() {
         let originalValue = 1...3
         let box = Box(originalValue)
-        let extractedValue = box.value as! CountableRange<Int>
+        let extractedValue = box.value as! CountableClosedRange<Int>
         XCTAssertEqual(extractedValue, originalValue)
         let extractedArray: [MustacheBox] = box.arrayValue!
         XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])

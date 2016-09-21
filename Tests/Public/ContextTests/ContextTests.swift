@@ -75,7 +75,7 @@ class ContextTests: XCTestCase {
     }
     
     func testSubscript() {
-        let context = Context(Box(["name": "name1", "a": ["name": "name2"]]))
+        let context = Context(Box(["name": "name1", "a": ["name": "name2"]] as NSDictionary))
         
         // '.' is an expression, not a key
         XCTAssertTrue(context.mustacheBoxForKey(".").isEmpty)

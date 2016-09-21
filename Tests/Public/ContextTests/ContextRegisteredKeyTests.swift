@@ -66,7 +66,7 @@ class ContextRegisteredKeyTests: XCTestCase {
         // This is more a caveat than a feature, isn't it?
         let template = try! Template(string: "{{#safe}}{{#evil}}{{name}}{{/evil}}{{/safe}}")
         template.registerInBaseContext("safe", Box(["name": "important"]))
-        let rendering = try! template.render(Box(["evil": ["name": "hacked"]]))
+        let rendering = try! template.render(Box(["evil": ["name": "hacked"]] as NSDictionary))
         XCTAssertEqual(rendering, "hacked")
     }
 }

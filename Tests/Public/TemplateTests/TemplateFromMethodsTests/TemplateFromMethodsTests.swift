@@ -63,9 +63,9 @@ class TemplateFromMethodsTests: XCTestCase {
     var compilerErrorTemplateWrapperPath: String { return compilerErrorTemplateWrapperURL.path }
     var compilerErrorTemplateWrapperString: String { return try! String(contentsOfFile: compilerErrorTemplateWrapperPath, encoding: String.Encoding.utf8) }
     
-    func valueForKey(_ key: String, inRendering rendering: String) -> AnyObject? {
+    func valueForKey(_ key: String, inRendering rendering: String) -> Any? {
         let data = rendering.data(using: String.Encoding.utf8)!
-        let object: AnyObject = try! JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions(rawValue: 0)) as AnyObject
+        let object = try! JSONSerialization.jsonObject(with: data, options: JSONSerialization.ReadingOptions(rawValue: 0)) as! NSObject
         return object.value(forKey: key)
     }
     

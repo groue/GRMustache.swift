@@ -112,14 +112,14 @@ class TemplateRepositoryURLTests: XCTestCase {
     func testPartialNameCanNotEscapeTemplateRepositoryRootURL() {
         let testBundle = Bundle(for: type(of: self))
         let URL = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
-        let repo = TemplateRepository(baseURL: URL.appendingPathComponent("partials")!)
+        let repo = TemplateRepository(baseURL: URL.appendingPathComponent("partials"))
         
         let template = try! repo.template(named: "partial2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "success")
         
         do {
-            try repo.template(named: "up")
+            _ = try repo.template(named: "up")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
             XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)

@@ -190,7 +190,7 @@ class HookFunctionTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(Box(willRender))
         willRenderCount = 0
         renderedValue = nil
-        rendering = try! template.render(Box(["subject": ["foo": "bar"]]))
+        rendering = try! template.render(Box(["subject": ["foo": "bar"]] as NSDictionary))
         XCTAssertEqual(rendering, "bar")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.value as! String), "bar")
