@@ -1,6 +1,15 @@
 Release Notes
 =============
 
+## Next Version
+
+**New**
+
+- Swift 3
+- Templates learned to render Int64 and UInt64
+- TODO: describe modified relationships with Foundation
+
+
 ## v1.1.0
 
 Released on September 19, 2016

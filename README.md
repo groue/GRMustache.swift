@@ -205,7 +205,7 @@ Templates may come from various sources:
         templateExtension: "sh")
     
     // Disable HTML escaping for Bash scripts:
-    repo.configuration.contentType = .Text
+    repo.configuration.contentType = .text
     
     // Load the "script.sh" resource:
     let template = repo.template(named: "script")!
@@ -231,7 +231,7 @@ do {
     // Unclosed Mustache tag.
     error.description
     
-    // TemplateNotFound, ParseError, or RenderError
+    // templateNotFound, parseError, or renderError
     error.kind
     
     // The eventual template at the source of the error. Can be a path, a URL,
@@ -887,7 +887,7 @@ Standard Swift Types Reference
 GRMustache.swift comes with built-in support for the following standard Swift types:
 
 - [Bool](#bool)
-- [Numeric Types](#numeric-types): Int, UInt and Double
+- [Numeric Types](#numeric-types): Int, UInt, Int64, UInt64 and Double
 - [String](#string)
 - [Set](#set) (and similar collections)
 - [Array](#array) (and similar collections)
@@ -905,7 +905,7 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 
 ### Numeric Types
 
-GRMustache supports `Int`, `UInt` and `Double`:
+GRMustache supports `Int`, `UInt`, `Int64`, `UInt64` and `Double`:
 
 - `{{number}}` renders the standard Swift string interpolation of *number*.
 - `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
@@ -1000,7 +1000,7 @@ The rendering of NSObject depends on the actual class:
     
     When an object conforms to the NSFastEnumeration protocol, like **NSArray**, it renders just like Swift [Array](#array). **NSSet** is an exception, rendered as a Swift [Set](#set). **NSDictionary**, the other exception, renders as a Swift [Dictionary](#dictionary).
 
-- **NSNumber** is rendered as a Swift [Bool](#bool), [Int, UInt or Double](#numeric-types), depending on its value.
+- **NSNumber** is rendered as a Swift [Bool](#bool), [Int, UInt, Int64, UInt64 or Double](#numeric-types), depending on its value.
 
 - **NSString** is rendered as [String](#string)
 
@@ -1204,13 +1204,17 @@ Filters can accept a precisely typed argument as above. You may prefer managing 
 ```swift
 // Define the `abs` filter.
 //
-// abs(x) evaluates to the absolute value of x (Int, UInt or Double):
+// abs(x) evaluates to the absolute value of x (Int, UInt, Int64, UInt64 or Double):
 let absFilter = Filter { (box: MustacheBox) in
     switch box.value {
     case let int as Int:
         return Box(abs(int))
+    case let int64 as Int64:
+        return Box(abs(int64))
     case let uint as UInt:
         return Box(uint)
+    case let uint64 as UInt64:
+        return Box(uint64)
     case let double as Double:
         return Box(abs(double))
     default:
