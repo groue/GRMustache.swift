@@ -87,7 +87,7 @@ class BoxTests: XCTestCase {
         let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
         let extractedClass = boxedClass.value as! Class
         let extractedNSObject = boxedNSObject.value as! NSDate
-        let extractedReferenceConvertible = boxedNSObject.value as! Date
+        let extractedReferenceConvertible = boxedReferenceConvertible.value as! Date
         
         XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
         XCTAssertEqual(extractedStruct.name, "Struct")

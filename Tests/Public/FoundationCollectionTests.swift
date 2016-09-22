@@ -118,7 +118,7 @@ class FoundationCollectionTests: XCTestCase {
         // recommended technique.
         let templateString = "{{#collection.isEmpty}}Empty{{/}}{{^collection.isEmpty}}Not empty{{/}}"
         XCTAssertEqual(try! Template(string: templateString).render(), "Not empty")
-        XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":Box([])])), "Not empty")
+        XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":Box([] as [String])])), "Not empty")
         XCTAssertEqual(try! Template(string: templateString).render(Box(["collection":Box(["foo"])])), "Not empty")
     }
     
