@@ -85,7 +85,7 @@ extension Formatter {
     dates: you can safely mix various data types in a section controlled by
     those well-behaved formatters.
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         // Return a multi-facetted box, because NSFormatter interacts in
         // various ways with Mustache rendering.
         
