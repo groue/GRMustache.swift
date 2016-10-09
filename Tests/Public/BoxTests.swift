@@ -24,22 +24,33 @@
 import XCTest
 import Mustache
 
-struct HashableBoxable : MustacheBoxable, Hashable {
+private struct CustomHashableBoxable : MustacheBoxable, Hashable {
     let int: Int
+    init(_ int: Int) { self.int = int }
+    var hashValue: Int { return int }
+    var mustacheBox: MustacheBox { return Box(int) }
+    
+    static func ==(lhs: CustomHashableBoxable, rhs: CustomHashableBoxable) -> Bool {
+        return lhs.int == rhs.int
+    }
+}
+
+private struct CustomBoxable : MustacheBoxable {
+    let int: Int
+    init(_ int: Int) { self.int = int }
     var hashValue: Int { return int }
     var mustacheBox: MustacheBox { return Box(int) }
 }
 
-func ==(lhs: HashableBoxable, rhs: HashableBoxable) -> Bool {
-    return lhs.int == rhs.int
-}
-
 class BoxTests: XCTestCase {
+    
+    
+    // MARK: - Box(MustacheBoxable)
     
     func testInt() {
         do {
             // Explicit type
-            let value: Int = 0
+            let value: Int = 1
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -47,7 +58,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable
-            let value: MustacheBoxable = 0
+            let value: MustacheBoxable = 1
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -55,7 +66,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = 0
+            let value = 1
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -64,16 +75,53 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{.}}")
-            let box = Box(0)
+            let box = Box(1)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
+    
+    func testCustomBoxable() {
+        do {
+            // Explicit type
+            let value: CustomBoxable = CustomBoxable(1)
+            let template = try! Template(string: "{{.}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // As MustacheBoxable
+            let value: MustacheBoxable = CustomBoxable(1)
+            let template = try! Template(string: "{{.}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Infered type
+            let value = CustomBoxable(1)
+            let template = try! Template(string: "{{.}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{.}}")
+            let box = Box(CustomBoxable(1))
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+    }
+    
+    
+    // MARK: - Box(MustacheBoxable?)
     
     func testOptionalInt() {
         do {
             // Explicit type
-            let value: Int? = 0
+            let value: Int? = 1
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -81,7 +129,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: MustacheBoxable? = 0
+            let value: MustacheBoxable? = 1
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -89,7 +137,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = Optional.some(0)
+            let value = 1 as Int?
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -98,50 +146,16 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{.}}")
-            let box = Box(Optional.some(0))
+            let box = Box(1 as Int?)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
     
-    func testMustacheBoxable() {
-        do {
-            // Explicit type
-            let value: HashableBoxable = HashableBoxable(int:0)
-            let template = try! Template(string: "{{.}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // As MustacheBoxable
-            let value: MustacheBoxable = HashableBoxable(int:0)
-            let template = try! Template(string: "{{.}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // Infered type
-            let value = HashableBoxable(int:0)
-            let template = try! Template(string: "{{.}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // Direct Box argument
-            let template = try! Template(string: "{{.}}")
-            let box = Box(HashableBoxable(int:0))
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-    }
-
     func testOptionalMustacheBoxable() {
         do {
             // Explicit type
-            let value: HashableBoxable? = HashableBoxable(int:0)
+            let value: CustomBoxable? = CustomBoxable(1)
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -149,7 +163,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: MustacheBoxable? = HashableBoxable(int:0)
+            let value: MustacheBoxable? = CustomBoxable(1)
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -157,7 +171,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = Optional.some(HashableBoxable(int:0))
+            let value = CustomBoxable(1) as CustomBoxable?
             let template = try! Template(string: "{{.}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -166,11 +180,14 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{.}}")
-            let box = Box(Optional.some(HashableBoxable(int:0)))
+            let box = Box(CustomBoxable(1) as CustomBoxable?)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
+    
+    
+    // MARK: - Box(Set<MustacheBoxable>)
     
     func testSetOfInt() {
         do {
@@ -189,12 +206,19 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
         }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box([0,1,2] as Set)
+            let rendering = try! template.render(box)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+        }
     }
     
-    func testSetOfMustacheBoxable() {
+    func testSetOfCustomHashableBoxable() {
         do {
             // Explicit type
-            let value: Set<HashableBoxable> = [HashableBoxable(int:0),HashableBoxable(int:1),HashableBoxable(int:2)]
+            let value: Set<CustomHashableBoxable> = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -202,18 +226,28 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Set = [HashableBoxable(int:0),HashableBoxable(int:1),HashableBoxable(int:2)]
+            let value: Set = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
             XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
         }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box([CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)] as Set)
+            let rendering = try! template.render(box)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+        }
     }
     
-    func testDictionaryOfInt() {
+    
+    // MARK: - Box([String: MustacheBoxable])
+    
+    func testDictionaryOfStringInt() {
         do {
             // Explicit type
-            let value: Dictionary<String, Int> = ["name": 0]
+            let value: [String: Int] = ["name": 1]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -221,7 +255,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable
-            let value: Dictionary<String, MustacheBoxable> = ["name": 0]
+            let value: [String: MustacheBoxable] = ["name": 1]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -229,7 +263,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Dictionary = ["name": 0]
+            let value: Dictionary = ["name": 1]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -237,7 +271,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = ["name": 0]
+            let value = ["name": 1]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -246,16 +280,61 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{name}}")
-            let box = Box(["name": 0])
+            let box = Box(["name": 1])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
     
-    func testDictionaryOfOptionalInt() {
+    func testDictionaryOfStringCustomBoxable() {
         do {
             // Explicit type
-            let value: Dictionary<String, Int?> = ["name": 0]
+            let value: [String: CustomBoxable] = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // As MustacheBoxable
+            let value: [String: MustacheBoxable] = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Infered element type
+            let value: Dictionary = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Infered type
+            let value = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{name}}")
+            let box = Box(["name": CustomBoxable(1)])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+    }
+    
+    
+    // MARK: - Box([String: MustacheBoxable?])
+    
+    func testDictionaryOfStringOptionalInt() {
+        do {
+            // Explicit type
+            let value: [String: Int?] = ["name": 1]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -263,7 +342,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: Dictionary<String, MustacheBoxable?> = ["name": Optional.some(0)]
+            let value: [String: MustacheBoxable?] = ["name": 1 as Int?]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -271,7 +350,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Dictionary = ["name": Optional.some(0)]
+            let value: Dictionary = ["name": 1 as Int?]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -279,7 +358,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = ["name": Optional.some(0)]
+            let value = ["name": 1 as Int?]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -288,58 +367,16 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{name}}")
-            let box = Box(["name": Optional.some(0)])
+            let box = Box(["name": 1 as Int?])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
     
-    func testDictionaryOfMustacheBoxable() {
+    func testDictionaryOfStringOptionalCustomBoxable() {
         do {
             // Explicit type
-            let value: Dictionary<String, HashableBoxable> = ["name": HashableBoxable(int:0)]
-            let template = try! Template(string: "{{name}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // As MustacheBoxable
-            let value: Dictionary<String, MustacheBoxable> = ["name": HashableBoxable(int:0)]
-            let template = try! Template(string: "{{name}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // Infered element type
-            let value: Dictionary = ["name": HashableBoxable(int:0)]
-            let template = try! Template(string: "{{name}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // Infered type
-            let value = ["name": HashableBoxable(int:0)]
-            let template = try! Template(string: "{{name}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-        do {
-            // Direct Box argument
-            let template = try! Template(string: "{{name}}")
-            let box = Box(["name": HashableBoxable(int:0)])
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1")
-        }
-    }
-    
-    func testDictionaryOfOptionalMustacheBoxable() {
-        do {
-            // Explicit type
-            let value: Dictionary<String, HashableBoxable?> = ["name": HashableBoxable(int:0)]
+            let value: [String: CustomBoxable?] = ["name": CustomBoxable(1)]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -347,7 +384,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: Dictionary<String, MustacheBoxable?> = ["name": HashableBoxable(int:0)]
+            let value: [String: MustacheBoxable?] = ["name": CustomBoxable(1)]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -355,7 +392,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Dictionary = ["name": HashableBoxable(int:0)]
+            let value: Dictionary = ["name": CustomBoxable(1)]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -363,7 +400,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = ["name": HashableBoxable(int:0)]
+            let value = ["name": CustomBoxable(1)]
             let template = try! Template(string: "{{name}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -372,44 +409,47 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{name}}")
-            let box = Box(["name": HashableBoxable(int:0)])
+            let box = Box(["name": CustomBoxable(1)])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
     }
     
-    func testDictionaryOfAny() {
+    
+    // MARK: - Box([String: Any])
+    
+    func testDictionaryOfStringAny() {
         do {
             // Explicit type
-            let value: Dictionary<String, Any> = ["int": 1, "string": "foo"]
+            let value: [String: Any] = ["int": 1, "string": "foo"]
             let template = try! Template(string: "{{int}}, {{string}}")
             let box = Box(value)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo")
         }
         do {
-            // As MustacheBoxable
-            let value: Dictionary<String, MustacheBoxable> = ["int": 1, "string": "foo"]
-            let template = try! Template(string: "{{int}}, {{string}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1, foo")
+            // As MustacheBoxable (won't compile)
+//            let value: [String: MustacheBoxable & Hashable] = ["int": 1, "string": "foo"]
+//            let template = try! Template(string: "{{int}}, {{string}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo")
         }
         do {
-            // Infered element type
-            let value: Dictionary = ["int": 1, "string": "foo"]
-            let template = try! Template(string: "{{int}}, {{string}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1, foo")
+            // Infered element type (won't compile)
+//            let value: Dictionary = ["int": 1, "string": "foo"]
+//            let template = try! Template(string: "{{int}}, {{string}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo")
         }
         do {
-            // Infered type
-            let value = ["int": 1, "string": "foo"]
-            let template = try! Template(string: "{{int}}, {{string}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1, foo")
+            // Infered type (won't compile)
+//            let value = ["int": 1, "string": "foo"]
+//            let template = try! Template(string: "{{int}}, {{string}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo")
         }
         do {
             // Infered type
@@ -420,10 +460,13 @@ class BoxTests: XCTestCase {
         }
     }
     
-    func testDictionaryOfOptionalAny() {
+    
+    // MARK: - Box([String: Any?])
+    
+    func testDictionaryOfStringOptionalAny() {
         do {
             // Explicit type
-            let value: Dictionary<String, Any?> = ["int": 1, "string": "foo", "missing": nil]
+            let value: [String: Any?] = ["int": 1, "string": "foo", "missing": nil]
             let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -431,7 +474,165 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: Dictionary<String, MustacheBoxable?> = ["int": 1, "string": "foo", "missing": nil]
+            let value: [String: MustacheBoxable?] = ["int": 1, "string": "foo", "missing": nil]
+            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo, ")
+        }
+        do {
+            // Infered element type (won't compile)
+//            let value: Dictionary = ["int": 1 as Int?, "string": "foo" as String?, "missing": nil as CustomBoxable?]
+//            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo, ")
+        }
+        do {
+            // Infered type (won't compile)
+//            let value = ["int": 1 as Int?, "string": "foo" as String?, "missing": nil as CustomBoxable?]
+//            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo, ")
+        }
+        do {
+            // Infered type
+            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+            let box = Box(["int": 1 as Int?, "string": "foo" as String?, "missing": nil as CustomBoxable?])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo, ")
+        }
+    }
+    
+    
+    // MARK: - Box([AnyHashable: Any])
+    
+    func testDictionaryOfAnyHashableAny() {
+        do {
+            // Explicit type
+            let value: [AnyHashable: Any] = ["int": 1, "string": "foo"]
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // As MustacheBoxable
+            let value: [AnyHashable: MustacheBoxable] = ["int": 1, "string": "foo"]
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered element type (won't compile)
+//            let value: Dictionary = [AnyHashable("int"): 1, AnyHashable("string"): "foo"]
+//            let template = try! Template(string: "{{int}}, {{string}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered type (won't compile)
+//            let value = [AnyHashable("int"): 1, AnyHashable("string"): "foo"]
+//            let template = try! Template(string: "{{int}}, {{string}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered type
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box([AnyHashable("int"): 1, AnyHashable("string"): "foo"])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+    }
+    
+    func testDictionaryOfArray() {
+        do {
+            // Explicit type
+            let value: [AnyHashable: Any] = ["int": [1, 2], "string": ["foo", "bar"]]
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "12, foobar")
+        }
+        do {
+            // Infered element type (won't compile)
+            let value: Dictionary = ["int": [1, 2], "string": ["foo", "bar"]]
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "12, foobar")
+        }
+        do {
+            // Infered type (won't compile)
+            let value = ["int": [1, 2], "string": ["foo", "bar"]]
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "12, foobar")
+        }
+        do {
+            // Infered type
+            let template = try! Template(string: "{{int}}, {{string}}")
+            let box = Box(["int": [1, 2], "string": ["foo", "bar"]])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "12, foobar")
+        }
+    }
+    
+    func testDictionaryOfDictionary() {
+        do {
+            // Explicit type
+            let value: [AnyHashable: Any] = ["int": ["name": 1], "string": ["name": "foo"]]
+            let template = try! Template(string: "{{int.name}}, {{string.name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered element type (won't compile)
+            let value: Dictionary = ["int": ["name": 1], "string": ["name": "foo"]]
+            let template = try! Template(string: "{{int.name}}, {{string.name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered type (won't compile)
+            let value = ["int": ["name": 1], "string": ["name": "foo"]]
+            let template = try! Template(string: "{{int.name}}, {{string.name}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Infered type
+            let template = try! Template(string: "{{int.name}}, {{string.name}}")
+            let box = Box(["int": ["name": 1], "string": ["name": "foo"]])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+    }
+    
+    
+    // MARK: - Box([AnyHashable: Any?])
+    
+    func testDictionaryOfAnyHashableOptionalAny() {
+        do {
+            // Explicit type
+            let value: [AnyHashable: Any?] = ["int": 1, "string": "foo", "missing": nil]
+            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo, ")
+        }
+        do {
+            // As MustacheBoxable?
+            let value: [AnyHashable: MustacheBoxable?] = ["int": 1, "string": "foo", "missing": nil]
             let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -439,7 +640,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Dictionary = ["int": Optional.some(1), "string": Optional.some("foo"), "missing": nil]
+            let value: Dictionary = [AnyHashable("int"): 1 as Any?, AnyHashable("string"): "foo" as Any?, AnyHashable("missing"): nil]
             let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -447,25 +648,28 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = ["int": Optional.some(1), "string": Optional.some("foo"), "missing": nil]
+            let value = [AnyHashable("int"): 1 as Any?, AnyHashable("string"): "foo" as Any?, AnyHashable("missing"): nil]
             let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
             let box = Box(value)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo, ")
         }
         do {
-            // Infered type
-            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
-            let box = Box(["int": Optional.some(1), "string": Optional.some("foo"), "missing": nil])
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "1, foo, ")
+            // Infered type (won't compile)
+//            let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
+//            let box = Box([AnyHashable("int"): 1 as Any?, AnyHashable("string"): "foo" as Any?, AnyHashable("missing"): nil])
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "1, foo, ")
         }
     }
+    
+    
+    // MARK: - Box([MustacheBoxable])
     
     func testArrayOfInt() {
         do {
             // Explicit type
-            let value: Array<Int> = [0,1,2,3]
+            let value: [Int] = [0,1,2,3]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -473,7 +677,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable
-            let value: Array<MustacheBoxable> = [0,1,2,3]
+            let value: [MustacheBoxable] = [0,1,2,3]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -504,52 +708,10 @@ class BoxTests: XCTestCase {
         }
     }
     
-    func testArrayOfOptionalInt() {
+    func testArrayOfCustomBoxable() {
         do {
             // Explicit type
-            let value: Array<Int?> = [0,1,2,3,nil]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0123")
-        }
-        do {
-            // As MustacheBoxable?
-            let value: Array<MustacheBoxable?> = [0,1,2,3,nil]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0123")
-        }
-        do {
-            // Infered element type
-            let value: Array = [Optional.some(0),Optional.some(1),Optional.some(2),Optional.some(3),Optional.none]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0123")
-        }
-        do {
-            // Infered type: won't compile
-            let value = [Optional.some(0),Optional.some(1),Optional.some(2),Optional.some(3),Optional.none]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0123")
-        }
-        do {
-            // Direct Box argument
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box([0,1,2,3,nil])
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0123")
-        }
-    }
-    
-    func testArrayOfMustacheBoxable() {
-        do {
-            // Explicit type
-            let value: Array<HashableBoxable> = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value: [CustomBoxable] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -557,7 +719,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable
-            let value: Array<MustacheBoxable> = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value: [MustacheBoxable] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -565,7 +727,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Array = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value: Array = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -573,7 +735,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -582,16 +744,61 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box([HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)])
+            let box = Box([CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+    }
+    
+    
+    // MARK: - Box([MustacheBoxable?])
+    
+    func testArrayOfOptionalInt() {
+        do {
+            // Explicit type
+            let value: [Int?] = [0,1,2,3,nil]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+        do {
+            // As MustacheBoxable?
+            let value: [MustacheBoxable?] = [0,1,2,3,nil]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+        do {
+            // Infered element type
+            let value: Array = [0 as Int?, 1 as Int?, 2 as Int?,3 as Int?, nil as Int?]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+        do {
+            // Infered type
+            let value = [0 as Int?, 1 as Int?, 2 as Int?, 3 as Int?, nil as Int?]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box([0 as Int?, 1 as Int?, 2 as Int?, 3 as Int?, nil as Int?])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
     }
 
-    func testArrayOfOptionalMustacheBoxable() {
+    func testArrayOfOptionalCustomBoxable() {
         do {
             // Explicit type
-            let value: Array<HashableBoxable?> = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value: [CustomBoxable?] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -599,7 +806,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // As MustacheBoxable?
-            let value: Array<MustacheBoxable?> = [HashableBoxable(int:0), HashableBoxable(int:1), HashableBoxable(int:2), HashableBoxable(int:3)]
+            let value: [MustacheBoxable?] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -607,7 +814,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Array = [Optional.some(HashableBoxable(int:0)), Optional.some(HashableBoxable(int:1)), Optional.some(HashableBoxable(int:2)), Optional.some(HashableBoxable(int:3))]
+            let value: Array = [CustomBoxable(0) as CustomBoxable?, CustomBoxable(1) as CustomBoxable?, CustomBoxable(2) as CustomBoxable?, CustomBoxable(3) as CustomBoxable?]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -615,7 +822,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = [Optional.some(HashableBoxable(int:0)), Optional.some(HashableBoxable(int:1)), Optional.some(HashableBoxable(int:2)), Optional.some(HashableBoxable(int:3))]
+            let value = [CustomBoxable(0) as CustomBoxable?, CustomBoxable(1) as CustomBoxable?, CustomBoxable(2) as CustomBoxable?, CustomBoxable(3) as CustomBoxable?]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -624,44 +831,39 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box([Optional.some(HashableBoxable(int:0)), Optional.some(HashableBoxable(int:1)), Optional.some(HashableBoxable(int:2)), Optional.some(HashableBoxable(int:3))])
+            let box = Box([CustomBoxable(0) as CustomBoxable?, CustomBoxable(1) as CustomBoxable?, CustomBoxable(2) as CustomBoxable?, CustomBoxable(3) as CustomBoxable?])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
     }
     
+    
+    // MARK: - Box([Any])
+    
     func testArrayOfAny() {
         do {
             // Explicit type
-            let value: Array<Any> = [0,"foo"]
+            let value: [Any] = [0,"foo"]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0foo")
         }
         do {
-            // As MustacheBoxable
-            let value: Array<MustacheBoxable> = [0,"foo"]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0foo")
+            // Infered element type (won't compile)
+//            let value: Array = [0,"foo"]
+//            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "0foo")
         }
         do {
-            // Infered element type
-            let value: Array = [0,"foo"]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0foo")
-        }
-        do {
-            // Infered type
-            let value = [0,"foo"]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0foo")
+            // Infered type (won't compile)
+//            let value = [0,"foo"]
+//            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "0foo")
         }
         do {
             // Direct Box argument
@@ -672,18 +874,10 @@ class BoxTests: XCTestCase {
         }
     }
     
-    func testArrayOfOptionalAny() {
+    func testArrayOfArray() {
         do {
             // Explicit type
-            let value: Array<Any?> = [0,nil,"foo"]
-            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box(value)
-            let rendering = try! template.render(box)
-            XCTAssertEqual(rendering, "0foo")
-        }
-        do {
-            // As MustacheBoxable?
-            let value: Array<MustacheBoxable?> = [0,nil,"foo"]
+            let value: [Any] = [[0,"foo"]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -691,7 +885,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type
-            let value: Array = [Optional.some(0),nil,Optional.some("foo")]
+            let value: Array = [[0,"foo"]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -699,7 +893,7 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered type
-            let value = [Optional.some(0),nil,Optional.some("foo")]
+            let value = [[0,"foo"]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box(value)
             let rendering = try! template.render(box)
@@ -708,19 +902,104 @@ class BoxTests: XCTestCase {
         do {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let box = Box([Optional.some(0),nil,Optional.some("foo")])
+            let box = Box([[0,"foo"]])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0foo")
         }
     }
     
+    func testArrayOfDictionary() {
+        do {
+            // Explicit type
+            let value: [Any] = [["name": 1]]
+            let template = try! Template(string: "{{#.}}{{name}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Infered element type (won't compile)
+            let value: Array = [["name": 1]]
+            let template = try! Template(string: "{{#.}}{{name}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Infered type
+            let value = [["name": 1]]
+            let template = try! Template(string: "{{#.}}{{name}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{#.}}{{name}}{{/}}")
+            let box = Box([["name": 1]])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+    }
+
+    
+    // MARK: - Box([Any?])
+    
+    func testArrayOfOptionalAny() {
+        do {
+            // Explicit type
+            let value: [Any?] = [0,nil,"foo"]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
+        do {
+            // As MustacheBoxable?
+            let value: [MustacheBoxable?] = [0,nil,"foo"]
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box(value)
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
+        do {
+            // Infered element type (won't compile)
+//            let value: Array = [0 as Int?, nil as CustomBoxable?, "foo" as String?]
+//            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "0foo")
+        }
+        do {
+            // Infered type (won't compile)
+//            let value = [0 as Int?, nil as CustomBoxable?, "foo" as String?]
+//            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+//            let box = Box(value)
+//            let rendering = try! template.render(box)
+//            XCTAssertEqual(rendering, "0foo")
+        }
+        do {
+            // Direct Box argument
+            let template = try! Template(string: "{{#.}}{{.}}{{/}}")
+            let box = Box([0 as Int?, nil as CustomBoxable?, "foo" as String?])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
+    }
+    
+    
+    // MARK: - Box([non boxable])
+    
     func testArrayOfNonMustacheBoxable() {
         class Class { }
-        let array: Array<Any> = [Class()]
+        let array: [Any] = [Class()]
         let context = Context(Box(array))
         let box = context.mustacheBoxForKey("first")
         XCTAssertTrue(box.value == nil)
     }
+    
+    
+    // MARK: - Box(NSArray)
     
     func testNSArrayOfInt() {
         let value: NSArray = [0,1,2,3]
@@ -755,10 +1034,13 @@ class BoxTests: XCTestCase {
         XCTAssertTrue(box.value == nil)
     }
     
+    
+    // MARK: - Box(Range)
+    
     func testRange() {
         let value = 0..<10
         let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-        let box = Box(value)
+        let box = Box(Array(value))
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "0123456789")
     }

@@ -512,11 +512,11 @@ final public class MustacheBox : NSObject {
         let dictionaryValue: (() -> [String: MustacheBox]?)
         
         init(
-            arrayValue: @autoclosure @escaping () -> [MustacheBox]? = nil,
-            dictionaryValue: @autoclosure @escaping () -> [String: MustacheBox]? = nil)
+            arrayValue: (() -> [MustacheBox])? = nil,
+            dictionaryValue: (() -> [String: MustacheBox]?)? = nil)
         {
-            self.arrayValue = arrayValue
-            self.dictionaryValue = dictionaryValue
+            self.arrayValue = arrayValue ?? { nil }
+            self.dictionaryValue = dictionaryValue ?? { nil }
         }
     }
 }

@@ -991,12 +991,18 @@ Otherwise, GRMustache logs a warning, and returns the empty box.
 - returns: A MustacheBox that wraps *object*.
 */
 private func BoxAny(_ object: Any?) -> MustacheBox {
-    if let boxable = object as? MustacheBoxable {
-        return boxable.mustacheBox
-    } else if let object = object {
-        NSLog("Mustache: value `\(object)` does not conform to MustacheBoxable: it is discarded.")
+    guard let object = object else {
         return Box()
-    } else {
+    }
+    switch object {
+    case let boxable as MustacheBoxable:
+        return boxable.mustacheBox
+    case let array as [Any?]:
+        return Box(array)
+    case let dictionary as [AnyHashable: Any?]:
+        return Box(dictionary)
+    default:
+        NSLog("Mustache: value `\(object)` does not conform to MustacheBoxable: it is discarded.")
         return Box()
     }
 }
@@ -1140,7 +1146,7 @@ extension Collection where IndexDistance == Int {
     */
     fileprivate func mustacheBoxWithSetValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            converter: MustacheBox.Converter(arrayValue: { self.map({ box($0) }) }),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
@@ -1190,7 +1196,7 @@ extension BidirectionalCollection where IndexDistance == Int {
     */
     fileprivate func mustacheBoxWithArrayValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            converter: MustacheBox.Converter(arrayValue: { self.map({ box($0) }) }),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
@@ -1338,12 +1344,12 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: Collection>(_ set: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
-    if let set = set {
-        return set.mustacheBoxWithSetValue(set, box: { Box($0) })
-    } else {
+public func Box<Element>(_ set: Set<Element>?) -> MustacheBox {
+//public func Box<C: Collection>(_ set: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
+    guard let set = set else {
         return Box()
     }
+    return set.mustacheBoxWithSetValue(set, box: { BoxAny($0) })
 }
 
 /**
@@ -1389,12 +1395,12 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
-    if let array = array {
-        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
-    } else {
+public func Box(_ array: [Any?]?) -> MustacheBox {
+//public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
+    guard let array = array else {
         return Box()
     }
+    return array.mustacheBoxWithArrayValue(array, box: { BoxAny($0) })
 }
 
 /**
@@ -1440,13 +1446,20 @@ type of the raw boxed value (Array, Set, NSArray, NSSet, ...).
 
 - returns: A MustacheBox that wraps *array*.
 */
-public func Box<C: BidirectionalCollection, T>(_ array: C?) -> MustacheBox where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int {
-    if let array = array {
-        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
-    } else {
-        return Box()
-    }
-}
+//public func Box<T>(_ array: [T?]?) -> MustacheBox {
+//    //public func Box<C: BidirectionalCollection>(_ array: C?) -> MustacheBox where C.Iterator.Element: MustacheBoxable, C.IndexDistance == Int {
+//    guard let array = array else {
+//        return Box()
+//    }
+//    return array.mustacheBoxWithArrayValue(array, box: { BoxAny($0) })
+//}
+//public func Box<C: BidirectionalCollection, T>(_ array: C?) -> MustacheBox where C.Iterator.Element == Optional<T>, T: MustacheBoxable, C.IndexDistance == Int {
+//    if let array = array {
+//        return array.mustacheBoxWithArrayValue(array, box: { Box($0) })
+//    } else {
+//        return Box()
+//    }
+//}
 
 
 // =============================================================================
@@ -1501,22 +1514,30 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box(_ dictionary: [String: MustacheBoxable]?) -> MustacheBox {
-    if let dictionary = dictionary {
-        return MustacheBox(
-            converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: MustacheBoxable)) in
-                    var boxDictionary = boxDictionary
-                    boxDictionary[item.key] = Box(item.value)
-                    return boxDictionary
-                })),
-            value: dictionary,
-            keyedSubscript: { (key: String) in
-                return Box(dictionary[key])
-        })
-    } else {
+public func Box(_ dictionary: [AnyHashable: Any?]?) -> MustacheBox {
+    guard let dictionary = dictionary else {
         return Box()
     }
+    return MustacheBox(
+        converter: MustacheBox.Converter(dictionaryValue: {
+            var boxDictionary: [String: MustacheBox] = [:]
+            for (key, value) in dictionary {
+                if let key = key as? String {
+                    boxDictionary[key] = BoxAny(value)
+                } else {
+                    NSLog("GRMustache found a non-string key in dictionary (\(key)): value is discarded.")
+                }
+            }
+            return boxDictionary
+        }),
+        value: dictionary,
+        keyedSubscript: { (key: String) in
+            if let value = dictionary[key] {
+                return BoxAny(value)
+            } else {
+                return Box()
+            }
+    })
 }
 
 /**
@@ -1567,27 +1588,31 @@ dictionary, whatever the actual type of the raw boxed value.
 
 - returns: A MustacheBox that wraps *dictionary*.
 */
-public func Box(_ dictionary: [String: MustacheBoxable?]?) -> MustacheBox {
-    if let dictionary = dictionary {
-        return MustacheBox(
-            converter: MustacheBox.Converter(
-                dictionaryValue: dictionary.reduce([String: MustacheBox](), { (boxDictionary, item: (key: String, value: MustacheBoxable?)) in
-                    var boxDictionary = boxDictionary
-                    boxDictionary[item.key] = Box(item.value)
-                    return boxDictionary
-                })),
-            value: dictionary,
-            keyedSubscript: { (key: String) in
-                if let value = dictionary[key] {
-                    return Box(value)
-                } else {
-                    return Box()
-                }
-        })
-    } else {
-        return Box()
-    }
-}
+//public func Box(_ dictionary: [AnyHashable: Any?]?) -> MustacheBox {
+//    guard let dictionary = dictionary else {
+//        return Box()
+//    }
+//    return MustacheBox(
+//        converter: MustacheBox.Converter(dictionaryValue: {
+//            var boxDictionary: [String: MustacheBox] = [:]
+//            for (key, value) in dictionary {
+//                if let key = key as? String {
+//                    boxDictionary[key] = BoxAny(value)
+//                } else {
+//                    NSLog("GRMustache found a non-string key in dictionary (\(key)): value is discarded.")
+//                }
+//            }
+//            return boxDictionary
+//        }),
+//        value: dictionary,
+//        keyedSubscript: { (key: String) in
+//            if let value = dictionary[key] {
+//                return BoxAny(value)
+//            } else {
+//                return Box()
+//            }
+//    })
+//}
 
 
 /**
@@ -1647,16 +1672,15 @@ extension NSDictionary {
     */
     public override var mustacheBox: MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(
-                dictionaryValue: IteratorSequence(NSFastEnumerationIterator(self)).reduce([String: MustacheBox](), { (boxDictionary, key) in
-                    var boxDictionary = boxDictionary
-                    if let key = key as? String {
-                        boxDictionary[key] = BoxAny(self[key])
-                    } else {
-                        NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
-                    }
-                    return boxDictionary
-                })),
+            converter: MustacheBox.Converter(dictionaryValue: { IteratorSequence(NSFastEnumerationIterator(self)).reduce([String: MustacheBox](), { (boxDictionary, key) in
+                var boxDictionary = boxDictionary
+                if let key = key as? String {
+                    boxDictionary[key] = BoxAny(self[key])
+                } else {
+                    NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
+                }
+                return boxDictionary
+            })}),
             value: self,
             keyedSubscript: { BoxAny(self[$0])
         })

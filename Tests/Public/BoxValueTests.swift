@@ -115,24 +115,6 @@ class BoxValueTests: XCTestCase {
         XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
     }
     
-    func testArrayValueForCollectionOfOne() {
-        let originalValue = CollectionOfOne(123)
-        let box = Box(originalValue)
-        let extractedValue = box.value as! CollectionOfOne<Int>
-        XCTAssertEqual(extractedValue[extractedValue.startIndex], originalValue[originalValue.startIndex])
-        let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [123])
-    }
-    
-    func testArrayValueForRange() {
-        let originalValue = 1...3
-        let box = Box(originalValue)
-        let extractedValue = box.value as! CountableClosedRange<Int>
-        XCTAssertEqual(extractedValue, originalValue)
-        let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
-    }
-    
     func testDictionaryValueForNSDictionary() {
         let originalValue = NSDictionary(object: "value", forKey: "key" as NSCopying)
         let box = Box(originalValue)
