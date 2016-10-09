@@ -627,7 +627,7 @@ extension NSObject : MustacheBoxable {
     - `{{^object}}...{{/object}}` does not render.
     
     */
-    public var mustacheBox: MustacheBox {
+    open var mustacheBox: MustacheBox {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
@@ -728,7 +728,7 @@ extension NSNull {
     
     - `{{^null}}...{{/null}}` does render (NSNull is falsey).
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
             boolValue: false,
@@ -769,7 +769,7 @@ extension NSNumber {
     - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
     
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         
         let objCType = String(cString: self.objCType)
         switch objCType {
@@ -846,7 +846,7 @@ extension NSString {
     - `length`: the number of characters in the string (using Swift method).
     
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         return Box(self as String)
     }
 }
@@ -1286,7 +1286,7 @@ extension NSSet {
     `arrayValue` property: it reliably returns an Array of MustacheBox, whatever
     the actual type of the raw boxed value (Set, Array, NSArray, NSSet, ...)
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         // DRY principle won't let us provide all the code for boxing NSSet when
         // we already have it for Set.
         //
@@ -1670,7 +1670,7 @@ extension NSDictionary {
     `dictionaryValue` property: it reliably returns an `[String: MustacheBox]`
     dictionary, whatever the actual type of the raw boxed value.
     */
-    public override var mustacheBox: MustacheBox {
+    open override var mustacheBox: MustacheBox {
         return MustacheBox(
             converter: MustacheBox.Converter(dictionaryValue: { IteratorSequence(NSFastEnumerationIterator(self)).reduce([String: MustacheBox](), { (boxDictionary, key) in
                 var boxDictionary = boxDictionary
