@@ -695,6 +695,7 @@ extension URL : MustacheBoxable { }
 extension URLComponents : MustacheBoxable { }
 
 /// URLQueryItem can feed Mustache templates.
+@available(OSXApplicationExtension 10.10, *)
 extension URLQueryItem : MustacheBoxable { }
 
 /// URLRequest can feed Mustache templates.
