@@ -234,7 +234,7 @@ extension Collection where IndexDistance == Int {
     /// - returns: A MustacheBox that wraps the collection.
     func mustacheBoxWithSetValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            converter: MustacheBox.Converter(arrayValue: { self.map({ box($0) }) }),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
@@ -280,7 +280,7 @@ extension BidirectionalCollection where IndexDistance == Int {
     /// - returns: A MustacheBox that wraps the collection.
     func mustacheBoxWithArrayValue(_ value: Any?, box: @escaping (Iterator.Element) -> MustacheBox) -> MustacheBox {
         return MustacheBox(
-            converter: MustacheBox.Converter(arrayValue: self.map({ box($0) })),
+            converter: MustacheBox.Converter(arrayValue: { self.map({ box($0) }) }),
             value: value,
             boolValue: !isEmpty,
             keyedSubscript: { (key) in
