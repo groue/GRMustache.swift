@@ -231,6 +231,15 @@
 		569C423E1A88979600748E98 /* MustacheBoxDocumentationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */; };
 		56A0B4671A19D95A008A719F /* ContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A0B4661A19D95A008A719F /* ContextTests.swift */; };
 		56A88EC81A066EC40055E40A /* RenderFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */; };
+		56A928931DBA385D00F15955 /* CoreGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928901DBA385D00F15955 /* CoreGraphics.swift */; };
+		56A928941DBA385D00F15955 /* CoreGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928901DBA385D00F15955 /* CoreGraphics.swift */; };
+		56A928951DBA385D00F15955 /* CoreGraphics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928901DBA385D00F15955 /* CoreGraphics.swift */; };
+		56A928961DBA385D00F15955 /* Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928911DBA385D00F15955 /* Foundation.swift */; };
+		56A928971DBA385D00F15955 /* Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928911DBA385D00F15955 /* Foundation.swift */; };
+		56A928981DBA385D00F15955 /* Foundation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928911DBA385D00F15955 /* Foundation.swift */; };
+		56A928991DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928921DBA385D00F15955 /* SwiftStandardLibrary.swift */; };
+		56A9289A1DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928921DBA385D00F15955 /* SwiftStandardLibrary.swift */; };
+		56A9289B1DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A928921DBA385D00F15955 /* SwiftStandardLibrary.swift */; };
 		56B401A01A1F643B002D5CD7 /* TagTests.mustache in Resources */ = {isa = PBXBuildFile; fileRef = 56B4019E1A1F643B002D5CD7 /* TagTests.mustache */; };
 		56B401A11A1F643B002D5CD7 /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
 		56B4B2151A25BC5200BD4F8F /* TemplateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */; };
@@ -371,6 +380,9 @@
 		569C423D1A88979600748E98 /* MustacheBoxDocumentationTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MustacheBoxDocumentationTests.swift; sourceTree = "<group>"; };
 		56A0B4661A19D95A008A719F /* ContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContextTests.swift; sourceTree = "<group>"; };
 		56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderFunctionTests.swift; sourceTree = "<group>"; };
+		56A928901DBA385D00F15955 /* CoreGraphics.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreGraphics.swift; sourceTree = "<group>"; };
+		56A928911DBA385D00F15955 /* Foundation.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Foundation.swift; sourceTree = "<group>"; };
+		56A928921DBA385D00F15955 /* SwiftStandardLibrary.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SwiftStandardLibrary.swift; sourceTree = "<group>"; };
 		56B4019E1A1F643B002D5CD7 /* TagTests.mustache */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = TagTests.mustache; sourceTree = "<group>"; };
 		56B4019F1A1F643B002D5CD7 /* TagTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TagTests.swift; sourceTree = "<group>"; };
 		56B4B2141A25BC5200BD4F8F /* TemplateTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateTests.swift; sourceTree = "<group>"; };
@@ -645,6 +657,7 @@
 				563AE20319FC643C0028C6C1 /* ExpressionInvocation.swift */,
 				56BD793F1A0E381900937A76 /* MustacheBox.swift */,
 				563AE1EB19FC55920028C6C1 /* RenderingEngine.swift */,
+				56A9288F1DBA384800F15955 /* Support */,
 			);
 			name = Rendering;
 			sourceTree = "<group>";
@@ -697,6 +710,16 @@
 				56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */,
 			);
 			path = ServicesTests;
+			sourceTree = "<group>";
+		};
+		56A9288F1DBA384800F15955 /* Support */ = {
+			isa = PBXGroup;
+			children = (
+				56A928901DBA385D00F15955 /* CoreGraphics.swift */,
+				56A928911DBA385D00F15955 /* Foundation.swift */,
+				56A928921DBA385D00F15955 /* SwiftStandardLibrary.swift */,
+			);
+			name = Support;
 			sourceTree = "<group>";
 		};
 		56B4019D1A1F643B002D5CD7 /* TagTests */ = {
@@ -1149,12 +1172,14 @@
 				5607A3411C160216002364C1 /* GRMustacheKeyAccess.m in Sources */,
 				09A89E001BF58560003A695E /* ExpressionInvocation.swift in Sources */,
 				09A89DF81BF58550003A695E /* NSFormatter.swift in Sources */,
+				56A928981DBA385D00F15955 /* Foundation.swift in Sources */,
 				09A89DEF1BF58548003A695E /* TemplateGenerator.swift in Sources */,
 				09A89E031BF58569003A695E /* RenderingEngine.swift in Sources */,
 				09A89DF61BF58550003A695E /* StandardLibrary.swift in Sources */,
 				09A89DFB1BF58557003A695E /* TemplateParser.swift in Sources */,
 				09A89DF31BF58550003A695E /* JavascriptEscapeHelper.swift in Sources */,
 				09A89DF71BF58550003A695E /* URLEscapeHelper.swift in Sources */,
+				56A9289B1DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */,
 				09A89DFC1BF58557003A695E /* TemplateToken.swift in Sources */,
 				09A89DE71BF58538003A695E /* LocatedTag.swift in Sources */,
 				09A89DF51BF58550003A695E /* Logger.swift in Sources */,
@@ -1167,6 +1192,7 @@
 				09A89DF01BF58548003A695E /* ExpressionGenerator.swift in Sources */,
 				09A89DF21BF58550003A695E /* HTMLEscapeHelper.swift in Sources */,
 				09A89DF41BF58550003A695E /* Localizer.swift in Sources */,
+				56A928951DBA385D00F15955 /* CoreGraphics.swift in Sources */,
 				09A89DFA1BF58557003A695E /* ExpressionParser.swift in Sources */,
 				09A89DF91BF58550003A695E /* ZipFilter.swift in Sources */,
 			);
@@ -1217,12 +1243,14 @@
 				561E72901A8BDC4D004ED48B /* TemplateParser.swift in Sources */,
 				561E728B1A8BDC4D004ED48B /* StandardLibrary.swift in Sources */,
 				561E72931A8BDC4D004ED48B /* ExpressionInvocation.swift in Sources */,
+				56A928971DBA385D00F15955 /* Foundation.swift in Sources */,
 				561E72941A8BDC4D004ED48B /* MustacheBox.swift in Sources */,
 				561E72911A8BDC4D004ED48B /* TemplateToken.swift in Sources */,
 				561E72881A8BDC4D004ED48B /* HTMLEscapeHelper.swift in Sources */,
 				561E72851A8BDC4D004ED48B /* TemplateCompiler.swift in Sources */,
 				561E728C1A8BDC4D004ED48B /* URLEscapeHelper.swift in Sources */,
 				561E728A1A8BDC4D004ED48B /* Localizer.swift in Sources */,
+				56A9289A1DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */,
 				561E727F1A8BDC4D004ED48B /* Tag.swift in Sources */,
 				561E72861A8BDC4D004ED48B /* Configuration.swift in Sources */,
 				561E727E1A8BDC4D004ED48B /* SectionTag.swift in Sources */,
@@ -1235,6 +1263,7 @@
 				561E729A1A8BDC4D004ED48B /* TemplateRepository.swift in Sources */,
 				561E72991A8BDC4D004ED48B /* Template.swift in Sources */,
 				561336071B2174E2005BB0F7 /* Common.swift in Sources */,
+				56A928941DBA385D00F15955 /* CoreGraphics.swift in Sources */,
 				56105B0A1B4E8618002CD224 /* LocatedTag.swift in Sources */,
 				566244581AEBC88C008BAD41 /* Expression.swift in Sources */,
 			);
@@ -1302,12 +1331,14 @@
 				5607A33F1C160216002364C1 /* GRMustacheKeyAccess.m in Sources */,
 				563AE1D819FC4A450028C6C1 /* Context.swift in Sources */,
 				56BF065B1A063DE600926BEB /* JavascriptEscapeHelper.swift in Sources */,
+				56A928961DBA385D00F15955 /* Foundation.swift in Sources */,
 				563AE1BD19FC27040028C6C1 /* TemplateCompiler.swift in Sources */,
 				563AE1D319FC45400028C6C1 /* TemplateRepository.swift in Sources */,
 				563AE1D519FC48330028C6C1 /* Template.swift in Sources */,
 				5622F1FB1A0355EE00B5D3F8 /* EachFilter.swift in Sources */,
 				563AE1BA19FBE6F40028C6C1 /* Configuration.swift in Sources */,
 				563AE1B519FBE4FF0028C6C1 /* TemplateParser.swift in Sources */,
+				56A928991DBA385D00F15955 /* SwiftStandardLibrary.swift in Sources */,
 				5622F1F51A02E98F00B5D3F8 /* StandardLibrary.swift in Sources */,
 				5622F1F81A03535700B5D3F8 /* Localizer.swift in Sources */,
 				563AE1EC19FC55920028C6C1 /* RenderingEngine.swift in Sources */,
@@ -1320,6 +1351,7 @@
 				569C42381A86824800748E98 /* ZipFilter.swift in Sources */,
 				563AE1C019FC29BF0028C6C1 /* TemplateAST.swift in Sources */,
 				566244571AEBC88C008BAD41 /* Expression.swift in Sources */,
+				56A928931DBA385D00F15955 /* CoreGraphics.swift in Sources */,
 				56105B091B4E8618002CD224 /* LocatedTag.swift in Sources */,
 				563AE20419FC643C0028C6C1 /* ExpressionInvocation.swift in Sources */,
 			);
