@@ -32,13 +32,13 @@ class FilterTests: XCTestCase {
     
     func testFilterCanChain() {
         let box = Box([
-            "name": Box("Name"),
-            "uppercase": Box(Filter { (string: String?) -> MustacheBox in
+            "name": "Name",
+            "uppercase": Filter { (string: String?) -> MustacheBox in
                 return Box(string?.uppercased())
-            }),
-            "prefix": Box(Filter { (string: String?) -> MustacheBox in
+            },
+            "prefix": Filter { (string: String?) -> MustacheBox in
                 return Box("prefix\(string!)")
-            })
+            }
             ])
         let template = try! Template(string:"<{{name}}> <{{prefix(name)}}> <{{uppercase(name)}}> <{{prefix(uppercase(name))}}> <{{uppercase(prefix(name))}}>")
         let rendering = try! template.render(box)
@@ -51,31 +51,31 @@ class FilterTests: XCTestCase {
         var rendering: String
         
         box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
-            "f": Box(Filter { (box: MustacheBox) -> MustacheBox in
+            "object": ["name": "objectName"],
+            "name": "rootName",
+            "f": Filter { (box: MustacheBox) -> MustacheBox in
                 return box
-            })
+            }
             ])
         rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<objectName> <objectName>")
         
         box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
-            "f": Box(Filter { (_: MustacheBox) -> MustacheBox in
+            "object": ["name": "objectName"],
+            "name": "rootName",
+            "f": Filter { (_: MustacheBox) -> MustacheBox in
                 return Box(["name": "filterName"])
-            })
+            }
             ])
         rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<filterName> <filterName>")
         
         box = Box([
-            "object": Box(["name": "objectName"]),
-            "name": Box("rootName"),
-            "f": Box(Filter { (_: MustacheBox) -> MustacheBox in
+            "object": ["name": "objectName"],
+            "name": "rootName",
+            "f": Filter { (_: MustacheBox) -> MustacheBox in
                 return Box(true)
-            })
+            }
             ])
         rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<> <rootName>")
@@ -83,11 +83,11 @@ class FilterTests: XCTestCase {
     
     func testFilterArgumentsDoNotEnterSectionContextStack() {
         let box = Box([
-            "test": Box("success"),
-            "filtered": Box(["test": "failure"]),
-            "filter": Box(Filter { (_: MustacheBox) -> MustacheBox in
+            "test": "success",
+            "filtered": ["test": "failure"],
+            "filter": Filter { (_: MustacheBox) -> MustacheBox in
                 return Box(true)
-            })])
+            }])
         let template = try! Template(string:"{{#filter(filtered)}}<{{test}} instead of {{#filtered}}{{test}}{{/filtered}}>{{/filter(filtered)}}")
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<success instead of failure>")
@@ -98,8 +98,8 @@ class FilterTests: XCTestCase {
             return Box((x ?? 0) * 2)
         })
         let box = Box([
-            "x": Box(1),
-            "math": Box(["double": doubleFilter])
+            "x": 1,
+            "math": ["double": doubleFilter]
             ])
         let template = try! Template(string:"{{ math.double(x) }}")
         let rendering = try! template.render(box)
@@ -113,8 +113,8 @@ class FilterTests: XCTestCase {
                 })
             })
         let box = Box([
-            "prefix": Box("prefix"),
-            "value": Box("value"),
+            "prefix": "prefix",
+            "value": "value",
             "f": filterValue])
         let template = try! Template(string:"{{f(prefix)(value)}}")
         let rendering = try! template.render(box)
@@ -132,10 +132,10 @@ class FilterTests: XCTestCase {
     
     func testMissingFilterError() {
         let box = Box([
-            "name": Box("Name"),
-            "replace": Box(Filter { (_: MustacheBox) -> MustacheBox in
+            "name": "Name",
+            "replace": Filter { (_: MustacheBox) -> MustacheBox in
                 return Box("replace")
-            })
+            }
         ])
         
         var template = try! Template(string:"<{{missing(missing)}}>")

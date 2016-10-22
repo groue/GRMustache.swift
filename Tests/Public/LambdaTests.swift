@@ -31,7 +31,7 @@ class LambdaTests: XCTestCase {
         let lambda = Lambda { "world" }
         let template = try! Template(string: "Hello, {{lambda}}!")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "Hello, world!")
@@ -41,9 +41,9 @@ class LambdaTests: XCTestCase {
         // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L29
         let lambda = Lambda { "{{planet}}" }
         let template = try! Template(string: "Hello, {{lambda}}!")
-        let data = [
-            "planet": Box("world"),
-            "lambda": Box(lambda),
+        let data: [String: Any] = [
+            "planet": "world",
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "Hello, world!")
@@ -55,9 +55,9 @@ class LambdaTests: XCTestCase {
         // not honor mustache spec white space rules.
         let lambda = Lambda { "|planet| => {{planet}}" }
         let template = try! Template(string: "{{= | | =}}Hello, (|&lambda|)!")
-        let data = [
-            "planet": Box("world"),
-            "lambda": Box(lambda),
+        let data: [String: Any] = [
+            "planet": "world",
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "Hello, (|planet| => world)!")
@@ -69,7 +69,7 @@ class LambdaTests: XCTestCase {
         let lambda = Lambda { calls += 1; return "\(calls)" }
         let template = try! Template(string: "{{lambda}} == {{{lambda}}} == {{lambda}}")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "1 == 2 == 3")
@@ -80,7 +80,7 @@ class LambdaTests: XCTestCase {
         let lambda = Lambda { ">" }
         let template = try! Template(string: "<{{lambda}}{{{lambda}}}")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "<&gt;>")
@@ -97,7 +97,7 @@ class LambdaTests: XCTestCase {
         }
         let template = try! Template(string: "<{{#lambda}}{{x}}{{/lambda}}>")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "<yes>")
@@ -109,9 +109,9 @@ class LambdaTests: XCTestCase {
             return "\(string){{planet}}\(string)"
         }
         let template = try! Template(string: "<{{#lambda}}-{{/lambda}}>")
-        let data = [
-            "planet": Box("Earth"),
-            "lambda": Box(lambda),
+        let data: [String: Any] = [
+            "planet": "Earth",
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "<-Earth->")
@@ -123,9 +123,9 @@ class LambdaTests: XCTestCase {
             return "\(string){{planet}} => |planet|\(string)"
         }
         let template = try! Template(string: "{{= | | =}}<|#lambda|-|/lambda|>")
-        let data = [
-            "planet": Box("Earth"),
-            "lambda": Box(lambda),
+        let data: [String: Any] = [
+            "planet": "Earth",
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "<-{{planet}} => Earth->")
@@ -138,7 +138,7 @@ class LambdaTests: XCTestCase {
         }
         let template = try! Template(string: "{{#lambda}}FILE{{/lambda}} != {{#lambda}}LINE{{/lambda}}")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "__FILE__ != __LINE__")
@@ -151,7 +151,7 @@ class LambdaTests: XCTestCase {
         }
         let template = try! Template(string: "<{{^lambda}}{{static}}{{/lambda}}>")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "<>")
@@ -164,7 +164,7 @@ class LambdaTests: XCTestCase {
         let lambda = Lambda { "{{>partial}}" }
         let template = try! templateRepository.template(string: "<{{lambda}}>")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         do {
             _ = try template.render(Box(data))
@@ -183,7 +183,7 @@ class LambdaTests: XCTestCase {
         let lambda = Lambda { (string: String) in "{{>partial}}" }
         let template = try! templateRepository.template(string: "<{{#lambda}}...{{/lambda}}>")
         let data = [
-            "lambda": Box(lambda),
+            "lambda": lambda,
         ]
         do {
             _ = try template.render(Box(data))
@@ -198,14 +198,14 @@ class LambdaTests: XCTestCase {
     func testArity0LambdaInSectionTag() {
         let lambda = Lambda { "success" }
         let template = try! Template(string: "{{#lambda}}<{{.}}>{{/lambda}}")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(Box(["lambda": lambda]))
         XCTAssertEqual(rendering, "<success>")
     }
     
     func testArity1LambdaInVariableTag() {
         let lambda = Lambda { (string) in string }
         let template = try! Template(string: "<{{lambda}}>")
-        let rendering = try! template.render(Box(["lambda": Box(lambda)]))
+        let rendering = try! template.render(Box(["lambda": lambda]))
         XCTAssertEqual(rendering, "<(Lambda)>")
     }
 }

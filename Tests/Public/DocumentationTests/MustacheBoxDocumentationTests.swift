@@ -31,7 +31,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
             return Rendering("foo")
         }
         let template = try! Template(string: "{{object}}")
-        let data = ["object": Box(render)]
+        let data = ["object": render]
         let rendering = try! template.render(Box(data))
         XCTAssertEqual(rendering, "foo")
     }
@@ -52,7 +52,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
                 return try info.tag.render(context)
             }
         }
-        let data = ["object": Box(render)]
+        let data = ["object": render]
         
         // Renders "variable"
         let template1 = try! Template(string: "{{object}}")

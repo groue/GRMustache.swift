@@ -34,7 +34,7 @@ class FoundationCollectionTests: XCTestCase {
     var boxedNSOrderedSet: MustacheBox!
     
     override func setUp() {
-        boxedArray = Box(["collection": Box([["key": "value"] as NSDictionary])])
+        boxedArray = Box(["collection": [["key": "value"] as NSDictionary]])
         boxedNSArray = {
             let array = NSMutableArray()
             array.add(["key": "value"])
@@ -42,7 +42,7 @@ class FoundationCollectionTests: XCTestCase {
             data.setObject(array, forKey: "collection" as NSString)
             return Box(data)
         }()
-        boxedSet = Box(["collection": Box(Set([["key": "value"] as NSDictionary]))])
+        boxedSet = Box(["collection": Set([["key": "value"] as NSDictionary])])
         boxedNSSet = {
             let set = NSMutableSet()
             set.add(["key": "value"])

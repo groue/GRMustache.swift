@@ -59,8 +59,8 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let box = Box([
-            "strong": Box(render),
-            "name": Box("Arthur")])
+            "strong": render,
+            "name": "Arthur"])
         let rendering = try! Template(string: "{{#strong}}{{name}}{{/strong}}").render(box)
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
@@ -70,7 +70,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             let rendering = try! info.tag.render(info.context)
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = Box(["twice": Box(render)])
+        let box = Box(["twice": render])
         let rendering = try! Template(string: "{{#twice}}Success{{/twice}}").render(box)
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
@@ -81,9 +81,9 @@ class MustacheRenderableGuideTests: XCTestCase {
             return try template.render(info.context)
         }
         let box = Box([
-            "link": Box(render),
-            "name": Box("Arthur"),
-            "url": Box("/people/123")])
+            "link": render,
+            "name": "Arthur",
+            "url": "/people/123"])
         let rendering = try! Template(string: "{{# link }}{{ name }}{{/ link }}").render(box)
         XCTAssertEqual(rendering, "<a href=\"/people/123\">Arthur</a>")
     }
@@ -92,17 +92,17 @@ class MustacheRenderableGuideTests: XCTestCase {
         let repository = TemplateRepository(templates: [
             "movieLink": "<a href=\"{{url}}\">{{title}}</a>",
             "personLink": "<a href=\"{{url}}\">{{name}}</a>"])
-        let link1 = Box(try! repository.template(named: "movieLink"))
-        let item1 = Box([
-            "title": Box("Citizen Kane"),
-            "url": Box("/movies/321"),
-            "link": link1])
-        let link2 = Box(try! repository.template(named: "personLink"))
-        let item2 = Box([
-            "name": Box("Orson Welles"),
-            "url": Box("/people/123"),
-            "link": link2])
-        let box = Box(["items": Box([item1, item2])])
+        let link1 = try! repository.template(named: "movieLink")
+        let item1: [String: Any] = [
+            "title": "Citizen Kane",
+            "url": "/movies/321",
+            "link": link1]
+        let link2 = try! repository.template(named: "personLink")
+        let item2: [String: Any] = [
+            "name": "Orson Welles",
+            "url": "/people/123",
+            "link": link2]
+        let box = Box(["items": [item1, item2]])
         let rendering = try! Template(string: "{{#items}}{{link}}{{/items}}").render(box)
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
     }
@@ -164,7 +164,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         let movie = Movie(title:"Citizen Kane", director: director)
         
         let template = try! Template(string: "{{ movie }}")
-        let rendering = try! template.render(Box(["movie": Box(movie)]))
+        let rendering = try! template.render(Box(["movie": movie]))
         XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
     
@@ -185,15 +185,15 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")
-        template.baseContext = template.baseContext.extendedContext(Box(["list": Box(Filter(listFilter))]))
+        template.baseContext = template.baseContext.extendedContext(Box(["list": Filter(listFilter)]))
         
-        let item1 = Box([
+        let item1 = [
             "url": "http://mustache.github.io",
-            "title": "Mustache"])
-        let item2 = Box([
+            "title": "Mustache"]
+        let item2 = [
             "url": "http://github.com/groue/GRMustache.swift",
-            "title": "GRMustache.swift"])
-        let box = Box(["nav": Box([item1, item2])])
+            "title": "GRMustache.swift"]
+        let box = Box(["nav": [item1, item2]])
         
         let rendering = try! template.render(box)
         XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")
