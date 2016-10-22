@@ -113,10 +113,12 @@ func BoxAny(_ value: Any?) -> MustacheBox {
         return boxable.mustacheBox
     case let array as [Any?]:
         return Box(array)
+    case let set as Set<AnyHashable>:
+        return Box(set)
     case let dictionary as [AnyHashable: Any?]:
         return Box(dictionary)
     default:
-        NSLog("Mustache: value `\(value)` does not conform to MustacheBoxable: it is discarded.")
+        NSLog("Mustache: value `\(value)` is discarded (not an array, not a set, not a dictionary, not a MustacheBoxable value.")
         return Box()
     }
 }
@@ -397,7 +399,6 @@ public func Box(_ array: [Any?]?) -> MustacheBox {
     return array.mustacheBoxWithArrayValue(array, box: { BoxAny($0) })
 }
 
-
 /// A dictionary can feed Mustache templates.
 ///
 ///     let dictionary: [String: String] = [
@@ -444,7 +445,7 @@ public func Box(_ dictionary: [AnyHashable: Any?]?) -> MustacheBox {
                 if let key = key as? String {
                     boxDictionary[key] = BoxAny(value)
                 } else {
-                    NSLog("GRMustache found a non-string key in dictionary (\(key)): value is discarded.")
+                    NSLog("Mustache: non-string key in dictionary (\(key)) is discarded.")
                 }
             }
             return boxDictionary
