@@ -54,7 +54,7 @@ class ReadMeTests: XCTestCase {
     func testReadmeExample1() {
         let testBundle = Bundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
-        let data: [String: MustacheBoxable?] = [
+        let data: [String: Any] = [
             "name": "Chris",
             "value": 10000,
             "taxed_value": 10000 - (10000 * 0.4),
