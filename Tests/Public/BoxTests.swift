@@ -28,7 +28,13 @@ private struct CustomHashableBoxable : MustacheBoxable, Hashable {
     let int: Int
     init(_ int: Int) { self.int = int }
     var hashValue: Int { return int }
-    var mustacheBox: MustacheBox { return Box(int) }
+    var mustacheBox: MustacheBox {
+        // Don't inherit the boolean nature of int
+        return MustacheBox(
+            value: self,
+            boolValue: true,
+            render: { _ in Rendering("\(self.int)") })
+    }
     
     static func ==(lhs: CustomHashableBoxable, rhs: CustomHashableBoxable) -> Bool {
         return lhs.int == rhs.int
@@ -39,7 +45,13 @@ private struct CustomBoxable : MustacheBoxable {
     let int: Int
     init(_ int: Int) { self.int = int }
     var hashValue: Int { return int }
-    var mustacheBox: MustacheBox { return Box(int) }
+    var mustacheBox: MustacheBox {
+        // Don't inherit the boolean nature of int
+        return MustacheBox(
+            value: self,
+            boolValue: true,
+            render: { _ in Rendering("\(self.int)") })
+    }
 }
 
 class BoxTests: XCTestCase {
@@ -79,6 +91,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
+        do {
+            // Nested
+            let value: Int = 1
+            let template = try! Template(string: "{{#nested}}1{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
     }
     
     func testCustomBoxable() {
@@ -110,6 +130,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{.}}")
             let box = Box(CustomBoxable(1))
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Nested
+            let value: CustomBoxable = CustomBoxable(1)
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
@@ -150,6 +178,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
+        do {
+            // Nested
+            let value: Int? = 1
+            let template = try! Template(string: "{{#nested}}1{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
     }
     
     func testOptionalMustacheBoxable() {
@@ -184,6 +220,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
+        do {
+            // Nested
+            let value: CustomBoxable? = CustomBoxable(1)
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
     }
     
     
@@ -213,6 +257,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
         }
+        do {
+            // Nested
+            let value: Set<Int> = [0,1,2]
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+        }
     }
     
     func testSetOfCustomHashableBoxable() {
@@ -236,6 +288,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box([CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)] as Set)
+            let rendering = try! template.render(box)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+        }
+        do {
+            // Nested
+            let value: Set<CustomHashableBoxable> = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
+            let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
         }
@@ -284,6 +344,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
+        do {
+            // Nested
+            let value: [String: Int] = ["name": 1]
+            let template = try! Template(string: "{{#nested}}{{name}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
     }
     
     func testDictionaryOfStringCustomBoxable() {
@@ -323,6 +391,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{name}}")
             let box = Box(["name": CustomBoxable(1)])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Nested
+            let value: [String: CustomBoxable] = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{#nested}}{{name}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
@@ -371,6 +447,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
+        do {
+            // Nested
+            let value: [String: Int?] = ["name": 1]
+            let template = try! Template(string: "{{#nested}}{{name}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
     }
     
     func testDictionaryOfStringOptionalCustomBoxable() {
@@ -410,6 +494,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{name}}")
             let box = Box(["name": CustomBoxable(1)])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Nested
+            let value: [String: CustomBoxable?] = ["name": CustomBoxable(1)]
+            let template = try! Template(string: "{{#nested}}{{name}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
@@ -458,6 +550,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo")
         }
+        do {
+            // Nested
+            let value: [String: Any] = ["int": 1, "string": "foo"]
+            let template = try! Template(string: "{{#nested}}{{int}}, {{string}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
     }
     
     
@@ -500,6 +600,14 @@ class BoxTests: XCTestCase {
             // Infered type
             let template = try! Template(string: "{{int}}, {{string}}, {{missing}}")
             let box = Box(["int": 1 as Int?, "string": "foo" as String?, "missing": nil as CustomBoxable?])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo, ")
+        }
+        do {
+            // Nested
+            let value: [String: Any?] = ["int": 1, "string": "foo", "missing": nil]
+            let template = try! Template(string: "{{#nested}}{{int}}, {{string}}, {{missing}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo, ")
         }
@@ -548,6 +656,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo")
         }
+        do {
+            // Nested
+            let value: [AnyHashable: Any] = ["int": 1, "string": "foo"]
+            let template = try! Template(string: "{{#nested}}{{int}}, {{string}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
     }
     
     func testDictionaryOfArray() {
@@ -582,6 +698,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "12, foobar")
         }
+        do {
+            // Nested
+            let value: [AnyHashable: Any] = ["int": [1, 2], "string": ["foo", "bar"]]
+            let template = try! Template(string: "{{#nested}}{{int}}, {{string}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "12, foobar")
+        }
     }
     
     func testDictionaryOfDictionary() {
@@ -613,6 +737,14 @@ class BoxTests: XCTestCase {
             // Infered type
             let template = try! Template(string: "{{int.name}}, {{string.name}}")
             let box = Box(["int": ["name": 1], "string": ["name": "foo"]])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo")
+        }
+        do {
+            // Nested
+            let value: [AnyHashable: Any] = ["int": ["name": 1], "string": ["name": "foo"]]
+            let template = try! Template(string: "{{#nested}}{{int.name}}, {{string.name}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1, foo")
         }
@@ -661,6 +793,14 @@ class BoxTests: XCTestCase {
 //            let rendering = try! template.render(box)
 //            XCTAssertEqual(rendering, "1, foo, ")
         }
+        do {
+            // Nested
+            let value: [AnyHashable: Any?] = ["int": 1, "string": "foo", "missing": nil]
+            let template = try! Template(string: "{{#nested}}{{int}}, {{string}}, {{missing}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1, foo, ")
+        }
     }
     
     
@@ -706,6 +846,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
+        do {
+            // Nested
+            let value: [Int] = [0,1,2,3]
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
     }
     
     func testArrayOfCustomBoxable() {
@@ -745,6 +893,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box([CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
+        do {
+            // Nested
+            let value: [CustomBoxable] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
+            let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
@@ -793,6 +949,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
+        do {
+            // Nested
+            let value: [Int?] = [0,1,2,3,nil]
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
     }
 
     func testArrayOfOptionalCustomBoxable() {
@@ -835,6 +999,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0123")
         }
+        do {
+            // Nested
+            let value: [CustomBoxable?] = [CustomBoxable(0), CustomBoxable(1), CustomBoxable(2), CustomBoxable(3)]
+            let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0123")
+        }
     }
     
     
@@ -872,6 +1044,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0foo")
         }
+        do {
+            // Nested
+            let value: [Any] = [0,"foo"]
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
     }
     
     func testArrayOfArray() {
@@ -906,6 +1086,14 @@ class BoxTests: XCTestCase {
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0foo")
         }
+        do {
+            // Nested
+            let value: [Any] = [[0,"foo"]]
+            let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
+            let box = Box(["nested": value])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
     }
     
     func testArrayOfDictionary() {
@@ -937,6 +1125,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{name}}{{/}}")
             let box = Box([["name": 1]])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "1")
+        }
+        do {
+            // Nested
+            let value: [Any] = [["name": 1]]
+            let template = try! Template(string: "{{#nested}}{{#.}}{{name}}{{/}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "1")
         }
@@ -982,6 +1178,14 @@ class BoxTests: XCTestCase {
             // Direct Box argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let box = Box([0 as Int?, nil as CustomBoxable?, "foo" as String?])
+            let rendering = try! template.render(box)
+            XCTAssertEqual(rendering, "0foo")
+        }
+        do {
+            // Nested
+            let value: [Any?] = [0,nil,"foo"]
+            let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
+            let box = Box(["nested": value])
             let rendering = try! template.render(box)
             XCTAssertEqual(rendering, "0foo")
         }
