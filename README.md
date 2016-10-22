@@ -1,4 +1,4 @@
-GRMustache.swift [![Swift](https://img.shields.io/badge/swift-2.3-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Platforms](https://img.shields.io/cocoapods/p/GRMustache.swift.svg)](https://developer.apple.com/swift/) [![License](https://img.shields.io/github/license/groue/GRMustache.swift.svg?maxAge=2592000)](/LICENSE)
+GRMustache.swift [![Swift](https://img.shields.io/badge/swift-3-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Platforms](https://img.shields.io/cocoapods/p/GRMustache.swift.svg)](https://developer.apple.com/swift/) [![License](https://img.shields.io/github/license/groue/GRMustache.swift.svg?maxAge=2592000)](/LICENSE)
 ================
 
 ### Mustache templates for Swift
@@ -17,7 +17,7 @@ Follow [@groue](http://twitter.com/groue) on Twitter for release announcements a
     <a href="#features">Features</a> &bull;
     <a href="#usage">Usage</a> &bull;
     <a href="#installation">Installation</a> &bull;
-    <a href="#documentation">Documentation</a> &bull;
+    <a href="#documentation">Documentation</a>
 </p>
 
 ---
@@ -62,15 +62,15 @@ import Mustache
 let template = try Template(named: "document")
 
 // Let template format dates with `{{format(...)}}`
-let dateFormatter = NSDateFormatter()
-dateFormatter.dateStyle = .MediumStyle
+let dateFormatter = DateFormatter()
+dateFormatter.dateStyle = .medium
 template.registerInBaseContext("format", Box(dateFormatter))
 
 // The rendered data
-let data = [
+let data: [String: Any] = [
     "name": "Arthur",
-    "date": NSDate(),
-    "realDate": NSDate().dateByAddingTimeInterval(60*60*24*3),
+    "date": Date(),
+    "realDate": Date().addingTimeInterval(60*60*24*3),
     "late": true
 ]
 
@@ -120,7 +120,7 @@ let package = Package(
     name: "MyPackage",
     targets: [],
     dependencies: [
-        .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 1, minor: 1),
+        .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 2, minor: 0),
     ]
 )
 ```
@@ -131,9 +131,19 @@ Check [groue/GRMustacheSPM](https://github.com/groue/GRMustacheSPM) for a sample
 ### Manually
 
 1. Download a copy of GRMustache.swift.
-2. Embed the `Mustache.xcodeproj` project in your own project.
-3. Add the `MustacheOSX`, `MustacheiOS`, or `MustacheWatchOS` target in the **Target Dependencies** section of the **Build Phases** tab of your application target.
-4. Add the the `Mustache.framework` from the targetted platform to the **Embedded Binaries** section of the **General**  tab of your target.
+
+2. Checkout the latest GRMustache.swift version:
+    
+    ```sh
+    cd [GRMustache.swift directory]
+    git checkout 1.1.0
+    ````
+    
+3. Embed the `Mustache.xcodeproj` project in your own project.
+
+4. Add the `MustacheOSX`, `MustacheiOS`, or `MustacheWatchOS` target in the **Target Dependencies** section of the **Build Phases** tab of your application target.
+
+5. Add the the `Mustache.framework` from the targetted platform to the **Embedded Binaries** section of the **General**  tab of your target.
 
 See [MustacheDemoiOS](Docs/DemoApps/MustacheDemoiOS) for an example of such integration.
 
@@ -213,19 +223,19 @@ Templates may come from various sources:
 
 For more information, check:
 
-- [Template.swift](Sources/Template.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/Template.html))
-- [TemplateRepository.swift](Sources/TemplateRepository.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/TemplateRepository.html))
+- [Template.swift](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/Template.html)
+- [TemplateRepository.swift](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Classes/TemplateRepository.html)
 
 
 Errors
 ------
 
-Not funny, but they happen. Standard NSErrors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `MustacheError`:
+Not funny, but they happen. Standard errors of domain NSCocoaErrorDomain, etc. may be thrown whenever the library needs to access the file system or other system resource. Mustache-specific errors are of type `MustacheError`:
 
 ```swift
 do {
     let template = try Template(named: "Document")
-    let rendering = template.render(Box(data))
+    let rendering = try template.render(Box(data))
 } catch let error as MustacheError {
     // Parse error at line 2 of template /path/to/template.mustache:
     // Unclosed Mustache tag.
@@ -314,7 +324,7 @@ try template.render(Box(["value": false]))     // false boolean
 
 #### Collections
 
-If the value is a *collection*, the section is rendered as many times as there are elements in the collection, and inner tags have direct access to the keys of elements:
+If the value is a *collection* (an array or a set), the section is rendered as many times as there are elements in the collection, and inner tags have direct access to the keys of elements:
 
 Template:
 
@@ -343,8 +353,6 @@ Rendering:
 - Albert Einstein
 - Tom Selleck
 ```
-
-Collections can be Swift arrays, ranges, sets, NSArray, NSSet, etc.
 
 
 #### Other Values
@@ -540,7 +548,7 @@ Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more info
 A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is **statically** determined, since that partial has already been loaded before the template is rendered:
 
 ```swift
-let repo = TemplateRepository(bundle: NSBundle.mainBundle())
+let repo = TemplateRepository(bundle: Bundle.main)
 let template = try repo.template(string: "{{#user}}{{>partial}}{{/user}}")
 
 // Now the `partial.mustache` resource has been loaded. It will be used when
@@ -563,10 +571,10 @@ let partial2 = try Template(string: "{{occupation}}")
 
 // Two different renderings of the same template:
 // "Georges Brassens"
-let data1 = ["user": Box(user), "partial": Box(partial1) ]
+let data1: [String: Any] = ["user": user, "partial": partial1]
 try template.render(Box(data1))
 // "Singer"
-let data2 = ["user": Box(user), "partial": Box(partial2) ]
+let data2: [String: Any] = ["user": user, "partial": partial2]
 try template.render(Box(data2))
 ```
 
@@ -688,7 +696,7 @@ GRMustache.swift interprets two pragma tags that set the content type of the tem
 
 In a **text template**, there is no HTML-escaping. Both `{{name}}` and `{{{name}}}` have the same rendering. Text templates are globally HTML-escaped when included in HTML templates.
 
-For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](Sources/Configuration.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Structs/Configuration.html)).
+For a more complete discussion, see the documentation of `Configuration.contentType` in [Configuration.swift](http://cocoadocs.org/docsets/GRMustache.swift/1.1.0/Structs/Configuration.html).
 
 
 The Context Stack and Expressions
@@ -802,83 +810,15 @@ template.render(Box(profile))
 
 This boxing is required by the rendering engine. Some types can be boxed and rendered, some can not, and some require some help.
 
-- [Boxable Types](#boxable-types)
-- [Non Boxable Types](#non-boxable-types)
-- [Imprecise Types](#imprecise-types)
-- [Note to Library Developers](#note-to-library-developers)
-
-
-### Boxable Types
-
 The types that can feed templates are:
 
-- `NSObject` and all its subclasses.
-- All types conforming to `MustacheBoxable` such as `String`, `Int`.
-- Collections and dictionaries of `MustacheBoxable`: `[Int]`, `[String: String]`, `Set<NSObject>`.
-- A few function types such as `FilterFunction` (that we will see later).
-
-Check the rendering of [Custom Types](#custom-types) below for more information about `MustacheBoxable`.
-
-**Caveat**: You may experience boxing issues with nested collections, such as dictionaries of arrays, arrays of dictionaries, etc. Even though they only contain granted boxable values, the compiler complains:
-
-```Swift
-Box(["numbers": 1..<10])      // Compiler error
-```
-
-Well, Swift won't help us here. When this happens, you have to box further:
-
-```Swift
-Box(["numbers": Box(1..<10)]) // Fine
-```
-
-
-### Non Boxable Types
-
-Some types can not be boxed, because the rendering engine does not know what do to with them. Think of tuples, and most function types. When you try to box them, you get a compiler error.
-
-
-### Imprecise Types
-
-`Any`, `AnyObject`, `[String: Any]`, `[AnyObject]` et al. can not be directly boxed. There is no way for GRMustache.swift to render values it does not know anything about. Worse: those types may hide values that are not boxable at all.
-
-You must turn them into a known boxable type before they can feed templates. And that should not be a problem for you, since you do not feed your templates with random data, do you?
-
-Pick the best of those three options:
-
-1. For boxable types and homogeneous collections of such types, perform a simple conversion with the `as!` operator: `Box(value as! [String:Int])`.
-
-2. For mixed collections of values that are compatible with Objective-C, a conversion to NSArray or NSDictionary will make it: `Box(value as! NSDictionary)`.
-
-3. For data soups, no conversions will work. We suggest you create a `MustacheBox`, `[MustacheBox]` or `[String:MustacheBox]` by hand. See [issue #8](https://github.com/groue/GRMustache.swift/issues/8) for some help.
-
-
-### Note to Library Developers
-
-If you intend to use GRMustache.swift as an internal rendering engine, and wrap it around your own APIs, you will be facing with a dilemna as soon as you'll want to let your own library users provide rendered data.
-
-Say you want to provide an API to build a HTTP Response while hiding the template house-keeping:
-
-```swift
-class HTTPController {
-    func responseWithTemplateNamed(templateName: String, data: ???) -> HTTPResponse {
-        let template = try templateRepository.template(named: templateName)
-        let rendering = try template.render(Box(data))
-        return HTTPResponse(string: rendering)
-    }
-}
-```
-
-You'll wonder what type the `data` parameter should be.
-
-- `Any` or `AnyObject`? We have seen above that they may hide non-boxable values. GRMustache.swift won't help you, because Swift won't help either: it makes it impossible to write a general `func Box(Any?) -> MustacheBox?` function that covers everything (especially, Swift can't recognize collections of boxable values).
-
-- `MustacheBox`? This would sure work, but now your library has married GRMustache.swift for good, and your library users are exposed to an alien library.
-
-- `MustacheBoxable`? Again, we have strong coupling, but worse: No Swift collection adopts this protocol. No Swift collection of boxable values can adopt any protocol, actually, because Swift won't let any specialization of a generic type adopt a protocol. Forget Dictionary, Array, Set, etc.
-
-- `NSObject` or `NSDictionary`? This one would sure work. But now your users have no way to use the extra features of GRMustache.swift such as [filters](#filters) and [lambdas](#lambdas), etc. Consider that lambdas are part of the Mustache specification: your users may expect them to be available as soon as you claim to use a Mustache back end.
-
-There is no silver bullet here: marry me, or live a dull life. [Suggestions are welcome](https://github.com/groue/GRMustache.swift/issues).
+- All types conforming to `MustacheBoxable` such as `String`, `Int`, `NSObject` and its subclasses (see [Standard Swift Types Reference](#standard-swift-types-reference) and [Custom Types](#custom-types))
+    
+- Arrays, sets, and dictionaries (`[Any?]`, `Set`, `[AnyHashable: Any?]`, NSArray, NSSet and NSDictionary). *This does not include other sequences and collections, such as Swift ranges.*
+    
+- A few function types such as [filter functions](#filters), [lambdas](#lambdas), and other functions involved in [advanced boxes](#advanced-boxes).
+    
+- [Goodies](Docs/Guides/goodies.md) such as Foundation's formatters.
 
 
 Standard Swift Types Reference
@@ -887,13 +827,12 @@ Standard Swift Types Reference
 GRMustache.swift comes with built-in support for the following standard Swift types:
 
 - [Bool](#bool)
-- [Numeric Types](#numeric-types): Int, UInt, Int64, UInt64 and Double
+- [Numeric Types](#numeric-types): Int, UInt, Int64, UInt64, Float, Double and CGFloat.
 - [String](#string)
-- [Set](#set) (and similar collections)
-- [Array](#array) (and similar collections)
+- [Set](#set)
+- [Array](#array)
 - [Dictionary](#dictionary)
 - [NSObject](#nsobject)
-- [AnyObject and Any](#anyobject-and-any)
 
 
 ### Bool
@@ -905,19 +844,19 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 
 ### Numeric Types
 
-GRMustache supports `Int`, `UInt`, `Int64`, `UInt64` and `Double`:
+GRMustache supports `Int`, `UInt`, `Int64`, `UInt64`, `Float` and `Double`:
 
 - `{{number}}` renders the standard Swift string interpolation of *number*.
 - `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
 - `{{^number}}...{{/number}}` renders if and only if *number* is 0 (zero).
 
-The Swift types `Float`, `Int8`, `UInt8`, etc. have no built-in support: turn them into one of the three general types before injecting them into templates.
+The Swift types `Int8`, `UInt8`, etc. have no built-in support: turn them into one of the three general types before injecting them into templates.
 
-To format numbers, use `NSNumberFormatter`:
+To format numbers, you can use `NumberFormatter`:
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
@@ -927,7 +866,7 @@ let data = ["x": 0.5]
 let rendering = try template.render(Box(data))
 ```
 
-[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+[More info on Formatter](Docs/Guides/goodies.md#formatter).
 
 
 ### String
@@ -953,10 +892,6 @@ Exposed keys:
 - `set.first`: the first element.
 - `set.count`: the number of elements in the set.
 
-GRMustache.swift renders as `Set` all types that provide iteration, access to the first element, and to the elements count. Precisely: `CollectionType where Index.Distance == Int`.
-
-Sets must contain boxable values. Check the [Boxing Values](#boxing-values) chapter for more information.
-
 
 ### Array
 
@@ -970,26 +905,12 @@ Exposed keys:
 - `array.last`: the last element.
 - `array.count`: the number of elements in the array.
 
-GRMustache.swift renders as `Array` all types that provide iteration, access to the first and last elements, and to the elements count. Precisely: `CollectionType where Index: BidirectionalIndexType, Index.Distance == Int`.
-
-`Range` is such a type:
-
-```swift
-// 123456789
-let template = try Template(string: "{{ numbers }}")
-let rendering = try template.render(Box(["numbers": Box(1..<10)]))
-```
-
-Arrays must contain boxable values. Check the [Boxing Values](#boxing-values) chapter for more information.
-
 
 ### Dictionary
 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary* (not very useful).
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
-
-Dictionary keys must be String, and its values must be boxable. Check the [Boxing Values](#boxing-values) chapter for more information.
 
 
 ### NSObject
@@ -1000,7 +921,7 @@ The rendering of NSObject depends on the actual class:
     
     When an object conforms to the NSFastEnumeration protocol, like **NSArray**, it renders just like Swift [Array](#array). **NSSet** is an exception, rendered as a Swift [Set](#set). **NSDictionary**, the other exception, renders as a Swift [Dictionary](#dictionary).
 
-- **NSNumber** is rendered as a Swift [Bool](#bool), [Int, UInt, Int64, UInt64 or Double](#numeric-types), depending on its value.
+- **NSNumber** is rendered as a Swift [Bool](#bool), [Int, UInt, Int64, UInt64, Float or Double](#numeric-types), depending on its value.
 
 - **NSString** is rendered as [String](#string)
 
@@ -1022,43 +943,12 @@ The rendering of NSObject depends on the actual class:
     Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
 
 
-### AnyObject and Any
-
-When you try to render a value of type `Any` or `AnyObject`, you get a compiler error:
-
-```swift
-let any: Any = ...
-let anyObject: AnyObject = ...
-
-let rendering = try template.render(Box(any))
-// Compiler Error
-
-let rendering = try template.render(Box(anyObject))
-// Compiler Error
-```
-
-The solution is to convert the value to its actual type:
-
-```swift
-let json: AnyObject = ["name": "Lionel Richie"]
-
-// Convert to Dictionary:
-let dictionary = json as! [String: String]
-
-// Lionel Richie has a Mustache.
-let template = try Template(string: "{{ name }} has a Mustache.")
-let rendering = try template.render(Box(dictionary))
-```
-
-The same kind of boxing trouble happens for collections of general types like `[String: Any]` or `[AnyObject]`. For more information, check the [Boxing Values](#boxing-values) chapter.
-
-
 Custom Types
 ------------
 
 ### NSObject subclasses
 
-With support for Objective-C runtime (on Apple platforms), your NSObject subclass can trivially feed your templates:
+NSObject subclasses can trivially feed your templates:
 
 ```swift
 // An NSObject subclass
@@ -1132,11 +1022,11 @@ let wrapped = Lambda { (string) in "<b>\(string)</b>" }
 // <b>Frank Zappa is awesome.</b>
 let templateString = "{{#wrapped}}{{fullName}} is awesome.{{/wrapped}}"
 let template = try Template(string: templateString)
-let data = [
-    "firstName": Box("Frank"),
-    "lastName": Box("Zappa"),
-    "fullName": Box(fullName),
-    "wrapped": Box(wrapped)]
+let data: [String: Any] = [
+    "firstName": "Frank",
+    "lastName": "Zappa",
+    "fullName": fullName,
+    "wrapped": wrapped]
 let rendering = try template.render(Box(data))
 ```
 
@@ -1204,21 +1094,14 @@ Filters can accept a precisely typed argument as above. You may prefer managing 
 ```swift
 // Define the `abs` filter.
 //
-// abs(x) evaluates to the absolute value of x (Int, UInt, Int64, UInt64 or Double):
+// abs(x) evaluates to the absolute value of x (Int or Double):
 let absFilter = Filter { (box: MustacheBox) in
     switch box.value {
     case let int as Int:
         return Box(abs(int))
-    case let int64 as Int64:
-        return Box(abs(int64))
-    case let uint as UInt:
-        return Box(uint)
-    case let uint64 as UInt64:
-        return Box(uint64)
     case let double as Double:
         return Box(abs(double))
     default:
-        // GRMustache does not support any other numeric types: give up.
         return Box()
     }
 }
@@ -1233,8 +1116,8 @@ You can process collections and dictionaries as well, and return new ones:
 // oneEveryTwoItems(collection) returns the array of even items in the input
 // collection.
 let oneEveryTwoItems = Filter { (box: MustacheBox) in
-    // `box.arrayValue` returns a `[MustacheBox]` whatever the boxed Swift
-    // or Foundation collection (Array, Set, NSOrderedSet, etc.).
+    // `box.arrayValue` returns a `[MustacheBox]` for all boxed collections
+    // (Array, Set, NSArray, etc.).
     guard let boxes = box.arrayValue else {
         // No value, or not a collection: return the empty box
         return Box()
@@ -1242,7 +1125,7 @@ let oneEveryTwoItems = Filter { (box: MustacheBox) in
     
     // Rebuild another array with even indexes:
     var result: [MustacheBox] = []
-    for (index, box) in boxes.enumerate() where index % 2 == 0 {
+    for (index, box) in boxes.enumerated() where index % 2 == 0 {
         result.append(box)
     }
     
@@ -1258,7 +1141,7 @@ let template = try Template(string: templateString)
 template.registerInBaseContext("oneEveryTwoItems", Box(oneEveryTwoItems))
 
 // <1><3><5><7><9>
-let rendering = try template.render(Box(["items": Box(1..<10)]))
+let rendering = try template.render(Box(["items": Array(1..<10)]))
 ```
 
 
@@ -1290,11 +1173,11 @@ Filters can chain and generally be part of more complex expressions:
     Circle area is {{ format(product(PI, circle.radius, circle.radius)) }} cm².
 
 
-When you want to format values, just use NSNumberFormatter, NSDateFormatter, or any NSFormatter. They are ready-made filters:
+When you want to format values, just use NumberFormatter, DateFormatter, or generally any Foundation's Formatter. They are ready-made filters:
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
@@ -1304,7 +1187,7 @@ let data = ["x": 0.5]
 let rendering = try template.render(Box(data))
 ```
 
-[More info on NSFormatter](Docs/Guides/goodies.md#nsformatter).
+[More info on formatters](Docs/Guides/goodies.md#formatter).
 
 
 ### Pre-Rendering Filters
@@ -1318,7 +1201,7 @@ You can, for example, reverse a rendering:
 //
 // reverse(x) renders the reversed rendering of its argument:
 let reverse = Filter { (rendering: Rendering) in
-    let reversedString = String(rendering.string.characters.reverse())
+    let reversedString = String(rendering.string.characters.reversed())
     return Rendering(reversedString, rendering.contentType)
 }
 
@@ -1358,7 +1241,7 @@ let pluralize = Filter { (count: Int?, info: RenderingInfo) in
     var string = info.tag.innerTemplateString
     
     // Pluralize if needed:
-    if count > 1 {
+    if let count = count, count > 1 {
         string += "s"  // naive
     }
     
@@ -1424,7 +1307,7 @@ The `MustacheBox` type that feeds templates is able to wrap many different behav
     {{/ user }}
     ```
 
-- `Box(NSFormatter)` returns a box that is able to format a single value, or all values inside a section ([more information](Docs/Guides/goodies.md#nsformatter)):
+- `Box(Formatter)` returns a box that is able to format a single value, or all values inside a section ([more information](Docs/Guides/goodies.md#formatter)):
     
     ```
     {{ format(date) }}
@@ -1453,7 +1336,7 @@ This variety of behaviors is available through public APIs. Before we dig into t
 
 3. The rendering engine then looks in the context stack for all boxes that have a customized `WillRenderFunction`. Those functions have an opportunity to process the Result box, and eventually return another one.
     
-    This is how, for example, a boxed [NSDateFormatter](Docs/Guides/goodies.md#nsformatter) can format all dates in a section: its `WillRenderFunction` formats dates into strings.
+    This is how, for example, a boxed [DateFormatter](Docs/Guides/goodies.md#formatter) can format all dates in a section: its `WillRenderFunction` formats dates into strings.
 
 4. The resulting box is ready to be rendered. For regular and inverted section tags, the rendering engine queries the customizable boolean value of the box, so that `{{# F(A) }}...{{/}}` and `{{^ F(A) }}...{{/}}` can't be both rendered.
     

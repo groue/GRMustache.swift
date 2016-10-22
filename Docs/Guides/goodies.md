@@ -3,7 +3,7 @@ Goodies
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
-- [NSFormatter](#nsformatter)
+- [Formatter](#formatter)
 - [HTMLEscape](#htmlescape)
 - [javascriptEscape](#javascriptescape)
 - [URLEscape](#urlescape)
@@ -13,15 +13,15 @@ GRMustache ships with a library of built-in goodies available for your templates
 - [Logger](#logger)
 
 
-### NSFormatter
+### Formatter
 
-GRMustache provides built-in support for NSFormatter and its subclasses such as NSNumberFormatter and NSDateFormatter.
+GRMustache provides built-in support for Foundation's Formatter and its subclasses such as NumberFormatter and DateFormatter.
 
 #### Formatting a value
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try! Template(string: "{{ percent(x) }}")
 template.registerInBaseContext("percent", Box(percentFormatter))
@@ -33,7 +33,7 @@ let rendering = try! template.render(Box(data))
 
 #### Formatting all values in a section
 
-NSFormatters are able to *format all variable tags* inside the section:
+Formatters are able to *format all variable tags* inside the section:
 
 `Document.mustache`:
 
@@ -46,8 +46,8 @@ NSFormatters are able to *format all variable tags* inside the section:
 Rendering code:
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try! Template(named: "Document")
 template.registerInBaseContext("percent", Box(percentFormatter))
@@ -58,11 +58,11 @@ template.registerInBaseContext("percent", Box(percentFormatter))
 //   daily: 150%
 //   weekly: 400%
 
-id data = [
+let data = [
     "hourly": 0.1,
     "daily": 1.5,
     "weekly": 4,
-};
+]
 let rendering = try! template.render(Box(data))
 ```
 
@@ -82,11 +82,11 @@ Would render:
     - ham: 22%
     - butter: 43%
 
-Precisely speaking, "values that can't be formatted" are the ones that have the `stringForObjectValue:` method return nil, as stated by [NSFormatter documentation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html#//apple_ref/occ/instm/NSFormatter/stringForObjectValue:).
+Precisely speaking, "values that can't be formatted" are the ones that have the `string(for:)` method return nil, as stated by [NSFormatter documentation](https://developer.apple.com/reference/foundation/formatter/1415993-string).
 
-Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
+Typically, NumberFormatter only formats numbers, and DateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
 
-Support for NSFormatter is written using public APIs. You can check the [source](../../Mustache/Goodies/NSFormatter.swift) for inspiration.
+Support for Formatter is written using public APIs. You can check the [source](../../Mustache/Formatter.swift) for inspiration.
 
 
 ### HTMLEscape
@@ -121,7 +121,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
       {{/}}
     {{/ HTMLEscape }}
 
-StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/HTMLEscape.swift) for inspiration.
+StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/HTMLEscapeHelper.swift) for inspiration.
 
 See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
 
@@ -165,7 +165,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 </script>
 ```
 
-StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/JavascriptEscape.swift) for inspiration.
+StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/JavascriptEscapeHelper.swift) for inspiration.
 
 See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
 
@@ -201,7 +201,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 {{/ URLEscape }}
 ```
 
-StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/URLEscape.swift) for inspiration.
+StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/URLEscapeHelper.swift) for inspiration.
 
 See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
 
@@ -260,7 +260,7 @@ When provided with a dictionary, `each` iterates each key/value pair of the dict
 
 The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.
 
-The `each` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/EachFilter.swift) for inspiration.
+The `each` filter is written using public APIs. You can check the [source](../../Mustache/EachFilter.swift) for inspiration.
 
 
 ### zip
@@ -312,7 +312,7 @@ In the example above, the first step has consumed (Alice, iOS and 100), and the 
 
 The zip filter renders a section as many times as there are elements in the longest of its argument: exhausted lists simply do not add anything to the rendering context.
 
-The `zip` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/ZipFilter.swift) for inspiration.
+The `zip` filter is written using public APIs. You can check the [source](../../Mustache/ZipFilter.swift) for inspiration.
 
 
 ### Localizer
@@ -358,7 +358,7 @@ You can embed conditional sections inside:
 
 Depending on the name, this would render `Bonjour Arthur` or `Bonjour toi`, given French localizations for both `Hello %@` and `Hello you`.
 
-StandardLibrary.Localizer filter is written using public APIs. You can check the [source](../../Mustache/Goodies/Localizer.swift) for inspiration.
+StandardLibrary.Localizer filter is written using public APIs. You can check the [source](../../Mustache/Localizer.swift) for inspiration.
 
 
 ### Logger
