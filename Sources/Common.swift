@@ -55,7 +55,7 @@ public enum ContentType {
 // MARK: - Errors
 
 /// The errors thrown by Mustache.swift
-public struct MustacheError: Error {
+public struct MustacheError : Error {
     
     /// MustacheError types
     public enum Kind : Int {
@@ -78,6 +78,11 @@ public struct MustacheError: Error {
     
     /// Eventual underlying error
     public let underlyingError: Error?
+    
+    /// Returns self.description
+    public var localizedDescription: String {
+        return description
+    }
     
     
     // Not public
