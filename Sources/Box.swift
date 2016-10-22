@@ -117,6 +117,16 @@ func BoxAny(_ value: Any?) -> MustacheBox {
         return Box(set)
     case let dictionary as [AnyHashable: Any?]:
         return Box(dictionary)
+    case let f as FilterFunction:
+        return Box(f)
+    case let f as RenderFunction:
+        return Box(f)
+    case let f as WillRenderFunction:
+        return Box(f)
+    case let f as DidRenderFunction:
+        return Box(f)
+    case let f as KeyedSubscriptFunction:
+        return MustacheBox(keyedSubscript: f)
     default:
         NSLog("Mustache: value `\(value)` is discarded (not an array, not a set, not a dictionary, not a MustacheBoxable value.")
         return Box()
