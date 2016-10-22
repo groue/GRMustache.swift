@@ -79,6 +79,63 @@ extension Double : MustacheBoxable {
 
 
 /**
+ GRMustache provides built-in support for rendering `Float`.
+ */
+
+extension Float : MustacheBoxable {
+    
+    /**
+     `Float` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+     templates.
+     
+     You should not directly call the `mustacheBox` property. Always use the
+     `Box()` function instead:
+     
+     3.14.mustacheBox   // Valid, but discouraged
+     Box(3.14)          // Preferred
+     
+     
+     ### Rendering
+     
+     - `{{float}}` is rendered with built-in Swift String Interpolation.
+     Custom formatting can be explicitly required with NSNumberFormatter, as in
+     `{{format(a)}}` (see `NSFormatter`).
+     
+     - `{{#float}}...{{/float}}` renders if and only if `float` is not 0 (zero).
+     
+     - `{{^float}}...{{/float}}` renders if and only if `float` is 0 (zero).
+     
+     */
+    public var mustacheBox: MustacheBox {
+        return MustacheBox(
+            value: self,
+            boolValue: (self != 0.0),
+            render: { (info: RenderingInfo) in
+                switch info.tag.type {
+                case .variable:
+                    // {{ float }}
+                    return Rendering("\(self)")
+                case .section:
+                    if info.enumerationItem {
+                        // {{# floats }}...{{/ floats }}
+                        return try info.tag.render(info.context.extendedContext(Box(self)))
+                    } else {
+                        // {{# float }}...{{/ float }}
+                        //
+                        // Floats do not enter the context stack when used in a
+                        // boolean section.
+                        //
+                        // This behavior must not change:
+                        // https://github.com/groue/GRMustache/issues/83
+                        return try info.tag.render(info.context)
+                    }
+                }
+        })
+    }
+}
+
+
+/**
  GRMustache provides built-in support for rendering `String`.
  */
 
