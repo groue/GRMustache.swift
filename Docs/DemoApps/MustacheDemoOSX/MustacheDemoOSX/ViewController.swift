@@ -37,7 +37,7 @@ class ViewController: NSViewController {
             template.register(percentFormatter, forKey: "percent")
             template.register(StandardLibrary.each, forKey: "each")
             template.register(StandardLibrary.zip, forKey: "zip")
-            template.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
+            template.register(StandardLibrary.Localizer(), forKey: "localize")
             template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
             template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
             template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
