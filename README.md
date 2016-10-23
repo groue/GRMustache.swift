@@ -812,7 +812,7 @@ Templates render values:
 
 ```swift
 template.render(["name": "Luigi"])
-template.render(profile)
+template.render(Profile(named: "Luigi"))
 ```
 
 You can feed templates with:
