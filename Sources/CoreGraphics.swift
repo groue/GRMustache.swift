@@ -29,11 +29,7 @@
         /// CGFloat adopts the MustacheBoxable protocol so that it can feed
         /// Mustache templates.
         ///
-        /// You should not directly call the `mustacheBox` property. Always use
-        /// the `Box()` function instead:
-        ///
-        ///     CGFloat(3.14).mustacheBox   // Valid, but discouraged
-        ///     Box(CGFloat(3.14))          // Preferred
+        /// You should not directly call the `mustacheBox` property.
         ///
         /// ### Rendering
         ///

@@ -21,34 +21,24 @@
 // THE SOFTWARE.
 
 
-/**
- GRMustache provides built-in support for rendering `Double`.
- */
-
+/// GRMustache provides built-in support for rendering `Double`.
 extension Double : MustacheBoxable {
     
-    /**
-     `Double` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-     templates.
-     
-     You should not directly call the `mustacheBox` property. Always use the
-     `Box()` function instead:
-     
-     3.14.mustacheBox   // Valid, but discouraged
-     Box(3.14)          // Preferred
-     
-     
-     ### Rendering
-     
-     - `{{double}}` is rendered with built-in Swift String Interpolation.
-     Custom formatting can be explicitly required with NSNumberFormatter, as in
-     `{{format(a)}}` (see `NSFormatter`).
-     
-     - `{{#double}}...{{/double}}` renders if and only if `double` is not 0 (zero).
-     
-     - `{{^double}}...{{/double}}` renders if and only if `double` is 0 (zero).
-     
-     */
+    /// `Double` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{double}}` is rendered with built-in Swift String Interpolation.
+    /// Custom formatting can be explicitly required with NumberFormatter, as in
+    /// `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#double}}...{{/double}}` renders if and only if `double` is not 0 (zero).
+    /// 
+    /// - `{{^double}}...{{/double}}` renders if and only if `double` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -78,34 +68,24 @@ extension Double : MustacheBoxable {
 }
 
 
-/**
- GRMustache provides built-in support for rendering `Float`.
- */
-
+/// GRMustache provides built-in support for rendering `Float`.
 extension Float : MustacheBoxable {
     
-    /**
-     `Float` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-     templates.
-     
-     You should not directly call the `mustacheBox` property. Always use the
-     `Box()` function instead:
-     
-     3.14.mustacheBox   // Valid, but discouraged
-     Box(3.14)          // Preferred
-     
-     
-     ### Rendering
-     
-     - `{{float}}` is rendered with built-in Swift String Interpolation.
-     Custom formatting can be explicitly required with NSNumberFormatter, as in
-     `{{format(a)}}` (see `NSFormatter`).
-     
-     - `{{#float}}...{{/float}}` renders if and only if `float` is not 0 (zero).
-     
-     - `{{^float}}...{{/float}}` renders if and only if `float` is 0 (zero).
-     
-     */
+    /// `Float` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    /// templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{float}}` is rendered with built-in Swift String Interpolation.
+    /// Custom formatting can be explicitly required with NumberFormatter, as in
+    /// `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#float}}...{{/float}}` renders if and only if `float` is not 0 (zero).
+    /// 
+    /// - `{{^float}}...{{/float}}` renders if and only if `float` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -135,45 +115,35 @@ extension Float : MustacheBoxable {
 }
 
 
-/**
- GRMustache provides built-in support for rendering `String`.
- */
-
+/// GRMustache provides built-in support for rendering `String`.
 extension String : MustacheBoxable {
     
-    /**
-     `String` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-     templates.
-     
-     You should not directly call the `mustacheBox` property. Always use the
-     `Box()` function instead:
-     
-     "foo".mustacheBox   // Valid, but discouraged
-     Box("foo")          // Preferred
-     
-     
-     ### Rendering
-     
-     - `{{string}}` renders the string, HTML-escaped.
-     
-     - `{{{string}}}` renders the string, *not* HTML-escaped.
-     
-     - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
-     
-     - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
-     
-     HTML-escaping of `{{string}}` tags is disabled for Text templates: see
-     `Configuration.contentType` for a full discussion of the content type of
-     templates.
-     
-     
-     ### Keys exposed to templates
-     
-     A string can be queried for the following keys:
-     
-     - `length`: the number of characters in the string.
-     
-     */
+    /// `String` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{string}}` renders the string, HTML-escaped.
+    /// 
+    /// - `{{{string}}}` renders the string, *not* HTML-escaped.
+    /// 
+    /// - `{{#string}}...{{/string}}` renders if and only if `string` is not empty.
+    /// 
+    /// - `{{^string}}...{{/string}}` renders if and only if `string` is empty.
+    /// 
+    /// HTML-escaping of `{{string}}` tags is disabled for Text templates: see
+    /// `Configuration.contentType` for a full discussion of the content type of
+    /// templates.
+    /// 
+    /// 
+    /// ### Keys exposed to templates
+    /// 
+    /// A string can be queried for the following keys:
+    /// 
+    /// - `length`: the number of characters in the string.
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -190,32 +160,22 @@ extension String : MustacheBoxable {
 }
 
 
-/**
-GRMustache provides built-in support for rendering `Bool`.
-*/
-
+/// GRMustache provides built-in support for rendering `Bool`.
 extension Bool : MustacheBoxable {
     
-    /**
-    `Bool` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        true.mustacheBox   // Valid, but discouraged
-        Box(true)          // Preferred
-
-    
-    ### Rendering
-    
-    - `{{bool}}` renders as `0` or `1`.
-    
-    - `{{#bool}}...{{/bool}}` renders if and only if `bool` is true.
-    
-    - `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
-    
-    */
+    /// `Bool` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{bool}}` renders as `0` or `1`.
+    /// 
+    /// - `{{#bool}}...{{/bool}}` renders if and only if `bool` is true.
+    /// 
+    /// - `{{^bool}}...{{/bool}}` renders if and only if `bool` is false.
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -245,34 +205,24 @@ extension Bool : MustacheBoxable {
 }
 
 
-/**
-GRMustache provides built-in support for rendering `Int64`.
-*/
-
+/// GRMustache provides built-in support for rendering `Int64`.
 extension Int64 : MustacheBoxable {
     
-    /**
-    `Int64` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{int}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
-    
-    - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
-    
-    */
+    /// `Int64` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{int}}` is rendered with built-in Swift String Interpolation.
+    ///   Custom formatting can be explicitly required with NumberFormatter,
+    ///   as in `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
+    /// 
+    /// - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -302,34 +252,24 @@ extension Int64 : MustacheBoxable {
 }
 
 
-/**
-GRMustache provides built-in support for rendering `Int`.
-*/
-
+/// GRMustache provides built-in support for rendering `Int`.
 extension Int : MustacheBoxable {
     
-    /**
-    `Int` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{int}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
-    
-    - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
-    
-    */
+    /// `Int` adopts the `MustacheBoxable` protocol so that it can feed Mustache
+    /// templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{int}}` is rendered with built-in Swift String Interpolation.
+    ///   Custom formatting can be explicitly required with NumberFormatter, as
+    ///   in `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#int}}...{{/int}}` renders if and only if `int` is not 0 (zero).
+    /// 
+    /// - `{{^int}}...{{/int}}` renders if and only if `int` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -359,34 +299,24 @@ extension Int : MustacheBoxable {
 }
 
 
-/**
-GRMustache provides built-in support for rendering `UInt64`.
-*/
-
+/// GRMustache provides built-in support for rendering `UInt64`.
 extension UInt64 : MustacheBoxable {
     
-    /**
-    `UInt64` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{uint}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
-    
-    - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
-    
-    */
+    /// `UInt64` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{uint}}` is rendered with built-in Swift String Interpolation.
+    ///   Custom formatting can be explicitly required with NumberFormatter, as
+    ///   in `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
+    /// 
+    /// - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
@@ -416,34 +346,24 @@ extension UInt64 : MustacheBoxable {
 }
 
 
-/**
-GRMustache provides built-in support for rendering `UInt`.
-*/
-
+/// GRMustache provides built-in support for rendering `UInt`.
 extension UInt : MustacheBoxable {
     
-    /**
-    `UInt` adopts the `MustacheBoxable` protocol so that it can feed Mustache
-    templates.
-    
-    You should not directly call the `mustacheBox` property. Always use the
-    `Box()` function instead:
-    
-        1.mustacheBox   // Valid, but discouraged
-        Box(1)          // Preferred
-    
-    
-    ### Rendering
-    
-    - `{{uint}}` is rendered with built-in Swift String Interpolation.
-      Custom formatting can be explicitly required with NSNumberFormatter, as in
-      `{{format(a)}}` (see `NSFormatter`).
-    
-    - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
-    
-    - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
-    
-    */
+    /// `UInt` adopts the `MustacheBoxable` protocol so that it can feed
+    /// Mustache templates.
+    /// 
+    /// You should not directly call the `mustacheBox` property.
+    /// 
+    /// 
+    /// ### Rendering
+    /// 
+    /// - `{{uint}}` is rendered with built-in Swift String Interpolation.
+    ///   Custom formatting can be explicitly required with NumberFormatter, as
+    ///   in `{{format(a)}}` (see `Formatter`).
+    /// 
+    /// - `{{#uint}}...{{/uint}}` renders if and only if `uint` is not 0 (zero).
+    /// 
+    /// - `{{^uint}}...{{/uint}}` renders if and only if `uint` is 0 (zero).
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
