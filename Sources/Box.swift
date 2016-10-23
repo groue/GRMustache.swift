@@ -26,8 +26,7 @@ import Foundation
 /// The MustacheBoxable protocol gives any type the ability to feed Mustache
 /// templates.
 ///
-/// It is adopted by the standard types Bool, Int, UInt, Double, String, and
-/// NSObject.
+/// It is adopted by the standard types Bool, Int, Double, String, NSObject...
 ///
 /// Your own types can conform to it as well, so that they can feed templates:
 ///
@@ -35,20 +34,14 @@ import Foundation
 ///
 ///     let profile = ...
 ///     let template = try! Template(named: "Profile")
-///     let rendering = try! template.render(Box(profile))
+///     let rendering = try! template.render(profile)
 public protocol MustacheBoxable {
     
-    /// You should not directly call the `mustacheBox` property. Always use the
-    /// `Box()` function instead:
-    ///
-    ///     value.mustacheBox   // Valid, but discouraged
-    ///     Box(value)          // Preferred
-    ///
     /// Returns a `MustacheBox` that describes how your type interacts with the
     /// rendering engine.
     ///
     /// You can for example box another value that is already boxable, such as
-    /// dictionaries:
+    /// a dictionary:
     ///
     ///     struct Person {
     ///         let firstName: String
@@ -71,10 +64,7 @@ public protocol MustacheBoxable {
     ///
     ///     // Renders "Tom Selleck"
     ///     let template = try! Template(string: "{{person.fullName}}")
-    ///     try! template.render(Box(["person": Box(person)]))
-    ///
-    /// However, there are multiple ways to build a box, several `Box()`
-    /// functions. See their documentations.
+    ///     try! template.render(["person": person])
     var mustacheBox: MustacheBox { get }
 }
 
@@ -88,7 +78,128 @@ extension MustacheBox {
 }
 
 
-/// TODO
+/// Returns a MustacheBox that allows *value* to feed Mustache templates.
+///
+/// The returned box depends on the type of the value:
+///
+///
+/// ## MustacheBoxable
+///
+/// For values that adopt the MustacheBoxable protocol, the `Box` function
+/// returns their mustacheBox property.
+///
+///
+/// ## Arrays
+///
+/// Arrays can feed Mustache templates.
+///
+///     let array = [1,2,3]
+///
+///     // Renders "123"
+///     let template = try! Template(string: "{{#array}}{{.}}{{/array}}")
+///     try! template.render(["array": array])
+///
+///
+/// ### Rendering
+///
+/// - `{{array}}` renders the concatenation of the array items.
+///
+/// - `{{#array}}...{{/array}}` renders as many times as there are items in
+///   `array`, pushing each item on its turn on the top of the context stack.
+///
+/// - `{{^array}}...{{/array}}` renders if and only if `array` is empty.
+///
+///
+/// ### Keys exposed to templates
+///
+/// An array can be queried for the following keys:
+///
+/// - `count`: number of elements in the array
+/// - `first`: the first object in the array
+/// - `last`: the last object in the array
+///
+/// Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders
+/// once, if and only if `array` is not empty.
+///
+///
+/// ## Sets
+///
+/// Sets can feed Mustache templates.
+///
+///     let set:Set<Int> = [1,2,3]
+///
+///     // Renders "132", or "231", etc.
+///     let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
+///     try! template.render(["set": set])
+///
+///
+/// ### Rendering
+///
+/// - `{{set}}` renders the concatenation of the set items.
+///
+/// - `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
+///   pushing each item on its turn on the top of the context stack.
+///
+/// - `{{^set}}...{{/set}}` renders if and only if `set` is empty.
+///
+///
+/// ### Keys exposed to templates
+///
+/// A set can be queried for the following keys:
+///
+/// - `count`: number of elements in the set
+/// - `first`: the first object in the set
+///
+/// Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
+/// if and only if `set` is not empty.
+///
+///
+/// ## Dictionaries
+///
+/// A dictionary can feed Mustache templates.
+///
+///     let dictionary: [String: String] = [
+///         "firstName": "Freddy",
+///         "lastName": "Mercury"]
+///
+///     // Renders "Freddy Mercury"
+///     let template = try! Template(string: "{{firstName}} {{lastName}}")
+///     let rendering = try! template.render(dictionary)
+///
+///
+/// ### Rendering
+///
+/// - `{{dictionary}}` renders the built-in Swift String Interpolation of the
+///   dictionary.
+///
+/// - `{{#dictionary}}...{{/dictionary}}` pushes the dictionary on the top of the
+///   context stack, and renders the section once.
+///
+/// - `{{^dictionary}}...{{/dictionary}}` does not render.
+///
+///
+/// In order to iterate over the key/value pairs of a dictionary, use the `each`
+/// filter from the Standard Library:
+///
+///     // Register StandardLibrary.each for the key "each":
+///     let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
+///     template.register(StandardLibrary.each, forKey: "each")
+///
+///     // Renders "<firstName:Freddy, lastName:Mercury,>"
+///     let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
+///     let rendering = try! template.render(["dictionary": dictionary])
+///
+///
+/// ## FilterFunction, RenderFunction, WillRenderFunction, DidRenderFunction, KeyedSubscriptFunction
+///
+/// Those functions are boxed as customized boxes.
+///
+/// ## Other Values
+///
+/// Other values (including nil) are discarded as empty boxes.
+///
+/// - parameter value: A value.
+/// - returns: A MustacheBox.
 public func Box(_ value: Any?) -> MustacheBox {
     guard let value = value else {
         return EmptyBox
@@ -217,39 +328,6 @@ private func concatenateRenderings(array: [Any?], info: RenderingInfo) throws ->
 
 extension MustacheBox {
     
-    /// Arrays can feed Mustache templates.
-    ///
-    ///     let array = [1,2,3]
-    ///
-    ///     // Renders "123"
-    ///     let template = try! Template(string: "{{#array}}{{.}}{{/array}}")
-    ///     try! template.render(Box(["array": Box(array)]))
-    ///
-    ///
-    /// ### Rendering
-    ///
-    /// - `{{array}}` renders the concatenation of the array items.
-    ///
-    /// - `{{#array}}...{{/array}}` renders as many times as there are items in
-    ///   `array`, pushing each item on its turn on the top of the context stack.
-    ///
-    /// - `{{^array}}...{{/array}}` renders if and only if `array` is empty.
-    ///
-    ///
-    /// ### Keys exposed to templates
-    ///
-    /// An array can be queried for the following keys:
-    ///
-    /// - `count`: number of elements in the array
-    /// - `first`: the first object in the array
-    /// - `last`: the last object in the array
-    ///
-    /// Because 0 (zero) is falsey, `{{#array.count}}...{{/array.count}}` renders
-    /// once, if and only if `array` is not empty.
-    ///
-    ///
-    /// - parameter array: An array of boxable values.
-    /// - returns: A MustacheBox that wraps *array*.
     convenience init(array: [Any?]) {
         self.init(
             converter: MustacheBox.Converter(arrayValue: { array.map { Box($0) } }),
@@ -287,38 +365,6 @@ extension MustacheBox {
         })
     }
     
-    /// Sets can feed Mustache templates.
-    ///
-    ///     let set:Set<Int> = [1,2,3]
-    ///
-    ///     // Renders "132", or "231", etc.
-    ///     let template = try! Template(string: "{{#set}}{{.}}{{/set}}")
-    ///     try! template.render(Box(["set": Box(set)]))
-    ///
-    ///
-    /// ### Rendering
-    ///
-    /// - `{{set}}` renders the concatenation of the set items.
-    ///
-    /// - `{{#set}}...{{/set}}` renders as many times as there are items in `set`,
-    ///   pushing each item on its turn on the top of the context stack.
-    ///
-    /// - `{{^set}}...{{/set}}` renders if and only if `set` is empty.
-    ///
-    ///
-    /// ### Keys exposed to templates
-    ///
-    /// A set can be queried for the following keys:
-    ///
-    /// - `count`: number of elements in the set
-    /// - `first`: the first object in the set
-    ///
-    /// Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders once,
-    /// if and only if `set` is not empty.
-    ///
-    ///
-    /// - parameter set: A set.
-    /// - returns: A MustacheBox that wraps *set*.
     convenience init<Element>(set: Set<Element>) {
         self.init(
             converter: MustacheBox.Converter(arrayValue: { set.map({ Box($0) }) }),
@@ -351,41 +397,6 @@ extension MustacheBox {
         )
     }
     
-    /// A dictionary can feed Mustache templates.
-    ///
-    ///     let dictionary: [String: String] = [
-    ///         "firstName": "Freddy",
-    ///         "lastName": "Mercury"]
-    ///
-    ///     // Renders "Freddy Mercury"
-    ///     let template = try! Template(string: "{{firstName}} {{lastName}}")
-    ///     let rendering = try! template.render(Box(dictionary))
-    ///
-    ///
-    /// ### Rendering
-    ///
-    /// - `{{dictionary}}` renders the built-in Swift String Interpolation of the
-    ///   dictionary.
-    ///
-    /// - `{{#dictionary}}...{{/dictionary}}` pushes the dictionary on the top of the
-    ///   context stack, and renders the section once.
-    ///
-    /// - `{{^dictionary}}...{{/dictionary}}` does not render.
-    ///
-    ///
-    /// In order to iterate over the key/value pairs of a dictionary, use the `each`
-    /// filter from the Standard Library:
-    ///
-    ///     // Register StandardLibrary.each for the key "each":
-    ///     let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
-    ///     template.register(StandardLibrary.each, forKey: "each")
-    ///
-    ///     // Renders "<firstName:Freddy, lastName:Mercury,>"
-    ///     let dictionary: [String: String] = ["firstName": "Freddy", "lastName": "Mercury"]
-    ///     let rendering = try! template.render(Box(["dictionary": dictionary]))
-    ///
-    /// - parameter dictionary: A dictionary
-    /// - returns: A MustacheBox that wraps *dictionary*.
     convenience init(dictionary: [AnyHashable: Any?]) {
         self.init(
             converter: MustacheBox.Converter(dictionaryValue: {
@@ -409,9 +420,5 @@ extension MustacheBox {
         })
     }
 }
-
-//public func Box() -> MustacheBox {
-//    return EmptyBox
-//}
 
 let EmptyBox = MustacheBox()

@@ -49,16 +49,15 @@ final class URLEscapeHelper : MustacheBoxable {
     //
     // It is activated as soon as the formatter enters the context stack, when
     // used in a section {{# URLEscape }}...{{/ URLEscape }}.
-    fileprivate func willRender(_ tag: Tag, box: MustacheBox) -> MustacheBox {
+    fileprivate func willRender(_ tag: Tag, box: MustacheBox) -> Any? {
         switch tag.type {
         case .variable:
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box({ (info: RenderingInfo) -> Rendering in
+            return { (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info)
                 return try self.filter(rendering)
-
-            })
+            }
         case .section:
             return box
         }
