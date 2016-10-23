@@ -23,9 +23,7 @@
 
 import Foundation
 
-/**
-VariableTag represents a variable tag such as {{name}} or {{{name}}}.
-*/
+/// VariableTag represents a variable tag such as {{name}} or {{{name}}}.
 final class VariableTag: LocatedTag {
     let token: TemplateToken
     let contentType: ContentType

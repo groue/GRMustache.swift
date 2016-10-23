@@ -21,20 +21,18 @@
 // THE SOFTWARE.
 
 
-/**
-The abstract syntax tree of a template
-*/
+/// The abstract syntax tree of a template
 final class TemplateAST {
     
-    // A template AST can be "defined" or "undefined".
-    //
-    // Undefined template ASTs are used when parsing templates which embed a
-    // partial tag which refers to themselves. The compiler would emit a
-    // PartialNode which contains a reference to an undefined (yet) template
-    // AST. At the end of the compilation the undefined template AST would
-    // become defined.
-    //
-    // See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
+    /// A template AST can be "defined" or "undefined".
+    ///
+    /// Undefined template ASTs are used when parsing templates which embed a
+    /// partial tag which refers to themselves. The compiler would emit a
+    /// PartialNode which contains a reference to an undefined (yet) template
+    /// AST. At the end of the compilation the undefined template AST would
+    /// become defined.
+    ///
+    /// See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
     enum `Type` {
         case undefined
         case defined(nodes: [TemplateASTNode], contentType: ContentType)
@@ -46,23 +44,17 @@ final class TemplateAST {
     }
     
     
-    /**
-    Returns an undefined TemplateAST.
-    */
+    /// Creates an undefined TemplateAST.
     convenience init() {
         self.init(type: Type.undefined)
     }
     
-    /**
-    Returns a defined TemplateAST.
-    */
+    /// Creates a defined TemplateAST.
     convenience init(nodes: [TemplateASTNode], contentType: ContentType) {
         self.init(type: Type.defined(nodes: nodes, contentType: contentType))
     }
     
-    /**
-    Returns nil if the template AST is undefined.
-    */
+    /// Nil if the template AST is undefined.
     var nodes: [TemplateASTNode]! {
         switch type {
         case .undefined:
@@ -72,9 +64,7 @@ final class TemplateAST {
         }
     }
 
-    /**
-    Returns nil if the template AST is undefined.
-    */
+    /// Nil if the template AST is undefined.
     var contentType: ContentType! {
         switch type {
         case .undefined:

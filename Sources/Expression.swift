@@ -23,10 +23,8 @@
 
 import Foundation
 
-/**
-The type for expressions that appear in tags: `name`, `user.name`,
-`uppercase(user.name)`, etc.
-*/
+/// The type for expressions that appear in tags: `name`, `user.name`,
+/// `uppercase(user.name)`, etc.
 enum Expression {
     
     // {{ . }}
@@ -42,11 +40,9 @@ enum Expression {
     indirect case filter(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool)
 }
 
-/**
-Expression conforms to Equatable so that the Compiler can check that section
-tags have matching openings and closings: {{# person }}...{{/ person }} is OK
-but {{# foo }}...{{/ bar }} is not.
-*/
+/// Expression conforms to Equatable so that the Compiler can check that section
+/// tags have matching openings and closings: {{# person }}...{{/ person }} is
+/// OK but {{# foo }}...{{/ bar }} is not.
 extension Expression: Equatable {
 }
 

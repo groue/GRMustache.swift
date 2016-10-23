@@ -23,10 +23,8 @@
 
 import Foundation
 
-/**
-A SectionTag represents a regular or inverted section tag such as
-{{#section}}...{{/section}} or {{^section}}...{{/section}}.
-*/
+/// A SectionTag represents a regular or inverted section tag such as
+/// {{#section}}...{{/section}} or {{^section}}...{{/section}}.
 final class SectionTag: LocatedTag {
     let openingToken: TemplateToken
     let innerTemplateAST: TemplateAST
