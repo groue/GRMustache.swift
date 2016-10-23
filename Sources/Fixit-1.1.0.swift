@@ -25,3 +25,16 @@ extension Template {
     @available(*, unavailable, renamed:"register(_:forKey:)")
     public func registerInBaseContext(_ key: String, _ value: Any?) { }
 }
+
+extension Context {
+    @available(*, unavailable, renamed:"mustacheBox(forKey:)")
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
+    
+    @available(*, unavailable, renamed:"mustacheBox(forExpression:)")
+    public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox { return EmptyBox }
+}
+
+extension MustacheBox {
+    @nonobjc @available(*, unavailable, renamed:"mustacheBox(forKey:)")
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
+}

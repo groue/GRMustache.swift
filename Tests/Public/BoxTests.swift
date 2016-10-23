@@ -1066,7 +1066,7 @@ class BoxTests: XCTestCase {
         
         let array = NSArray(object: Class())
         let context = Context(array)
-        let box = try! context.mustacheBoxForExpression("first.foo")
+        let box = try! context.mustacheBox(forExpression: "first.foo")
         XCTAssertEqual((box.value as! String), "foo")
     }
     
