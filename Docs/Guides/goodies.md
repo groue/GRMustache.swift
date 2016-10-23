@@ -226,9 +226,9 @@ The `each` filter is there to give you some extra keys:
 - `@last` is true for the last item only.
 
 ```
-One line per user:
+Users with their positions:
 {{# each(users) }}
-- {{ @index }}: {{ name }}
+- {{ @indexPlusOne }}: {{ name }}
 {{/}}
 
 Comma-separated user names:
@@ -236,26 +236,26 @@ Comma-separated user names:
 ```
 
 ```
-One line per user:
-- 0: Alice
-- 1: Bob
-- 2: Craig
+Users with their positions:
+- 1: Alice
+- 2: Bob
+- 3: Craig
 
 Comma-separated user names: Alice, Bob, Craig.
 ```
 
 When provided with a dictionary, `each` iterates each key/value pair of the dictionary, stores the key in `@key`, and sets the value as the current context:
 
-```
-{{# each(dictionary) }}
-- {{ @key }}: {{.}}
+```mustache
+{{# each(items) }}
+- key: {{ @key }}, value: {{.}}
 {{/}}
 ```
 
 ```
-- name: Alice
-- score: 200
-- level: 5
+- key: name, value: Alice
+- key: score, value: 200
+- key: level, value: 5
 ```
 
 The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.

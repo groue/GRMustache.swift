@@ -911,12 +911,63 @@ Exposed keys:
 - `array.last`: the last element.
 - `array.count`: the number of elements in the array.
 
+In order to render array indexes, or vary the rendering according to the position of elements in the array, use the [each](Docs/Guides/goodies.md#each) filter from the Standard Library:
+
+`document.mustache`:
+
+```
+Users with their positions:
+{{# each(users) }}
+- {{ @indexPlusOne }}: {{ name }}
+{{/}}
+
+Comma-separated user names:
+{{# each(users) }}{{ name }}{{^ @last }}, {{/}}{{/}}.
+```
+
+```swift
+let template = try! Template(named: "document")
+
+// Register StandardLibrary.each for the key "each":
+template.register(StandardLibrary.each, forKey: "each")
+
+// Users with their positions:
+// - 1: Alice
+// - 2: Bob
+// - 3: Craig
+// 
+// Comma-separated user names: Alice, Bob, Craig.
+let users = [["name": "Alice"], ["name": "Bob"], ["name": "Craig"]]
+let rendering = try! template.render(["users": users])
+```
+
 
 ### Dictionary
 
 - `{{dictionary}}` renders the standard Swift string interpolation of *dictionary* (not very useful).
 - `{{#dictionary}}...{{/dictionary}}` renders once, pushing the dictionary on top of the [context stack](#the-context-stack).
 - `{{^dictionary}}...{{/dictionary}}` does not render.
+
+In order to iterate over the key/value pairs of a dictionary, use the [each](Docs/Guides/goodies.md#each) filter from the Standard Library:
+
+`document.mustache`:
+
+```mustache
+{{# each(dictionary) }}
+    key: {{ @key }}, value: {{.}}
+{{/}}
+```
+
+```swift
+let template = try! Template(named: "document")
+
+// Register StandardLibrary.each for the key "each":
+template.register(StandardLibrary.each, forKey: "each")
+
+// Renders "key: name, value: Freddy Mercury"
+let dictionary = ["name": "Freddy Mercury"]
+let rendering = try! template.render(["dictionary": dictionary])
+```
 
 
 ### NSObject
