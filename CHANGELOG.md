@@ -5,9 +5,49 @@ Release Notes
 
 **New**
 
-- Swift 3
-- Templates learned to render Int64 and UInt64
-- TODO: describe modified relationships with Foundation
+- **Swift 3**
+- Templates learned to render Int64, UInt64, Float, and CGFloat.
+- The Box() function is no longer necessary when feeding templates:
+    
+    ```swift
+    // Still supported
+    let rendering try template.render(Box(["name": "Arthur"]))
+    
+    // New:
+    let rendering try template.render(["name": "Arthur"])
+    ```
+
+**Breaking Changes**
+
+- The only collections that can feed Mustache templates are arrays, sets, dictionaries, and Foundation collections that adopt NSFastEnumeration such as NSArray, SSet, NSOrderedSet, NSDictionary, etc.
+
+- The Swift 3 *Grand Renaming* has impacted a few GRMustache APIs:
+    
+    ```diff
+     struct Configuration {
+    -    func registerInBaseContext(_ key: String, _ box: MustacheBox)
+    +    func register(_ value: Any?, forKey key: String)
+     }
+    
+     class Template {
+    -    func registerInBaseContext(_ key: String, _ box: MustacheBox)
+    +    func register(_ value: Any?, forKey key: String)
+     }
+    
+     class Context {
+    -    func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context
+    -    func mustacheBoxForKey(_ key: String) -> MustacheBox
+    -    func mustacheBoxForExpression(_ string: String) throws -> MustacheBox
+    +    func extendedContext(withRegisteredValue value: Any?, forKey key: String) -> Context
+    +    func mustacheBox(forKey key: String) -> MustacheBox
+    +    func mustacheBox(forExpression string: String) throws -> MustacheBox
+     }
+    
+     class MustacheBox {
+    -    func mustacheBoxForKey(_ key: String) -> MustacheBox
+    +    func mustacheBox(forKey key: String) -> MustacheBox
+     }
+    ```
 
 
 ## v1.1.0

@@ -32,6 +32,9 @@ extension Context {
     
     @available(*, unavailable, renamed:"mustacheBox(forExpression:)")
     public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox { return EmptyBox }
+    
+    @available(*, unavailable, renamed:"extendedContext(withRegisteredValue:forKey:)")
+    func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context { return self }
 }
 
 extension MustacheBox {
