@@ -40,7 +40,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
     }
     
     // This function is used for evaluating `javascriptEscape(x)` expressions.
-    private func filter(rendering: Rendering) throws -> Rendering {
+    private func filter(_ rendering: Rendering) throws -> Rendering {
         return Rendering(JavascriptEscapeHelper.escapeJavascript(rendering.string), rendering.contentType)
     }
     
@@ -49,21 +49,21 @@ final class JavascriptEscapeHelper : MustacheBoxable {
     //
     // It is activated as soon as the formatter enters the context stack, when
     // used in a section {{# javascriptEscape }}...{{/ javascriptEscape }}.
-    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
+    private func willRender(_ tag: Tag, box: MustacheBox) -> Any? {
         switch tag.type {
-        case .Variable:
+        case .variable:
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box({ (info: RenderingInfo) -> Rendering in
-                let rendering = try box.render(info: info)
+            return { (info: RenderingInfo) -> Rendering in
+                let rendering = try box.render(info)
                 return try self.filter(rendering)
-            })
-        case .Section:
+            }
+        case .section:
             return box
         }
     }
     
-    private class func escapeJavascript(string: String) -> String {
+    private class func escapeJavascript(_ string: String) -> String {
         // This table comes from https://github.com/django/django/commit/8c4a525871df19163d5bfdf5939eff33b544c2e2#django/template/defaultfilters.py
         //
         // Quoting Malcolm Tredinnick:

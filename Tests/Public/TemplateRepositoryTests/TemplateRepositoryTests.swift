@@ -30,19 +30,19 @@ class TemplateRepositoryTests: XCTestCase {
         let repo = TemplateRepository()
         
         do {
-            try repo.template(named:"partial")
+            _ = try repo.template(named:"partial")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
         
         do {
-            try repo.template(string:"{{>partial}}")
+            _ = try repo.template(string:"{{>partial}}")
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.TemplateNotFound)
+            XCTAssertEqual(error.kind, MustacheError.Kind.templateNotFound)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -51,7 +51,7 @@ class TemplateRepositoryTests: XCTestCase {
     func testTemplateRepositoryWithoutDataSourceCanLoadStringTemplate() {
         let repo = TemplateRepository()
         let template = try! repo.template(string:"{{.}}")
-        let rendering = try! template.render(Box("success"))
+        let rendering = try! template.render("success")
         XCTAssertEqual(rendering, "success")
     }
     
@@ -60,7 +60,7 @@ class TemplateRepositoryTests: XCTestCase {
         let repo = TemplateRepository(templates: templates)
         
         let template1 = try! repo.template(named: "name")
-        template1.registerInBaseContext("value", Box("foo"))
+        template1.register("foo", forKey: "value")
         let rendering1 = try! template1.render()
         
         let template2 = try! repo.template(named: "name")
@@ -76,17 +76,17 @@ class TemplateRepositoryTests: XCTestCase {
             init(templates: [String: String]) {
                 self.templates = templates
             }
-            func templateIDForName(name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
+            func templateIDForName(_ name: String, relativeToTemplateID baseTemplateID: TemplateID?) -> TemplateID? {
                 return name
             }
-            func templateStringForTemplateID(templateID: TemplateID) throws -> String {
+            func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
                 if let string = templates[templateID] {
                     return string
                 } else {
-                    throw MustacheError(kind: .TemplateNotFound)
+                    throw MustacheError(kind: .templateNotFound)
                 }
             }
-            func setTemplateString(templateString: String, forKey key: String) {
+            func setTemplateString(_ templateString: String, forKey key: String) {
                 templates[key] = templateString
             }
         }

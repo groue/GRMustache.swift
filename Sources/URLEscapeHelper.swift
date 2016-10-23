@@ -40,7 +40,7 @@ final class URLEscapeHelper : MustacheBoxable {
     }
     
     // This function is used for evaluating `URLEscape(x)` expressions.
-    private func filter(rendering: Rendering) throws -> Rendering {
+    fileprivate func filter(_ rendering: Rendering) throws -> Rendering {
         return Rendering(URLEscapeHelper.escapeURL(rendering.string), rendering.contentType)
     }
     
@@ -49,24 +49,23 @@ final class URLEscapeHelper : MustacheBoxable {
     //
     // It is activated as soon as the formatter enters the context stack, when
     // used in a section {{# URLEscape }}...{{/ URLEscape }}.
-    private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
+    fileprivate func willRender(_ tag: Tag, box: MustacheBox) -> Any? {
         switch tag.type {
-        case .Variable:
+        case .variable:
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box({ (info: RenderingInfo) -> Rendering in
-                let rendering = try box.render(info: info)
+            return { (info: RenderingInfo) -> Rendering in
+                let rendering = try box.render(info)
                 return try self.filter(rendering)
-
-            })
-        case .Section:
+            }
+        case .section:
             return box
         }
     }
     
-    private class func escapeURL(string: String) -> String {
-        let s = NSCharacterSet.URLQueryAllowedCharacterSet().mutableCopy() as! NSMutableCharacterSet
-        s.removeCharactersInString("?&=")
-        return string.stringByAddingPercentEncodingWithAllowedCharacters(s) ?? ""
+    fileprivate class func escapeURL(_ string: String) -> String {
+        let s = (CharacterSet.urlQueryAllowed as NSCharacterSet).mutableCopy() as! NSMutableCharacterSet
+        s.removeCharacters(in: "?&=")
+        return string.addingPercentEncoding(withAllowedCharacters: s as CharacterSet) ?? ""
     }
 }

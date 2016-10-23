@@ -23,67 +23,56 @@ import Foundation
 
 extension StandardLibrary {
     
-    /**
-    StandardLibrary.Localizer provides localization of Mustache sections or
-    data.
-    
-        let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
-        template.registerInBaseContext("localize", Box(localizer))
-    
-    ### Localizing data:
-    
-    `{{ localize(greeting) }}` renders `NSLocalizedString(@"Hello", nil)`,
-    assuming the `greeting` key resolves to the `Hello` string.
-    
-    ### Localizing sections:
-    
-    `{{#localize}}Hello{{/localize}}` renders `NSLocalizedString(@"Hello", nil)`.
-    
-    ### Localizing sections with arguments:
-    
-    `{{#localize}}Hello {{name}}{{/localize}}` builds the format string
-    `Hello %@`, localizes it with NSLocalizedString, and finally
-    injects the name with `String(format:...)`.
-    
-    ### Localize sections with arguments and conditions:
-    
-    `{{#localize}}Good morning {{#title}}{{title}}{{/title}} {{name}}{{/localize}}`
-    build the format string `Good morning %@" or @"Good morning %@ %@`,
-    depending on the presence of the `title` key. It then injects the name, or
-    both title and name, with `String(format:...)`, to build the final
-    rendering.
-    */
+    /// StandardLibrary.Localizer provides localization of Mustache sections
+    /// or data.
+    /// 
+    ///     let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
+    ///     template.register(localizer, forKey: "localize")
+    /// 
+    /// ### Localizing data:
+    /// 
+    /// `{{ localize(greeting) }}` renders `NSLocalizedString("Hello", comment: "")`,
+    /// assuming the `greeting` key resolves to the `Hello` string.
+    /// 
+    /// ### Localizing sections:
+    /// 
+    /// `{{#localize}}Hello{{/localize}}` renders `NSLocalizedString("Hello", comment: "")`.
+    /// 
+    /// ### Localizing sections with arguments:
+    /// 
+    /// `{{#localize}}Hello {{name}}{{/localize}}` builds the format string
+    /// `Hello %@`, localizes it with NSLocalizedString, and finally
+    /// injects the name with `String(format:...)`.
+    /// 
+    /// ### Localize sections with arguments and conditions:
+    /// 
+    /// `{{#localize}}Good morning {{#title}}{{title}}{{/title}} {{name}}{{/localize}}`
+    /// build the format string `Good morning %@" or @"Good morning %@ %@`,
+    /// depending on the presence of the `title` key. It then injects the name, or
+    /// both title and name, with `String(format:...)`, to build the final
+    /// rendering.
     public final class Localizer : MustacheBoxable {
         /// The bundle
-        public let bundle: NSBundle
+        public let bundle: Bundle
         
         /// The table
         public let table: String?
         
-        /**
-        Returns a Localizer.
-        
-        - parameter bundle: The bundle where to look for localized strings. If
-                            nil, the main bundle is used.
-        - parameter table:  The table where to look for localized strings. If
-                            nil, the default `Localizable.strings` is used.
-        - returns: A new Localizer.
-        */
-        public init(bundle: NSBundle?, table: String?) {
-            self.bundle = bundle ?? NSBundle.mainBundle()
+        /// Creates a Localizer.
+        /// 
+        /// - parameter bundle: The bundle where to look for localized strings.
+        ///   If nil, the main bundle is used.
+        /// - parameter table:  The table where to look for localized strings.
+        ///   If nil, the default `Localizable.strings` is used.
+        public init(bundle: Bundle? = nil, table: String? = nil) {
+            self.bundle = bundle ?? Bundle.main
             self.table = table
         }
         
-        /**
-        `Localizer` adopts the `MustacheBoxable` protocol so that it can feed
-        Mustache templates.
-        
-        You should not directly call the `mustacheBox` property. Always use the
-        `Box()` function instead:
-        
-            localizer.mustacheBox   // Valid, but discouraged
-            Box(localizer)          // Preferred
-        */
+        /// `Localizer` adopts the `MustacheBoxable` protocol so that it can
+        /// feed Mustache templates.
+        /// 
+        /// You should not directly call the `mustacheBox` property.
         public var mustacheBox: MustacheBox {
             // Return a multi-facetted box, because Localizer interacts in
             // various ways with Mustache rendering.
@@ -111,12 +100,12 @@ extension StandardLibrary {
         private var formatArguments: [String]?
         
         // This function is used for evaluating `localize(x)` expressions.
-        private func filter(rendering: Rendering) throws -> Rendering {
+        private func filter(_ rendering: Rendering) throws -> Rendering {
             return Rendering(localizedStringForKey(rendering.string), rendering.contentType)
         }
         
         // This functionis used to render a {{# localize }}Hello{{/ localize }} section.
-        private func render(info: RenderingInfo) throws -> Rendering {
+        private func render(_ info: RenderingInfo) throws -> Rendering {
             
             // Perform a first rendering of the section tag, that will turn
             // variable tags into a custom placeholder.
@@ -157,7 +146,7 @@ extension StandardLibrary {
                 
             // Render again
                 
-            try! info.tag.render(context)
+            _ = try! info.tag.render(context)
                 
                 
             let rendering: Rendering
@@ -186,7 +175,7 @@ extension StandardLibrary {
                 //
                 // The format string will then be "%%d %@", as needed.
                 
-                let localizableFormat = localizableFormatRendering.string.stringByReplacingOccurrencesOfString("%", withString: "%%").stringByReplacingOccurrencesOfString(Placeholder.string, withString: "%@")
+                let localizableFormat = localizableFormatRendering.string.replacingOccurrences(of: "%", with: "%%").replacingOccurrences(of: Placeholder.string, with: "%@")
                 
                 // Now localize the format
                 let localizedFormat = localizedStringForKey(localizableFormat)
@@ -209,9 +198,9 @@ extension StandardLibrary {
             return rendering
         }
         
-        private func willRender(tag: Tag, box: MustacheBox) -> MustacheBox {
+        private func willRender(_ tag: Tag, box: MustacheBox) -> MustacheBox {
             switch tag.type {
-            case .Variable:
+            case .variable:
                 // {{ value }}
                 //
                 // We behave as stated in the documentation of render():
@@ -222,7 +211,7 @@ extension StandardLibrary {
                     return box
                 }
                 
-            case .Section:
+            case .section:
                 // {{# value }}
                 // {{^ value }}
                 //
@@ -232,9 +221,9 @@ extension StandardLibrary {
             }
         }
         
-        private func didRender(tag: Tag, box: MustacheBox, string: String?) {
+        private func didRender(_ tag: Tag, box: MustacheBox, string: String?) {
             switch tag.type {
-            case .Variable:
+            case .variable:
                 // {{ value }}
                 //
                 // We behave as stated in the documentation of render():
@@ -245,18 +234,18 @@ extension StandardLibrary {
                     }
                 }
                 
-            case .Section:
+            case .section:
                 // {{# value }}
                 // {{^ value }}
                 break
             }
         }
         
-        private func localizedStringForKey(key: String) -> String {
-            return bundle.localizedStringForKey(key, value:"", table:table)
+        private func localizedStringForKey(_ key: String) -> String {
+            return bundle.localizedString(forKey: key, value:"", table:table)
         }
         
-        private func stringWithFormat(format format: String, argumentsArray args:[String]) -> String {
+        private func stringWithFormat(format: String, argumentsArray args:[String]) -> String {
             switch args.count {
             case 0:
                 return String(format: format)

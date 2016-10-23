@@ -9,8 +9,7 @@ There are a lot of types in GRMustache.swift. Each one has its own tiny role. Le
 // Render "Hello Arthur"
 let template = Template(string: "Hello {{name}}")!
 let data = ["name": "Arthur"]
-let box = Box(data)
-let rendering = template.render(box)!
+let rendering = template.render(data)!
 ```
 
 
@@ -54,7 +53,7 @@ Templates do not eat raw values. They eat boxed values.
 
 ## MustacheBox
 
-The [Box() functions](Mustache/Rendering/Box.swift) turn a value whose type is known at compile time into a [MustacheBox](Mustache/Rendering/MustacheBox.swift) that encapsulates a set of dynamic behaviors against the Mustache engine. Depending on how a box is used, one facet or another will be activated by the engine:
+The [Box() function](Mustache/Rendering/Box.swift) turn a value whose type is known at compile time into a [MustacheBox](Mustache/Rendering/MustacheBox.swift) that encapsulates a set of dynamic behaviors against the Mustache engine. Depending on how a box is used, one facet or another will be activated by the engine:
 
 - `{{ name }}`: the *key extraction* facet of the current box is used, so that the key "name" gets turned into the value that gets eventually rendered.
     

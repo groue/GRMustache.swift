@@ -27,58 +27,58 @@ import Mustache
 class StandardLibraryTests: XCTestCase {
     
     func testStandardLibraryHTMLEscapeDoesEscapeText() {
-        let render = Box({ (info: RenderingInfo) -> Rendering in
+        let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("<")
-        })
+        }
         
         var template = try! Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")
-        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        var rendering = try! template.render(Box(["object": render]))
+        template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+        var rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "&amp;lt;")
         
         template = try! Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")
-        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        rendering = try! template.render(Box(["object": render]))
+        template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+        rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "&lt;")
     }
     
     func testStandardLibraryHTMLEscapeDoesEscapeHTML() {
-        let render = Box({ (info: RenderingInfo) -> Rendering in
-            return Rendering("<br>", .HTML)
-        })
+        let render = { (info: RenderingInfo) -> Rendering in
+            return Rendering("<br>", .html)
+        }
         
         var template = try! Template(string: "{{# HTMLEscape }}{{ object }}{{/ }}")
-        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        var rendering = try! template.render(Box(["object": render]))
+        template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+        var rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "&lt;br&gt;")
         
         template = try! Template(string: "{{# HTMLEscape }}{{{ object }}}{{/ }}")
-        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-        rendering = try! template.render(Box(["object": render]))
+        template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+        rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "&lt;br&gt;")
     }
     
     func testStandardLibraryJavascriptEscapeDoesEscapeRenderFunction() {
-        let render = Box({ (info: RenderingInfo) -> Rendering in
+        let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("\"double quotes\" and 'single quotes'")
-        })
+        }
         
         let template = try! Template(string: "{{# javascriptEscape }}{{ object }}{{/ }}")
-        template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+        template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
         
-        let rendering = try! template.render(Box(["object": render]))
+        let rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "\\u0022double quotes\\u0022 and \\u0027single quotes\\u0027")
     }
     
     func testStandardLibraryURLEscapeDoesEscapeRenderFunctions() {
-        let render = Box({ (info: RenderingInfo) -> Rendering in
+        let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("&")
-        })
+        }
         
         let template = try! Template(string: "{{# URLEscape }}{{ object }}{{/ }}")
-        template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+        template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
         
-        let rendering = try! template.render(Box(["object": render]))
+        let rendering = try! template.render(["object": render])
         XCTAssertEqual(rendering, "%26")
     }
 }

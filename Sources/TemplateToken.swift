@@ -24,40 +24,40 @@
 struct TemplateToken {
     enum `Type` {
         /// text
-        case Text(text: String)
+        case text(text: String)
         
         /// {{ content }}
-        case EscapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
+        case escapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
         
         /// {{{ content }}}
-        case UnescapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
+        case unescapedVariable(content: String, tagDelimiterPair: TagDelimiterPair)
         
         /// {{! comment }}
-        case Comment
+        case comment
         
         /// {{# content }}
-        case Section(content: String, tagDelimiterPair: TagDelimiterPair)
+        case section(content: String, tagDelimiterPair: TagDelimiterPair)
         
         /// {{^ content }}
-        case InvertedSection(content: String, tagDelimiterPair: TagDelimiterPair)
+        case invertedSection(content: String, tagDelimiterPair: TagDelimiterPair)
         
         /// {{/ content }}
-        case Close(content: String)
+        case close(content: String)
         
         /// {{> content }}
-        case Partial(content: String)
+        case partial(content: String)
         
         /// {{= ... ... =}}
-        case SetDelimiters
+        case setDelimiters
         
         /// {{% content }}
-        case Pragma(content: String)
+        case pragma(content: String)
         
         /// {{< content }}
-        case PartialOverride(content: String)
+        case partialOverride(content: String)
         
         /// {{$ content }}
-        case Block(content: String)
+        case block(content: String)
     }
     
     let type: Type
@@ -70,13 +70,13 @@ struct TemplateToken {
     
     var tagDelimiterPair: TagDelimiterPair? {
         switch type {
-        case .EscapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
+        case .escapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
             return tagDelimiterPair
-        case .UnescapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
+        case .unescapedVariable(content: _, tagDelimiterPair: let tagDelimiterPair):
             return tagDelimiterPair
-        case .Section(content: _, tagDelimiterPair: let tagDelimiterPair):
+        case .section(content: _, tagDelimiterPair: let tagDelimiterPair):
             return tagDelimiterPair
-        case .InvertedSection(content: _, tagDelimiterPair: let tagDelimiterPair):
+        case .invertedSection(content: _, tagDelimiterPair: let tagDelimiterPair):
             return tagDelimiterPair
         default:
             return nil

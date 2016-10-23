@@ -21,23 +21,26 @@
 // THE SOFTWARE.
 
 
-import XCTest
-import Mustache
+@available(*, unavailable, message:"Use nil instead.")
+public func Box() -> MustacheBox { return EmptyBox }
 
-class MustacheBoxTests: XCTestCase {
+extension Template {
+    @available(*, unavailable, renamed:"register(_:forKey:)")
+    public func registerInBaseContext(_ key: String, _ value: Any?) { }
+}
+
+extension Context {
+    @available(*, unavailable, renamed:"mustacheBox(forKey:)")
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
     
-    // This test should go elsewhere, or should have many brothers: tests for
-    // each way to feed the Box(boolValue:value:etc.) function.
-    func testBoolValue() {
-        let template = try! Template(string:"{{#.}}true{{/.}}{{^.}}false{{/.}}")
-        XCTAssertEqual(try! template.render(MustacheBox(boolValue: true)), "true")
-        XCTAssertEqual(try! template.render(MustacheBox(boolValue: false)), "false")
-    }
+    @available(*, unavailable, renamed:"mustacheBox(forExpression:)")
+    public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox { return EmptyBox }
     
-    // This test should go elsewhere
-    func testBoolBoxing() {
-        let template = try! Template(string:"{{.}}:{{#.}}true{{/.}}{{^.}}false{{/.}}")
-        XCTAssertEqual(try! template.render(true), "1:true")
-        XCTAssertEqual(try! template.render(false), "0:false")
-    }
+    @available(*, unavailable, renamed:"extendedContext(withRegisteredValue:forKey:)")
+    func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context { return self }
+}
+
+extension MustacheBox {
+    @nonobjc @available(*, unavailable, renamed:"mustacheBox(forKey:)")
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
 }

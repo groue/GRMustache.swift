@@ -21,47 +21,37 @@
 // THE SOFTWARE.
 
 
-// =============================================================================
-// MARK: - ContentType
-
-/**
-GRMustache distinguishes Text from HTML.
-
-Content type applies to both *templates*, and *renderings*:
-
-- In a HTML template, `{{name}}` tags escape Text renderings, but do not escape
-HTML renderings.
-
-- In a Text template, `{{name}}` tags do not escape anything.
-
-The content type of a template comes from `Configuration.contentType` or
-`{{% CONTENT_TYPE:... }}` pragma tags. See the documentation of
-`Configuration.contentType` for a full discussion.
-
-The content type of rendering is discussed with the `Rendering` type.
-
-See also:
-
-- Configuration.contentType
-- Rendering
-*/
+/// GRMustache distinguishes Text from HTML.
+///
+/// Content type applies to both *templates*, and *renderings*:
+///
+/// - In a HTML template, `{{name}}` tags escape Text renderings, but do not
+///   escape HTML renderings.
+///
+/// - In a Text template, `{{name}}` tags do not escape anything.
+///
+/// The content type of a template comes from `Configuration.contentType` or
+/// `{{% CONTENT_TYPE:... }}` pragma tags. See the documentation of
+/// `Configuration.contentType` for a full discussion.
+///
+/// The content type of rendering is discussed with the `Rendering` type.
+///
+/// - seealso: Configuration.contentType
+/// - seealso: Rendering
 public enum ContentType {
-    case Text
-    case HTML
+    case text
+    case html
 }
 
 
-// =============================================================================
-// MARK: - Errors
-
 /// The errors thrown by Mustache.swift
-public struct MustacheError: ErrorType {
+public struct MustacheError : Error {
     
     /// MustacheError types
     public enum Kind : Int {
-        case TemplateNotFound
-        case ParseError
-        case RenderError
+        case templateNotFound
+        case parseError
+        case renderError
     }
     
     /// The error type
@@ -77,12 +67,17 @@ public struct MustacheError: ErrorType {
     public let lineNumber: Int?
     
     /// Eventual underlying error
-    public let underlyingError: ErrorType?
+    public let underlyingError: Error?
+    
+    /// Returns self.description
+    public var localizedDescription: String {
+        return description
+    }
     
     
     // Not public
     
-    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) {
+    public init(kind: Kind, message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) {
         self.kind = kind
         self.message = message
         self.templateID = templateID
@@ -90,7 +85,7 @@ public struct MustacheError: ErrorType {
         self.underlyingError = underlyingError
     }
     
-    func errorWith(message message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: ErrorType? = nil) -> MustacheError {
+    func errorWith(message: String? = nil, templateID: TemplateID? = nil, lineNumber: Int? = nil, underlyingError: Error? = nil) -> MustacheError {
         return MustacheError(
             kind: self.kind,
             message: message ?? self.message,
@@ -122,15 +117,15 @@ extension MustacheError : CustomStringConvertible {
     public var description: String {
         var description: String
         switch kind {
-        case .TemplateNotFound:
+        case .templateNotFound:
             description = ""
-        case .ParseError:
+        case .parseError:
             if let locationDescription = locationDescription {
                 description = "Parse error at \(locationDescription)"
             } else {
                 description = "Parse error"
             }
-        case .RenderError:
+        case .renderError:
             if let locationDescription = locationDescription {
                 description = "Rendering error at \(locationDescription)"
             } else {
@@ -155,28 +150,19 @@ extension MustacheError : CustomStringConvertible {
 }
 
 
-// =============================================================================
-// MARK: - Tag delimiters
-
-/**
-A pair of tag delimiters, such as `("{{", "}}")`.
-
-:see Configuration.tagDelimiterPair
-:see Tag.tagDelimiterPair
-*/
+/// A pair of tag delimiters, such as `("{{", "}}")`.
+///
+/// - seealso: Configuration.tagDelimiterPair
+/// - seealso: Tag.tagDelimiterPair
 public typealias TagDelimiterPair = (String, String)
 
 
-// =============================================================================
-// MARK: - HTML escaping
-
-/**
-HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entities.
-
-- parameter string: A string.
-- returns: The HTML-escaped string.
-*/
-public func escapeHTML(string: String) -> String {
+/// HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with
+/// HTML entities.
+///
+/// - parameter string: A string.
+/// - returns: The HTML-escaped string.
+public func escapeHTML(_ string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",
         ">": "&gt;",

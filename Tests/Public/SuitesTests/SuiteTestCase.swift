@@ -26,21 +26,21 @@ import Mustache
 
 class SuiteTestCase: XCTestCase {
     
-    func runTestsFromResource(name: String, directory: String) {
-        let testBundle = NSBundle(forClass: self.dynamicType)
-        let path: String! = testBundle.pathForResource(name, ofType: nil, inDirectory: directory)
+    func runTestsFromResource(_ name: String, directory: String) {
+        let testBundle = Bundle(for: type(of: self))
+        let path: String! = testBundle.path(forResource: name, ofType: nil, inDirectory: directory)
         if path == nil {
             XCTFail("No such test suite \(directory)/\(name)")
             return
         }
         
-        let data: NSData! = NSData(contentsOfFile:path)
+        let data: Data! = try? Data(contentsOf: URL(fileURLWithPath: path))
         if data == nil {
             XCTFail("No test suite in \(path)")
             return
         }
         
-        let testSuite = try! NSJSONSerialization.JSONObjectWithData(data, options:NSJSONReadingOptions(rawValue: 0)) as! NSDictionary
+        let testSuite = try! JSONSerialization.jsonObject(with: data, options:JSONSerialization.ReadingOptions(rawValue: 0)) as! NSDictionary
         
         let tests = testSuite["tests"] as! NSArray!
         if tests == nil {
@@ -48,7 +48,7 @@ class SuiteTestCase: XCTestCase {
             return
         }
         
-        for testDictionary in tests {
+        for testDictionary in tests! {
             let test = Test(path: path, dictionary: testDictionary as! NSDictionary)
             test.run()
         }
@@ -69,17 +69,18 @@ class SuiteTestCase: XCTestCase {
             for template in templates {
                 
                 // Standard Library
-                template.registerInBaseContext("each", Box(StandardLibrary.each))
-                template.registerInBaseContext("zip", Box(StandardLibrary.zip))
-                template.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
-                template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-                template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-                template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+                template.register(StandardLibrary.each, forKey: "each")
+                template.register(StandardLibrary.zip, forKey: "zip")
+                template.register(StandardLibrary.Localizer(bundle: nil, table: nil), forKey: "localize")
+                template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+                template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
+                template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
                 
                 // Support for filters.json
-                template.registerInBaseContext("capitalized", Box(Filter({ (string: String?) -> MustacheBox in
-                    return Box(string?.capitalizedString)
-                })))
+                let capitalized = Filter { (string: String?) -> Any? in
+                    return string?.capitalized
+                }
+                template.register(capitalized, forKey: "capitalized")
                 
                 testRendering(template)
             }
@@ -92,7 +93,7 @@ class SuiteTestCase: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
         var templateString: String? { return dictionary["template"] as! String? }
         var templateName: String? { return dictionary["template_name"] as! String? }
-        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
+        var renderedValue: Any? { return dictionary["data"] }
         var expectedRendering: String? { return dictionary["expected"] as! String? }
         var expectedError: String? { return dictionary["expected_error"] as! String? }
         
@@ -103,12 +104,12 @@ class SuiteTestCase: XCTestCase {
                     let templateExtension = (templateName as NSString).pathExtension
                     for (directoryPath, encoding) in pathsAndEncodingsToPartials(partialsDictionary) {
                         do {
-                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                            let template = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).deletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                                    _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).deletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -116,12 +117,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                            let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).deletingPathExtension)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).stringByDeletingPathExtension)
+                                    _ = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: templateExtension, encoding: encoding).template(named: (templateName as NSString).deletingPathExtension)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -138,7 +139,7 @@ class SuiteTestCase: XCTestCase {
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
+                                    _ = try TemplateRepository(directoryPath: directoryPath, templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -146,12 +147,12 @@ class SuiteTestCase: XCTestCase {
                         }
                         
                         do {
-                            let template = try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                            let template = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                             templates.append(template)
                         } catch {
                             testError(error, replayOnFailure: {
                                 do {
-                                    try TemplateRepository(baseURL: NSURL.fileURLWithPath(directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
+                                    _ = try TemplateRepository(baseURL: URL(fileURLWithPath: directoryPath), templateExtension: "", encoding: encoding).template(string: templateString)
                                 } catch {
                                     // ignore error on replay
                                 }
@@ -175,7 +176,7 @@ class SuiteTestCase: XCTestCase {
                     } catch {
                         testError(error, replayOnFailure: {
                             do {
-                                try TemplateRepository().template(string: templateString)
+                                _ = try TemplateRepository().template(string: templateString)
                             } catch {
                                 // ignore error on replay
                             }
@@ -189,7 +190,7 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func testRendering(template: Template) {
+        func testRendering(_ template: Template) {
             do {
                 let rendering = try template.render(renderedValue)
                 if let expectedRendering = expectedRendering as String! {
@@ -199,7 +200,7 @@ class SuiteTestCase: XCTestCase {
                 }
                 testSuccess(replayOnFailure: {
                     do {
-                        try template.render(self.renderedValue)
+                        _ = try template.render(self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }
@@ -207,7 +208,7 @@ class SuiteTestCase: XCTestCase {
             } catch {
                 testError(error, replayOnFailure: {
                     do {
-                        try template.render(self.renderedValue)
+                        _ = try template.render(self.renderedValue)
                     } catch {
                         // ignore error on replay
                     }
@@ -215,12 +216,12 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func testError(error: ErrorType, replayOnFailure replayBlock: ()->()) {
+        func testError(_ error: Error, replayOnFailure replayBlock: ()->()) {
             if let expectedError = expectedError {
                 do {
-                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpressionOptions(rawValue: 0))
+                    let reg = try NSRegularExpression(pattern: expectedError, options: NSRegularExpression.Options(rawValue: 0))
                     let errorMessage = "\(error)"
-                    let matches = reg.matchesInString(errorMessage, options: NSMatchingOptions(rawValue: 0), range:NSMakeRange(0, (errorMessage as NSString).length))
+                    let matches = reg.matches(in: errorMessage, options: NSRegularExpression.MatchingOptions(rawValue: 0), range:NSMakeRange(0, (errorMessage as NSString).length))
                     if matches.count == 0 {
                         XCTFail("`\(errorMessage)` does not match /\(expectedError)/ in \(description)")
                         replayBlock()
@@ -242,21 +243,21 @@ class SuiteTestCase: XCTestCase {
             }
         }
         
-        func pathsAndEncodingsToPartials(partialsDictionary: [String: String]) -> [(String, NSStringEncoding)] {
-            var templatesPaths: [(String, NSStringEncoding)] = []
+        func pathsAndEncodingsToPartials(_ partialsDictionary: [String: String]) -> [(String, String.Encoding)] {
+            var templatesPaths: [(String, String.Encoding)] = []
             
-            let fm = NSFileManager.defaultManager()
-            let encodings: [NSStringEncoding] = [NSUTF8StringEncoding, NSUTF16StringEncoding]
+            let fm = FileManager.default
+            let encodings: [String.Encoding] = [String.Encoding.utf8, String.Encoding.utf16]
             for encoding in encodings {
-                let templatesPath = ((NSTemporaryDirectory() as NSString).stringByAppendingPathComponent("GRMustacheTest") as NSString).stringByAppendingPathComponent("encoding_\(encoding)")
-                if fm.fileExistsAtPath(templatesPath) {
-                    try! fm.removeItemAtPath(templatesPath)
+                let templatesPath = ((NSTemporaryDirectory() as NSString).appendingPathComponent("GRMustacheTest") as NSString).appendingPathComponent("encoding_\(encoding)")
+                if fm.fileExists(atPath: templatesPath) {
+                    try! fm.removeItem(atPath: templatesPath)
                 }
                 for (partialName, partialString) in partialsDictionary {
-                    let partialPath = (templatesPath as NSString).stringByAppendingPathComponent(partialName)
+                    let partialPath = (templatesPath as NSString).appendingPathComponent(partialName)
                     do {
-                        try fm.createDirectoryAtPath((partialPath as NSString).stringByDeletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
-                        if !fm.createFileAtPath(partialPath, contents: partialString.dataUsingEncoding(encoding, allowLossyConversion: false), attributes: nil) {
+                        try fm.createDirectory(atPath: (partialPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true, attributes: nil)
+                        if !fm.createFile(atPath: partialPath, contents: partialString.data(using: encoding, allowLossyConversion: false), attributes: nil) {
                             XCTFail("Could not save template in \(description)")
                             return []
                         }

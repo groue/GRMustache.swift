@@ -4,5 +4,5 @@ import Mustache
 
 // Renders "Hello Arthur"
 let template = try! Template(string: "Hello {{ name }}")
-let rendering = try! template.render(Box(["name": "Arthur"]))
+let rendering = try! template.render(["name": "Arthur"])
 print(rendering)

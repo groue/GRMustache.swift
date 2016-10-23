@@ -23,9 +23,7 @@
 
 import Foundation
 
-/**
-VariableTag represents a variable tag such as {{name}} or {{{name}}}.
-*/
+/// VariableTag represents a variable tag such as {{name}} or {{{name}}}.
 final class VariableTag: LocatedTag {
     let token: TemplateToken
     let contentType: ContentType
@@ -37,7 +35,7 @@ final class VariableTag: LocatedTag {
     
     // Mark: - Tag protocol
     
-    let type: TagType = .Variable
+    let type: TagType = .variable
     let innerTemplateString: String = ""
     var tagDelimiterPair: TagDelimiterPair { return token.tagDelimiterPair! }
     
@@ -46,7 +44,7 @@ final class VariableTag: LocatedTag {
     }
     
     // Variable have no inner content.
-    func render(context: Context) throws -> Rendering {
+    func render(_ context: Context) throws -> Rendering {
         return Rendering("", contentType)
     }
     

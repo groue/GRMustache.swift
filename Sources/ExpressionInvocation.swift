@@ -26,42 +26,42 @@ import Foundation
 struct ExpressionInvocation {
     let expression: Expression
     
-    func invokeWithContext(context: Context) throws -> MustacheBox {
+    func invokeWithContext(_ context: Context) throws -> MustacheBox {
         return try evaluate(context: context, expression: expression)
     }
     
-    private func evaluate(context context: Context, expression: Expression) throws -> MustacheBox {
+    fileprivate func evaluate(context: Context, expression: Expression) throws -> MustacheBox {
         switch expression {
-        case .ImplicitIterator:
+        case .implicitIterator:
             // {{ . }}
             
             return context.topBox
             
-        case .Identifier(let identifier):
+        case .identifier(let identifier):
             // {{ identifier }}
             
-            return context.mustacheBoxForKey(identifier)
+            return context.mustacheBox(forKey: identifier)
 
-        case .Scoped(let baseExpression, let identifier):
+        case .scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
-            return try evaluate(context: context, expression: baseExpression).mustacheBoxForKey(identifier)
+            return try evaluate(context: context, expression: baseExpression).mustacheBox(forKey: identifier)
             
-        case .Filter(let filterExpression, let argumentExpression, let partialApplication):
+        case .filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
             let filterBox = try evaluate(context: context, expression: filterExpression)
             
             guard let filter = filterBox.filter else {
                 if filterBox.isEmpty {
-                    throw MustacheError(kind: .RenderError, message: "Missing filter")
+                    throw MustacheError(kind: .renderError, message: "Missing filter")
                 } else {
-                    throw MustacheError(kind: .RenderError, message: "Not a filter")
+                    throw MustacheError(kind: .renderError, message: "Not a filter")
                 }
             }
             
             let argumentBox = try evaluate(context: context, expression: argumentExpression)
-            return try filter(box: argumentBox, partialApplication: partialApplication)
+            return try Box(filter(argumentBox, partialApplication))
         }
     }
 }

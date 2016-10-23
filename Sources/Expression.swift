@@ -23,45 +23,41 @@
 
 import Foundation
 
-/**
-The type for expressions that appear in tags: `name`, `user.name`,
-`uppercase(user.name)`, etc.
-*/
+/// The type for expressions that appear in tags: `name`, `user.name`,
+/// `uppercase(user.name)`, etc.
 enum Expression {
     
     // {{ . }}
-    case ImplicitIterator
+    case implicitIterator
 
     // {{ identifier }}
-    case Identifier(identifier: String)
+    case identifier(identifier: String)
     
     // {{ <expression>.identifier }}
-    indirect case Scoped(baseExpression: Expression, identifier: String)
+    indirect case scoped(baseExpression: Expression, identifier: String)
     
     // {{ <expression>(<expression>) }}
-    indirect case Filter(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool)
+    indirect case filter(filterExpression: Expression, argumentExpression: Expression, partialApplication: Bool)
 }
 
-/**
-Expression conforms to Equatable so that the Compiler can check that section
-tags have matching openings and closings: {{# person }}...{{/ person }} is OK
-but {{# foo }}...{{/ bar }} is not.
-*/
+/// Expression conforms to Equatable so that the Compiler can check that section
+/// tags have matching openings and closings: {{# person }}...{{/ person }} is
+/// OK but {{# foo }}...{{/ bar }} is not.
 extension Expression: Equatable {
 }
 
 func ==(lhs: Expression, rhs: Expression) -> Bool {
     switch (lhs, rhs) {
-    case (.ImplicitIterator, .ImplicitIterator):
+    case (.implicitIterator, .implicitIterator):
         return true
         
-    case (.Identifier(let lIdentifier), .Identifier(let rIdentifier)):
+    case (.identifier(let lIdentifier), .identifier(let rIdentifier)):
         return lIdentifier == rIdentifier
         
-    case (.Scoped(let lBase, let lIdentifier), .Scoped(let rBase, let rIdentifier)):
+    case (.scoped(let lBase, let lIdentifier), .scoped(let rBase, let rIdentifier)):
         return lBase == rBase && lIdentifier == rIdentifier
         
-    case (.Filter(let lFilter, let lArgument, let lPartialApplication), .Filter(let rFilter, let rArgument, let rPartialApplication)):
+    case (.filter(let lFilter, let lArgument, let lPartialApplication), .filter(let rFilter, let rArgument, let rPartialApplication)):
         return lFilter == rFilter && lArgument == rArgument && lPartialApplication == rPartialApplication
         
     default:

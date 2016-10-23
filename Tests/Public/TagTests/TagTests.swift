@@ -28,224 +28,224 @@ class TagTests: XCTestCase {
 
     func testTagDescriptionContainsTagToken() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString("{{name}}")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: "{{name}}")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "{{#name}}{{/name}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString("{{#name}}")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: "{{#name}}")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "{{  name\t}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString("{{  name\t}}")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: "{{  name\t}}")
         XCTAssertTrue(range != nil)
     }
 
     func testTagDescriptionContainsLineNumber() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
         var template = try! Template(string: "{{name}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString("line 1")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: "line 1")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "\n {{\nname}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString("line 2")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: "line 2")
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! Template(string: "\n\n  {{#\nname}}\n\n{{/name}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString("line 3")
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: "line 3")
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsResourceBasedTemplatePath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! Template(named: "TagTests", bundle: bundle)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsURLBasedTemplatePath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
-        template = try! Template(URL: bundle.URLForResource("TagTests", withExtension: "mustache")!)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template = try! Template(URL: bundle.url(forResource: "TagTests", withExtension: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsPathBasedTemplatePath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
-        template = try! Template(path: bundle.pathForResource("TagTests", ofType: "mustache")!)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template = try! Template(path: bundle.path(forResource: "TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsResourceBasedPartialPath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
 
         tagDescription = nil
         template = try! Template(named: "TagTests_wrapper", bundle: bundle)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsURLBasedPartialPath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
-        template = try! Template(URL: bundle.URLForResource("TagTests_wrapper", withExtension: "mustache")!)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template = try! Template(URL: bundle.url(forResource: "TagTests_wrapper", withExtension: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
     
     func testTagDescriptionContainsPathBasedPartialPath() {
         var tagDescription: String? = nil
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             tagDescription = tag.description
             return box
         }
         
         tagDescription = nil
-        let bundle = NSBundle(forClass: self.dynamicType)
+        let bundle = Bundle(for: type(of: self))
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        var range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        var range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
         template = try! templateRepository.template(string: "{{> TagTests }}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
         
         tagDescription = nil
-        template = try! Template(path: bundle.pathForResource("TagTests_wrapper", ofType: "mustache")!)
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        try! template.render()
-        range = tagDescription?.rangeOfString(bundle.pathForResource("TagTests", ofType: "mustache")!)
+        template = try! Template(path: bundle.path(forResource: "TagTests_wrapper", ofType: "mustache")!)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        _ = try! template.render()
+        range = tagDescription?.range(of: bundle.path(forResource: "TagTests", ofType: "mustache")!)
         XCTAssertTrue(range != nil)
     }
 }

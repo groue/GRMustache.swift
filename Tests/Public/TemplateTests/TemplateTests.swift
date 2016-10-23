@@ -34,12 +34,12 @@ class TemplateTests: XCTestCase {
     
     func testTemplateExtendBaseContextWithValue() {
         let template = try! Template(string: "{{name}}")
-        template.extendBaseContext(Box(["name": Box("Arthur")]))
+        template.extendBaseContext(["name": "Arthur"])
         
         var rendering = try! template.render()
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = try! template.render(Box(["name": "Bobby"]))
+        rendering = try! template.render(["name": "Bobby"])
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -48,12 +48,12 @@ class TemplateTests: XCTestCase {
     }
     
     func testTemplateExtendBaseContextWithWillRenderFunction() {
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            return Box("observer")
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
+            return "observer"
         }
         
         let template = try! Template(string: "{{name}}")
-        template.extendBaseContext(Box(willRender))
+        template.extendBaseContext(willRender)
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "observer")
     }

@@ -26,15 +26,15 @@ import Mustache
 
 class RenderFunctionTests: XCTestCase {
 
-    enum CustomError : ErrorType {
-        case Error
+    enum CustomError : Error {
+        case error
     }
     
     func testRenderFunctionInVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("---")
         }
-        let rendering = try! Template(string: "{{.}}").render(Box(render))
+        let rendering = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(rendering, "---")
     }
     
@@ -42,7 +42,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("---")
         }
-        let rendering = try! Template(string: "{{#.}}{{/.}}").render(Box(render))
+        let rendering = try! Template(string: "{{#.}}{{/.}}").render(render)
         XCTAssertEqual(rendering, "---")
     }
     
@@ -50,23 +50,23 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("---")
         }
-        let rendering = try! Template(string: "{{^.}}{{/.}}").render(Box(render))
+        let rendering = try! Template(string: "{{^.}}{{/.}}").render(render)
         XCTAssertEqual(rendering, "")
     }
     
     func testRenderFunctionHTMLRenderingOfEscapedVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            return Rendering("&", .HTML)
+            return Rendering("&", .html)
         }
-        let rendering = try! Template(string: "{{.}}").render(Box(render))
+        let rendering = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(rendering, "&")
     }
     
     func testRenderFunctionHTMLRenderingOfUnescapedVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            return Rendering("&", .HTML)
+            return Rendering("&", .html)
         }
-        let rendering = try! Template(string: "{{{.}}}").render(Box(render))
+        let rendering = try! Template(string: "{{{.}}}").render(render)
         XCTAssertEqual(rendering, "&")
     }
     
@@ -74,7 +74,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("&")
         }
-        let rendering = try! Template(string: "{{.}}").render(Box(render))
+        let rendering = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -82,15 +82,15 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("&")
         }
-        let rendering = try! Template(string: "{{{.}}}").render(Box(render))
+        let rendering = try! Template(string: "{{{.}}}").render(render)
         XCTAssertEqual(rendering, "&")
     }
     
     func testRenderFunctionHTMLRenderingOfSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            return Rendering("&", .HTML)
+            return Rendering("&", .html)
         }
-        let rendering = try! Template(string: "{{#.}}{{/.}}").render(Box(render))
+        let rendering = try! Template(string: "{{#.}}{{/.}}").render(render)
         XCTAssertEqual(rendering, "&")
     }
     
@@ -98,7 +98,7 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return Rendering("&")
         }
-        let rendering = try! Template(string: "{{#.}}{{/.}}").render(Box(render))
+        let rendering = try! Template(string: "{{#.}}{{/.}}").render(render)
         XCTAssertEqual(rendering, "&amp;")
     }
     
@@ -108,7 +108,7 @@ class RenderFunctionTests: XCTestCase {
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
         }
         do {
-            try Template(string: "{{.}}").render(Box(render))
+            _ = try Template(string: "{{.}}").render(render)
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
@@ -117,12 +117,12 @@ class RenderFunctionTests: XCTestCase {
     
     func testRenderFunctionCanThrowCustomErrorFromVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw CustomError.Error
+            throw CustomError.error
         }
         do {
-            try Template(string: "\n\n{{.}}").render(Box(render))
+            _ = try Template(string: "\n\n{{.}}").render(render)
             XCTAssert(false)
-        } catch CustomError.Error {
+        } catch CustomError.error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
@@ -135,7 +135,7 @@ class RenderFunctionTests: XCTestCase {
             throw NSError(domain: errorDomain, code: 0, userInfo: nil)
         }
         do {
-            try Template(string: "{{#.}}{{/.}}").render(Box(render))
+            _ = try Template(string: "{{#.}}{{/.}}").render(render)
             XCTAssert(false)
         } catch let error as NSError {
             XCTAssertEqual(error.domain, errorDomain)
@@ -144,12 +144,12 @@ class RenderFunctionTests: XCTestCase {
     
     func testRenderFunctionCanThrowCustomErrorFromSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            throw CustomError.Error
+            throw CustomError.error
         }
         do {
-            try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(Box(render))
+            _ = try Template(string: "\n\n{{#.}}\n\n{{/.}}").render(render)
             XCTAssert(false)
-        } catch CustomError.Error {
+        } catch CustomError.error {
             XCTAssert(true)
         } catch {
             XCTAssert(false)
@@ -160,14 +160,14 @@ class RenderFunctionTests: XCTestCase {
         var variableTagDetections = 0
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
-            case .Variable:
+            case .variable:
                 variableTagDetections += 1
             default:
                 break
             }
             return Rendering("")
         }
-        try! Template(string: "{{.}}").render(Box(render))
+        _ = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(variableTagDetections, 1)
     }
     
@@ -175,14 +175,14 @@ class RenderFunctionTests: XCTestCase {
         var sectionTagDetections = 0
         let render = { (info: RenderingInfo) -> Rendering in
             switch info.tag.type {
-            case .Section:
+            case .section:
                 sectionTagDetections += 1
             default:
                 break
             }
             return Rendering("")
         }
-        try! Template(string: "{{#.}}{{/.}}").render(Box(render))
+        _ = try! Template(string: "{{#.}}{{/.}}").render(render)
         XCTAssertEqual(sectionTagDetections, 1)
     }
     
@@ -192,7 +192,7 @@ class RenderFunctionTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        try! Template(string: "{{#.}}{{subject}}{{/.}}").render(Box(render))
+        _ = try! Template(string: "{{#.}}{{subject}}{{/.}}").render(render)
         XCTAssertEqual(innerTemplateString!, "{{subject}}")
     }
     
@@ -202,7 +202,7 @@ class RenderFunctionTests: XCTestCase {
             innerTemplateString = info.tag.innerTemplateString
             return Rendering("")
         }
-        try! Template(string: "{{.}}").render(Box(render))
+        _ = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(innerTemplateString!, "")
     }
     
@@ -213,10 +213,10 @@ class RenderFunctionTests: XCTestCase {
             return tagRendering!
         }
         
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        try! Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "-"]
+        _ = try! Template(string: "{{#render}}{{subject}}={{subject}}{{/render}}").render(value)
         XCTAssertEqual(tagRendering!.string, "-=-")
-        XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
+        XCTAssertEqual(tagRendering!.contentType, ContentType.html)
     }
     
     func testRenderFunctionCanAccessRenderedContentFromEscapedVariableTag() {
@@ -226,9 +226,9 @@ class RenderFunctionTests: XCTestCase {
             return tagRendering!
         }
         
-        try! Template(string: "{{.}}").render(Box(render))
+        _ = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(tagRendering!.string, "")
-        XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
+        XCTAssertEqual(tagRendering!.contentType, ContentType.html)
     }
     
     func testRenderFunctionCanAccessRenderedContentFromUnescapedVariableTag() {
@@ -238,10 +238,10 @@ class RenderFunctionTests: XCTestCase {
             return tagRendering!
         }
         
-        try! Template(string: "{{{.}}}").render(Box(render))
+        _ = try! Template(string: "{{{.}}}").render(render)
         
         XCTAssertEqual(tagRendering!.string, "")
-        XCTAssertEqual(tagRendering!.contentType, ContentType.HTML)
+        XCTAssertEqual(tagRendering!.contentType, ContentType.html)
     }
     
     func testRenderFunctionCanRenderCurrentContextInAnotherTemplateFromVariableTag() {
@@ -249,8 +249,8 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return try altTemplate.render(info.context)
         }
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        let rendering = try! Template(string: "{{render}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "-"]
+        let rendering = try! Template(string: "{{render}}").render(value)
         XCTAssertEqual(rendering, "-")
     }
     
@@ -259,67 +259,67 @@ class RenderFunctionTests: XCTestCase {
         let render = { (info: RenderingInfo) -> Rendering in
             return try altTemplate.render(info.context)
         }
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        let rendering = try! Template(string: "{{#render}}{{/render}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "-"]
+        let rendering = try! Template(string: "{{#render}}{{/render}}").render(value)
         XCTAssertEqual(rendering, "-")
     }
 
     func testRenderFunctionDoesNotAutomaticallyEntersVariableContextStack() {
-        let keyedSubscript = { (key: String) -> MustacheBox in
-            return Box("value")
+        let keyedSubscript = { (key: String) -> Any? in
+            return "value"
         }
         let render = { (info: RenderingInfo) -> Rendering in
             return try Template(string:"key:{{key}}").render(info.context)
         }
-        let box = Box(["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)])
-        let rendering = try! Template(string: "{{render}}").render(box)
+        let value: [String: Any] = ["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)]
+        let rendering = try! Template(string: "{{render}}").render(value)
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRenderFunctionDoesNotAutomaticallyEntersSectionContextStack() {
-        let keyedSubscript = { (key: String) -> MustacheBox in
-            return Box("value")
+        let keyedSubscript = { (key: String) -> Any? in
+            return "value"
         }
         let render = { (info: RenderingInfo) -> Rendering in
             return try info.tag.render(info.context)
         }
-        let box = Box(["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)])
-        let rendering = try! Template(string: "{{#render}}key:{{key}}{{/render}}").render(box)
+        let value: [String: Any] = ["render": MustacheBox(keyedSubscript: keyedSubscript, render: render)]
+        let rendering = try! Template(string: "{{#render}}key:{{key}}{{/render}}").render(value)
         XCTAssertEqual(rendering, "key:")
     }
     
     func testRenderFunctionCanExtendValueContextStackInVariableTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            let context = info.context.extendedContext(Box(["subject2": Box("+++")]))
+            let context = info.context.extendedContext(["subject2": "+++"])
             let template = try! Template(string: "{{subject}}{{subject2}}")
             return try template.render(context)
         }
-        let box = Box(["render": Box(render), "subject": Box("---")])
-        let rendering = try! Template(string: "{{render}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "---"]
+        let rendering = try! Template(string: "{{render}}").render(value)
         XCTAssertEqual(rendering, "---+++")
     }
     
     func testRenderFunctionCanExtendValueContextStackInSectionTag() {
         let render = { (info: RenderingInfo) -> Rendering in
-            return try info.tag.render(info.context.extendedContext(Box(["subject2": Box("+++")])))
+            return try info.tag.render(info.context.extendedContext(["subject2": "+++"]))
         }
-        let box = Box(["render": Box(render), "subject": Box("---")])
-        let rendering = try! Template(string: "{{#render}}{{subject}}{{subject2}}{{/render}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "---"]
+        let rendering = try! Template(string: "{{#render}}{{subject}}{{subject2}}{{/render}}").render(value)
         XCTAssertEqual(rendering, "---+++")
     }
     
     func testRenderFunctionCanExtendWillRenderStackInVariableTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
-            let context = info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
+            let context = info.context.extendedContext({ (tag: Tag, box: MustacheBox) -> Any? in
                 tagWillRenderCount += 1
                 return box
-            }))
+            })
             let template = try! Template(string: "{{subject}}{{subject}}")
             return try template.render(context)
         }
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        let rendering = try! Template(string: "{{subject}}{{render}}{{subject}}{{subject}}{{subject}}{{subject}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "-"]
+        let rendering = try! Template(string: "{{subject}}{{render}}{{subject}}{{subject}}{{subject}}{{subject}}").render(value)
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(tagWillRenderCount, 2)
     }
@@ -327,24 +327,24 @@ class RenderFunctionTests: XCTestCase {
     func testRenderFunctionCanExtendWillRenderStackInSectionTag() {
         var tagWillRenderCount = 0
         let render = { (info: RenderingInfo) -> Rendering in
-            return try info.tag.render(info.context.extendedContext(Box({ (tag: Tag, box: MustacheBox) -> MustacheBox in
+            return try info.tag.render(info.context.extendedContext({ (tag: Tag, box: MustacheBox) -> Any? in
                 tagWillRenderCount += 1
                 return box
-            })))
+            }))
         }
-        let box = Box(["render": Box(render), "subject": Box("-")])
-        let rendering = try! Template(string: "{{subject}}{{#render}}{{subject}}{{subject}}{{/render}}{{subject}}{{subject}}{{subject}}{{subject}}").render(box)
+        let value: [String: Any] = ["render": render, "subject": "-"]
+        let rendering = try! Template(string: "{{subject}}{{#render}}{{subject}}{{subject}}{{/render}}{{subject}}{{subject}}{{subject}}{{subject}}").render(value)
         XCTAssertEqual(rendering, "-------")
         XCTAssertEqual(tagWillRenderCount, 2)
     }
     
     func testRenderFunctionTriggersWillRenderFunctions() {
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             switch tag.type {
-            case .Section:
+            case .section:
                 return box
             default:
-                return Box("delegate")
+                return "delegate"
             }
         }
         
@@ -353,19 +353,19 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#render}}{{subject}}{{/render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        let box = Box(["render": Box(render), "subject": Box("---")])
-        let rendering = try! template.render(box)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        let value: [String: Any] = ["render": render, "subject": "---"]
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "delegate")
     }
     
     func testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromVariableTag() {
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             switch tag.type {
-            case .Section:
+            case .section:
                 return box
             default:
-                return Box("delegate")
+                return "delegate"
             }
         }
         
@@ -375,19 +375,19 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        let box = Box(["render": Box(render), "subject": Box("---")])
-        let rendering = try! template.render(box)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        let value: [String: Any] = ["render": render, "subject": "---"]
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "delegate")
     }
     
     func testRenderFunctionTriggersWillRenderFunctionsInAnotherTemplateFromSectionTag() {
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             switch tag.type {
-            case .Section:
+            case .section:
                 return box
             default:
-                return Box("delegate")
+                return "delegate"
             }
         }
         
@@ -397,9 +397,9 @@ class RenderFunctionTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#render}}{{/render}}")
-        template.baseContext = template.baseContext.extendedContext(Box(willRender))
-        let box = Box(["render": Box(render), "subject": Box("---")])
-        let rendering = try! template.render(box)
+        template.baseContext = template.baseContext.extendedContext(willRender)
+        let value: [String: Any] = ["render": render, "subject": "---"]
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "delegate")
     }
     
@@ -410,8 +410,8 @@ class RenderFunctionTests: XCTestCase {
         let render2 = { (info: RenderingInfo) -> Rendering in
             return Rendering("2")
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{#items}}{{/items}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{#items}}{{/items}}").render(value)
         XCTAssertEqual(rendering, "12")
     }
     
@@ -422,32 +422,32 @@ class RenderFunctionTests: XCTestCase {
         let render2 = { (info: RenderingInfo) -> Rendering in
             return Rendering("2")
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{items}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{items}}").render(value)
         XCTAssertEqual(rendering, "12")
     }
     
     func testArrayOfHTMLRenderFunctionsInEscapedVariableTag() {
         let render1 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<1>", .HTML)
+            return Rendering("<1>", .html)
         }
         let render2 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<2>", .HTML)
+            return Rendering("<2>", .html)
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{items}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{items}}").render(value)
         XCTAssertEqual(rendering, "<1><2>")
     }
     
     func testArrayOfHTMLRenderFunctionsInUnescapedVariableTag() {
         let render1 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<1>", .HTML)
+            return Rendering("<1>", .html)
         }
         let render2 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<2>", .HTML)
+            return Rendering("<2>", .html)
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{{items}}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{{items}}}").render(value)
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -458,8 +458,8 @@ class RenderFunctionTests: XCTestCase {
         let render2 = { (info: RenderingInfo) -> Rendering in
             return Rendering("<2>")
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{items}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{items}}").render(value)
         XCTAssertEqual(rendering, "&lt;1&gt;&lt;2&gt;")
     }
     
@@ -470,8 +470,8 @@ class RenderFunctionTests: XCTestCase {
         let render2 = { (info: RenderingInfo) -> Rendering in
             return Rendering("<2>")
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
-        let rendering = try! Template(string: "{{{items}}}").render(box)
+        let value: [String: Any] = ["items": [render1, render2]]
+        let rendering = try! Template(string: "{{{items}}}").render(value)
         XCTAssertEqual(rendering, "<1><2>")
     }
     
@@ -480,14 +480,14 @@ class RenderFunctionTests: XCTestCase {
             return Rendering("<1>")
         }
         let render2 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<2>", .HTML)
+            return Rendering("<2>", .html)
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
+        let value: [String: Any] = ["items": [render1, render2]]
         do {
-            try Template(string: "{{items}}").render(box)
+            _ = try Template(string: "{{items}}").render(value)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -498,14 +498,14 @@ class RenderFunctionTests: XCTestCase {
             return Rendering("<1>")
         }
         let render2 = { (info: RenderingInfo) -> Rendering in
-            return Rendering("<2>", .HTML)
+            return Rendering("<2>", .html)
         }
-        let box = Box(["items": Box([Box(render1), Box(render2)])])
+        let value: [String: Any] = ["items": [render1, render2]]
         do {
-            try Template(string: "{{#items}}{{/items}}").render(box)
+            _ = try Template(string: "{{#items}}{{/items}}").render(value)
             XCTFail("Expected MustacheError")
         } catch let error as MustacheError {
-            XCTAssertEqual(error.kind, MustacheError.Kind.RenderError)
+            XCTAssertEqual(error.kind, MustacheError.Kind.renderError)
         } catch {
             XCTFail("Expected MustacheError")
         }
@@ -514,16 +514,16 @@ class RenderFunctionTests: XCTestCase {
     func testDynamicPartial() {
         let repository = TemplateRepository(templates: ["partial": "{{subject}}"])
         let template = try! repository.template(named: "partial")
-        let box = Box(["partial": Box(template), "subject": Box("---")])
-        let rendering = try! Template(string: "{{partial}}").render(box)
+        let value: [String: Any] = ["partial": template, "subject": "---"]
+        let rendering = try! Template(string: "{{partial}}").render(value)
         XCTAssertEqual(rendering, "---")
     }
     
     func testDynamicPartialIsNotHTMLEscaped() {
         let repository = TemplateRepository(templates: ["partial": "<{{subject}}>"])
         let template = try! repository.template(named: "partial")
-        let box = Box(["partial": Box(template), "subject": Box("---")])
-        let rendering = try! Template(string: "{{partial}}").render(box)
+        let value: [String: Any] = ["partial": template, "subject": "---"]
+        let rendering = try! Template(string: "{{partial}}").render(value)
         XCTAssertEqual(rendering, "<--->")
     }
     
@@ -532,10 +532,10 @@ class RenderFunctionTests: XCTestCase {
             "layout": "<{{$a}}Default{{subject}}{{/a}},{{$b}}Ignored{{/b}}>",
             "partial": "[{{#layout}}---{{$b}}Overriden{{subject}}{{/b}}---{{/layout}}]"])
         let template = try! repository.template(named: "partial")
-        let data = [
-            "layout": Box(try! repository.template(named: "layout")),
-            "subject": Box("---")]
-        let rendering = try! template.render(Box(data))
+        let data: [String: Any] = [
+            "layout": try! repository.template(named: "layout"),
+            "subject": "---"]
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "[<Default---,Overriden--->]")
     }
     
@@ -573,9 +573,9 @@ class RenderFunctionTests: XCTestCase {
 //            let altTemplate = Template(string: "{{>partial}}")!
 //            return altTemplate.render(info.context, error: error)
 //        }
-//        let box = Box(["render": Box(render), "subject": Box("-")])
+//        let value: [String: Any] = ["render": render, "subject": "-"]
 //        let template = repository.template(named: "template")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "-")
 //    }
 //    
@@ -586,40 +586,40 @@ class RenderFunctionTests: XCTestCase {
 //        let repository2 = TemplateRepository(templates: [
 //            "template2": "{{ render }}",
 //            "partial": "partial2"])
-//        let box = Box([
-//            "template2": Box(repository2.template(named: "template2")!),
-//            "render": Box({ (info: RenderingInfo) -> Rendering in
+//        let value: [String: Any] = [
+//            "template2": repository2.template(named: "template2")!,
+//            "render": { (info: RenderingInfo) -> Rendering in
 //                let altTemplate = Template(string: "{{>partial}}")!
 //                return altTemplate.render(info.context, error: error)
-//            })])
+//            }]
 //        let template = repository1.template(named: "template1")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "partial1|partial2")
 //    }
 //    
 //    func testRenderFunctionInheritHTMLContentTypeOfCurrentlyRenderedTemplate() {
-//        let box = Box([
-//            "object": Box("&"),
-//            "render": Box({ (info: RenderingInfo) -> Rendering in
+//        let value: [String: Any] = [
+//            "object": "&",
+//            "render": { (info: RenderingInfo) -> Rendering in
 //                let altTemplate = Template(string: "{{ object }}")!
 //                return altTemplate.render(info.context, error: error)
-//            })])
+//            }]
 //        
 //        let template = Template(string: "{{%CONTENT_TYPE:HTML}}{{render}}")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "&amp;")
 //    }
 //    
 //    func testRenderFunctionInheritTextContentTypeOfCurrentlyRenderedTemplate() {
-//        let box = Box([
-//            "object": Box("&"),
-//            "render": Box({ (info: RenderingInfo) -> Rendering in
+//        let value: [String: Any] = [
+//            "object": "&",
+//            "render": { (info: RenderingInfo) -> Rendering in
 //                let altTemplate = Template(string: "{{ object }}")!
 //                return altTemplate.render(info.context, error: error)
-//            })])
+//            }]
 //        
 //        let template = Template(string: "{{%CONTENT_TYPE:TEXT}}{{render}}")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "&")
 //    }
 //    
@@ -627,14 +627,14 @@ class RenderFunctionTests: XCTestCase {
 //        let repository = TemplateRepository(templates: [
 //            "templateHTML": "{{ render }}|{{> templateText }}",
 //            "templateText": "{{% CONTENT_TYPE:TEXT }}{{ render }}"])
-//        let box = Box([
-//            "value": Box("&"),
-//            "render": Box({ (info: RenderingInfo) -> Rendering in
+//        let value: [String: Any] = [
+//            "value": "&",
+//            "render": { (info: RenderingInfo) -> Rendering in
 //                let altTemplate = Template(string: "{{ value }}")!
 //                return altTemplate.render(info.context, error: error)
-//            })])
+//            }]
 //        let template = repository.template(named: "templateHTML")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "&amp;|&amp;")
 //    }
 //    
@@ -649,12 +649,12 @@ class RenderFunctionTests: XCTestCase {
 //            let altTemplate = Template(string: "{{{ value }}}")!
 //            return altTemplate.render(info.context, error: error)
 //        }
-//        let box = Box([
-//            "value": Box("&"),
-//            "templateText": Box(repository2.template(named: "templateText")!),
-//            "render": Box(render)])
+//        let value: [String: Any] = [
+//            "value": "&",
+//            "templateText": repository2.template(named: "templateText")!,
+//            "render": render]
 //        let template = repository1.template(named: "templateHTML")!
-//        let rendering = template.render(box)!
+//        let rendering = template.render(value)!
 //        XCTAssertEqual(rendering, "&|&amp;")
 //    }
     
@@ -667,9 +667,9 @@ class RenderFunctionTests: XCTestCase {
             let rendering = try! info.tag.render(info.context)
             return Rendering("[2:\(rendering.string)]", rendering.contentType)
         }
-        let renders = [Box(render1), Box(render2), Box(true), Box(false)]
+        let renders: [Any] = [render1, render2, true, false]
         let template = try! Template(string: "{{#items}}---{{/items}},{{#items}}{{#.}}---{{/.}}{{/items}}")
-        let rendering = try! template.render(Box(["items":Box(renders)]))
+        let rendering = try! template.render(["items": renders])
         XCTAssertEqual(rendering, "[1:---][2:---]------,[1:---][2:---]---")
     }
 }

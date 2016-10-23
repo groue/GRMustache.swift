@@ -29,17 +29,17 @@ class EachFilterTests: XCTestCase {
     func testEachFilterEnumeratesSet() {
         let set = Set(["a", "b"])
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(["set": set])
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].index(of: rendering) != nil)
     }
     
     func testEachFilterEnumeratesNSSet() {
         let set = NSSet(objects: "a", "b")
         let template = try! Template(string: "{{#each(set)}}({{@index}},{{.}}){{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["set": set]))
-        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].indexOf(rendering) != nil)
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(["set": set])
+        XCTAssertTrue(["(0,a)(1,b)", "(0,b)(1,a)"].index(of: rendering) != nil)
     }
     
     func testEachFilterTriggersRenderFunctionsInArray() {
@@ -47,10 +47,10 @@ class EachFilterTests: XCTestCase {
             let rendering = try! info.tag.render(info.context)
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = Box(["array": Box([Box(render)])])
+        let value = ["array": [render]]
         let template = try! Template(string: "{{#each(array)}}{{@index}}{{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(box)
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "<0>")
     }
 
@@ -59,39 +59,39 @@ class EachFilterTests: XCTestCase {
             let rendering = try! info.tag.render(info.context)
             return Rendering("<\(rendering.string)>", rendering.contentType)
         }
-        let box = Box(["dictionary": Box(["a": Box(render)])])
+        let value = ["dictionary": ["a": render]]
         let template = try! Template(string: "{{#each(dictionary)}}{{@key}}{{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(box)
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "<a>")
     }
     
     func testEachFilterDoesNotMessWithItemValues() {
-        let increment = Filter { (int: Int?) -> MustacheBox in
-            return Box(int! + 1)
+        let increment = Filter { (int: Int?) -> Any? in
+            return int! + 1
         }
         let items = [1,2,3]
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{increment(.)}}){{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        template.registerInBaseContext("increment", Box(increment))
-        let rendering = try! template.render(Box(["items": items]))
+        template.register(StandardLibrary.each, forKey: "each")
+        template.register(increment, forKey: "increment")
+        let rendering = try! template.render(["items": items])
         XCTAssertEqual(rendering, "(0,2)(1,3)(2,4)")
     }
     
     func testEachFilterDoesNotMessWithItemKeyedSubscriptFunction() {
         let items = ["a","bb","ccc"]
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{length}}){{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["items": items]))
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(["items": items])
         XCTAssertEqual(rendering, "(0,1)(1,2)(2,3)")
     }
     
     func testEachFilterDoesNotMessWithItemRenderFunction() {
         let item = Lambda { "foo" }
-        let items = [Box(item)]
+        let items = [item]
         let template = try! Template(string: "{{#each(items)}}({{@index}},{{.}}){{/}}")
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
-        let rendering = try! template.render(Box(["items": items]))
+        template.register(StandardLibrary.each, forKey: "each")
+        let rendering = try! template.render(["items": items])
         XCTAssertEqual(rendering, "(0,foo)")
     }
 }

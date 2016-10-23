@@ -21,70 +21,60 @@
 // THE SOFTWARE.
 
 
-/**
-The abstract syntax tree of a template
-*/
+/// The abstract syntax tree of a template
 final class TemplateAST {
     
-    // A template AST can be "defined" or "undefined".
-    //
-    // Undefined template ASTs are used when parsing templates which embed a
-    // partial tag which refers to themselves. The compiler would emit a
-    // PartialNode which contains a reference to an undefined (yet) template
-    // AST. At the end of the compilation the undefined template AST would
-    // become defined.
-    //
-    // See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
+    /// A template AST can be "defined" or "undefined".
+    ///
+    /// Undefined template ASTs are used when parsing templates which embed a
+    /// partial tag which refers to themselves. The compiler would emit a
+    /// PartialNode which contains a reference to an undefined (yet) template
+    /// AST. At the end of the compilation the undefined template AST would
+    /// become defined.
+    ///
+    /// See TemplateRepository.templateAST(named:relativeToTemplateID:error:).
     enum `Type` {
-        case Undefined
-        case Defined(nodes: [TemplateASTNode], contentType: ContentType)
+        case undefined
+        case defined(nodes: [TemplateASTNode], contentType: ContentType)
     }
     var type: Type
     
-    private init(type: Type) {
+    fileprivate init(type: Type) {
         self.type = type
     }
     
     
-    /**
-    Returns an undefined TemplateAST.
-    */
+    /// Creates an undefined TemplateAST.
     convenience init() {
-        self.init(type: Type.Undefined)
+        self.init(type: Type.undefined)
     }
     
-    /**
-    Returns a defined TemplateAST.
-    */
+    /// Creates a defined TemplateAST.
     convenience init(nodes: [TemplateASTNode], contentType: ContentType) {
-        self.init(type: Type.Defined(nodes: nodes, contentType: contentType))
+        self.init(type: Type.defined(nodes: nodes, contentType: contentType))
     }
     
-    /**
-    Returns nil if the template AST is undefined.
-    */
+    /// Nil if the template AST is undefined.
     var nodes: [TemplateASTNode]! {
         switch type {
-        case .Undefined:
+        case .undefined:
             return nil
-        case .Defined(let nodes, _):
+        case .defined(let nodes, _):
             return nodes
         }
     }
 
-    /**
-    Returns nil if the template AST is undefined.
-    */
+    /// Nil if the template AST is undefined.
     var contentType: ContentType! {
         switch type {
-        case .Undefined:
+        case .undefined:
             return nil
-        case .Defined(_, let contentType):
+        case .defined(_, let contentType):
             return contentType
         }
     }
 
-    func updateFromTemplateAST(templateAST: TemplateAST) {
+    func updateFromTemplateAST(_ templateAST: TemplateAST) {
         self.type = templateAST.type
     }
 }

@@ -3,7 +3,7 @@ Goodies
 
 GRMustache ships with a library of built-in goodies available for your templates.
 
-- [NSFormatter](#nsformatter)
+- [Formatter](#formatter)
 - [HTMLEscape](#htmlescape)
 - [javascriptEscape](#javascriptescape)
 - [URLEscape](#urlescape)
@@ -13,27 +13,27 @@ GRMustache ships with a library of built-in goodies available for your templates
 - [Logger](#logger)
 
 
-### NSFormatter
+### Formatter
 
-GRMustache provides built-in support for NSFormatter and its subclasses such as NSNumberFormatter and NSDateFormatter.
+GRMustache provides built-in support for Foundation's Formatter and its subclasses such as NumberFormatter and DateFormatter.
 
 #### Formatting a value
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try! Template(string: "{{ percent(x) }}")
-template.registerInBaseContext("percent", Box(percentFormatter))
+template.register(percentFormatter, forKey: "percent")
 
 // Rendering: 50%
 let data = ["x": 0.5]
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(data)
 ```
 
 #### Formatting all values in a section
 
-NSFormatters are able to *format all variable tags* inside the section:
+Formatters are able to *format all variable tags* inside the section:
 
 `Document.mustache`:
 
@@ -46,11 +46,11 @@ NSFormatters are able to *format all variable tags* inside the section:
 Rendering code:
 
 ```swift
-let percentFormatter = NSNumberFormatter()
-percentFormatter.numberStyle = .PercentStyle
+let percentFormatter = NumberFormatter()
+percentFormatter.numberStyle = .percent
 
 let template = try! Template(named: "Document")
-template.registerInBaseContext("percent", Box(percentFormatter))
+template.register(percentFormatter, forKey: "percent")
 
 // Rendering:
 //
@@ -58,12 +58,12 @@ template.registerInBaseContext("percent", Box(percentFormatter))
 //   daily: 150%
 //   weekly: 400%
 
-id data = [
+let data = [
     "hourly": 0.1,
     "daily": 1.5,
     "weekly": 4,
-};
-let rendering = try! template.render(Box(data))
+]
+let rendering = try! template.render(data)
 ```
 
 Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections. However, values that can't be formatted are left untouched:
@@ -82,11 +82,11 @@ Would render:
     - ham: 22%
     - butter: 43%
 
-Precisely speaking, "values that can't be formatted" are the ones that have the `stringForObjectValue:` method return nil, as stated by [NSFormatter documentation](https://developer.apple.com/library/mac/documentation/Cocoa/Reference/Foundation/Classes/NSFormatter_Class/index.html#//apple_ref/occ/instm/NSFormatter/stringForObjectValue:).
+Precisely speaking, "values that can't be formatted" are the ones that have the `string(for:)` method return nil, as stated by [NSFormatter documentation](https://developer.apple.com/reference/foundation/formatter/1415993-string).
 
-Typically, NSNumberFormatter only formats numbers, and NSDateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
+Typically, NumberFormatter only formats numbers, and DateFormatter, dates: you can safely mix various data types in a section controlled by those well-behaved formatters.
 
-Support for NSFormatter is written using public APIs. You can check the [source](../../Mustache/Goodies/NSFormatter.swift) for inspiration.
+Support for Formatter is written using public APIs. You can check the [source](../../Mustache/Formatter.swift) for inspiration.
 
 
 ### HTMLEscape
@@ -95,7 +95,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
 ```
 
 As a filter, `HTMLEscape` returns its argument, HTML-escaped.
@@ -121,7 +121,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
       {{/}}
     {{/ HTMLEscape }}
 
-StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/HTMLEscape.swift) for inspiration.
+StandardLibrary.HTMLEscape is written using public APIs. You can check the [source](../../Mustache/HTMLEscapeHelper.swift) for inspiration.
 
 See also [javascriptEscape](#javascriptescape), [URLEscape](#urlescape)
 
@@ -132,7 +132,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
 ```
 
 As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
@@ -165,7 +165,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 </script>
 ```
 
-StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/JavascriptEscape.swift) for inspiration.
+StandardLibrary.javascriptEscape is written using public APIs. You can check the [source](../../Mustache/JavascriptEscapeHelper.swift) for inspiration.
 
 See also [HTMLEscape](#htmlescape), [URLEscape](#urlescape)
 
@@ -176,7 +176,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
 ```
 
 As a filter, `URLEscape` returns its argument, percent-escaped.
@@ -201,7 +201,7 @@ Variable tags buried inside inner sections are escaped as well, so that you can 
 {{/ URLEscape }}
 ```
 
-StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/Goodies/URLEscape.swift) for inspiration.
+StandardLibrary.URLEscape is written using public APIs. You can check the [source](../../Mustache/URLEscapeHelper.swift) for inspiration.
 
 See also [HTMLEscape](#htmlescape), [javascriptEscape](#javascriptescape)
 
@@ -212,7 +212,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("each", Box(StandardLibrary.each))
+template.register(StandardLibrary.each, forKey: "each")
 ```
 
 Iteration is natural to Mustache templates: `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the `users` key is given a list of users.
@@ -260,7 +260,7 @@ When provided with a dictionary, `each` iterates each key/value pair of the dict
 
 The other positional keys `@index`, `@first`, etc. are still available when iterating dictionaries.
 
-The `each` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/EachFilter.swift) for inspiration.
+The `each` filter is written using public APIs. You can check the [source](../../Mustache/EachFilter.swift) for inspiration.
 
 
 ### zip
@@ -269,7 +269,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+template.register(StandardLibrary.zip, forKey: "zip")
 ```
 
 The zip filter iterates several lists all at once. On each step, one object from each input list enters the rendering context, and makes its own keys available for rendering.
@@ -312,7 +312,7 @@ In the example above, the first step has consumed (Alice, iOS and 100), and the 
 
 The zip filter renders a section as many times as there are elements in the longest of its argument: exhausted lists simply do not add anything to the rendering context.
 
-The `zip` filter is written using public APIs. You can check the [source](../../Mustache/Goodies/ZipFilter.swift) for inspiration.
+The `zip` filter is written using public APIs. You can check the [source](../../Mustache/ZipFilter.swift) for inspiration.
 
 
 ### Localizer
@@ -323,7 +323,7 @@ Usage:
 let template = ...
 
 let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
-template.registerInBaseContext("localize", Box(localizer))
+template.register(localizer, forKey: "localize")
 ```
 
 #### Localizing a value
@@ -358,7 +358,7 @@ You can embed conditional sections inside:
 
 Depending on the name, this would render `Bonjour Arthur` or `Bonjour toi`, given French localizations for both `Hello %@` and `Hello you`.
 
-StandardLibrary.Localizer filter is written using public APIs. You can check the [source](../../Mustache/Goodies/Localizer.swift) for inspiration.
+StandardLibrary.Localizer filter is written using public APIs. You can check the [source](../../Mustache/Localizer.swift) for inspiration.
 
 
 ### Logger
@@ -368,8 +368,8 @@ Usage:
 ```swift
 let template = ...
 
-let logger = StandardLibrary.Logger()
-template.extendBaseContext(Box(logger))
+let logger = StandardLibrary.Logger { print($0) }
+template.extendBaseContext(logger)
 ```
 
 `Logger` is a tool intended for debugging templates.
@@ -384,11 +384,11 @@ let template = try! Template(string: "{{name}} died at {{age}}.")
 
 // Logs all tag renderings with NSLog():
 let logger = StandardLibrary.Logger()
-template.extendBaseContext(Box(logger))
+template.extendBaseContext(logger)
 
 // Render
 let data = ["name": "Freddy Mercury", "age": 45]
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(data)
 ```
 
 In the log:

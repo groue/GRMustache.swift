@@ -28,7 +28,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
    
     func testConfigurationExtendBaseContextWithValue() {
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(["name": Box("Arthur")]))
+        configuration.extendBaseContext(["name": "Arthur"])
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = try! repository.template(string: "{{name}}")
@@ -36,7 +36,7 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
         var rendering = try! template.render()
         XCTAssertEqual(rendering, "Arthur")
         
-        rendering = try! template.render(Box(["name": "Bobby"]))
+        rendering = try! template.render(["name": "Bobby"])
         XCTAssertEqual(rendering, "Bobby")
     }
     
@@ -45,11 +45,11 @@ class ConfigurationExtendBaseContextTests: XCTestCase {
     }
     
     func testConfigurationExtendBaseContextWithWillRenderFunction() {
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
-            return Box("delegate")
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
+            return "delegate"
         }
         var configuration = Configuration()
-        configuration.extendBaseContext(Box(willRender))
+        configuration.extendBaseContext(willRender)
         let repository = TemplateRepository()
         repository.configuration = configuration
         let template = try! repository.template(string: "{{name}}")

@@ -32,8 +32,8 @@ class ContextTests: XCTestCase {
         var rendering = try! template.render()
         XCTAssertEqual(rendering, "")
         
-        let box = Box(["foo": "bar"])
-        template.baseContext = Context(box)
+        let value = ["foo": "bar"]
+        template.baseContext = Context(value)
         rendering = try! template.render()
         XCTAssertEqual(rendering, "bar")
     }
@@ -44,13 +44,13 @@ class ContextTests: XCTestCase {
     
     func testContextWithWillRenderFunction() {
         var success = false
-        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
             success = true
             return box
         }
         let template = try! Template(string: "{{success}}")
-        template.baseContext = Context(Box(willRender))
-        try! template.render()
+        template.baseContext = Context(willRender)
+        _ = try! template.render()
         XCTAssertTrue(success)
     }
     
@@ -58,32 +58,32 @@ class ContextTests: XCTestCase {
         var context = Context()
         XCTAssertTrue(context.topBox.isEmpty)
         
-        context = context.extendedContext(Box("object"))
+        context = context.extendedContext("object")
         XCTAssertEqual((context.topBox.value as! String), "object")
         
         // TODO: import protected test from GRMustacheContextTopMustacheObjectTest.testTopMustacheObject
         
         // TODO: check if those commented lines are worth decommenting
-//        let willRender = { (tag: Tag, box: MustacheBox) -> MustacheBox in
+//        let willRender = { (tag: Tag, box: MustacheBox) -> Any? in
 //            return box
 //        }
-//        context = context.extendedContext(Box(willRender))
+//        context = context.extendedContext(willRender)
 //        XCTAssertEqual(context.topBox.value as String, "object")
 
-        context = context.extendedContext(Box("object2"))
+        context = context.extendedContext("object2")
         XCTAssertEqual((context.topBox.value as! String), "object2")
     }
     
     func testSubscript() {
-        let context = Context(Box(["name": "name1", "a": ["name": "name2"]]))
+        let context = Context(["name": "name1", "a": ["name": "name2"]])
         
         // '.' is an expression, not a key
-        XCTAssertTrue(context.mustacheBoxForKey(".").isEmpty)
+        XCTAssertTrue(context.mustacheBox(forKey: ".").isEmpty)
         
         // 'name' is a key
-        XCTAssertEqual((context.mustacheBoxForKey("name").value as! String), "name1")
+        XCTAssertEqual((context.mustacheBox(forKey: "name").value as! String), "name1")
         
         // 'a.name' is an expression, not a key
-        XCTAssertTrue(context.mustacheBoxForKey("a.name").isEmpty)
+        XCTAssertTrue(context.mustacheBox(forKey: "a.name").isEmpty)
     }
 }

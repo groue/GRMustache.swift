@@ -28,36 +28,36 @@ class ContextRegisteredKeyTests: XCTestCase {
     
     func testRegisteredKeyCanBeAccessed() {
         let template = try! Template(string: "{{safe}}")
-        template.registerInBaseContext("safe", Box("important"))
+        template.register("important", forKey: "safe")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "important")
     }
     
     func testMultipleRegisteredKeysCanBeAccessed() {
         let template = try! Template(string: "{{safe1}}, {{safe2}}")
-        template.registerInBaseContext("safe1", Box("important1"))
-        template.registerInBaseContext("safe2", Box("important2"))
+        template.register("important1", forKey: "safe1")
+        template.register("important2", forKey: "safe2")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "important1, important2")
     }
     
     func testRegisteredKeysCanNotBeShadowed() {
         let template = try! Template(string: "{{safe}}, {{fragile}}")
-        template.registerInBaseContext("safe", Box("important"))
-        let rendering = try! template.render(Box(["safe": "error", "fragile": "not important"]))
+        template.register("important", forKey: "safe")
+        let rendering = try! template.render(["safe": "error", "fragile": "not important"])
         XCTAssertEqual(rendering, "important, not important")
     }
     
     func testDeepRegisteredKeyCanBeAccessedViaFullKeyPath() {
         let template = try! Template(string: "{{safe.name}}")
-        template.registerInBaseContext("safe", Box(["name": "important"]))
+        template.register(["name": "important"], forKey: "safe")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "important")
     }
     
     func testDeepRegisteredKeyCanBeAccessedViaScopedExpression() {
         let template = try! Template(string: "{{#safe}}{{.name}}{{/safe}}")
-        template.registerInBaseContext("safe", Box(["name": "important"]))
+        template.register(["name": "important"], forKey: "safe")
         let rendering = try! template.render()
         XCTAssertEqual(rendering, "important")
     }
@@ -65,8 +65,8 @@ class ContextRegisteredKeyTests: XCTestCase {
     func testDeepRegisteredKeyCanBeShadowed() {
         // This is more a caveat than a feature, isn't it?
         let template = try! Template(string: "{{#safe}}{{#evil}}{{name}}{{/evil}}{{/safe}}")
-        template.registerInBaseContext("safe", Box(["name": "important"]))
-        let rendering = try! template.render(Box(["evil": ["name": "hacked"]]))
+        template.register(["name": "important"], forKey: "safe")
+        let rendering = try! template.render(["evil": ["name": "hacked"]])
         XCTAssertEqual(rendering, "hacked")
     }
 }

@@ -25,22 +25,22 @@ import Foundation
 
 let ZipFilter = VariadicFilter { (boxes) in
     
-    // Turn collection arguments into generators. Generators can be iterated
+    // Turn collection arguments into iterators. Iterators can be iterated
     // all together, and this is what we need.
     //
     // Other kinds of arguments generate an error.
     
-    var zippedGenerators: [AnyGenerator<MustacheBox>] = []
+    var zippedIterators: [AnyIterator<MustacheBox>] = []
     
     for box in boxes {
         if box.isEmpty {
             // Missing collection does not provide anything
         } else if let array = box.arrayValue {
             // Array
-            zippedGenerators.append(AnyGenerator(array.generate()))
+            zippedIterators.append(AnyIterator(array.makeIterator()))
         } else {
             // Error
-            throw MustacheError(kind: .RenderError, message: "Non-enumerable argument in zip filter: `\(box.value)`")
+            throw MustacheError(kind: .renderError, message: "Non-enumerable argument in zip filter: `\(box.value)`")
         }
     }
     
@@ -51,22 +51,22 @@ let ZipFilter = VariadicFilter { (boxes) in
     
     while true {
         
-        // Extract from all generators the boxes that should enter the rendering
+        // Extract from all iterators the boxes that should enter the rendering
         // context at each iteration.
         //
         // Given the [1,2,3], [a,b,c] input collections, those boxes would be
         // [1,a] then [2,b] and finally [3,c].
         
         var zippedBoxes: [MustacheBox] = []
-        for generator in zippedGenerators {
-            var generator = generator
-            if let box = generator.next() {
+        for iterator in zippedIterators {
+            var iterator = iterator
+            if let box = iterator.next() {
                 zippedBoxes.append(box)
             }
         }
         
         
-        // All generators have been enumerated: stop
+        // All iterators have been enumerated: stop
         
         if zippedBoxes.isEmpty {
             break;
@@ -84,8 +84,5 @@ let ZipFilter = VariadicFilter { (boxes) in
         renderFunctions.append(renderFunction)
     }
     
-    
-    // Return a box of those boxed render functions
-    
-    return Box(renderFunctions.map(Box))
+    return renderFunctions
 }

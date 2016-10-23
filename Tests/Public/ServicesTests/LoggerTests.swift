@@ -31,10 +31,10 @@ class LoggerTests : XCTestCase {
         let logger = StandardLibrary.Logger { logMessages.append($0) }
         
         let template = try! Template(string: "{{#people}}- {{name}} has a Mustache.\n{{/people}}")
-        template.extendBaseContext(Box(logger))
+        template.extendBaseContext(logger)
         
         let data = ["people": [["name": "Frank Zappa"], ["name": "Charlie Chaplin"], ["name": "Albert Einstein"]]]
-        try! template.render(Box(data))
+        _ = try! template.render(data)
         
         XCTAssertEqual(logMessages.count, 5)
         XCTAssertEqual(logMessages[0], "{{#people}} at line 1 will render [[\"name\":\"Frank Zappa\"],[\"name\":\"Charlie Chaplin\"],[\"name\":\"Albert Einstein\"]]")
@@ -49,10 +49,10 @@ class LoggerTests : XCTestCase {
         let logger = StandardLibrary.Logger { logMessages.append($0) }
         
         let template = try! Template(string: "{{#people}}{{#log}}- {{name}} has a Mustache.\n{{/log}}{{/people}}{{#log}}{{missing}}{{/log}}")
-        template.registerInBaseContext("log", Box(logger))
+        template.register(logger, forKey: "log")
         
         let data = ["people": [["name": "Frank Zappa"], ["name": "Charlie Chaplin"], ["name": "Albert Einstein"]]]
-        try! template.render(Box(data))
+        _ = try! template.render(data)
         
         XCTAssertEqual(logMessages.count, 4)
         XCTAssertEqual(logMessages[0], "{{name}} at line 1 did render \"Frank Zappa\" as \"Frank Zappa\"")

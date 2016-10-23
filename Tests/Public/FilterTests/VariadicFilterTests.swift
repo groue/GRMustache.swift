@@ -27,98 +27,98 @@ import Mustache
 class VariadicFilterTests: XCTestCase {
 
     func testVariadicFilterCanAccessArguments() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return Box(boxes.map { ($0.value as? String) ?? "" }.joinWithSeparator(","))
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> Any? in
+            return boxes.map { ($0.value as? String) ?? "" }.joined(separator: ",")
         })
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
-            "join": Box(filter)])
+        let value: [String: Any] = [
+            "a": "a",
+            "b": "b",
+            "c": "c",
+            "join": filter]
         let template = try! Template(string:"{{join(a)}} {{join(a,b)}} {{join(a,b,c)}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "a a,b a,b,c")
     }
 
     func testVariadicFilterCanReturnFilter() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            let joined = boxes.map { ($0.value as? String) ?? "" }.joinWithSeparator(",")
-            return Box(Filter({ (box: MustacheBox) -> MustacheBox in
-                return Box(joined + "+" + ((box.value as? String) ?? ""))
-            }))
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> Any? in
+            let joined = boxes.map { ($0.value as? String) ?? "" }.joined(separator: ",")
+            return Filter { (box: MustacheBox) -> Any? in
+                return joined + "+" + ((box.value as? String) ?? "")
+            }
         })
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
-            "f": Box(filter)])
+        let value: [String: Any] = [
+            "a": "a",
+            "b": "b",
+            "c": "c",
+            "f": filter]
         let template = try! Template(string:"{{f(a)(a)}} {{f(a,b)(a)}} {{f(a,b,c)(a)}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "a+a a,b+a a,b,c+a")
     }
     
     func testVariadicFilterCanBeRootOfScopedExpression() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return Box(["foo": "bar"])
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> Any? in
+            return ["foo": "bar"]
         })
-        let box = Box(["f": Box(filter)])
+        let value = ["f": filter]
         let template = try! Template(string:"{{f(a,b).foo}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "bar")
     }
     
     func testVariadicFilterCanBeUsedForObjectSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return Box(["foo": "bar"])
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> Any? in
+            return ["foo": "bar"]
         })
-        let box = Box(["f": Box(filter)])
+        let value = ["f": filter]
         let template = try! Template(string:"{{#f(a,b)}}{{foo}}{{/}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "bar")
     }
     
     func testVariadicFilterCanBeUsedForEnumerableSections() {
-        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> MustacheBox in
-            return Box(boxes)
+        let filter = VariadicFilter({ (boxes: [MustacheBox]) -> Any? in
+            return boxes
         })
-        let box = Box([
-            "a": Box("a"),
-            "b": Box("b"),
-            "c": Box("c"),
-            "f": Box(filter)])
+        let value: [String: Any] = [
+            "a": "a",
+            "b": "b",
+            "c": "c",
+            "f": filter]
         let template = try! Template(string:"{{#f(a,b)}}{{.}}{{/}} {{#f(a,b,c)}}{{.}}{{/}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "ab abc")
     }
     
     func testVariadicFilterCanBeUsedForBooleanSections() {
-        let filter = VariadicFilter { (boxes) -> MustacheBox in
+        let filter = VariadicFilter { (boxes) -> Any? in
             return boxes.first!
         }
-        let box = Box([
-            "yes": Box(true),
-            "no": Box(false),
-            "f": Box(filter)])
+        let value: [String: Any] = [
+            "yes": true,
+            "no": false,
+            "f": filter]
         let template = try! Template(string:"{{#f(yes)}}YES{{/}} {{^f(no)}}NO{{/}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "YES NO")
     }
     
     func testImplicitIteratorCanBeVariadicFilterArgument() {
-        let box = Box([
-            "f": Box(VariadicFilter { (boxes) -> MustacheBox in
+        let value: [String: Any] = [
+            "f": VariadicFilter { (boxes) -> Any? in
                 var result = ""
                 for box in boxes {
                     if let dictionary = box.dictionaryValue {
                         result += String(dictionary.count)
                     }
                 }
-                return Box(result)
-            }),
-            "foo": Box(["a": "a", "b": "b", "c": "c"])
-            ])
+                return result
+            },
+            "foo": ["a": "a", "b": "b", "c": "c"]
+            ]
         let template = try! Template(string:"{{f(foo,.)}} {{f(.,foo)}}")
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "32 23")
     }
 }

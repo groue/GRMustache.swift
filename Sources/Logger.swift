@@ -23,38 +23,33 @@ import Foundation
 
 extension StandardLibrary {
     
-    /**
-    StandardLibrary.Logger is a tool intended for debugging templates.
-    
-    It logs the rendering of variable and section tags such as `{{name}}` and
-    `{{#name}}...{{/name}}`.
-    
-    To activate logging, add a Logger to the base context of a template:
-    
-        let template = try! Template(string: "{{name}} died at {{age}}.")
-    
-        // Logs all tag renderings with NSLog():
-        let logger = StandardLibrary.Logger()
-        template.extendBaseContext(Box(logger))
-        
-        // Render
-        let data = ["name": "Freddy Mercury", "age": 45]
-        let rendering = try! template.render(Box(data))
-    
-        // In NSLog:
-        // {{name}} at line 1 did render "Freddy Mercury" as "Freddy Mercury"
-        // {{age}} at line 1 did render 45 as "45"
-    */
+    /// StandardLibrary.Logger is a tool intended for debugging templates.
+    /// 
+    /// It logs the rendering of variable and section tags such as `{{name}}`
+    /// and `{{#name}}...{{/name}}`.
+    /// 
+    /// To activate logging, add a Logger to the base context of a template:
+    /// 
+    ///     let template = try! Template(string: "{{name}} died at {{age}}.")
+    /// 
+    ///     // Logs all tag renderings with print:
+    ///     let logger = StandardLibrary.Logger() { print($0) }
+    ///     template.extendBaseContext(logger)
+    ///     
+    ///     // Render
+    ///     let data = ["name": "Freddy Mercury", "age": 45]
+    ///     let rendering = try! template.render(data)
+    /// 
+    ///     // Prints:
+    ///     // {{name}} at line 1 did render "Freddy Mercury" as "Freddy Mercury"
+    ///     // {{age}} at line 1 did render 45 as "45"
     public final class Logger : MustacheBoxable {
         
-        /**
-        Returns a Logger.
-        
-        - parameter log: A closure that takes a String. Default one logs that
-                         string with NSLog().
-        - returns: a Logger
-        */
-        public init(log: ((String) -> Void)? = nil) {
+        /// Creates a Logger.
+        /// 
+        /// - parameter log: A closure that takes a String. Default one logs that
+        ///   string with NSLog().
+        public init(_ log: ((String) -> Void)? = nil) {
             if let log = log {
                 self.log = log
             } else {
@@ -62,27 +57,21 @@ extension StandardLibrary {
             }
         }
         
-        /**
-        Logger adopts the `MustacheBoxable` protocol so that it can feed
-        Mustache templates.
-        
-        You should not directly call the `mustacheBox` property. Always use the
-        `Box()` function instead:
-        
-            localizer.mustacheBox   // Valid, but discouraged
-            Box(localizer)          // Preferred
-        */
+        /// Logger adopts the `MustacheBoxable` protocol so that it can feed
+        /// Mustache templates.
+        /// 
+        /// You should not directly call the `mustacheBox` property.
         public var mustacheBox: MustacheBox {
             return MustacheBox(
                 willRender: { (tag, box) in
-                    if tag.type == .Section {
+                    if tag.type == .section {
                         self.log("\(self.indentationPrefix)\(tag) will render \(box.valueDescription)")
                         self.indentationLevel += 1
                     }
                     return box
                 },
                 didRender: { (tag, box, string) in
-                    if tag.type == .Section {
+                    if tag.type == .section {
                         self.indentationLevel -= 1
                     }
                     if let string = string {
@@ -93,10 +82,10 @@ extension StandardLibrary {
         }
         
         var indentationPrefix: String {
-            return String(count: indentationLevel * 2, repeatedValue: " " as Character)
+            return String(repeating: " ", count: indentationLevel * 2)
         }
         
-        private let log: (String) -> Void
-        private var indentationLevel: Int = 0
+        fileprivate let log: (String) -> Void
+        fileprivate var indentationLevel: Int = 0
     }
 }

@@ -36,43 +36,43 @@ final class ExpressionGenerator {
         self.configuration = configuration ?? DefaultConfiguration
     }
     
-    func stringFromExpression(expression: Expression) -> String {
+    func stringFromExpression(_ expression: Expression) -> String {
         buffer = ""
         renderExpression(expression)
         return buffer
     }
     
-    func renderExpression(expression: Expression) {
+    func renderExpression(_ expression: Expression) {
         switch expression {
-        case .ImplicitIterator:
+        case .implicitIterator:
             // {{ . }}
             
-            buffer.appendContentsOf(".")
+            buffer.append(".")
             
-        case .Identifier(let identifier):
+        case .identifier(let identifier):
             // {{ identifier }}
             
-            buffer.appendContentsOf(identifier)
+            buffer.append(identifier)
             
-        case .Scoped(let baseExpression, let identifier):
+        case .scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
             
             renderExpression(baseExpression)
-            buffer.appendContentsOf(".")
-            buffer.appendContentsOf(identifier)
+            buffer.append(".")
+            buffer.append(identifier)
             
-        case .Filter(let filterExpression, let argumentExpression, _):
+        case .filter(let filterExpression, let argumentExpression, _):
             // {{ <expression>(<expression>) }}
             //
             // Support for variadic filters is not implemented:
             // `f(a,b)` is rendered `f(a)(b)`.
             
             renderExpression(filterExpression)
-            buffer.appendContentsOf("(")
+            buffer.append("(")
             renderExpression(argumentExpression)
-            buffer.appendContentsOf(")")
+            buffer.append(")")
         }
     }
     
-    private var buffer: String = ""
+    fileprivate var buffer: String = ""
 }
