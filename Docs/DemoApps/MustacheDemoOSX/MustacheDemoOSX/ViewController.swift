@@ -19,13 +19,14 @@ class ViewController: NSViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        for textView in [templateTextView, JSONTextView] {
-            textView.automaticQuoteSubstitutionEnabled = false;
-            textView.textStorage?.font = font
-        }
+        templateTextView.isAutomaticQuoteSubstitutionEnabled = false
+        templateTextView.textStorage?.font = font
+        
+        JSONTextView.isAutomaticQuoteSubstitutionEnabled = false
+        JSONTextView.textStorage?.font = font
     }
     
-    @IBAction func render(sender: AnyObject) {
+    @IBAction func render(_ sender: Any?) {
         do {
             let template = try Template(string: model.templateString)
 
@@ -42,17 +43,17 @@ class ViewController: NSViewController {
             template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
             template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
 
-            let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
-            let JSONObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())
+            let data = model.JSONString.data(using: .utf8)!
+            let JSONObject = try JSONSerialization.jsonObject(with: data, options: [])
             let string = try template.render(Box(JSONObject as? NSObject))
-            presentRenderingString(string)
+            present(renderingString: string)
         }
         catch let error as NSError {
-            presentRenderingString("\(error.domain): \(error.localizedDescription)")
+            present(renderingString: "\(error.domain): \(error.localizedDescription)")
         }
     }
     
-    func presentRenderingString(string: String) {
+    func present(renderingString string: String) {
         self.renderingTextView.string = string
         self.renderingTextView.textStorage?.font = font
     }
