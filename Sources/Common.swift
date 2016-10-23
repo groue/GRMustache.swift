@@ -21,38 +21,28 @@
 // THE SOFTWARE.
 
 
-// =============================================================================
-// MARK: - ContentType
-
-/**
-GRMustache distinguishes Text from HTML.
-
-Content type applies to both *templates*, and *renderings*:
-
-- In a HTML template, `{{name}}` tags escape Text renderings, but do not escape
-HTML renderings.
-
-- In a Text template, `{{name}}` tags do not escape anything.
-
-The content type of a template comes from `Configuration.contentType` or
-`{{% CONTENT_TYPE:... }}` pragma tags. See the documentation of
-`Configuration.contentType` for a full discussion.
-
-The content type of rendering is discussed with the `Rendering` type.
-
-See also:
-
-- Configuration.contentType
-- Rendering
-*/
+/// GRMustache distinguishes Text from HTML.
+///
+/// Content type applies to both *templates*, and *renderings*:
+///
+/// - In a HTML template, `{{name}}` tags escape Text renderings, but do not
+///   escape HTML renderings.
+///
+/// - In a Text template, `{{name}}` tags do not escape anything.
+///
+/// The content type of a template comes from `Configuration.contentType` or
+/// `{{% CONTENT_TYPE:... }}` pragma tags. See the documentation of
+/// `Configuration.contentType` for a full discussion.
+///
+/// The content type of rendering is discussed with the `Rendering` type.
+///
+/// - seealso: Configuration.contentType
+/// - seealso: Rendering
 public enum ContentType {
     case text
     case html
 }
 
-
-// =============================================================================
-// MARK: - Errors
 
 /// The errors thrown by Mustache.swift
 public struct MustacheError : Error {
@@ -160,27 +150,18 @@ extension MustacheError : CustomStringConvertible {
 }
 
 
-// =============================================================================
-// MARK: - Tag delimiters
-
-/**
-A pair of tag delimiters, such as `("{{", "}}")`.
-
-:see Configuration.tagDelimiterPair
-:see Tag.tagDelimiterPair
-*/
+/// A pair of tag delimiters, such as `("{{", "}}")`.
+///
+/// - seealso: Configuration.tagDelimiterPair
+/// - seealso: Tag.tagDelimiterPair
 public typealias TagDelimiterPair = (String, String)
 
 
-// =============================================================================
-// MARK: - HTML escaping
-
-/**
-HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with HTML entities.
-
-- parameter string: A string.
-- returns: The HTML-escaped string.
-*/
+/// HTML-escapes a string by replacing `<`, `> `, `&`, `'` and `"` with
+/// HTML entities.
+///
+/// - parameter string: A string.
+/// - returns: The HTML-escaped string.
 public func escapeHTML(_ string: String) -> String {
     let escapeTable: [Character: String] = [
         "<": "&lt;",
