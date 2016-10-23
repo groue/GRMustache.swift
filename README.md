@@ -813,7 +813,7 @@ Templates render values:
 
 ```swift
 template.render(["name": "Luigi"])
-template.render(Profile(named: "Luigi"))
+template.render(Person(name: "Luigi"))
 ```
 
 You can feed templates with:
@@ -1002,7 +1002,7 @@ extension Person : MustacheBoxable {
 
 Your `mustacheBox` implementation will generally call the `Box` function on a regular [value](#values) that itself adopts the `MustacheBoxable` protocol (such as `String` or `Int`), or an array, a set, or a dictionary.
 
-Now we can render users, arrays of users, dictionaries of users, etc:
+Now we can render persons, arrays of persons, dictionaries of persons, etc:
 
 ```swift
 // Freddy Mercury has a mustache.
