@@ -19,11 +19,23 @@ Release Notes
 
 **Breaking Changes**
 
-- The only collections that can feed Mustache templates are arrays, sets, dictionaries, and Foundation collections that adopt NSFastEnumeration such as NSArray, SSet, NSOrderedSet, NSDictionary, etc.
+- The only collections that can feed Mustache templates are arrays, sets, dictionaries, and Foundation collections that adopt NSFastEnumeration such as NSArray, SSet, NSOrderedSet, NSDictionary, etc. Other Swift collections such as ranges can no longer feed templates.
 
-- The Swift 3 *Grand Renaming* has impacted a few GRMustache APIs:
+- The following APIs were modified:
     
     ```diff
+     // Use nil instead
+    -func Box() -> MustacheBox
+    
+    -typealias KeyedSubscriptFunction = (key: String) -> MustacheBox
+    +typealias KeyedSubscriptFunction = (_ key: String) -> Any?
+    
+    -typealias FilterFunction = (box: MustacheBox, partialApplication: Bool) throws -> MustacheBox
+    +typealias FilterFunction = (_ box: MustacheBox, _ partialApplication: Bool) throws -> Any?
+    
+    -typealias WillRenderFunction = (tag: Tag, box: MustacheBox) -> MustacheBox
+    +typealias WillRenderFunction = (_ tag: Tag, _ box: MustacheBox) -> Any?
+    
      struct Configuration {
     -    func registerInBaseContext(_ key: String, _ box: MustacheBox)
     +    func register(_ value: Any?, forKey key: String)
