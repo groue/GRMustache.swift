@@ -21,6 +21,9 @@
 // THE SOFTWARE.
 
 
+@available(*, unavailable, message:"Use nil instead.")
+public func Box() -> MustacheBox { return EmptyBox }
+
 extension Template {
     @available(*, unavailable, renamed:"register(_:forKey:)")
     public func registerInBaseContext(_ key: String, _ value: Any?) { }
