@@ -41,7 +41,7 @@ Usage
 
 The library is built around **two main APIs**:
 
-- The `Template(...)` constructor that loads a template.
+- The `Template(...)` initializer that loads a template.
 - The `Template.render(...)` method that renders your data.
 
 
@@ -850,7 +850,7 @@ GRMustache.swift comes with built-in support for the following standard Swift ty
 
 ### Numeric Types
 
-GRMustache supports `Int`, `UInt`, `Int64`, `UInt64`, `Float` and `Double`:
+GRMustache supports `Int`, `UInt`, `Int64`, `UInt64`, `Float`, `Double` and `CGFloat`:
 
 - `{{number}}` renders the standard Swift string interpolation of *number*.
 - `{{#number}}...{{/number}}` renders if and only if *number* is not 0 (zero).
