@@ -54,7 +54,7 @@ extension StandardLibrary {
                          string with NSLog().
         - returns: a Logger
         */
-        public init(log: ((String) -> Void)? = nil) {
+        public init(_ log: ((String) -> Void)? = nil) {
             if let log = log {
                 self.log = log
             } else {
