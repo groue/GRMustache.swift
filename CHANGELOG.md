@@ -3,6 +3,8 @@ Release Notes
 
 ## v2.0.0
 
+Released October 23, 2016
+
 **New**
 
 - **Swift 3**
@@ -11,10 +13,10 @@ Release Notes
     
     ```swift
     // Still supported
-    let rendering try template.render(Box(["name": "Arthur"]))
+    let rendering = try template.render(Box(["name": "Arthur"]))
     
     // New:
-    let rendering try template.render(["name": "Arthur"])
+    let rendering = try template.render(["name": "Arthur"])
     ```
 
 **Breaking Changes**
