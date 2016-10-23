@@ -88,11 +88,8 @@ extension MustacheBox {
 }
 
 
-/// Attempt to turn value into a box.
-///
-/// - parameter object: An object.
-/// - returns: A MustacheBox that wraps *object*.
-func Box(_ value: Any?) -> MustacheBox {
+/// TODO
+public func Box(_ value: Any?) -> MustacheBox {
     guard let value = value else {
         return EmptyBox
     }
@@ -117,7 +114,8 @@ func Box(_ value: Any?) -> MustacheBox {
     case let f as KeyedSubscriptFunction:
         return MustacheBox(keyedSubscript: f)
     default:
-        return MustacheBox(value: value, boolValue: true)
+        NSLog("%@", "Mustache warning: \(String(reflecting: value)) of type \(type(of: value)) is not MustacheBoxable, Array, Set, Dictionary, and is discarded.")
+        return EmptyBox
     }
 }
 

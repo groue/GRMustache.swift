@@ -35,25 +35,11 @@ class BoxValueTests: XCTestCase {
             }
         }
         
-        struct Struct : CustomDebugStringConvertible {
-            var debugDescription: String {
-                return "Struct"
-            }
-        }
-        
         class BoxableClass : MustacheBoxable {
             init() {
             }
             var mustacheBox: MustacheBox {
                 return MustacheBox(value: self)
-            }
-        }
-        
-        class Class : CustomDebugStringConvertible {
-            init() {
-            }
-            var debugDescription: String {
-                return "Class"
             }
         }
         
@@ -68,9 +54,7 @@ class BoxValueTests: XCTestCase {
             XCTAssertEqual(try! template.render(data), "success", "\(String(reflecting: value)) is not boxed as \(T.self)")
         }
         assert(value: BoxableStruct(), isBoxedAs: BoxableStruct.self)
-        assert(value: Struct(), isBoxedAs: Struct.self)
         assert(value: BoxableClass(), isBoxedAs: BoxableClass.self)
-        assert(value: Class(), isBoxedAs: Class.self)
         assert(value: NSObject(), isBoxedAs: NSObject.self)
         assert(value: NSDate(), isBoxedAs: NSDate.self)
         assert(value: Date(), isBoxedAs: Date.self)
