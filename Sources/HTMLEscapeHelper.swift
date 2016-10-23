@@ -40,7 +40,7 @@ final class HTMLEscapeHelper : MustacheBoxable {
     }
     
     // This function is used for evaluating `HTMLEscape(x)` expressions.
-    fileprivate func filter(_ rendering: Rendering) throws -> Rendering {
+    private func filter(_ rendering: Rendering) throws -> Rendering {
         return Rendering(escapeHTML(rendering.string), rendering.contentType)
     }
     
@@ -49,16 +49,16 @@ final class HTMLEscapeHelper : MustacheBoxable {
     //
     // It is activated as soon as the formatter enters the context stack, when
     // used in a section {{# HTMLEscape }}...{{/ HTMLEscape }}.
-    fileprivate func willRender(_ tag: Tag, box: MustacheBox) -> MustacheBox {
+    private func willRender(_ tag: Tag, box: MustacheBox) -> Any? {
         switch tag.type {
         case .variable:
             // {{ value }}
             // We don't know if the box contains a String, so let's escape its
             // rendering.
-            return Box({ (info: RenderingInfo) -> Rendering in
+            return { (info: RenderingInfo) -> Rendering in
                 let rendering = try box.render(info)
                 return try self.filter(rendering)
-            })
+            }
         case .section:
             // {{# value }}...{{/ value }}
             // {{^ value }}...{{/ value }}
