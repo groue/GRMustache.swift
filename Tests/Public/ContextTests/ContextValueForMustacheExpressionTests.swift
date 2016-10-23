@@ -27,31 +27,31 @@ import Mustache
 class ContextValueForMustacheExpressionTests: XCTestCase {
 
     func testImplicitIteratorExpression() {
-        let context = Context(Box("success"))
+        let context = Context("success")
         let box = try! context.mustacheBoxForExpression(".")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testIdentifierExpression() {
-        let context = Context(Box(["name": "success"]))
+        let context = Context(["name": "success"])
         let box = try! context.mustacheBoxForExpression("name")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testScopedExpression() {
-        let context = Context(Box(["a": ["name": "success"]] as NSDictionary))
+        let context = Context(["a": ["name": "success"]])
         let box = try! context.mustacheBoxForExpression("a.name")
         let string = box.value as? String
         XCTAssertEqual(string!, "success")
     }
     
     func testFilteredExpression() {
-        let filter = Filter({ (string: String?) -> MustacheBox in
-            return Box(string!.uppercased())
+        let filter = Filter({ (string: String?) -> Any? in
+            return string!.uppercased()
         })
-        let context = Context(Box(["name": "success", "f": filter]))
+        let context = Context(["name": "success", "f": filter])
         let box = try! context.mustacheBoxForExpression("f(name)")
         let string = box.value as? String
         XCTAssertEqual(string!, "SUCCESS")

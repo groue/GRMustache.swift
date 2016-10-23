@@ -181,9 +181,9 @@ extension String : MustacheBoxable {
             keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
-                    return Box(self.characters.count)
+                    return self.characters.count
                 default:
-                    return Box()
+                    return nil
                 }
         })
     }

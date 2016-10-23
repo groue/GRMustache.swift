@@ -69,17 +69,18 @@ class SuiteTestCase: XCTestCase {
             for template in templates {
                 
                 // Standard Library
-                template.registerInBaseContext("each", Box(StandardLibrary.each))
-                template.registerInBaseContext("zip", Box(StandardLibrary.zip))
-                template.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
-                template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-                template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-                template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+                template.register(StandardLibrary.each, forKey: "each")
+                template.register(StandardLibrary.zip, forKey: "zip")
+                template.register(StandardLibrary.Localizer(bundle: nil, table: nil), forKey: "localize")
+                template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+                template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
+                template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
                 
                 // Support for filters.json
-                template.registerInBaseContext("capitalized", Box(Filter({ (string: String?) -> MustacheBox in
-                    return Box(string?.capitalized)
-                })))
+                let capitalized = Filter { (string: String?) -> Any? in
+                    return string?.capitalized
+                }
+                template.register(capitalized, forKey: "capitalized")
                 
                 testRendering(template)
             }
@@ -92,7 +93,7 @@ class SuiteTestCase: XCTestCase {
         var partialsDictionary: [String: String]? { return dictionary["partials"] as! [String: String]? }
         var templateString: String? { return dictionary["template"] as! String? }
         var templateName: String? { return dictionary["template_name"] as! String? }
-        var renderedValue: MustacheBox { return Box(dictionary["data"] as? NSObject) }
+        var renderedValue: Any? { return dictionary["data"] }
         var expectedRendering: String? { return dictionary["expected"] as! String? }
         var expectedError: String? { return dictionary["expected_error"] as! String? }
         

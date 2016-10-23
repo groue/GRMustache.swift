@@ -32,15 +32,15 @@ class ViewController: NSViewController {
             // Play with those goodies in your templates:
             // They are documented at https://github.com/groue/GRMustache.swift/blob/master/Guides/goodies.md
             
-            let percentFormatter = NSNumberFormatter()
-            percentFormatter.numberStyle = .PercentStyle
-            template.registerInBaseContext("percent", Box(percentFormatter))
-            template.registerInBaseContext("each", Box(StandardLibrary.each))
-            template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+            let percentFormatter = NumberFormatter()
+            percentFormatter.numberStyle = .percent
+            template.register(percentFormatter, forKey: "percent")
+            template.register(StandardLibrary.each, forKey: "each")
+            template.register(StandardLibrary.zip, forKey: "zip")
             template.registerInBaseContext("localize", Box(StandardLibrary.Localizer(bundle: nil, table: nil)))
-            template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
-            template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
-            template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+            template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
+            template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
+            template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
 
             let data = model.JSONString.dataUsingEncoding(NSUTF8StringEncoding)!
             let JSONObject: AnyObject = try NSJSONSerialization.JSONObjectWithData(data, options: NSJSONReadingOptions())

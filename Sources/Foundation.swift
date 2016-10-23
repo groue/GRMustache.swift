@@ -108,9 +108,8 @@ extension NSObject : MustacheBoxable {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
-            // Turn enumerable into a Swift array of MustacheBoxes that we know how to box
-            let array = IteratorSequence(NSFastEnumerationIterator(enumerable)).map(BoxAny)
-            return array.mustacheBoxWithArrayValue(self, box: { $0 })
+            // Turn enumerable into a Swift array that we know how to box
+            return Box(Array(IteratorSequence(NSFastEnumerationIterator(enumerable))))
             
         } else {
             // Generic NSObject
@@ -121,14 +120,14 @@ extension NSObject : MustacheBoxable {
                 keyedSubscript: { (key: String) in
                     if GRMustacheKeyAccess.isSafeMustacheKey(key, for: self) {
                         // Use valueForKey: for safe keys
-                        return BoxAny(self.value(forKey: key))
+                        return self.value(forKey: key)
                     } else {
                         // Missing key
-                        return Box()
+                        return nil
                     }
                 })
             #else
-                return MustacheBox(value: self)
+                return self
             #endif
         }
     }
@@ -217,14 +216,13 @@ extension NSNumber {
         case "Q":
             return Box(uint64Value)
         case "f":
-            return Box(Double(floatValue))
+            return Box(floatValue)
         case "d":
             return Box(doubleValue)
         case "B":
             return Box(boolValue)
         default:
-            NSLog("GRMustache support for NSNumber of type \(objCType) is not implemented: value is discarded.")
-            return Box()
+            return Box(self)
         }
     }
 }
@@ -311,8 +309,7 @@ extension NSSet {
     /// Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders
     /// once, if and only if `set` is not empty.
     open override var mustacheBox: MustacheBox {
-        let array = IteratorSequence(NSFastEnumerationIterator(self)).map(BoxAny)
-        return array.mustacheBoxWithSetValue(self, box: { $0 })
+        return Box(Set(IteratorSequence(NSFastEnumerationIterator(self)).flatMap { $0 as? AnyHashable }))
     }
 }
 
@@ -357,25 +354,33 @@ extension NSDictionary {
     ///
     ///     // Attach StandardLibrary.each to the key "each":
     ///     let template = try! Template(string: "<{{# each(dictionary) }}{{@key}}:{{.}}, {{/}}>")
-    ///     template.registerInBaseContext("each", Box(StandardLibrary.each))
+    ///     template.register(StandardLibrary.each, forKey: "each")
     ///
     ///     // Renders "<name:Arthur, age:36, >"
     ///     let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
     ///     let rendering = try! template.render(Box(["dictionary": dictionary]))
     open override var mustacheBox: MustacheBox {
-        return MustacheBox(
-            converter: MustacheBox.Converter(dictionaryValue: { IteratorSequence(NSFastEnumerationIterator(self)).reduce([String: MustacheBox](), { (boxDictionary, key) in
-                var boxDictionary = boxDictionary
-                if let key = key as? String {
-                    boxDictionary[key] = BoxAny(self[key])
-                } else {
-                    NSLog("GRMustache found a non-string key in NSDictionary (\(key)): value is discarded.")
-                }
-                return boxDictionary
-            })}),
-            value: self,
-            keyedSubscript: { BoxAny(self[$0])
-        })
+        return Box(self as? [AnyHashable: Any])
+//        return MustacheBox(
+//            converter: MustacheBox.Converter(dictionaryValue: {
+//                var boxDictionary: [String: MustacheBox] = [:]
+//                for (key, value) in self {
+//                    if let key = key as? String {
+//                        boxDictionary[key] = Box(value)
+//                    } else {
+//                        NSLog("Mustache: non-string key in dictionary (\(key)) is discarded.")
+//                    }
+//                }
+//                return boxDictionary
+//            }),
+//            value: self,
+//            keyedSubscript: { (key: String) in
+//                if let value = self[key] {
+//                    return Box(value)
+//                } else {
+//                    return EmptyBox
+//                }
+//        })
     }
 }
 
@@ -385,12 +390,7 @@ extension ReferenceConvertible where Self: MustacheBoxable {
     ///
     /// See NSObject.mustacheBox
     public var mustacheBox: MustacheBox {
-        if let object = self as? ReferenceType {
-            return object.mustacheBox
-        } else {
-            NSLog("Value `\(self)` can not feed Mustache templates: it is discarded.")
-            return Box()
-        }
+        return (self as! ReferenceType).mustacheBox
     }
 }
 

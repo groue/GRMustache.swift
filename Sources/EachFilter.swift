@@ -23,7 +23,7 @@
 
 import Foundation
 
-let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
+let EachFilter = Filter { (box: MustacheBox) -> Any? in
     
     // {{# each(nothing) }}...{{/ }}
     if box.isEmpty {
@@ -35,33 +35,33 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     //     // Renders "firstName: Charles, lastName: Bronson."
     //     let dictionary = ["firstName": "Charles", "lastName": "Bronson"]
     //     let template = try! Template(string: "{{# each(dictionary) }}{{ @key }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(dictionary) }}.")
-    //     template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //     try! template.render(Box(["dictionary": dictionary]))
+    //     template.register(StandardLibrary.each, forKey: "each")
+    //     try! template.render(["dictionary": dictionary])
     //
     // The dictionaryValue box property makes sure to return a
     // [String: MustacheBox] whatever the boxed dictionary-like value
     // (NSDictionary, [String: Int], [String: CustomObject], etc.
     if let dictionary = box.dictionaryValue {
         let count = dictionary.count
-        let transformedBoxes = dictionary.enumerated().map { (index: Int, element: (key: String, box: MustacheBox)) -> MustacheBox in
+        let customRenderFunctions = dictionary.enumerated().map { (index: Int, element: (key: String, box: MustacheBox)) -> Any? in
             let customRenderFunction: RenderFunction = { info in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
-                var position: [String: MustacheBox] = [:]
-                position["@index"] = Box(index)
-                position["@indexPlusOne"] = Box(index + 1)
-                position["@indexIsEven"] = Box(index % 2 == 0)
-                position["@first"] = Box(index == 0)
-                position["@last"] = Box((index == count - 1))
-                position["@key"] = Box(element.key)
+                var position: [String: Any] = [:]
+                position["@index"] = index
+                position["@indexPlusOne"] = index + 1
+                position["@indexIsEven"] = (index % 2 == 0)
+                position["@first"] = (index == 0)
+                position["@last"] = ((index == count - 1))
+                position["@key"] = element.key
                 
                 var info = info
-                info.context = info.context.extendedContext(Box(position))
+                info.context = info.context.extendedContext(position)
                 return try element.box.render(info)
             }
-            return Box(customRenderFunction)
+            return customRenderFunction
         }
-        return Box(transformedBoxes)
+        return customRenderFunctions
     }
     
     
@@ -70,31 +70,31 @@ let EachFilter = Filter { (box: MustacheBox) -> MustacheBox in
     //     // Renders "1: bread, 2: ham, 3: butter"
     //     let array = ["bread", "ham", "butter"]
     //     let template = try! Template(string: "{{# each(array) }}{{ @indexPlusOne }}: {{ . }}{{^ @last }}, {{/ @last }}{{/ each(array) }}.")
-    //     template.registerInBaseContext("each", Box(StandardLibrary.each))
-    //     try! template.render(Box(["array": array]))
+    //     template.register(StandardLibrary.each, forKey: "each")
+    //     try! template.render(["array": array])
     //
     // The arrayValue box property makes sure to return a [MustacheBox] whatever
     // the boxed collection: NSArray, NSSet, [String], [CustomObject], etc.
     if let boxes = box.arrayValue {
         let count = boxes.count
-        let transformedBoxes = boxes.enumerated().map { (index: Int, box: MustacheBox) -> MustacheBox in
+        let customRenderFunctions = boxes.enumerated().map { (index: Int, box: MustacheBox) -> Any? in
             let customRenderFunction: RenderFunction = { info in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
-                var position: [String: MustacheBox] = [:]
-                position["@index"] = Box(index)
-                position["@indexPlusOne"] = Box(index + 1)
-                position["@indexIsEven"] = Box(index % 2 == 0)
-                position["@first"] = Box(index == 0)
-                position["@last"] = Box((index == count - 1))
+                var position: [String: Any] = [:]
+                position["@index"] = index
+                position["@indexPlusOne"] = index + 1
+                position["@indexIsEven"] = (index % 2 == 0)
+                position["@first"] = (index == 0)
+                position["@last"] = ((index == count - 1))
                 
                 var info = info
-                info.context = info.context.extendedContext(Box(position))
+                info.context = info.context.extendedContext(position)
                 return try box.render(info)
             }
-            return Box(customRenderFunction)
+            return customRenderFunction
         }
-        return Box(transformedBoxes)
+        return customRenderFunctions
     }
     
     // Non-iterable value

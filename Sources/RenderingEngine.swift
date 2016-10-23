@@ -151,7 +151,7 @@ final class RenderingEngine {
         // 2. Let willRender functions alter the box
         
         for willRender in context.willRenderStack {
-            box = willRender(tag, box)
+            box = Box(willRender(tag, box))
         }
         
         

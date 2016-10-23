@@ -47,7 +47,7 @@ extension Formatter {
         percentFormatter.numberStyle = .PercentStyle
 
         var template = try! Template(string: "{{ percent(x) }}")
-        template.registerInBaseContext("percent", Box(percentFormatter))
+        template.register(percentFormatter, forKey: "percent")
 
         // Renders "50%"
         try! template.render(Box(["x": 0.5]))
@@ -61,7 +61,7 @@ extension Formatter {
                 "- {{name}} ({{proportion}})\n" +
               "{{/ingredients}}" +
             "{{/percent}}")
-        template.registerInBaseContext("percent", Box(percentFormatter))
+        template.register(percentFormatter, forKey: "percent")
 
         // - bread (50%)
         // - ham (35%)
@@ -102,10 +102,10 @@ extension Formatter {
                 // > right class, return a properly formatted and, if necessary,
                 // > localized string.
                 if let object = box.value as? NSObject {
-                    return Box(self.string(for: object))
+                    return self.string(for: object)
                 } else {
                     // Not the correct class: return nil, i.e. empty Box.
-                    return Box()
+                    return nil
                 }
             },
             
@@ -129,8 +129,8 @@ extension Formatter {
                     // So nil result means that object is not of the correct class. Leave
                     // it untouched.
                     
-                    if let object = box.value as? NSObject, let formatted = self.string(for: object) {
-                        return Box(formatted)
+                    if let formatted = self.string(for: box.value) {
+                        return formatted
                     } else {
                         return box
                     }

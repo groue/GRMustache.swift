@@ -135,8 +135,8 @@ final public class Template {
                        that describes the problem.
     - returns: The rendered string.
     */
-    public func render(_ box: MustacheBox = Box()) throws -> String {
-        let rendering = try render(baseContext.extendedContext(box))
+    public func render(_ value: Any? = nil) throws -> String {
+        let rendering = try render(baseContext.extendedContext(value))
         return rendering.string
     }
     
@@ -213,8 +213,8 @@ final public class Template {
     - registerInBaseContext
     - Context.extendedContext
     */
-    public func extendBaseContext(_ box: MustacheBox) {
-        baseContext = baseContext.extendedContext(box)
+    public func extendBaseContext(_ value: Any?) {
+        baseContext = baseContext.extendedContext(value)
     }
     
     /**
@@ -235,10 +235,10 @@ final public class Template {
     
     - baseContext
     - extendBaseContext
-    - Context.contextWithRegisteredKey
+    - Context.extendedContext(withRegisteredValue:forKey:)
     */
-    public func registerInBaseContext(_ key: String, _ box: MustacheBox) {
-        baseContext = baseContext.contextWithRegisteredKey(key, box: box)
+    public func register(_ value: Any?, forKey key: String) {
+        baseContext = baseContext.extendedContext(withRegisteredValue: value, forKey: key)
     }
     
     

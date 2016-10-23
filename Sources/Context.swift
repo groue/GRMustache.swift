@@ -74,8 +74,8 @@ final public class Context {
     - parameter box: A box.
     - returns: A new context that contains *box*.
     */
-    public convenience init(_ box: MustacheBox) {
-        self.init(type: .box(box: box, parent: Context()))
+    public convenience init(_ value: Any?) {
+        self.init(type: .box(box: Box(value), parent: Context()))
     }
     
     /**
@@ -86,9 +86,8 @@ final public class Context {
     - parameter box: A box.
     - returns: A new context with *box* registered for *key*.
     */
-    public convenience init(registeredKey key: String, box: MustacheBox) {
-        let d = [key: box]
-        self.init(type: .root, registeredKeysContext: Context(Box(d)))
+    public convenience init(registeredKey key: String, value: Any?) {
+        self.init(type: .root, registeredKeysContext: Context([key: value]))
     }
     
     
@@ -103,8 +102,8 @@ final public class Context {
     - returns: A new context with *box* pushed at the top of the stack.
     */
     
-    public func extendedContext(_ box: MustacheBox) -> Context {
-        return Context(type: .box(box: box, parent: self), registeredKeysContext: registeredKeysContext)
+    public func extendedContext(_ value: Any?) -> Context {
+        return Context(type: .box(box: Box(value), parent: self), registeredKeysContext: registeredKeysContext)
     }
     
     /**
@@ -116,9 +115,8 @@ final public class Context {
     - returns: A new context with *box* registered for *key*.
     */
     
-    public func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context {
-        let d = [key: box]
-        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext(Box(d))
+    public func extendedContext(withRegisteredValue value: Any?, forKey key: String) -> Context {
+        let registeredKeysContext = (self.registeredKeysContext ?? Context()).extendedContext([key: value])
         return Context(type: self.type, registeredKeysContext: registeredKeysContext)
     }
     
@@ -133,7 +131,7 @@ final public class Context {
     public var topBox: MustacheBox {
         switch type {
         case .root:
-            return Box()
+            return EmptyBox
         case .box(box: let box, parent: _):
             return box
         case .partialOverride(partialOverride: _, parent: let parent):
@@ -175,7 +173,7 @@ final public class Context {
         
         switch type {
         case .root:
-            return Box()
+            return EmptyBox
         case .box(box: let box, parent: let parent):
             let innerBox = box.mustacheBoxForKey(key)
             if innerBox.isEmpty {

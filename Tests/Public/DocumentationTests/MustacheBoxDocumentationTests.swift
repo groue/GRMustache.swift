@@ -32,7 +32,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
         }
         let template = try! Template(string: "{{object}}")
         let data = ["object": render]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "foo")
     }
     
@@ -48,7 +48,7 @@ class MustacheBoxDocumentationTests: XCTestCase {
                 //
                 // Extend the current context with ["value": "foo"], and proceed
                 // with regular rendering of the inner content of the section.
-                let context = info.context.extendedContext(Box(["value": "foo"]))
+                let context = info.context.extendedContext(["value": "foo"])
                 return try info.tag.render(context)
             }
         }
@@ -56,12 +56,12 @@ class MustacheBoxDocumentationTests: XCTestCase {
         
         // Renders "variable"
         let template1 = try! Template(string: "{{object}}")
-        let rendering1 = try! template1.render(Box(data))
+        let rendering1 = try! template1.render(data)
         XCTAssertEqual(rendering1, "variable")
         
         // Renders "value: foo"
         let template2 = try! Template(string: "{{#object}}value: {{value}}{{/object}}")
-        let rendering2 = try! template2.render(Box(data))
+        let rendering2 = try! template2.render(data)
         XCTAssertEqual(rendering2, "value: foo")
     }
 }

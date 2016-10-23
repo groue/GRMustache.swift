@@ -52,7 +52,7 @@ advanced usage, only supported with the low-level function
 `func Box(boolValue:value:keyedSubscript:filter:render:willRender:didRender:) -> MustacheBox`.
     
     // A KeyedSubscriptFunction that turns "key" into "KEY":
-    let keyedSubscript: KeyedSubscriptFunction = { (key: String) -> MustacheBox in
+    let keyedSubscript: KeyedSubscriptFunction = { (key: String) -> Any? in
         return Box(key.uppercaseString)
     }
 
@@ -72,7 +72,7 @@ in the context stack in order to resolve a key, return the empty box `Box()`.
 In order to express "missing value", and prevent the rendering engine from
 digging deeper, return `Box(NSNull())`.
 */
-public typealias KeyedSubscriptFunction = (_ key: String) -> MustacheBox
+public typealias KeyedSubscriptFunction = (_ key: String) -> Any?
 
 
 // =============================================================================
@@ -118,7 +118,7 @@ types of filters:
 
 See the documentation of the `Filter()` functions.
 */
-public typealias FilterFunction = (_ box: MustacheBox, _ partialApplication: Bool) throws -> MustacheBox
+public typealias FilterFunction = (_ box: MustacheBox, _ partialApplication: Bool) throws -> Any?
 
 
 // -----------------------------------------------------------------------------
@@ -145,7 +145,7 @@ MustacheError of type RenderError.
 - parameter filter: A function `(MustacheBox) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func Filter(_ filter: @escaping (MustacheBox) throws -> MustacheBox) -> FilterFunction {
+public func Filter(_ filter: @escaping (MustacheBox) throws -> Any?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
@@ -179,7 +179,7 @@ MustacheError of type RenderError.
 - parameter filter: A function `(T?) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func Filter<T>(_ filter: @escaping (T?) throws -> MustacheBox) -> FilterFunction {
+public func Filter<T>(_ filter: @escaping (T?) throws -> Any?) -> FilterFunction {
     return { (box: MustacheBox, partialApplication: Bool) in
         guard !partialApplication else {
             // This is a single-argument filter: we do not wait for another one.
@@ -211,7 +211,7 @@ For example:
 - parameter filter: A function `([MustacheBox]) throws -> MustacheBox`.
 - returns: A FilterFunction.
 */
-public func VariadicFilter(_ filter: @escaping ([MustacheBox]) throws -> MustacheBox) -> FilterFunction {
+public func VariadicFilter(_ filter: @escaping ([MustacheBox]) throws -> Any?) -> FilterFunction {
     
     // f(a,b,c) is implemented as f(a)(b)(c).
     //
@@ -220,12 +220,12 @@ public func VariadicFilter(_ filter: @escaping ([MustacheBox]) throws -> Mustach
     //
     // It is the partialApplication flag the tells when it's time to return the
     // final result.
-    func partialFilter(_ filter: @escaping ([MustacheBox]) throws -> MustacheBox, arguments: [MustacheBox]) -> FilterFunction {
+    func partialFilter(_ filter: @escaping ([MustacheBox]) throws -> Any?, arguments: [MustacheBox]) -> FilterFunction {
         return { (nextArgument: MustacheBox, partialApplication: Bool) in
             let arguments = arguments + [nextArgument]
             if partialApplication {
                 // Wait for another argument
-                return Box(partialFilter(filter, arguments: arguments))
+                return partialFilter(filter, arguments: arguments)
             } else {
                 // No more argument: compute final value
                 return try filter(arguments)
@@ -272,9 +272,8 @@ public func Filter(_ filter: @escaping (Rendering) throws -> Rendering) -> Filte
             throw MustacheError(kind: .renderError, message: "Too many arguments")
         }
         // Box a RenderFunction
-        return Box { (info: RenderingInfo) in
-            let rendering = try box.render(info)
-            return try filter(rendering)
+        return { (info: RenderingInfo) in
+            return try filter(box.render(info))
         }
     }
 }
@@ -689,7 +688,7 @@ public func Lambda(_ lambda: @escaping () -> String) -> RenderFunction {
             // {{# lambda }}...{{/ lambda }}
             //
             // Behave as a true object, and render the section.
-            let context = info.context.extendedContext(Box(Lambda(lambda)))
+            let context = info.context.extendedContext(Lambda(lambda))
             return try info.tag.render(context)
         }
     }
@@ -811,7 +810,7 @@ section.
     ]
     try! template.render(Box(data))
 */
-public typealias WillRenderFunction = (_ tag: Tag, _ box: MustacheBox) -> MustacheBox
+public typealias WillRenderFunction = (_ tag: Tag, _ box: MustacheBox) -> Any?
 
 
 // =============================================================================

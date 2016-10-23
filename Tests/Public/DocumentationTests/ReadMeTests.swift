@@ -59,7 +59,7 @@ class ReadMeTests: XCTestCase {
             "value": 10000,
             "taxed_value": 10000 - (10000 * 0.4),
             "in_ca": true]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "Hello Chris\nYou have just won 10000 dollars!\n\nWell, 6000.0 dollars, after taxes.\n")
     }
     
@@ -83,15 +83,15 @@ class ReadMeTests: XCTestCase {
         
         // Register the pluralize filter for all Mustache renderings:
         
-        Mustache.DefaultConfiguration.registerInBaseContext("pluralize", Box(pluralizeFilter))
+        Mustache.DefaultConfiguration.register(pluralizeFilter, forKey: "pluralize")
         
         
         // I have 3 cats.
         
         let testBundle = Bundle(for: type(of: self))
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
-        let data: NSDictionary = ["cats": ["Kitty", "Pussy", "Melba"]]
-        let rendering = try! template.render(Box(data))
+        let data = ["cats": ["Kitty", "Pussy", "Melba"]]
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "I have 3 cats.")
     }
     
@@ -107,9 +107,9 @@ class ReadMeTests: XCTestCase {
                 return MustacheBox(value: self, keyedSubscript: { (key: String) in
                     switch key {
                     case "name":
-                        return Box(self.name)
+                        return self.name
                     default:
-                        return Box()
+                        return nil
                     }
                 })
             }
@@ -117,7 +117,7 @@ class ReadMeTests: XCTestCase {
         
         let user = User(name: "Arthur")
         let template = try! Template(string: "Hello {{name}}!")
-        let rendering = try! template.render(Box(user))
+        let rendering = try! template.render(user)
         XCTAssertEqual(rendering, "Hello Arthur!")
     }
     
@@ -127,10 +127,10 @@ class ReadMeTests: XCTestCase {
         percentFormatter.numberStyle = .percent
         
         let template = try! Template(string: "{{ percent(x) }}")
-        template.registerInBaseContext("percent", Box(percentFormatter))
+        template.register(percentFormatter, forKey: "percent")
         
         let data = ["x": 0.5]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "50%")
     }
     
@@ -140,10 +140,10 @@ class ReadMeTests: XCTestCase {
         percentFormatter.numberStyle = .percent
         
         let template = try! Template(string: "{{# percent }}{{ x }}{{/ }}")
-        template.registerInBaseContext("percent", Box(percentFormatter))
+        template.register(percentFormatter, forKey: "percent")
         
         let data = ["x": 0.5]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "50%")
     }
     
@@ -158,15 +158,15 @@ class ReadMeTests: XCTestCase {
         dateFormatter.dateStyle = .medium
         
         let template = try! Template(string: templateString)
-        template.registerInBaseContext("format", Box(dateFormatter))
+        template.register(dateFormatter, forKey: "format")
         
-        let data: NSDictionary = [
+        let data: [String: Any] = [
             "name": "Arthur",
             "date": Date(),
             "real_date": Date().addingTimeInterval(60*60*24*3),
             "late": true
         ]
-        let rendering = try! template.render(Box(data))
+        let rendering = try! template.render(data)
         XCTAssert(rendering.characters.count > 0)
     }
 }

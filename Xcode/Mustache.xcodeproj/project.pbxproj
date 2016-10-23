@@ -137,7 +137,7 @@
 		561E72AB1A8BDC6A004ED48B /* RenderFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56A88EC71A066EC40055E40A /* RenderFunctionTests.swift */; };
 		561E72AC1A8BDC6A004ED48B /* EachFilterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4B23A1A29E65E00BD4F8F /* EachFilterTests.swift */; };
 		561E72AD1A8BDC6A004ED48B /* LocalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5685DAB51A1A2074003E583B /* LocalizerTests.swift */; };
-		561E72AE1A8BDC6A004ED48B /* NSFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */; };
+		561E72AE1A8BDC6A004ED48B /* FormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* FormatterTests.swift */; };
 		561E72AF1A8BDC6A004ED48B /* StandardLibraryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */; };
 		561E72B01A8BDC6A004ED48B /* KeyedSubscriptFunctionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5698D0261A1626240039D564 /* KeyedSubscriptFunctionTests.swift */; };
 		561E72B11A8BDC6A004ED48B /* TagTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56B4019F1A1F643B002D5CD7 /* TagTests.swift */; };
@@ -215,7 +215,7 @@
 		566244B21AF201E7008BAD41 /* TemplateGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 566244B01AF201E7008BAD41 /* TemplateGenerator.swift */; };
 		56660D6E1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
 		56660D6F1A9378B100E53CCF /* CoreFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56660D6D1A9378B100E53CCF /* CoreFunctions.swift */; };
-		5674F3751A1CC7B8000CE8CB /* NSFormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */; };
+		5674F3751A1CC7B8000CE8CB /* FormatterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5674F3741A1CC7B8000CE8CB /* FormatterTests.swift */; };
 		5685DAB41A1A2029003E583B /* LocalizerTestsBundle in Resources */ = {isa = PBXBuildFile; fileRef = 5685DAB31A1A2029003E583B /* LocalizerTestsBundle */; };
 		5685DAB61A1A2074003E583B /* LocalizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5685DAB51A1A2074003E583B /* LocalizerTests.swift */; };
 		569517021A8646CF00FF7D86 /* ObjcKeyAccessTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */; };
@@ -273,6 +273,9 @@
 		56EE412A1DBB788D00CCA895 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE41291DBB788D00CCA895 /* Formatter.swift */; };
 		56EE412B1DBB788D00CCA895 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE41291DBB788D00CCA895 /* Formatter.swift */; };
 		56EE412C1DBB788D00CCA895 /* Formatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE41291DBB788D00CCA895 /* Formatter.swift */; };
+		56EE412E1DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE412D1DBBBE0B00CCA895 /* Fixit-1.1.0.swift */; };
+		56EE412F1DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE412D1DBBBE0B00CCA895 /* Fixit-1.1.0.swift */; };
+		56EE41301DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56EE412D1DBBBE0B00CCA895 /* Fixit-1.1.0.swift */; };
 		56FC9C8A1A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */; };
 		56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */; };
 		56FC9C8C1A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */; };
@@ -368,7 +371,7 @@
 		566244A61AF1653C008BAD41 /* HoganSuite */ = {isa = PBXFileReference; lastKnownFileType = folder; path = HoganSuite; sourceTree = "<group>"; };
 		566244B01AF201E7008BAD41 /* TemplateGenerator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TemplateGenerator.swift; sourceTree = "<group>"; };
 		56660D6D1A9378B100E53CCF /* CoreFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreFunctions.swift; sourceTree = "<group>"; };
-		5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NSFormatterTests.swift; sourceTree = "<group>"; };
+		5674F3741A1CC7B8000CE8CB /* FormatterTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FormatterTests.swift; sourceTree = "<group>"; };
 		5685DAB31A1A2029003E583B /* LocalizerTestsBundle */ = {isa = PBXFileReference; lastKnownFileType = folder; path = LocalizerTestsBundle; sourceTree = "<group>"; };
 		5685DAB51A1A2074003E583B /* LocalizerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LocalizerTests.swift; sourceTree = "<group>"; };
 		569517011A8646CF00FF7D86 /* ObjcKeyAccessTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ObjcKeyAccessTests.swift; sourceTree = "<group>"; };
@@ -413,6 +416,7 @@
 		56DFF1DC1C16029B000082A4 /* Mustache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Mustache.h; sourceTree = "<group>"; };
 		56EB0BE71BD0CB0D00A3DC55 /* LambdaTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LambdaTests.swift; sourceTree = "<group>"; };
 		56EE41291DBB788D00CCA895 /* Formatter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Formatter.swift; sourceTree = "<group>"; };
+		56EE412D1DBBBE0B00CCA895 /* Fixit-1.1.0.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Fixit-1.1.0.swift"; sourceTree = "<group>"; };
 		56FC9C841A17CD0C0020AAF8 /* ConfigurationBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationBaseContextTests.swift; sourceTree = "<group>"; };
 		56FC9C851A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationContentTypeTests.swift; sourceTree = "<group>"; };
 		56FC9C861A17CD0C0020AAF8 /* ConfigurationExtendBaseContextTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigurationExtendBaseContextTests.swift; sourceTree = "<group>"; };
@@ -559,6 +563,7 @@
 				563AE1B319FBE4D90028C6C1 /* Parsing */,
 				563AE1D619FC4A360028C6C1 /* Rendering */,
 				563AE1D119FC45350028C6C1 /* Template */,
+				56EE412D1DBBBE0B00CCA895 /* Fixit-1.1.0.swift */,
 			);
 			name = Sources;
 			path = ../Sources;
@@ -703,10 +708,10 @@
 			isa = PBXGroup;
 			children = (
 				56B4B23A1A29E65E00BD4F8F /* EachFilterTests.swift */,
+				5674F3741A1CC7B8000CE8CB /* FormatterTests.swift */,
 				5685DAB51A1A2074003E583B /* LocalizerTests.swift */,
 				5685DAB31A1A2029003E583B /* LocalizerTestsBundle */,
 				5611BF971B333E1F005FA874 /* LoggerTests.swift */,
-				5674F3741A1CC7B8000CE8CB /* NSFormatterTests.swift */,
 				56C8D6DB1A1DCB9500F106F8 /* StandardLibraryTests.swift */,
 			);
 			path = ServicesTests;
@@ -1166,6 +1171,7 @@
 				09A89DFE1BF58560003A695E /* Context.swift in Sources */,
 				09A89E041BF58572003A695E /* Template.swift in Sources */,
 				09A89E021BF58569003A695E /* MustacheBox.swift in Sources */,
+				56EE41301DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */,
 				09A89E051BF58572003A695E /* TemplateRepository.swift in Sources */,
 				09A89DE51BF58526003A695E /* Common.swift in Sources */,
 				09A89DE91BF58538003A695E /* Tag.swift in Sources */,
@@ -1237,6 +1243,7 @@
 				561E72951A8BDC4D004ED48B /* RenderingEngine.swift in Sources */,
 				560DE2641AC33D0D005C0312 /* Box.swift in Sources */,
 				56D204351B32ECF40031FEE7 /* Logger.swift in Sources */,
+				56EE412F1DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */,
 				561E72891A8BDC4D004ED48B /* JavascriptEscapeHelper.swift in Sources */,
 				561E72811A8BDC4D004ED48B /* TemplateASTNode.swift in Sources */,
 				5607A3401C160216002364C1 /* GRMustacheKeyAccess.m in Sources */,
@@ -1284,7 +1291,7 @@
 				5611BF991B333E1F005FA874 /* LoggerTests.swift in Sources */,
 				561E729F1A8BDC6A004ED48B /* ContextRegisteredKeyTests.swift in Sources */,
 				561E72AC1A8BDC6A004ED48B /* EachFilterTests.swift in Sources */,
-				561E72AE1A8BDC6A004ED48B /* NSFormatterTests.swift in Sources */,
+				561E72AE1A8BDC6A004ED48B /* FormatterTests.swift in Sources */,
 				561E72A61A8BDC6A004ED48B /* VariadicFilterTests.swift in Sources */,
 				566244A51AF164D5008BAD41 /* SuiteTestCase.swift in Sources */,
 				561E729E1A8BDC6A004ED48B /* ConfigurationTagDelimitersTests.swift in Sources */,
@@ -1325,6 +1332,7 @@
 				56BD79401A0E381900937A76 /* MustacheBox.swift in Sources */,
 				563AE1FB19FC5B860028C6C1 /* SectionTag.swift in Sources */,
 				560DE2631AC33D0D005C0312 /* Box.swift in Sources */,
+				56EE412E1DBBBE0B00CCA895 /* Fixit-1.1.0.swift in Sources */,
 				56D204341B32EBA50031FEE7 /* Logger.swift in Sources */,
 				56BF06581A063DC800926BEB /* URLEscapeHelper.swift in Sources */,
 				563AE1C919FC38B80028C6C1 /* ExpressionParser.swift in Sources */,
@@ -1382,7 +1390,7 @@
 				56C8D6E81A1F1AD800F106F8 /* ReadMeTests.swift in Sources */,
 				56C8D6E11A1F1A4700F106F8 /* BoxTests.swift in Sources */,
 				569C423B1A87D03800748E98 /* ContextRegisteredKeyTests.swift in Sources */,
-				5674F3751A1CC7B8000CE8CB /* NSFormatterTests.swift in Sources */,
+				5674F3751A1CC7B8000CE8CB /* FormatterTests.swift in Sources */,
 				56FC9C8E1A17CD0C0020AAF8 /* ContextValueForMustacheExpressionTests.swift in Sources */,
 				56FC9C8B1A17CD0C0020AAF8 /* ConfigurationContentTypeTests.swift in Sources */,
 				56FC9C8D1A17CD0C0020AAF8 /* ConfigurationTagDelimitersTests.swift in Sources */,

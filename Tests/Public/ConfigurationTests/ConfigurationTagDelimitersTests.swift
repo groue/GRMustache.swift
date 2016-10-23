@@ -43,7 +43,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         DefaultConfiguration.tagDelimiterPair = ("<%", "%>")
         
         let template = try! Template(string: "<%subject%>")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -51,7 +51,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         DefaultConfiguration.tagDelimiterPair = ("<%", "%>")
         
         let template = try! Template(string: "<%=[[ ]]=%>[[subject]]")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -75,7 +75,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = try! repository.template(string: "<%subject%>")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -84,7 +84,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagDelimiterPair = ("<%", "%>")
         
         let template = try! repository.template(string: "<%subject%>")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -97,7 +97,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = try! repository.template(string: "[[subject]]")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -108,7 +108,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagDelimiterPair = ("[[", "]]")
         
         let template = try! repository.template(string: "[[subject]]")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -119,7 +119,7 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration = configuration
         
         let template = try! repository.template(string: "<%=[[ ]]=%>[[subject]]")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
@@ -128,35 +128,35 @@ class ConfigurationTagDelimitersTests: XCTestCase {
         repository.configuration.tagDelimiterPair = ("<%", "%>")
         
         let template = try! repository.template(string: "<%=[[ ]]=%>[[subject]]")
-        let rendering = try! template.render(Box(["subject": "---"]))
+        let rendering = try! template.render(["subject": "---"])
         XCTAssertEqual(rendering, "---")
     }
     
     func testDefaultConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! repository.template(string: "{{foo}}<%foo%>").render(Box(["foo": "foo"]))
+        var rendering = try! repository.template(string: "{{foo}}<%foo%>").render(["foo": "foo"])
         XCTAssertEqual(rendering, "foo<%foo%>")
         
         DefaultConfiguration.tagDelimiterPair = ("<%", "%>")
-        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(Box(["foo": "foo"]))
+        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(["foo": "foo"])
         XCTAssertEqual(rendering, "foo<%foo%>")
     }
     
     func testRepositoryConfigurationMutationHasNoEffectAfterAnyTemplateHasBeenCompiled() {
         let repository = TemplateRepository()
         
-        var rendering = try! repository.template(string: "{{foo}}<%foo%>").render(Box(["foo": "foo"]))
+        var rendering = try! repository.template(string: "{{foo}}<%foo%>").render(["foo": "foo"])
         XCTAssertEqual(rendering, "foo<%foo%>")
         
         repository.configuration.tagDelimiterPair = ("<%", "%>")
-        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(Box(["foo": "foo"]))
+        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(["foo": "foo"])
         XCTAssertEqual(rendering, "foo<%foo%>")
         
         var configuration = Configuration()
         configuration.tagDelimiterPair = ("<%", "%>")
         repository.configuration = configuration
-        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(Box(["foo": "foo"]))
+        rendering = try! repository.template(string: "{{foo}}<%foo%>").render(["foo": "foo"])
         XCTAssertEqual(rendering, "foo<%foo%>")
     }
 }

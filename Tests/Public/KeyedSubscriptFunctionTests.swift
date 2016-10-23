@@ -27,11 +27,11 @@ import Mustache
 class KeyedSubscriptFunctionTests: XCTestCase {
     
     func makeKeyedSubscriptFunction() -> KeyedSubscriptFunction {
-        return { (key: String) -> MustacheBox in
+        return { (key: String) -> Any? in
             if key == "self" {
                 return MustacheBox(keyedSubscript: self.makeKeyedSubscriptFunction())
             } else {
-                return Box(key)
+                return key
             }
         }
     }

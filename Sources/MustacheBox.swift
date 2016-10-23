@@ -150,7 +150,10 @@ final public class MustacheBox : NSObject {
     - returns: The MustacheBox for *key*.
     */
     public func mustacheBoxForKey(_ key: String) -> MustacheBox {
-        return keyedSubscript?(key) ?? Box()
+        guard let keyedSubscript = keyedSubscript else {
+            return EmptyBox
+        }
+        return Box(keyedSubscript(key))
     }
     
     
@@ -373,7 +376,7 @@ final public class MustacheBox : NSObject {
                     value: self,
                     
                     // It lets Mustache extracts properties by name:
-                    keyedSubscript: { (key: String) -> MustacheBox in
+                    keyedSubscript: { (key: String) -> Any? in
                         switch key {
                         case "firstName": return Box(self.firstName)
                         case "lastName":  return Box(self.lastName)

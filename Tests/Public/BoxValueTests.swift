@@ -26,102 +26,59 @@ import Mustache
 
 class BoxValueTests: XCTestCase {
     
-    func testCustomValueExtraction() {
-        // Test that one can extract a custom value from MustacheBox.
+    func testBoxValue() {
+        // Test how values can be extracted from boxes
         
-        struct BoxableStruct {
-            let name: String
-            func mustacheBox() -> MustacheBox {
+        struct BoxableStruct : MustacheBoxable {
+            var mustacheBox: MustacheBox {
                 return MustacheBox(value: self)
             }
         }
         
-        struct Struct {
-            let name: String
+        struct Struct : CustomDebugStringConvertible {
+            var debugDescription: String {
+                return "Struct"
+            }
         }
         
-        class BoxableClass {
-            let name: String
-            init(name: String) {
-                self.name = name
+        class BoxableClass : MustacheBoxable {
+            init() {
             }
-            func mustacheBox() -> MustacheBox {
+            var mustacheBox: MustacheBox {
                 return MustacheBox(value: self)
             }
         }
         
-        class Class {
-            let name: String
-            init(name: String) {
-                self.name = name
+        class Class : CustomDebugStringConvertible {
+            init() {
+            }
+            var debugDescription: String {
+                return "Class"
             }
         }
         
-        let boxableStruct = BoxableStruct(name: "BoxableStruct")
-        let boxableClass = BoxableClass(name: "BoxableClass")
-        let optionalBoxableClass: BoxableClass? = BoxableClass(name: "BoxableClass")
-        let nsObject = NSDate()
-        let referenceConvertible = Date()
-        
-        let boxedBoxableStruct = boxableStruct.mustacheBox()
-        let boxedStruct = MustacheBox(value: Struct(name: "Struct"))
-        let boxedBoxableClass = boxableClass.mustacheBox()
-        let boxedOptionalBoxableClass = optionalBoxableClass!.mustacheBox()
-        let boxedClass = MustacheBox(value: Class(name: "Class"))
-        let boxedNSObject = Box(nsObject)
-        let boxedReferenceConvertible = Box(referenceConvertible)
-        
-        let extractedBoxableStruct = boxedBoxableStruct.value as! BoxableStruct
-        let extractedStruct = boxedStruct.value as! Struct
-        let extractedBoxableClass = boxedBoxableClass.value as! BoxableClass
-        let extractedOptionalBoxableClass = boxedOptionalBoxableClass.value as? BoxableClass
-        let extractedClass = boxedClass.value as! Class
-        let extractedNSObject = boxedNSObject.value as! NSDate
-        let extractedReferenceConvertible = boxedReferenceConvertible.value as! Date
-        
-        XCTAssertEqual(extractedBoxableStruct.name, "BoxableStruct")
-        XCTAssertEqual(extractedStruct.name, "Struct")
-        XCTAssertEqual(extractedBoxableClass.name, "BoxableClass")
-        XCTAssertEqual(extractedOptionalBoxableClass!.name, "BoxableClass")
-        XCTAssertEqual(extractedClass.name, "Class")
-        XCTAssertEqual(extractedNSObject, nsObject)
-        XCTAssertEqual(extractedReferenceConvertible, referenceConvertible)
+        func assert<T>(value: Any?, isBoxedAs: T.Type) {
+            let template = try! Template(string: "{{#test(value)}}success{{/}}")
+            let data: [String: Any] = [
+                "value": value,
+                "test": Filter { (box: MustacheBox) in
+                    box.value is T
+                }
+            ]
+            XCTAssertEqual(try! template.render(data), "success", "\(String(reflecting: value)) is not boxed as \(T.self)")
+        }
+        assert(value: BoxableStruct(), isBoxedAs: BoxableStruct.self)
+        assert(value: Struct(), isBoxedAs: Struct.self)
+        assert(value: BoxableClass(), isBoxedAs: BoxableClass.self)
+        assert(value: Class(), isBoxedAs: Class.self)
+        assert(value: NSObject(), isBoxedAs: NSObject.self)
+        assert(value: NSDate(), isBoxedAs: NSDate.self)
+        assert(value: Date(), isBoxedAs: Date.self)
+        assert(value: [1, 2, 3], isBoxedAs: [Any?].self)
+        assert(value: Set([1, 2, 3]), isBoxedAs: Set<AnyHashable>.self)
+        assert(value: ["foo": 1], isBoxedAs: Dictionary<AnyHashable, Any?>.self)
+        assert(value: NSArray(array: [1, 2, 3]), isBoxedAs: [Any?].self)
+        assert(value: NSSet(array: [1, 2, 3]), isBoxedAs: Set<AnyHashable>.self)
+        assert(value: NSDictionary(object: 1, forKey: "foo" as NSCopying), isBoxedAs: Dictionary<AnyHashable, Any?>.self)
     }
-    
-    func testArrayValueForArray() {
-        let originalValue = [1,2,3]
-        let box = Box(originalValue)
-        let extractedValue = box.value as! [Int]
-        XCTAssertEqual(extractedValue, originalValue)
-        let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { $0.value as! Int }, [1,2,3])
-    }
-    
-    func testArrayValueForNSArray() {
-        let originalValue = NSArray(object: "foo")
-        let box = Box(originalValue)
-        let extractedValue = box.value as! NSArray
-        XCTAssertEqual(extractedValue, originalValue)
-        let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
-    }
-    
-    func testArrayValueForNSOrderedSet() {
-        let originalValue = NSOrderedSet(object: "foo")
-        let box = Box(originalValue)
-        let extractedValue = box.value as! NSOrderedSet
-        XCTAssertEqual(extractedValue, originalValue)
-        let extractedArray: [MustacheBox] = box.arrayValue!
-        XCTAssertEqual(extractedArray.map { $0.value as! String }, ["foo"])
-    }
-    
-    func testDictionaryValueForNSDictionary() {
-        let originalValue = NSDictionary(object: "value", forKey: "key" as NSCopying)
-        let box = Box(originalValue)
-        let extractedValue = box.value as! NSDictionary
-        XCTAssertEqual(extractedValue, originalValue)
-        let extractedDictionary: [String: MustacheBox] = box.dictionaryValue!
-        XCTAssertEqual((extractedDictionary["key"]!.value as! String), "value")
-    }
-
 }

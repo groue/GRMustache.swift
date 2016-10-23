@@ -36,10 +36,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             }
         }
         
-        var rendering = try! Template(string: "{{.}}").render(Box(render))
+        var rendering = try! Template(string: "{{.}}").render(render)
         XCTAssertEqual(rendering, "I&apos;m rendering a {{ variable }} tag.")
         
-        rendering = try! Template(string: "{{#.}}{{/}}").render(Box(render))
+        rendering = try! Template(string: "{{#.}}{{/}}").render(render)
         XCTAssertEqual(rendering, "I&apos;m rendering a {{# section }}...{{/ }} tag.")
     }
     
@@ -48,7 +48,7 @@ class MustacheRenderableGuideTests: XCTestCase {
             return Rendering("Arthur & Cie")
         }
         
-        let rendering = try! Template(string: "{{.}}|{{{.}}}").render(Box(render))
+        let rendering = try! Template(string: "{{.}}|{{{.}}}").render(render)
         XCTAssertEqual(rendering, "Arthur &amp; Cie|Arthur & Cie")
     }
     
@@ -58,10 +58,10 @@ class MustacheRenderableGuideTests: XCTestCase {
             return Rendering("<strong>\(rendering.string)</strong>", rendering.contentType)
         }
         
-        let box = Box([
+        let value: [String: Any] = [
             "strong": render,
-            "name": "Arthur"])
-        let rendering = try! Template(string: "{{#strong}}{{name}}{{/strong}}").render(box)
+            "name": "Arthur"]
+        let rendering = try! Template(string: "{{#strong}}{{name}}{{/strong}}").render(value)
         XCTAssertEqual(rendering, "<strong>Arthur</strong>")
     }
     
@@ -70,8 +70,8 @@ class MustacheRenderableGuideTests: XCTestCase {
             let rendering = try! info.tag.render(info.context)
             return Rendering(rendering.string + rendering.string, rendering.contentType)
         }
-        let box = Box(["twice": render])
-        let rendering = try! Template(string: "{{#twice}}Success{{/twice}}").render(box)
+        let value = ["twice": render]
+        let rendering = try! Template(string: "{{#twice}}Success{{/twice}}").render(value)
         XCTAssertEqual(rendering, "SuccessSuccess")
     }
 
@@ -80,11 +80,11 @@ class MustacheRenderableGuideTests: XCTestCase {
             let template = try! Template(string: "<a href=\"{{url}}\">\(info.tag.innerTemplateString)</a>")
             return try template.render(info.context)
         }
-        let box = Box([
+        let value: [String: Any] = [
             "link": render,
             "name": "Arthur",
-            "url": "/people/123"])
-        let rendering = try! Template(string: "{{# link }}{{ name }}{{/ link }}").render(box)
+            "url": "/people/123"]
+        let rendering = try! Template(string: "{{# link }}{{ name }}{{/ link }}").render(value)
         XCTAssertEqual(rendering, "<a href=\"/people/123\">Arthur</a>")
     }
     
@@ -102,8 +102,8 @@ class MustacheRenderableGuideTests: XCTestCase {
             "name": "Orson Welles",
             "url": "/people/123",
             "link": link2]
-        let box = Box(["items": [item1, item2]])
-        let rendering = try! Template(string: "{{#items}}{{link}}{{/items}}").render(box)
+        let value = ["items": [item1, item2]]
+        let rendering = try! Template(string: "{{#items}}{{link}}{{/items}}").render(value)
         XCTAssertEqual(rendering, "<a href=\"/movies/321\">Citizen Kane</a><a href=\"/people/123\">Orson Welles</a>")
     }
     
@@ -112,19 +112,19 @@ class MustacheRenderableGuideTests: XCTestCase {
             let firstName: String
             let lastName: String
             var mustacheBox: MustacheBox {
-                let keyedSubscript = { (key: String) -> MustacheBox in
+                let keyedSubscript = { (key: String) -> Any? in
                     switch key {
                     case "firstName":
-                        return Box(self.firstName)
+                        return self.firstName
                     case "lastName":
-                        return Box(self.lastName)
+                        return self.lastName
                     default:
-                        return Box()
+                        return nil
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
                     let template = try! Template(named: "Person", bundle: Bundle(for: MustacheRenderableGuideTests.self))
-                    let context = info.context.extendedContext(Box(self))
+                    let context = info.context.extendedContext(self)
                     return try template.render(context)
                 }
                 return MustacheBox(
@@ -138,19 +138,19 @@ class MustacheRenderableGuideTests: XCTestCase {
             let title: String
             let director: Person
             var mustacheBox: MustacheBox {
-                let keyedSubscript = { (key: String) -> MustacheBox in
+                let keyedSubscript = { (key: String) -> Any? in
                     switch key {
                     case "title":
-                        return Box(self.title)
+                        return self.title
                     case "director":
-                        return Box(self.director)
+                        return self.director
                     default:
-                        return Box()
+                        return nil
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
                     let template = try! Template(named: "Movie", bundle: Bundle(for: MustacheRenderableGuideTests.self))
-                    let context = info.context.extendedContext(Box(self))
+                    let context = info.context.extendedContext(self)
                     return try template.render(context)
                 }
                 return MustacheBox(
@@ -164,7 +164,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         let movie = Movie(title:"Citizen Kane", director: director)
         
         let template = try! Template(string: "{{ movie }}")
-        let rendering = try! template.render(Box(["movie": movie]))
+        let rendering = try! template.render(["movie": movie])
         XCTAssertEqual(rendering, "Citizen Kane by Orson Welles")
     }
     
@@ -185,7 +185,7 @@ class MustacheRenderableGuideTests: XCTestCase {
         }
         
         let template = try! Template(string: "{{#list(nav)}}<a href=\"{{url}}\">{{title}}</a>{{/}}")
-        template.baseContext = template.baseContext.extendedContext(Box(["list": Filter(listFilter)]))
+        template.baseContext = template.baseContext.extendedContext(["list": Filter(listFilter)])
         
         let item1 = [
             "url": "http://mustache.github.io",
@@ -193,9 +193,9 @@ class MustacheRenderableGuideTests: XCTestCase {
         let item2 = [
             "url": "http://github.com/groue/GRMustache.swift",
             "title": "GRMustache.swift"]
-        let box = Box(["nav": [item1, item2]])
+        let value = ["nav": [item1, item2]]
         
-        let rendering = try! template.render(box)
+        let rendering = try! template.render(value)
         XCTAssertEqual(rendering, "<ul><li><a href=\"http://mustache.github.io\">Mustache</a></li><li><a href=\"http://github.com/groue/GRMustache.swift\">GRMustache.swift</a></li></ul>")
     }
 }

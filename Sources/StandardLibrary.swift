@@ -52,7 +52,7 @@ public struct StandardLibrary {
     ### Usage
     
         let template = ...
-        template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+        template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
     */
     public static let HTMLEscape: MustacheBoxable = HTMLEscapeHelper()
     
@@ -78,7 +78,7 @@ public struct StandardLibrary {
     ### Usage
     
         let template = ...
-        template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+        template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
     */
     public static let URLEscape: MustacheBoxable = URLEscapeHelper()
     
@@ -112,7 +112,7 @@ public struct StandardLibrary {
     ### Usage
     
         let template = ...
-        template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+        template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
     */
     public static let javascriptEscape: MustacheBoxable = JavascriptEscapeHelper()
     
@@ -168,7 +168,7 @@ public struct StandardLibrary {
     ### Usage
     
         let template = ...
-        template.registerInBaseContext("each", Box(StandardLibrary.each))
+        template.register(StandardLibrary.each, forKey: "each")
     */
     public static let each = EachFilter
     
@@ -215,7 +215,7 @@ public struct StandardLibrary {
     ### Usage
     
         let template = ...
-        template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+        template.register(StandardLibrary.zip, forKey: "zip")
     */
     public static let zip = ZipFilter
 }
