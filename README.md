@@ -1280,11 +1280,11 @@ Advanced Boxes
 
 Values that feed templates are able of many different behaviors. Let's review some of them:
 
-- `Bool` can trigger or prevent the rendering of sections:
+- Bool can trigger or prevent the rendering of sections:
 
     ```
-    {{# verified }}VERIFIED{{/ verified }}
-    {{^ verified }}NOT VERIFIED{{/ verified }}
+    {{# isVerified }}VERIFIED{{/ isVerified }}
+    {{^ isVerified }}NOT VERIFIED{{/ isVerified }}
     ```
 
 - Arrays render sections multiple times, and expose the `count`, `first`, and `last` keys:
