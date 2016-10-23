@@ -24,11 +24,11 @@ let percentFormatter = NumberFormatter()
 percentFormatter.numberStyle = .percent
 
 let template = try! Template(string: "{{ percent(x) }}")
-template.registerInBaseContext("percent", Box(percentFormatter))
+template.register(percentFormatter, forKey: "percent")
 
 // Rendering: 50%
 let data = ["x": 0.5]
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(data)
 ```
 
 #### Formatting all values in a section
@@ -50,7 +50,7 @@ let percentFormatter = NumberFormatter()
 percentFormatter.numberStyle = .percent
 
 let template = try! Template(named: "Document")
-template.registerInBaseContext("percent", Box(percentFormatter))
+template.register(percentFormatter, forKey: "percent")
 
 // Rendering:
 //
@@ -63,7 +63,7 @@ let data = [
     "daily": 1.5,
     "weekly": 4,
 ]
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(data)
 ```
 
 Variable tags buried inside inner sections are escaped as well, so that you can render loop and conditional sections. However, values that can't be formatted are left untouched:
@@ -95,7 +95,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("HTMLEscape", Box(StandardLibrary.HTMLEscape))
+template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
 ```
 
 As a filter, `HTMLEscape` returns its argument, HTML-escaped.
@@ -132,7 +132,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("javascriptEscape", Box(StandardLibrary.javascriptEscape))
+template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
 ```
 
 As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
@@ -176,7 +176,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("URLEscape", Box(StandardLibrary.URLEscape))
+template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
 ```
 
 As a filter, `URLEscape` returns its argument, percent-escaped.
@@ -212,7 +212,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("each", Box(StandardLibrary.each))
+template.register(StandardLibrary.each, forKey: "each")
 ```
 
 Iteration is natural to Mustache templates: `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the `users` key is given a list of users.
@@ -269,7 +269,7 @@ Usage:
 
 ```swift
 let template = ...
-template.registerInBaseContext("zip", Box(StandardLibrary.zip))
+template.register(StandardLibrary.zip, forKey: "zip")
 ```
 
 The zip filter iterates several lists all at once. On each step, one object from each input list enters the rendering context, and makes its own keys available for rendering.
@@ -323,7 +323,7 @@ Usage:
 let template = ...
 
 let localizer = StandardLibrary.Localizer(bundle: nil, table: nil)
-template.registerInBaseContext("localize", Box(localizer))
+template.register(localizer, forKey: "localize")
 ```
 
 #### Localizing a value
@@ -368,8 +368,8 @@ Usage:
 ```swift
 let template = ...
 
-let logger = StandardLibrary.Logger()
-template.extendBaseContext(Box(logger))
+let logger = StandardLibrary.Logger { print($0) }
+template.extendBaseContext(logger)
 ```
 
 `Logger` is a tool intended for debugging templates.
@@ -384,11 +384,11 @@ let template = try! Template(string: "{{name}} died at {{age}}.")
 
 // Logs all tag renderings with NSLog():
 let logger = StandardLibrary.Logger()
-template.extendBaseContext(Box(logger))
+template.extendBaseContext(logger)
 
 // Render
 let data = ["name": "Freddy Mercury", "age": 45]
-let rendering = try! template.render(Box(data))
+let rendering = try! template.render(data)
 ```
 
 In the log:
