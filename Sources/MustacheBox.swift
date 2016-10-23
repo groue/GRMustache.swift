@@ -562,7 +562,7 @@ extension MustacheBox {
                 facets.append("[:]")
             } else {
                 let items = dictionary.map { (key, box) in
-                    return "\(key.debugDescription):\(box.valueDescription)"
+                    return "\(String(reflecting: key)):\(box.valueDescription)"
                 }.joined(separator: ",")
                 facets.append("[\(items)]")
             }
