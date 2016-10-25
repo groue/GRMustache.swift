@@ -210,9 +210,7 @@ Templates may come from various sources:
     
     ```swift
     // The repository of Bash templates, with extension ".sh":
-    let repo = TemplateRepository(
-        bundle: NSBundle.mainBundle(),
-        templateExtension: "sh")
+    let repo = TemplateRepository(bundle: Bundle.main, templateExtension: "sh")
     
     // Disable HTML escaping for Bash scripts:
     repo.configuration.contentType = .text
