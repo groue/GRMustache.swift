@@ -266,7 +266,11 @@ Each one of them performs its own little task:
 - [Section Tags](#section-tags) `{{#items}}...{{/items}}` perform conditionals, loops, and object scoping.
 - [Inverted Section Tags](#inverted-section-tags) `{{^items}}...{{/items}}` are sisters of regular section tags, and render when the other one does not.
 - [Partial Tags](#partial-tags) `{{>partial}}` let you include a template in another one.
+    - [File system](#file-system)
+    - [Bundle Resources](#bundle-resources)
+    - [Dynamic Partials](#dynamic-partials)
 - [Partial Override Tags](#partial-override-tags) `{{<layout}}...{{/layout}}` provide *template inheritance*.
+    - [Dynamic Partial Overrides](#dynamic-partial-overrides)
 - [Set Delimiters Tags](#set-delimiters-tags) `{{=<% %>=}}` let you change the tag delimiters.
 - [Comment Tags](#comment-tags) let you comment: `{{! Wow. Such comment. }}`
 - [Pragma Tags](#pragma-tags) trigger implementation-specific features.
@@ -476,7 +480,7 @@ Recursive partials are supported, but your data should avoid infinite loops.
 Partial lookup depends on the origin of the main template:
 
 
-#### File system
+#### File System
 
 Partial names are **relative paths** when the template comes from the file system (via paths or URLs):
 
@@ -507,7 +511,7 @@ let template = repository.template(named: ...)
 ```
 
 
-#### Bundle resources
+#### Bundle Resources
     
 Partial names are interpreted as **resource names** when the template is a bundle resource:
 
@@ -541,7 +545,7 @@ Generally speaking, partial names are always interpreted by a **Template Reposit
 Check [TemplateRepository.swift](Sources/TemplateRepository.swift) for more information ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/2.0.0/Classes/TemplateRepository.html)).
 
 
-#### Dynamic partials
+#### Dynamic Partials
 
 A tag `{{> partial }}` includes a template, the one that is named "partial". One can say it is **statically** determined, since that partial has already been loaded before the template is rendered:
 
@@ -652,7 +656,7 @@ A few things to know:
 - Generally speaking, any part of a template can be refactored with partials and partial override tags, without requiring any modification anywhere else (in other templates that depend on it, or in your code).
 
 
-#### Dynamic partial overrides
+#### Dynamic Partial Overrides
 
 Like a regular partial tag, a partial override tag `{{< layout }}...{{/ layout }}` includes a statically determined template, the very one that is named "layout".
 
@@ -818,7 +822,7 @@ You can feed templates with:
 
 - Values that adopt the `MustacheBoxable` protocol such as `String`, `Int`, `NSObject` and its subclasses (see [Standard Swift Types Reference](#standard-swift-types-reference) and [Custom Types](#custom-types))
 
-- Arrays, sets, and dictionaries (`[Any?]`, `Set`, `[AnyHashable: Any?]`, NSArray, NSSet and NSDictionary). *This does not include other sequences and collections, such as Swift ranges.*
+- Arrays, sets, and dictionaries (Swift arrays, sets, dictionaries, and Foundation collections). *This does not include other collections, such as Swift ranges.*
 
 - A few function types such as [filter functions](#filters), [lambdas](#lambdas), and other functions involved in [advanced boxes](#advanced-boxes).
 
@@ -1088,6 +1092,8 @@ let rendering = try template.render(data)
 ```
 
 Lambdas are a special case of custom rendering functions. The raw `RenderFunction` type gives you extra flexibility when you need to perform custom rendering. See [CoreFunctions.swift](Sources/CoreFunctions.swift) ([read on cocoadocs.org](http://cocoadocs.org/docsets/GRMustache.swift/2.0.0/Typealiases.html)).
+
+> :point_up: **Note**: Mustache lambdas slightly overlap with [dynamic partials](#dynamic-partials). Lambdas are required by the Mustache specification. Dynamic partials are more efficient because they avoid parsing lambda strings over and over.
 
 
 Filters
