@@ -213,7 +213,7 @@ final public class Context {
     // =========================================================================
     // MARK: - Not public
 
-    private enum `Type` {
+    fileprivate enum `Type` {
         case Root
         case Box(box: MustacheBox, parent: Context)
         case PartialOverride(partialOverride: TemplateASTNode.PartialOverride, parent: Context)
