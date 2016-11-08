@@ -30,7 +30,7 @@ class FoundationCollectionTests: XCTestCase {
 
 // GENERATED: allTests required for Swift 3.0
     static var allTests : [(String, (FoundationCollectionTests) -> () throws -> Void)] {
-        var tests: [(String, (FoundationCollectionTests) -> () throws -> Void)] = [
+        return [
             ("testNSArrayIsIterated", testNSArrayIsIterated),
             ("testNSArrayIsNotIteratedWithValueForKey", testNSArrayIsNotIteratedWithValueForKey),
             ("testNSArrayIsEmpty", testNSArrayIsEmpty),
@@ -43,6 +43,12 @@ class FoundationCollectionTests: XCTestCase {
             ("testArrayCountKey", testArrayCountKey),
             ("testArrayKeyFirst", testArrayKeyFirst),
             ("testArrayLastKey", testArrayLastKey),
+            ("testNSSetIsIterated", testNSSetIsIterated),
+            ("testNSSetIsNotIteratedWithValueForKey", testNSSetIsNotIteratedWithValueForKey),
+            ("testNSSetIsEmpty", testNSSetIsEmpty),
+            ("testNSSetCountKey", testNSSetCountKey),
+            ("testNSSetFirstKey", testNSSetFirstKey),
+            ("testNSSetLastKey", testNSSetLastKey),
             ("testSetIsIterated", testSetIsIterated),
             ("testSetIsNotIteratedWithValueForKey", testSetIsNotIteratedWithValueForKey),
             ("testSetIsEmpty", testSetIsEmpty),
@@ -55,15 +61,6 @@ class FoundationCollectionTests: XCTestCase {
             ("testNSOrderedSetKeyFirst", testNSOrderedSetKeyFirst),
             ("testNSOrderedSetLastKey", testNSOrderedSetLastKey),
         ]
-        if TestConfiguration.sharedInstance.boxedNSSetTestsEnabled {
-            tests.append(("testNSSetIsIterated", testNSSetIsIterated))
-            tests.append(("testNSSetIsNotIteratedWithValueForKey", testNSSetIsNotIteratedWithValueForKey))
-            tests.append(("testNSSetIsEmpty", testNSSetIsEmpty))
-            tests.append(("testNSSetCountKey", testNSSetCountKey))
-            tests.append(("testNSSetFirstKey", testNSSetFirstKey))
-            tests.append(("testNSSetLastKey", testNSSetLastKey))
-        }
-        return tests
     }
 // END OF GENERATED CODE
 
@@ -90,8 +87,6 @@ class FoundationCollectionTests: XCTestCase {
             let object = NSDictionary(objects: [NSString(string: "value")], forKeys: [NSString(string:"key")])
             return Box(["collection": Set([object])])
         }()
-        #if !os(Linux) // issue https://bugs.swift.org/browse/SR-2486
-            //TODO: remove this ifdef once the issue is resolved
         boxedNSSet = {
             let set = NSMutableSet()
             set.add(["key": "value"])
@@ -99,7 +94,6 @@ class FoundationCollectionTests: XCTestCase {
             data.setObject(set, forKey: NSString(string: "collection"))
             return Box(data)
             }()
-        #endif
         boxedNSOrderedSet = {
             let orderedSet = NSMutableOrderedSet()
             orderedSet.add(["key": "value"])
