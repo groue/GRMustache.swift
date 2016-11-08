@@ -37,10 +37,4 @@ class TestConfigurationLinux: TestConfigurationProtocol {
         //TODO: return true once the issue is resolved
         return false
     }
-    var numberFormatterTestsEnabled: Bool {
-        // Tests that involve NumberFormatter.string(for:) ar disabled due to
-        //     issue https://bugs.swift.org/browse/SR-2477
-        //TODO: return true once the issue is resolved
-        return false
-    }
 }
