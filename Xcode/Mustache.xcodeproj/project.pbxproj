@@ -580,7 +580,7 @@
 		563AE1A619FBE47A0028C6C1 /* Tests */ = {
 			isa = PBXGroup;
 			children = (
-				56BF069B1A064FE900926BEB /* Public */,
+				56BF069B1A064FE900926BEB /* MustacheTests */,
 				563AE1A719FBE47A0028C6C1 /* Supporting Files */,
 			);
 			name = Tests;
@@ -794,7 +794,7 @@
 			path = TemplateRepositoryBundleTests;
 			sourceTree = "<group>";
 		};
-		56BF069B1A064FE900926BEB /* Public */ = {
+		56BF069B1A064FE900926BEB /* MustacheTests */ = {
 			isa = PBXGroup;
 			children = (
 				56C8D6E01A1F1A4700F106F8 /* BoxTests.swift */,
@@ -816,7 +816,7 @@
 				56B4B2171A26459100BD4F8F /* TemplateRepositoryTests */,
 				56B4B2131A25BC4200BD4F8F /* TemplateTests */,
 			);
-			path = Public;
+			path = MustacheTests;
 			sourceTree = "<group>";
 		};
 		56C8D6E21A1F1AD800F106F8 /* DocumentationTests */ = {
