@@ -24,6 +24,7 @@
 import XCTest
 import Mustache
 import Foundation
+import Bridging
 
 class LocalizerTests: XCTestCase {
 
@@ -47,7 +48,8 @@ class LocalizerTests: XCTestCase {
         return []
     }
 
-    lazy var localizableBundle: Bundle = Bundle(path: Bundle(for: type(of: self)).path(forResource: "LocalizerTestsBundle", ofType: nil)!)!
+    lazy var localizableBundle: Bundle =
+             Bundle(path: FoundationAdapter.getBundle(for: type(of: self)).path(forResource: "LocalizerTestsBundle", ofType: nil)!)!
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
 
     func testLocalizableBundle() {
