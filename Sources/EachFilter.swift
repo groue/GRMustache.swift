@@ -98,5 +98,5 @@ let EachFilter = Filter { (box: MustacheBox) -> Any? in
     }
     
     // Non-iterable value
-    throw MustacheError(kind: .renderError, message: "Non-enumerable argument in each filter: \(box.value)")
+    throw MustacheError(kind: .renderError, message: "Non-enumerable argument in each filter: \(box.value.map { String(reflecting: $0) } ?? "nil")")
 }
