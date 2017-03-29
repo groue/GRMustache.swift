@@ -40,7 +40,7 @@ let ZipFilter = VariadicFilter { (boxes) in
             zippedIterators.append(AnyIterator(array.makeIterator()))
         } else {
             // Error
-            throw MustacheError(kind: .renderError, message: "Non-enumerable argument in zip filter: `\(box.value)`")
+            throw MustacheError(kind: .renderError, message: "Non-enumerable argument in zip filter: `\(box.value.map { String(reflecting: $0) } ?? "nil")`")
         }
     }
     
