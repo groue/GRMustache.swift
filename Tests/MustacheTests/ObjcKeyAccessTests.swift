@@ -25,33 +25,37 @@ import XCTest
 import Mustache
 
 class ObjcKeyAccessTests: XCTestCase {
-    
+
     class ClassWithProperties: NSObject {
         let property: String = "property"
         func method() -> String { return "method" }
     }
-    
+
     func testPropertiesAreSafeAndAvailable() {
+        #if OBJC // the test would not work without ObjectiveC
         let object = ClassWithProperties()
-    
+
         // test setup
         XCTAssertEqual(object.property, "property")
         XCTAssertEqual((object.value(forKey: "property") as! String), "property")
-        
+
         // test context
         let context = Context(object)
         XCTAssertEqual((context.mustacheBox(forKey: "property").value as! String), "property")
+        #endif
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
+        #if OBJC // the test would not work without ObjectiveC
         let object = ClassWithProperties()
-        
+
         // test setup
         XCTAssertEqual(object.method(), "method")
         XCTAssertEqual((object.value(forKey: "method") as! String), "method")
-    
+
         // test context
         let context = Context(object)
         XCTAssertTrue(context.mustacheBox(forKey: "method").value == nil)
+        #endif
     }
 }
