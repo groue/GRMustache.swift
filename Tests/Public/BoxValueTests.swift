@@ -45,7 +45,7 @@ class BoxValueTests: XCTestCase {
         
         func assert<T>(value: Any?, isBoxedAs: T.Type) {
             let template = try! Template(string: "{{#test(value)}}success{{/}}")
-            let data: [String: Any] = [
+            let data: [String: Any?] = [
                 "value": value,
                 "test": Filter { (box: MustacheBox) in
                     box.value is T

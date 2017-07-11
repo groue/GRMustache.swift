@@ -9,6 +9,6 @@
 import Cocoa
 
 class Model: NSObject {
-    dynamic var templateString: String = "Hello {{ name }}!"
-    dynamic var JSONString: String = "{\n  \"name\": \"Arthur\"\n}"
+    @objc dynamic var templateString: String = "Hello {{ name }}!"
+    @objc dynamic var JSONString: String = "{\n  \"name\": \"Arthur\"\n}"
 }

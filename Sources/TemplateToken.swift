@@ -66,7 +66,7 @@ struct TemplateToken {
     let templateString: String
     let range: Range<String.Index>
     
-    var templateSubstring: String { return templateString[range] }
+    var templateSubstring: String { return String(templateString[range]) }
     
     var tagDelimiterPair: TagDelimiterPair? {
         switch type {

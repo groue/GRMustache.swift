@@ -132,7 +132,7 @@ final class JavascriptEscapeHelper : MustacheBoxable {
             "\r\n": "\\u000D\\u000A",
         ]
         var escaped = ""
-        for c in string.characters {
+        for c in string {
             if let escapedString = escapeTable[c] {
                 escaped += escapedString
             } else {

@@ -167,7 +167,7 @@ class ReadMeTests: XCTestCase {
             "late": true
         ]
         let rendering = try! template.render(data)
-        XCTAssert(rendering.characters.count > 0)
+        XCTAssert(rendering.count > 0)
     }
 }
 

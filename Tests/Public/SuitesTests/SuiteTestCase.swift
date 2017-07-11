@@ -267,7 +267,7 @@ class SuiteTestCase: XCTestCase {
                     }
                 }
                 
-                templatesPaths.append(templatesPath, encoding)
+                templatesPaths.append((templatesPath, encoding))
             }
             
             return templatesPaths
