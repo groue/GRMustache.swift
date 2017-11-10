@@ -100,7 +100,7 @@ extension NSObject : MustacheBoxable {
     ///   of the context stack.
     ///
     /// - `{{^object}}...{{/object}}` does not render.
-    open var mustacheBox: MustacheBox {
+    @objc open var mustacheBox: MustacheBox {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
