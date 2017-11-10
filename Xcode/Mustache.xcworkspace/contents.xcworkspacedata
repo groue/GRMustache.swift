@@ -2,7 +2,7 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:../Docs/Playground.playground">
+      location = "group:../Docs/QuickExample.playground">
    </FileRef>
    <FileRef
       location = "container:Mustache.xcodeproj">
