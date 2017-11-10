@@ -1033,7 +1033,7 @@ class BoxTests: XCTestCase {
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let rendering = try! template.render([0 as Int?, nil as CustomBoxable?, "foo" as String?])
+            let rendering = try! template.render([0, nil, "foo"])
             XCTAssertEqual(rendering, "0foo")
         }
         do {
