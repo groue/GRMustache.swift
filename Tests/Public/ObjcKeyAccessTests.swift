@@ -27,31 +27,47 @@ import Mustache
 class ObjcKeyAccessTests: XCTestCase {
     
     class ClassWithProperties: NSObject {
-        let property: String = "property"
-        func method() -> String { return "method" }
+        
+        static
+        let property1Name = "property1"
+        
+        static
+        let property1Value = "property1Value"
+        
+        static
+        let method2Name = "method2"
+        
+        static
+        let method2ReturnValue = "method2ReturnValue"
+        
+        @objc let property1: String = ClassWithProperties.property1Value
+        @objc func method2() -> String { return ClassWithProperties.method2ReturnValue }
     }
     
     func testPropertiesAreSafeAndAvailable() {
         let object = ClassWithProperties()
     
         // test setup
-        XCTAssertEqual(object.property, "property")
-        XCTAssertEqual((object.value(forKey: "property") as! String), "property")
+        XCTAssertEqual(object.property1, ClassWithProperties.property1Value)
+        XCTAssertEqual((object.value(forKey: ClassWithProperties.property1Name) as! String), ClassWithProperties.property1Value)
         
         // test context
         let context = Context(object)
-        XCTAssertEqual((context.mustacheBox(forKey: "property").value as! String), "property")
+        XCTAssertEqual((context.mustacheBox(forKey: "property1").value as! String), ClassWithProperties.property1Value)
     }
 
     func testMethodsAreUnsafeAndNotAvailable() {
         let object = ClassWithProperties()
         
         // test setup
-        XCTAssertEqual(object.method(), "method")
-        XCTAssertEqual((object.value(forKey: "method") as! String), "method")
+        XCTAssertEqual(object.method2(),
+                       ClassWithProperties.method2ReturnValue)
+        
+        XCTAssertEqual((object.value(forKey: ClassWithProperties.method2Name) as! String),
+                       ClassWithProperties.method2ReturnValue)
     
         // test context
         let context = Context(object)
-        XCTAssertTrue(context.mustacheBox(forKey: "method").value == nil)
+        XCTAssertTrue(context.mustacheBox(forKey: ClassWithProperties.method2Name).value == nil)
     }
 }
