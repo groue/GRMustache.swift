@@ -392,7 +392,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     fileprivate func blockNameFromString(_ string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespacesAndNewlines
         let blockName = string.trimmingCharacters(in: whiteSpace)
-        if blockName.characters.count == 0 {
+        if blockName.count == 0 {
             empty = true
             throw MustacheError(kind: .parseError, message: "Missing block name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if (blockName.rangeOfCharacter(from: whiteSpace) != nil) {
@@ -405,7 +405,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
     fileprivate func partialNameFromString(_ string: String, inToken token: TemplateToken, empty: inout Bool) throws -> String {
         let whiteSpace = CharacterSet.whitespacesAndNewlines
         let partialName = string.trimmingCharacters(in: whiteSpace)
-        if partialName.characters.count == 0 {
+        if partialName.count == 0 {
             empty = true
             throw MustacheError(kind: .parseError, message: "Missing template name", templateID: token.templateID, lineNumber: token.lineNumber)
         } else if (partialName.rangeOfCharacter(from: whiteSpace) != nil) {

@@ -71,7 +71,7 @@ final class ExpressionParser {
                 case ".":
                     state = .leadingDot
                 case "(", ")", ",", "{", "}", "&", "$", "#", "^", "/", "<", ">":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 default:
                     state = .identifier(identifierStart: i)
                 }
@@ -81,7 +81,7 @@ final class ExpressionParser {
                 case " ", "\r", "\n", "\r\n", "\t":
                     state = .doneExpressionPlusWhiteSpace(expression: Expression.implicitIterator)
                 case ".":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case "(":
                     filterExpressionStack.append(Expression.implicitIterator)
                     state = .waitingForAnyExpression
@@ -91,7 +91,7 @@ final class ExpressionParser {
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.implicitIterator, partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
@@ -99,10 +99,10 @@ final class ExpressionParser {
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.implicitIterator, partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case "{", "}", "&", "$", "#", "^", "/", "<", ">":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 default:
                     state = .scopingIdentifier(identifierStart: i, baseExpression: Expression.implicitIterator)
                 }
@@ -126,7 +126,7 @@ final class ExpressionParser {
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: identifier), partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
@@ -135,7 +135,7 @@ final class ExpressionParser {
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: identifier), partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 default:
                     break
@@ -164,7 +164,7 @@ final class ExpressionParser {
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
@@ -174,7 +174,7 @@ final class ExpressionParser {
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 default:
                     break
@@ -183,17 +183,17 @@ final class ExpressionParser {
             case .waitingForScopingIdentifier(let baseExpression):
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
-                    state = .error("Unexpected white space character at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected white space character at index \(string.distance(from: string.startIndex, to: i))")
                 case ".":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case "(":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case ")":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case ",":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case "{", "}", "&", "$", "#", "^", "/", "<", ">":
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 default:
                     state = .scopingIdentifier(identifierStart: i, baseExpression: baseExpression)
                 }
@@ -213,7 +213,7 @@ final class ExpressionParser {
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
@@ -221,10 +221,10 @@ final class ExpressionParser {
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 default:
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 }
                 
             case .doneExpressionPlusWhiteSpace(let doneExpression):
@@ -233,7 +233,7 @@ final class ExpressionParser {
                     break
                 case ".":
                     // Prevent "a .b"
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 case "(":
                     // Accept "a (b)"
                     filterExpressionStack.append(doneExpression)
@@ -245,7 +245,7 @@ final class ExpressionParser {
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 case ",":
                     // Accept "a(b ,c)"
@@ -254,10 +254,10 @@ final class ExpressionParser {
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: doneExpression, partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
-                        state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                        state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                     }
                 default:
-                    state = .error("Unexpected character `\(c)` at index \(string.characters.distance(from: string.startIndex, to: i))")
+                    state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
                 }
             }
             
@@ -280,14 +280,14 @@ final class ExpressionParser {
             if filterExpressionStack.isEmpty {
                 finalState = .empty
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .leadingDot:
             if filterExpressionStack.isEmpty {
                 finalState = .valid(expression: Expression.implicitIterator)
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .identifier(identifierStart: let identifierStart):
@@ -295,7 +295,7 @@ final class ExpressionParser {
                 let identifier = string.substring(from: identifierStart)
                 finalState = .valid(expression: Expression.identifier(identifier: identifier))
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .scopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
@@ -304,24 +304,24 @@ final class ExpressionParser {
                 let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
                 finalState = .valid(expression: scopedExpression)
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .waitingForScopingIdentifier:
-            finalState = .error("Missing identifier at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+            finalState = .error("Missing identifier at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             
         case .doneExpression(let doneExpression):
             if filterExpressionStack.isEmpty {
                 finalState = .valid(expression: doneExpression)
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .doneExpressionPlusWhiteSpace(let doneExpression):
             if filterExpressionStack.isEmpty {
                 finalState = .valid(expression: doneExpression)
             } else {
-                finalState = .error("Missing `)` character at index \(string.characters.distance(from: string.startIndex, to: string.endIndex))")
+                finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .error(let message):

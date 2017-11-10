@@ -275,7 +275,7 @@ final class TemplateParser {
                 } else if atString(i, currentDelimiters.setDelimitersEnd) {
                     let tagInitialIndex = templateString.index(startIndex, offsetBy: currentDelimiters.setDelimitersStartLength)
                     let content = templateString.substring(with: tagInitialIndex..<i)
-                    let newDelimiters = content.components(separatedBy: CharacterSet.whitespacesAndNewlines).filter { $0.characters.count > 0 }
+                    let newDelimiters = content.components(separatedBy: CharacterSet.whitespacesAndNewlines).filter { $0.count > 0 }
                     if (newDelimiters.count != 2) {
                         let error = MustacheError(kind: .parseError, message: "Invalid set delimiters tag", templateID: templateID, lineNumber: startLineNumber)
                         tokenConsumer.parser(self, didFailWithError: error)
@@ -356,19 +356,19 @@ final class TemplateParser {
         init(tagDelimiterPair : TagDelimiterPair) {
             self.tagDelimiterPair = tagDelimiterPair
             
-            tagStartLength = tagDelimiterPair.0.characters.distance(from: tagDelimiterPair.0.startIndex, to: tagDelimiterPair.0.endIndex)
-            tagEndLength = tagDelimiterPair.1.characters.distance(from: tagDelimiterPair.1.startIndex, to: tagDelimiterPair.1.endIndex)
+            tagStartLength = tagDelimiterPair.0.distance(from: tagDelimiterPair.0.startIndex, to: tagDelimiterPair.0.endIndex)
+            tagEndLength = tagDelimiterPair.1.distance(from: tagDelimiterPair.1.startIndex, to: tagDelimiterPair.1.endIndex)
             
             let usesStandardDelimiters = (tagDelimiterPair.0 == "{{") && (tagDelimiterPair.1 == "}}")
             unescapedTagStart = usesStandardDelimiters ? "{{{" : nil
-            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.characters.distance(from: unescapedTagStart!.startIndex, to: unescapedTagStart!.endIndex) : 0
+            unescapedTagStartLength = unescapedTagStart != nil ? unescapedTagStart!.distance(from: unescapedTagStart!.startIndex, to: unescapedTagStart!.endIndex) : 0
             unescapedTagEnd = usesStandardDelimiters ? "}}}" : nil
-            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.characters.distance(from: unescapedTagEnd!.startIndex, to: unescapedTagEnd!.endIndex) : 0
+            unescapedTagEndLength = unescapedTagEnd != nil ? unescapedTagEnd!.distance(from: unescapedTagEnd!.startIndex, to: unescapedTagEnd!.endIndex) : 0
             
             setDelimitersStart = "\(tagDelimiterPair.0)="
-            setDelimitersStartLength = setDelimitersStart.characters.distance(from: setDelimitersStart.startIndex, to: setDelimitersStart.endIndex)
+            setDelimitersStartLength = setDelimitersStart.distance(from: setDelimitersStart.startIndex, to: setDelimitersStart.endIndex)
             setDelimitersEnd = "=\(tagDelimiterPair.1)"
-            setDelimitersEndLength = setDelimitersEnd.characters.distance(from: setDelimitersEnd.startIndex, to: setDelimitersEnd.endIndex)
+            setDelimitersEndLength = setDelimitersEnd.distance(from: setDelimitersEnd.startIndex, to: setDelimitersEnd.endIndex)
         }
     }
 }
