@@ -110,20 +110,20 @@ final class ExpressionParser {
             case .identifier(identifierStart: let identifierStart):
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    state = .doneExpressionPlusWhiteSpace(expression: Expression.identifier(identifier: identifier))
+                    let identifier = string[identifierStart..<i]
+                    state = .doneExpressionPlusWhiteSpace(expression: Expression.identifier(identifier: String(identifier)))
                 case ".":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    state = .waitingForScopingIdentifier(baseExpression: Expression.identifier(identifier: identifier))
+                    let identifier = string[identifierStart..<i]
+                    state = .waitingForScopingIdentifier(baseExpression: Expression.identifier(identifier: String(identifier)))
                 case "(":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    filterExpressionStack.append(Expression.identifier(identifier: identifier))
+                    let identifier = string[identifierStart..<i]
+                    filterExpressionStack.append(Expression.identifier(identifier: String(identifier)))
                     state = .waitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substring(with: identifierStart..<i)
-                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: identifier), partialApplication: false)
+                        let identifier = string[identifierStart..<i]
+                        let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: String(identifier)), partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
                         state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
@@ -131,8 +131,8 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substring(with: identifierStart..<i)
-                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: identifier), partialApplication: true))
+                        let identifier = string[identifierStart..<i]
+                        filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: Expression.identifier(identifier: String(identifier)), partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
                         state = .error("Unexpected character `\(c)` at index \(string.distance(from: string.startIndex, to: i))")
@@ -144,23 +144,23 @@ final class ExpressionParser {
             case .scopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
                 switch c {
                 case " ", "\r", "\n", "\r\n", "\t":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let identifier = string[identifierStart..<i]
+                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                     state = .doneExpressionPlusWhiteSpace(expression: scopedExpression)
                 case ".":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let identifier = string[identifierStart..<i]
+                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                     state = .waitingForScopingIdentifier(baseExpression: scopedExpression)
                 case "(":
-                    let identifier = string.substring(with: identifierStart..<i)
-                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                    let identifier = string[identifierStart..<i]
+                    let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                     filterExpressionStack.append(scopedExpression)
                     state = .waitingForAnyExpression
                 case ")":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substring(with: identifierStart..<i)
-                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                        let identifier = string[identifierStart..<i]
+                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                         let expression = Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: false)
                         state = .doneExpression(expression: expression)
                     } else {
@@ -169,8 +169,8 @@ final class ExpressionParser {
                 case ",":
                     if let filterExpression = filterExpressionStack.last {
                         filterExpressionStack.removeLast()
-                        let identifier = string.substring(with: identifierStart..<i)
-                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                        let identifier = string[identifierStart..<i]
+                        let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                         filterExpressionStack.append(Expression.filter(filterExpression: filterExpression, argumentExpression: scopedExpression, partialApplication: true))
                         state = .waitingForAnyExpression
                     } else {
@@ -292,16 +292,16 @@ final class ExpressionParser {
             
         case .identifier(identifierStart: let identifierStart):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substring(from: identifierStart)
-                finalState = .valid(expression: Expression.identifier(identifier: identifier))
+                let identifier = string[identifierStart...]
+                finalState = .valid(expression: Expression.identifier(identifier: String(identifier)))
             } else {
                 finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")
             }
             
         case .scopingIdentifier(identifierStart: let identifierStart, baseExpression: let baseExpression):
             if filterExpressionStack.isEmpty {
-                let identifier = string.substring(from: identifierStart)
-                let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: identifier)
+                let identifier = string[identifierStart...]
+                let scopedExpression = Expression.scoped(baseExpression: baseExpression, identifier: String(identifier))
                 finalState = .valid(expression: scopedExpression)
             } else {
                 finalState = .error("Missing `)` character at index \(string.distance(from: string.startIndex, to: string.endIndex))")

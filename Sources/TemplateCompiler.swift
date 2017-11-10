@@ -221,7 +221,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                        }
                         let templateString = token.templateString
                         let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
-                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: false, openingToken: openingToken, innerTemplateString: String(templateString[innerContentRange]))
 
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
@@ -251,7 +251,7 @@ final class TemplateCompiler: TemplateTokenConsumer {
 //                        }
                         let templateString = token.templateString
                         let innerContentRange = openingToken.range.upperBound..<token.range.lowerBound
-                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: templateString[innerContentRange])
+                        let sectionTag = TemplateASTNode.section(templateAST: templateAST, expression: closedExpression, inverted: true, openingToken: openingToken, innerTemplateString: String(templateString[innerContentRange]))
                         
                         compilationState.popCurrentScope()
                         compilationState.currentScope.appendNode(sectionTag)
