@@ -444,7 +444,7 @@ final public class TemplateRepository {
                 templateBaseURL = self.baseURL
             }
             
-            let templateURL = URL(string: templateFilename, relativeTo: templateBaseURL)!.standardizedFileURL
+            let templateURL = templateBaseURL.appendingPathComponent(templateFilename, isDirectory: false).standardizedFileURL
             let templateAbsoluteString = templateURL.absoluteString
             
             // Make sure partial relative paths can not escape repository root
