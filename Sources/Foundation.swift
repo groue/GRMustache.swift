@@ -292,7 +292,7 @@ extension NSSet {
     /// Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders
     /// once, if and only if `set` is not empty.
     open override var mustacheBox: MustacheBox {
-        return Box(Set(IteratorSequence(NSFastEnumerationIterator(self)).flatMap { $0 as? AnyHashable }))
+        return Box(Set(IteratorSequence(NSFastEnumerationIterator(self)).compactMap { $0 as? AnyHashable }))
     }
 }
 
