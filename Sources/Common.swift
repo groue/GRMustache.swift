@@ -134,7 +134,7 @@ extension MustacheError : CustomStringConvertible {
         }
         
         if let message = message {
-            if description.characters.count > 0 {
+            if description.count > 0 {
                 description += ": \(message)"
             } else {
                 description = message
@@ -171,7 +171,7 @@ public func escapeHTML(_ string: String) -> String {
         "\"": "&quot;",
     ]
     var escaped = ""
-    for c in string.characters {
+    for c in string {
         if let escapedString = escapeTable[c] {
             escaped += escapedString
         } else {

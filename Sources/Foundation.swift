@@ -100,7 +100,7 @@ extension NSObject : MustacheBoxable {
     ///   of the context stack.
     ///
     /// - `{{^object}}...{{/object}}` does not render.
-    open var mustacheBox: MustacheBox {
+    @objc open var mustacheBox: MustacheBox {
         if let enumerable = self as? NSFastEnumeration {
             // Enumerable
             
@@ -150,7 +150,7 @@ extension NSNull {
     /// - `{{#null}}...{{/null}}` does not render (NSNull is falsey).
     ///
     /// - `{{^null}}...{{/null}}` does render (NSNull is falsey).
-    open override var mustacheBox: MustacheBox {
+    @objc open override var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
             boolValue: false,
@@ -183,7 +183,7 @@ extension NSNumber {
     ///
     /// - `{{^number}}...{{/number}}` renders if and only if `number` is 0 (zero).
     ///
-    open override var mustacheBox: MustacheBox {
+    @objc open override var mustacheBox: MustacheBox {
         
         let objCType = String(cString: self.objCType)
         switch objCType {
@@ -250,7 +250,7 @@ extension NSString {
     /// A string can be queried for the following keys:
     ///
     /// - `length`: the number of characters in the string (using Swift method).
-    open override var mustacheBox: MustacheBox {
+    @objc open override var mustacheBox: MustacheBox {
         return Box(self as String)
     }
 }
@@ -291,8 +291,8 @@ extension NSSet {
     ///
     /// Because 0 (zero) is falsey, `{{#set.count}}...{{/set.count}}` renders
     /// once, if and only if `set` is not empty.
-    open override var mustacheBox: MustacheBox {
-        return Box(Set(IteratorSequence(NSFastEnumerationIterator(self)).flatMap { $0 as? AnyHashable }))
+    @objc open override var mustacheBox: MustacheBox {
+        return Box(Set(IteratorSequence(NSFastEnumerationIterator(self)).compactMap { $0 as? AnyHashable }))
     }
 }
 
@@ -338,7 +338,7 @@ extension NSDictionary {
     ///     // Renders "<name:Arthur, age:36, >"
     ///     let dictionary = ["name": "Arthur", "age": 36] as NSDictionary
     ///     let rendering = try! template.render(["dictionary": dictionary])
-    open override var mustacheBox: MustacheBox {
+    @objc open override var mustacheBox: MustacheBox {
         return Box(self as? [AnyHashable: Any])
     }
 }

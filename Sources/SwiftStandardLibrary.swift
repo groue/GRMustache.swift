@@ -147,11 +147,11 @@ extension String : MustacheBoxable {
     public var mustacheBox: MustacheBox {
         return MustacheBox(
             value: self,
-            boolValue: (self.characters.count > 0),
+            boolValue: (self.count > 0),
             keyedSubscript: { (key: String) in
                 switch key {
                 case "length":
-                    return self.characters.count
+                    return self.count
                 default:
                     return nil
                 }
