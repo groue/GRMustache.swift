@@ -113,7 +113,7 @@ class FormatterTests: XCTestCase {
         let template = try! Template(string: "{{ formatter }}")
         let value = ["formatter": formatter]
         let rendering = try! template.render(value)
-        XCTAssertTrue(rendering.characters.count > 0)
+        XCTAssertTrue(rendering.count > 0)
     }
     
     func testNumberFormatterRendersNothingForMissingValue() {
