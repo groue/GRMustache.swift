@@ -1,4 +1,4 @@
-GRMustache.swift [![Swift](https://img.shields.io/badge/swift-3-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Platforms](https://img.shields.io/cocoapods/p/GRMustache.swift.svg)](https://developer.apple.com/swift/) [![License](https://img.shields.io/github/license/groue/GRMustache.swift.svg?maxAge=2592000)](/LICENSE)
+GRMustache.swift [![Swift](https://img.shields.io/badge/swift-5-orange.svg?style=flat)](https://developer.apple.com/swift/) [![Platforms](https://img.shields.io/cocoapods/p/GRMustache.swift.svg)](https://developer.apple.com/swift/) [![License](https://img.shields.io/github/license/groue/GRMustache.swift.svg?maxAge=2592000)](/LICENSE)
 ================
 
 ### Mustache templates for Swift
@@ -9,6 +9,9 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-3-orange.svg?style
 
 - Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/1.0.1)
 - Swift 2.3: use the [version 1.1.0](https://github.com/groue/GRMustache.swift/tree/1.1.0)
+- Swift 4.0: use the [version 3.0.0](https://github.com/fumito-ito/GRMustache.swift/tree/3.0.0)
+- Swift 4.2: use the [version 3.1.0](https://github.com/fumito-ito/GRMustache.swift/tree/3.1.0)
+- Swift 5.0: use the [version 4.0.0](https://github.com/fumito-ito/GRMustache.swift/tree/4.0.0)
 
 Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 
