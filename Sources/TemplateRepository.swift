@@ -419,7 +419,7 @@ final public class TemplateRepository {
             let normalizedName: String
             let normalizedBaseTemplateID: TemplateID?
             if !name.isEmpty && name[name.startIndex] == "/" {
-                normalizedName = String(name[name.index(after: name.startIndex)])
+                normalizedName = String(name[name.index(after: name.startIndex)...])
                 normalizedBaseTemplateID = nil
             } else {
                 normalizedName = name
