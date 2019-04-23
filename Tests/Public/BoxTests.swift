@@ -219,27 +219,27 @@ class BoxTests: XCTestCase {
             let value: Set<Int> = [0,1,2]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Infered element type
             let value: Set = [0,1,2]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render([0,1,2] as Set)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Nested
             let value: Set<Int> = [0,1,2]
             let template = try! Template(string: "{{#nested}}{{.}}{{/}}")
             let rendering = try! template.render(["nested": value])
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
     }
     
@@ -249,27 +249,27 @@ class BoxTests: XCTestCase {
             let value: Set<CustomHashableBoxable> = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Infered element type
             let value: Set = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render([CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)] as Set)
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
         do {
             // Nested
             let value: Set<CustomHashableBoxable> = [CustomHashableBoxable(0),CustomHashableBoxable(1),CustomHashableBoxable(2)]
             let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
             let rendering = try! template.render(["nested": value])
-            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].index(of: rendering) != nil)
+            XCTAssertTrue(["012", "021", "102", "120", "201", "210"].firstIndex(of: rendering) != nil)
         }
     }
     
@@ -1033,7 +1033,7 @@ class BoxTests: XCTestCase {
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let rendering = try! template.render([0 as Int?, nil as CustomBoxable?, "foo" as String?])
+            let rendering = try! template.render([0, nil, "foo"])
             XCTAssertEqual(rendering, "0foo")
         }
         do {

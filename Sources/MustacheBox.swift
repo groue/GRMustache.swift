@@ -127,13 +127,15 @@ final public class MustacheBox : NSObject {
         }
         return Box(keyedSubscript(key))
     }
-    
+
+    public func render(_ info: RenderingInfo) throws -> Rendering {
+        return try self._render(info)
+    }
     
     // -------------------------------------------------------------------------
     // MARK: - Other facets
     
-    /// See the documentation of `RenderFunction`.
-    public fileprivate(set) var render: RenderFunction
+    fileprivate var _render: RenderFunction
     
     /// See the documentation of `FilterFunction`.
     public let filter: FilterFunction?
@@ -435,7 +437,7 @@ final public class MustacheBox : NSObject {
         self.didRender = didRender
         if let render = render {
             self.hasCustomRenderFunction = true
-            self.render = render
+            self._render = render
             super.init()
         } else {
             // The default render function: it renders {{variable}} tags as the
@@ -447,10 +449,10 @@ final public class MustacheBox : NSObject {
             // We have to set self.render twice in order to avoid the compiler
             // error: "variable 'self.render' captured by a closure before being
             // initialized"
-            self.render = { (_) in return Rendering("") }
+            self._render = { (_) in return Rendering("") }
             self.hasCustomRenderFunction = false
             super.init()
-            self.render = { [unowned self] (info: RenderingInfo) in
+            self._render = { [unowned self] (info: RenderingInfo) in
                 
                 // Default rendering depends on the tag type:
                 switch info.tag.type {
