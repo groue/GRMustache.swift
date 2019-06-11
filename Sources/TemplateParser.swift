@@ -40,13 +40,6 @@ final class TemplateParser {
     func parse(_ templateString:String, templateID: TemplateID?) {
         var currentDelimiters = ParserTagDelimiters(tagDelimiterPair: tagDelimiterPair)
         
-        let atString = { (index: String.Index, string: String?) -> Bool in
-            guard let string = string else {
-                return false
-            }
-            return String(templateString[index...]).hasPrefix(string)
-        }
-        
         var state: State = .start
         var lineNumber = 1
         var i = templateString.startIndex
@@ -60,15 +53,15 @@ final class TemplateParser {
                 if c == "\n" {
                     state = .text(startIndex: i, startLineNumber: lineNumber)
                     lineNumber += 1
-                } else if atString(i, currentDelimiters.unescapedTagStart) {
+                } else if index(i, isAt: currentDelimiters.unescapedTagStart, in: templateString) {
                     state = .unescapedTag(startIndex: i, startLineNumber: lineNumber)
                     i = templateString.index(i, offsetBy: currentDelimiters.unescapedTagStartLength)
                     i = templateString.index(before: i)
-                } else if atString(i, currentDelimiters.setDelimitersStart) {
+                } else if index(i, isAt: currentDelimiters.setDelimitersStart, in: templateString) {
                     state = .setDelimitersTag(startIndex: i, startLineNumber: lineNumber)
                     i = templateString.index(i, offsetBy: currentDelimiters.setDelimitersStartLength)
                     i = templateString.index(before: i)
-                } else if atString(i, currentDelimiters.tagDelimiterPair.0) {
+                } else if index(i, isAt: currentDelimiters.tagDelimiterPair.0, in: templateString) {
                     state = .tag(startIndex: i, startLineNumber: lineNumber)
                     i = templateString.index(i, offsetBy: currentDelimiters.tagStartLength)
                     i = templateString.index(before: i)
@@ -78,7 +71,7 @@ final class TemplateParser {
             case .text(let startIndex, let startLineNumber):
                 if c == "\n" {
                     lineNumber += 1
-                } else if atString(i, currentDelimiters.unescapedTagStart) {
+                } else if index(i, isAt: currentDelimiters.unescapedTagStart, in: templateString) {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
@@ -94,7 +87,7 @@ final class TemplateParser {
                     state = .unescapedTag(startIndex: i, startLineNumber: lineNumber)
                     i = templateString.index(i, offsetBy: currentDelimiters.unescapedTagStartLength)
                     i = templateString.index(before: i)
-                } else if atString(i, currentDelimiters.setDelimitersStart) {
+                } else if index(i, isAt: currentDelimiters.setDelimitersStart, in: templateString) {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
@@ -110,7 +103,7 @@ final class TemplateParser {
                     state = .setDelimitersTag(startIndex: i, startLineNumber: lineNumber)
                     i = templateString.index(i, offsetBy: currentDelimiters.setDelimitersStartLength)
                     i = templateString.index(before: i)
-                } else if atString(i, currentDelimiters.tagDelimiterPair.0) {
+                } else if index(i, isAt: currentDelimiters.tagDelimiterPair.0, in: templateString) {
                     if startIndex != i {
                         let range = startIndex..<i
                         let token = TemplateToken(
@@ -130,7 +123,7 @@ final class TemplateParser {
             case .tag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     lineNumber += 1
-                } else if atString(i, currentDelimiters.tagDelimiterPair.1) {
+                } else if index(i, isAt: currentDelimiters.tagDelimiterPair.1, in: templateString) {
                     let tagInitialIndex = templateString.index(startIndex, offsetBy: currentDelimiters.tagStartLength)
                     let tagInitial = templateString[tagInitialIndex]
                     let tokenRange = startIndex..<templateString.index(i, offsetBy: currentDelimiters.tagEndLength)
@@ -253,7 +246,7 @@ final class TemplateParser {
             case .unescapedTag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     lineNumber += 1
-                } else if atString(i, currentDelimiters.unescapedTagEnd) {
+                } else if index(i, isAt: currentDelimiters.unescapedTagEnd, in: templateString) {
                     let tagInitialIndex = templateString.index(startIndex, offsetBy: currentDelimiters.unescapedTagStartLength)
                     let content = String(templateString[tagInitialIndex..<i])
                     let token = TemplateToken(
@@ -272,7 +265,7 @@ final class TemplateParser {
             case .setDelimitersTag(let startIndex, let startLineNumber):
                 if c == "\n" {
                     lineNumber += 1
-                } else if atString(i, currentDelimiters.setDelimitersEnd) {
+                } else if index(i, isAt: currentDelimiters.setDelimitersEnd, in: templateString) {
                     let tagInitialIndex = templateString.index(startIndex, offsetBy: currentDelimiters.setDelimitersStartLength)
                     let content = String(templateString[tagInitialIndex..<i])
                     let newDelimiters = content.components(separatedBy: CharacterSet.whitespacesAndNewlines).filter { $0.count > 0 }
@@ -329,6 +322,12 @@ final class TemplateParser {
         }
     }
     
+    private func index(_ index: String.Index, isAt string: String?, in templateString: String) -> Bool {
+        guard let string = string else {
+            return false
+        }
+        return templateString[index...].hasPrefix(string)
+    }
     
     // MARK: - Private
     
