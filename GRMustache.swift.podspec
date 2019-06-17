@@ -13,4 +13,5 @@ Pod::Spec.new do |s|
 	s.tvos.deployment_target = '9.0'
 	s.requires_arc = true
 	s.framework = 'Foundation'
+	s.swift_version = '4.2'
 end
