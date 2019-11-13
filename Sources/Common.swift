@@ -149,6 +149,12 @@ extension MustacheError : CustomStringConvertible {
     }
 }
 
+// Make the `localizedDescription` property of an `Error` be the same as the `description`
+extension MustacheError : LocalizedError {
+    public var errorDescription: String? {
+        return description
+    }
+}
 
 /// A pair of tag delimiters, such as `("{{", "}}")`.
 ///
