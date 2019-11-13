@@ -93,6 +93,7 @@ public struct Configuration {
         contentType = .html
         baseContext = Context()
         tagDelimiterPair = ("{{", "}}")
+        throwWhenMissing = false
     }
     
     
@@ -295,6 +296,14 @@ public struct Configuration {
     /// You can also change the delimiters right in your templates using a "Set
     /// Delimiter tag": `{{=[[ ]]=}}` changes delimiters to `[[` and `]]`.
     public var tagDelimiterPair: TagDelimiterPair
+
+    // =========================================================================
+    // MARK: - Render configuration
+
+    /// Throw an error during rendering when a tag found in the template
+    /// is missing from the context, or the tag is in the context but its
+    /// value is nil.
+    public var throwWhenMissing: Bool
 }
 
 
