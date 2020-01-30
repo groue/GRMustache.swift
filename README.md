@@ -1003,6 +1003,8 @@ The rendering of NSObject depends on the actual class:
     With support for Objective-C runtime, templates can render object properties: `{{ user.name }}`.
     
     Subclasses can alter this behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol. For more information, check the rendering of [Custom Types](#custom-types) below.
+    
+    Note that when using GRMustache.swift via CocoaPods, you may run into issue [#28](https://github.com/groue/GRMustache.swift/issues/28).
 
 
 Custom Types
@@ -1032,6 +1034,7 @@ When extracting values from your NSObject subclasses, GRMustache.swift uses the 
 
 Subclasses can alter this default behavior by overriding the `mustacheBox` method of the `MustacheBoxable` protocol, described below:
 
+Note that when using GRMustache.swift via CocoaPods, you may run into issue [#28](https://github.com/groue/GRMustache.swift/issues/28).
 
 ### Pure Swift Values and MustacheBoxable
 
