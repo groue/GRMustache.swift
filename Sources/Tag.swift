@@ -53,7 +53,7 @@ public enum TagType {
 /// - seealso: RenderFunction
 /// - seealso: WillRenderFunction
 /// - seealso: DidRenderFunction
-public protocol Tag: class, CustomStringConvertible {
+public protocol Tag: AnyObject, CustomStringConvertible {
     
     // IMPLEMENTATION NOTE
     //
