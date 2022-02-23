@@ -208,6 +208,8 @@ public func Box(_ value: Any?) -> MustacheBox {
     switch value {
     case let boxable as MustacheBoxable:
         return boxable.mustacheBox
+    case let box as MustacheBox:
+        return box
     case let array as [Any?]:
         return MustacheBox(array: array)
     case let set as Set<AnyHashable>:
@@ -225,8 +227,7 @@ public func Box(_ value: Any?) -> MustacheBox {
     case let f as KeyedSubscriptFunction:
         return MustacheBox(keyedSubscript: f)
     default:
-        NSLog("%@", "Mustache warning: \(String(reflecting: value)) of type \(type(of: value)) is not MustacheBoxable, Array, Set, Dictionary, and is discarded.")
-        return EmptyBox
+        return MustacheBox(value: value)
     }
 }
 
