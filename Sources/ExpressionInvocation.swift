@@ -39,14 +39,26 @@ struct ExpressionInvocation {
             
         case .identifier(let identifier):
             // {{ identifier }}
-            
-            return context.mustacheBox(forKey: identifier)
+
+            let identifierBox = context.mustacheBox(forKey: identifier)
+
+            if DefaultConfiguration.throwWhenMissing, identifierBox.isEmpty {
+                throw MustacheError(kind: .renderError, message: "Missing identifier")
+            }
+
+            return identifierBox
 
         case .scoped(let baseExpression, let identifier):
             // {{ <expression>.identifier }}
-            
-            return try evaluate(context: context, expression: baseExpression).mustacheBox(forKey: identifier)
-            
+
+            let identifierBox = try evaluate(context: context, expression: baseExpression).mustacheBox(forKey: identifier)
+
+            if DefaultConfiguration.throwWhenMissing, identifierBox.isEmpty {
+                throw MustacheError(kind: .renderError, message: "Missing identifier")
+            }
+
+            return identifierBox
+
         case .filter(let filterExpression, let argumentExpression, let partialApplication):
             // {{ <expression>(<expression>) }}
             
