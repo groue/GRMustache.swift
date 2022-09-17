@@ -443,8 +443,9 @@ final public class TemplateRepository {
             } else {
                 templateBaseURL = self.baseURL
             }
-            
-            let templateURL = URL(string: templateFilename, relativeTo: templateBaseURL)!.standardizedFileURL
+
+            let encodedURLPath = templateFilename.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!
+            let templateURL = URL(string: encodedURLPath, relativeTo: templateBaseURL)!.standardizedFileURL
             let templateAbsoluteString = templateURL.absoluteString
             
             // Make sure partial relative paths can not escape repository root

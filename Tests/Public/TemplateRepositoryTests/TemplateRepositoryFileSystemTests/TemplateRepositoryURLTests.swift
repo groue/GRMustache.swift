@@ -127,4 +127,22 @@ class TemplateRepositoryURLTests: XCTestCase {
             XCTFail("Expected MustacheError")
         }
     }
+
+    func testFileNameContainsWhitespace() {
+        let testBundle = Bundle(for: type(of: self))
+        let directoryPath = testBundle.url(forResource: "TemplateRepositoryFileSystemTests", withExtension: nil)!
+        let repo = TemplateRepository(baseURL: directoryPath)
+        let template = try! repo.template(named: "contains whitespace")
+        let rendering = try! template.render()
+        XCTAssertEqual(rendering, "success\n")
+    }
+
+    func testFileAndDictionaryNameContainsWhitespace() {
+        let testBundle = Bundle(for: type(of: self))
+        let directoryPath = testBundle.url(forResource: "TemplateRepositoryFileSystemTests/contains whitespace", withExtension: nil)!
+        let repo = TemplateRepository(baseURL: directoryPath)
+        let template = try! repo.template(named: "contains whitespace")
+        let rendering = try! template.render()
+        XCTAssertEqual(rendering, "success\n")
+    }
 }
