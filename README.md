@@ -117,19 +117,20 @@ The [Swift Package Manager](https://swift.org/package-manager/) is the open sour
 To use GRMustache.swift with the Swift Package Manager, add https://github.com/groue/GRMustache.swift to the list of your package dependencies:
 
 ```swift
-import PackageDescription
-
-let package = Package(
-    name: "MyPackage",
-    targets: [],
-    dependencies: [
-        .Package(url: "https://github.com/groue/GRMustache.swift", majorVersion: 2, minor: 0),
-    ]
-)
+dependencies: [
+    .package(url: "https://github.com/groue/GRMustache.swift", from: "4.0.0")
+]
 ```
 
-Check [groue/GRMustacheSPM](https://github.com/groue/GRMustacheSPM) for a sample Swift package that uses GRMustache.swift.
+Add `Mustache` to your target:
 
+```swift
+targets: [
+    .target(
+        name: "MyTool",
+        dependencies: ["Mustache"])
+]
+```
 
 ### Manually
 
