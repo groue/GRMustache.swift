@@ -24,6 +24,9 @@ let package = Package(
             path: "Tests",
             exclude: [
                 "Carthage"
+            ],
+            resources: [
+                .process("Public/ServicesTests/LocalizerTestsBundle"), // localized strings
             ]
         )
     ]

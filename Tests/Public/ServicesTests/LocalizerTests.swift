@@ -26,7 +26,7 @@ import Mustache
 
 class LocalizerTests: XCTestCase {
     
-    lazy var localizableBundle: Bundle = Bundle(path: Bundle(for: type(of: self)).path(forResource: "LocalizerTestsBundle", ofType: nil)!)!
+    lazy var localizableBundle: Bundle = Bundle.module
     lazy var localizer: StandardLibrary.Localizer = StandardLibrary.Localizer(bundle: self.localizableBundle, table: nil)
     
     func testLocalizableBundle() {
