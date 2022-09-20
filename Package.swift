@@ -27,6 +27,7 @@ let package = Package(
             ],
             resources: [
                 .process("Public/ServicesTests/LocalizerTestsBundle"), // localized strings
+                .process("vendor")  // mustache specs
             ]
         )
     ]
