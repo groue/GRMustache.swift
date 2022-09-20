@@ -1,4 +1,4 @@
-// swift-tools-version:5.0
+// swift-tools-version:5.3
 
 import PackageDescription
 
@@ -14,6 +14,17 @@ let package = Package(
         .target(
             name: "Mustache",
             dependencies: [],
-            path: "Sources")
+            path: "Sources"
+        ),
+        .testTarget(
+            name: "MustacheTests",
+            dependencies: [
+                "Mustache"
+            ],
+            path: "Tests",
+            exclude: [
+                "Carthage"
+            ]
+        )
     ]
 ) 
