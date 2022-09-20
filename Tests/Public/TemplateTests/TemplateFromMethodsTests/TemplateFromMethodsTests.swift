@@ -36,7 +36,7 @@ class TemplateFromMethodsTests: XCTestCase {
         }
     }
     
-    var testBundle: Bundle { return Bundle(for: type(of: self)) }
+    var testBundle: Bundle { return Bundle.ofFileDirectory(filePath: #file)! }
     
     let templateName = "TemplateFromMethodsTests"
     var templateURL: URL { return testBundle.url(forResource: templateName, withExtension: "mustache")! }
