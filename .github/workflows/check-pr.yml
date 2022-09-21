@@ -1,0 +1,16 @@
+name: check-pr
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: swift build
+
+      - name: Test
+        run: swift test
