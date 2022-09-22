@@ -92,7 +92,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(willRender)
@@ -116,7 +116,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(willRender)
@@ -140,7 +140,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests")
         template.baseContext = template.baseContext.extendedContext(willRender)
@@ -164,7 +164,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(bundle: bundle)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(willRender)
@@ -195,7 +195,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(baseURL: bundle.resourceURL!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(willRender)
@@ -226,7 +226,7 @@ class TagTests: XCTestCase {
         }
         
         tagDescription = nil
-        let bundle = Bundle(for: type(of: self))
+        let bundle = Bundle.ofFileDirectory(filePath: #file)!
         let templateRepository = TemplateRepository(directoryPath: bundle.resourcePath!)
         var template = try! templateRepository.template(named: "TagTests_wrapper")
         template.baseContext = template.baseContext.extendedContext(willRender)

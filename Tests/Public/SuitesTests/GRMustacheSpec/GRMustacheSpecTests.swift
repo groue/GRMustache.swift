@@ -28,43 +28,43 @@ class GRMustacheSpecTests: SuiteTestCase {
     
     func testSuite() {
         // General
-        runTestsFromResource("comments.json", directory: "Tests/general")
-        runTestsFromResource("delimiters.json", directory: "Tests/general")
-        runTestsFromResource("general.json", directory: "Tests/general")
-        runTestsFromResource("partials.json", directory: "Tests/general")
-        runTestsFromResource("pragmas.json", directory: "Tests/general")
-        runTestsFromResource("sections.json", directory: "Tests/general")
-        runTestsFromResource("inverted_sections.json", directory: "Tests/general")
-        runTestsFromResource("text_rendering.json", directory: "Tests/general")
-        runTestsFromResource("variables.json", directory: "Tests/general")
+        runTestsFromResource("comments", ofType: "json")
+        runTestsFromResource("delimiters", ofType: "json")
+        runTestsFromResource("general", ofType: "json")
+        runTestsFromResource("partials", ofType: "json")
+        runTestsFromResource("pragmas", ofType: "json")
+        runTestsFromResource("sections", ofType: "json")
+        runTestsFromResource("inverted_sections", ofType: "json")
+        runTestsFromResource("text_rendering", ofType: "json")
+        runTestsFromResource("variables", ofType: "json")
         
         // Errors
-        runTestsFromResource("expression_parsing_errors.json", directory: "Tests/errors")
-        runTestsFromResource("tag_parsing_errors.json", directory: "Tests/errors")
+        runTestsFromResource("expression_parsing_errors", ofType: "json")
+        runTestsFromResource("tag_parsing_errors", ofType: "json")
         
         // Expressions
-        runTestsFromResource("compound_keys.json", directory: "Tests/expressions")
-        runTestsFromResource("filters.json", directory: "Tests/expressions")
-        runTestsFromResource("implicit_iterator.json", directory: "Tests/expressions")
+        runTestsFromResource("compound_keys", ofType: "json")
+        runTestsFromResource("filters", ofType: "json")
+        runTestsFromResource("implicit_iterator", ofType: "json")
         
         // Inheritance
-        runTestsFromResource("blocks.json", directory: "Tests/inheritance")
-        runTestsFromResource("partial_overrides.json", directory: "Tests/inheritance")
+        runTestsFromResource("blocks", ofType: "json")
+        runTestsFromResource("partial_overrides", ofType: "json")
         
         // Standard library
-        runTestsFromResource("each.json", directory: "Tests/standard_library")
-        runTestsFromResource("HTMLEscape.json", directory: "Tests/standard_library")
-        runTestsFromResource("javascriptEscape.json", directory: "Tests/standard_library")
-        runTestsFromResource("URLEscape.json", directory: "Tests/standard_library")
-        runTestsFromResource("zip.json", directory: "Tests/standard_library")
+        runTestsFromResource("each", ofType: "json")
+        runTestsFromResource("HTMLEscape", ofType: "json")
+        runTestsFromResource("javascriptEscape", ofType: "json")
+        runTestsFromResource("URLEscape", ofType: "json")
+        runTestsFromResource("zip", ofType: "json")
         
         // Values
-        runTestsFromResource("array.json", directory: "Tests/values")
-        runTestsFromResource("bool.json", directory: "Tests/values")
-        runTestsFromResource("dictionary.json", directory: "Tests/values")
-        runTestsFromResource("missing_value.json", directory: "Tests/values")
-        runTestsFromResource("null.json", directory: "Tests/values")
-        runTestsFromResource("number.json", directory: "Tests/values")
-        runTestsFromResource("string.json", directory: "Tests/values")
+        runTestsFromResource("array", ofType: "json")
+        runTestsFromResource("bool", ofType: "json")
+        runTestsFromResource("dictionary", ofType: "json")
+        runTestsFromResource("missing_value", ofType: "json")
+        runTestsFromResource("null", ofType: "json")
+        runTestsFromResource("number", ofType: "json")
+        runTestsFromResource("string", ofType: "json")
     }
 }

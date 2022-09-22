@@ -27,7 +27,7 @@ import Mustache
 class TemplateRepositoryBundleTests: XCTestCase {
     
     func testTemplateRepositoryWithBundle() {
-        let repo = TemplateRepository(bundle: Bundle(for: type(of: self)))
+        let repo = TemplateRepository(bundle: Bundle.ofFileDirectory(filePath: #file)!)
         var template: Template
         var rendering: String
         
@@ -51,7 +51,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithBundleTemplateExtensionEncoding() {
-        var repo = TemplateRepository(bundle: Bundle(for: type(of: self)), templateExtension: "text", encoding: String.Encoding.utf8)
+        var repo = TemplateRepository(bundle: Bundle.ofFileDirectory(filePath: #file)!, templateExtension: "text", encoding: String.Encoding.utf8)
         var template: Template
         var rendering: String
         
@@ -69,7 +69,7 @@ class TemplateRepositoryBundleTests: XCTestCase {
         rendering = try! template.render()
         XCTAssertEqual(rendering, "TemplateRepositoryBundleTests.text TemplateRepositoryBundleTests_partial.text")
         
-        repo = TemplateRepository(bundle: Bundle(for: type(of: self)), templateExtension: "", encoding: String.Encoding.utf8)
+        repo = TemplateRepository(bundle: Bundle.ofFileDirectory(filePath: #file), templateExtension: "", encoding: String.Encoding.utf8)
         
         do {
             _ = try repo.template(named: "notFound")

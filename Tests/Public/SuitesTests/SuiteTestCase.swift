@@ -25,27 +25,27 @@ import XCTest
 import Mustache
 
 class SuiteTestCase: XCTestCase {
-    
-    func runTestsFromResource(_ name: String, directory: String) {
-        let testBundle = Bundle(for: type(of: self))
-        guard let path = testBundle.path(forResource: name, ofType: nil, inDirectory: directory) else {
-            XCTFail("No such test suite \(directory)/\(name)")
+
+    func runTestsFromResource(_ name: String, ofType: String) {
+        let testBundle = Bundle.module
+        guard let path = testBundle.path(forResource: name, ofType: ofType) else {
+            XCTFail("No such test suite \(name)")
             return
         }
-        
+
         let data: Data! = try? Data(contentsOf: URL(fileURLWithPath: path))
         if data == nil {
             XCTFail("No test suite in \(path)")
             return
         }
-        
+
         let testSuite = try! JSONSerialization.jsonObject(with: data, options:JSONSerialization.ReadingOptions(rawValue: 0)) as! NSDictionary
-        
+
         guard let tests = testSuite["tests"] as? NSArray else {
             XCTFail("Missing tests in \(path)")
             return
         }
-        
+
         for testDictionary in tests {
             let test = Test(path: path, dictionary: testDictionary as! NSDictionary)
             test.run()

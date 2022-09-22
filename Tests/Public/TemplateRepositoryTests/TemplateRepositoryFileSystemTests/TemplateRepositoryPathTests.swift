@@ -27,7 +27,7 @@ import Mustache
 class TemplateRepositoryPathTests: XCTestCase {
     
     func testTemplateRepositoryWithURL() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests_UTF8", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         var template: Template
@@ -57,7 +57,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
     
     func testTemplateRepositoryWithURLTemplateExtensionEncoding() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         var directoryPath: String
         var repo: TemplateRepository
         var template: Template
@@ -101,7 +101,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
     
     func testAbsolutePartialName() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         let template = try! repo.template(named: "base")
@@ -110,7 +110,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
     
     func testPartialNameCanNotEscapeTemplateRepositoryRootDirectory() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let repo = TemplateRepository(directoryPath: (directoryPath as NSString).appendingPathComponent("partials"))
         
@@ -129,7 +129,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
 
     func testFileNameContainsWhitespace() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         let template = try! repo.template(named: "contains whitespace")
@@ -138,7 +138,7 @@ class TemplateRepositoryPathTests: XCTestCase {
     }
 
     func testFileAndDictonaryNameContainsWhitespace() {
-        let testBundle = Bundle(for: type(of: self))
+        let testBundle = Bundle.ofFileDirectory(filePath: #file)!
         let directoryPath = testBundle.path(forResource: "TemplateRepositoryFileSystemTests/contains whitespace", ofType: nil)!
         let repo = TemplateRepository(directoryPath: directoryPath)
         let template = try! repo.template(named: "contains whitespace")
