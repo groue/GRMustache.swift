@@ -149,7 +149,7 @@ class MustacheRenderableGuideTests: XCTestCase {
                     }
                 }
                 let render = { (info: RenderingInfo) -> Rendering in
-                    let template = try! Template(named: "Movie", bundle: Bundle.ofFileDirectory(filePath: #file))//Bundle(for: MustacheRenderableGuideTests.self))
+                    let template = try! Template(named: "Movie", bundle: Bundle.ofFileDirectory(filePath: #file))
                     let context = info.context.extendedContext(self)
                     return try template.render(context)
                 }
