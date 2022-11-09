@@ -27,7 +27,8 @@ let package = Package(
         .target(
             name: "GRMustacheKeyAccess",
             path: "ObjC",
-            sources: ["GRMustacheKeyAccess.m"]
+            sources: ["GRMustacheKeyAccess.m"],
+            publicHeadersPath: "."
         ),
         .testTarget(
             name: "MustacheTests",
