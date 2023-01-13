@@ -18,8 +18,17 @@ let package = Package(
     targets: [
         .target(
             name: "Mustache",
-            dependencies: [],
-            path: "Sources"
+            dependencies: ["GRMustacheKeyAccess"],
+            path: "Sources",
+            swiftSettings: [
+                .define("OBJC")
+            ]
+        ),
+        .target(
+            name: "GRMustacheKeyAccess",
+            path: "ObjC",
+            sources: ["GRMustacheKeyAccess.m"],
+            publicHeadersPath: "."
         ),
         .testTarget(
             name: "MustacheTests",
