@@ -43,7 +43,7 @@ let EachFilter = Filter { (box: MustacheBox) -> Any? in
     // (NSDictionary, [String: Int], [String: CustomObject], etc.
     if let dictionary = box.dictionaryValue {
         let count = dictionary.count
-        let customRenderFunctions = dictionary.enumerated().map { (index: Int, element: (key: String, box: MustacheBox)) -> Any? in
+        let customRenderFunctions = dictionary.enumerated().map { (index: Int, element: (key: String, value: MustacheBox)) -> Any? in
             let customRenderFunction: RenderFunction = { info in
                 // Push positional keys in the context stack and then perform
                 // a regular rendering.
@@ -57,7 +57,7 @@ let EachFilter = Filter { (box: MustacheBox) -> Any? in
                 
                 var info = info
                 info.context = info.context.extendedContext(position)
-                return try element.box.render(info)
+                return try element.value.render(info)
             }
             return customRenderFunction
         }
