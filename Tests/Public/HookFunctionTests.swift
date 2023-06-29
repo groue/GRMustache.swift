@@ -208,7 +208,7 @@ class HookFunctionTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(willRender)
         willRenderCount = 0
         renderedValue = nil
-        rendering = try! template.render(["subject": "foo", "filter": Filter(filter)])
+        rendering = try! template.render(["subject": "foo", "filter": Filter(filter)] as [String : Any])
         XCTAssertEqual(rendering, "FOO")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.value as! String), "FOO")
@@ -217,7 +217,7 @@ class HookFunctionTests: XCTestCase {
         template.baseContext = template.baseContext.extendedContext(willRender)
         willRenderCount = 0
         renderedValue = nil
-        rendering = try! template.render(["subject": "foo", "filter": Filter(filter)])
+        rendering = try! template.render(["subject": "foo", "filter": Filter(filter)] as [String : Any])
         XCTAssertEqual(rendering, "3")
         XCTAssertEqual(willRenderCount, 1)
         XCTAssertEqual((renderedValue!.value as! Int), 3)
