@@ -27,7 +27,9 @@ import Mustache
 private struct CustomHashableBoxable : MustacheBoxable, Hashable {
     let int: Int
     init(_ int: Int) { self.int = int }
-    var hashValue: Int { return int }
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(int)
+    }
     var mustacheBox: MustacheBox {
         // Don't inherit the boolean nature of int
         return MustacheBox(
@@ -588,14 +590,14 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type (won't compile)
-            let value: Dictionary = ["int": [1, 2], "string": ["foo", "bar"]]
+            let value: Dictionary = ["int": [1, 2] as [Any], "string": ["foo", "bar"]]
             let template = try! Template(string: "{{int}}, {{string}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "12, foobar")
         }
         do {
             // Infered type (won't compile)
-            let value = ["int": [1, 2], "string": ["foo", "bar"]]
+            let value = ["int": [1, 2] as [Any], "string": ["foo", "bar"]]
             let template = try! Template(string: "{{int}}, {{string}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "12, foobar")
@@ -603,7 +605,7 @@ class BoxTests: XCTestCase {
         do {
             // Infered type
             let template = try! Template(string: "{{int}}, {{string}}")
-            let value = ["int": [1, 2], "string": ["foo", "bar"]]
+            let value = ["int": [1, 2] as [Any], "string": ["foo", "bar"]]
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "12, foobar")
         }
@@ -626,14 +628,14 @@ class BoxTests: XCTestCase {
         }
         do {
             // Infered element type (won't compile)
-            let value: Dictionary = ["int": ["name": 1], "string": ["name": "foo"]]
+            let value: Dictionary = ["int": ["name": 1] as [String : Any], "string": ["name": "foo"]]
             let template = try! Template(string: "{{int.name}}, {{string.name}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "1, foo")
         }
         do {
             // Infered type (won't compile)
-            let value = ["int": ["name": 1], "string": ["name": "foo"]]
+            let value = ["int": ["name": 1] as [String : Any], "string": ["name": "foo"]]
             let template = try! Template(string: "{{int.name}}, {{string.name}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "1, foo")
@@ -641,7 +643,7 @@ class BoxTests: XCTestCase {
         do {
             // Infered type
             let template = try! Template(string: "{{int.name}}, {{string.name}}")
-            let value = ["int": ["name": 1], "string": ["name": "foo"]]
+            let value = ["int": ["name": 1] as [String : Any], "string": ["name": "foo"]]
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "1, foo")
         }
@@ -912,7 +914,7 @@ class BoxTests: XCTestCase {
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let rendering = try! template.render([0,"foo"])
+            let rendering = try! template.render([0,"foo"] as [Any])
             XCTAssertEqual(rendering, "0foo")
         }
         do {
@@ -927,21 +929,21 @@ class BoxTests: XCTestCase {
     func testArrayOfArray() {
         do {
             // Explicit type
-            let value: [Any] = [[0,"foo"]]
+            let value: [Any] = [[0,"foo"] as [Any]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "0foo")
         }
         do {
             // Infered element type
-            let value: Array = [[0,"foo"]]
+            let value: Array = [[0,"foo"] as [Any]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "0foo")
         }
         do {
             // Infered type
-            let value = [[0,"foo"]]
+            let value = [[0,"foo"] as [Any]]
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
             let rendering = try! template.render(value)
             XCTAssertEqual(rendering, "0foo")
@@ -949,12 +951,12 @@ class BoxTests: XCTestCase {
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let rendering = try! template.render([[0,"foo"]])
+            let rendering = try! template.render([[0,"foo"] as [Any]])
             XCTAssertEqual(rendering, "0foo")
         }
         do {
             // Nested
-            let value: [Any] = [[0,"foo"]]
+            let value: [Any] = [[0,"foo"] as [Any]]
             let template = try! Template(string: "{{#nested}}{{#.}}{{.}}{{/}}{{/}}")
             let rendering = try! template.render(["nested": value])
             XCTAssertEqual(rendering, "0foo")
@@ -1033,7 +1035,7 @@ class BoxTests: XCTestCase {
         do {
             // Direct argument
             let template = try! Template(string: "{{#.}}{{.}}{{/}}")
-            let rendering = try! template.render([0, nil, "foo"])
+            let rendering = try! template.render([0, nil, "foo"] as [Any?])
             XCTAssertEqual(rendering, "0foo")
         }
         do {
