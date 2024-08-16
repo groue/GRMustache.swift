@@ -21,7 +21,9 @@ let package = Package(
             dependencies: ["GRMustacheKeyAccess"],
             path: "Sources",
             swiftSettings: [
-                .define("OBJC")
+                .define("OBJC"),
+                .unsafeFlags(["-Xfrontend", "-strict-concurrency=complete"]),
+                .unsafeFlags(["-Xfrontend", "-warnings-as-errors"])
             ]
         ),
         .target(
