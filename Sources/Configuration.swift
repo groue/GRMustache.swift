@@ -303,4 +303,4 @@ public struct Configuration {
 
 /// The default configuration that is used unless specified otherwise by a
 /// TemplateRepository.
-public var DefaultConfiguration = Configuration()
+nonisolated(unsafe) public var DefaultConfiguration = Configuration()
