@@ -160,8 +160,10 @@ public struct StandardLibrary {
     /// 
     ///     let template = ...
     ///     template.register(StandardLibrary.each, forKey: "each")
-    public static let each = EachFilter
-    
+    public static var each: FilterFunction {
+        EachFilter()
+    }
+
     /// The zip filter iterates several lists all at once. On each step, one object
     /// from each input list enters the rendering context, and makes its own keys
     /// available for rendering.
@@ -205,5 +207,7 @@ public struct StandardLibrary {
     /// 
     ///     let template = ...
     ///     template.register(StandardLibrary.zip, forKey: "zip")
-    public static let zip = ZipFilter
+    public static var zip: FilterFunction {
+        ZipFilter()
+    }
 }

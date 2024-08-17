@@ -23,66 +23,68 @@
 
 import Foundation
 
-let ZipFilter = VariadicFilter { (boxes) in
-    
-    // Turn collection arguments into iterators. Iterators can be iterated
-    // all together, and this is what we need.
-    //
-    // Other kinds of arguments generate an error.
-    
-    var zippedIterators: [AnyIterator<MustacheBox>] = []
-    
-    for box in boxes {
-        if box.isEmpty {
-            // Missing collection does not provide anything
-        } else if let array = box.arrayValue {
-            // Array
-            zippedIterators.append(AnyIterator(array.makeIterator()))
-        } else {
-            // Error
-            throw MustacheError(kind: .renderError, message: "Non-enumerable argument in zip filter: `\(box.value.map { String(reflecting: $0) } ?? "nil")`")
-        }
-    }
-    
-    
-    // Build an array of custom render functions
-    
-    var renderFunctions: [RenderFunction] = []
-    
-    while true {
-        
-        // Extract from all iterators the boxes that should enter the rendering
-        // context at each iteration.
+func ZipFilter() -> FilterFunction {
+    VariadicFilter { (boxes) in
+
+        // Turn collection arguments into iterators. Iterators can be iterated
+        // all together, and this is what we need.
         //
-        // Given the [1,2,3], [a,b,c] input collections, those boxes would be
-        // [1,a] then [2,b] and finally [3,c].
-        
-        var zippedBoxes: [MustacheBox] = []
-        for iterator in zippedIterators {
-            var iterator = iterator
-            if let box = iterator.next() {
-                zippedBoxes.append(box)
+        // Other kinds of arguments generate an error.
+
+        var zippedIterators: [AnyIterator<MustacheBox>] = []
+
+        for box in boxes {
+            if box.isEmpty {
+                // Missing collection does not provide anything
+            } else if let array = box.arrayValue {
+                // Array
+                zippedIterators.append(AnyIterator(array.makeIterator()))
+            } else {
+                // Error
+                throw MustacheError(kind: .renderError, message: "Non-enumerable argument in zip filter: `\(box.value.map { String(reflecting: $0) } ?? "nil")`")
             }
         }
-        
-        
-        // All iterators have been enumerated: stop
-        
-        if zippedBoxes.isEmpty {
-            break;
+
+
+        // Build an array of custom render functions
+
+        var renderFunctions: [RenderFunction] = []
+
+        while true {
+
+            // Extract from all iterators the boxes that should enter the rendering
+            // context at each iteration.
+            //
+            // Given the [1,2,3], [a,b,c] input collections, those boxes would be
+            // [1,a] then [2,b] and finally [3,c].
+
+            var zippedBoxes: [MustacheBox] = []
+            for iterator in zippedIterators {
+                let iterator = iterator
+                if let box = iterator.next() {
+                    zippedBoxes.append(box)
+                }
+            }
+
+
+            // All iterators have been enumerated: stop
+
+            if zippedBoxes.isEmpty {
+                break;
+            }
+
+
+            // Build a render function which extends the rendering context with
+            // zipped boxes before rendering the tag.
+
+            let renderFunction: RenderFunction = { (info) -> Rendering in
+                let context = zippedBoxes.reduce(info.context) { (context, box) in context.extendedContext(box) }
+                return try info.tag.render(context)
+            }
+
+            renderFunctions.append(renderFunction)
         }
-        
-        
-        // Build a render function which extends the rendering context with
-        // zipped boxes before rendering the tag.
-        
-        let renderFunction: RenderFunction = { (info) -> Rendering in
-            var context = zippedBoxes.reduce(info.context) { (context, box) in context.extendedContext(box) }
-            return try info.tag.render(context)
-        }
-        
-        renderFunctions.append(renderFunction)
+
+        return renderFunctions
     }
-    
-    return renderFunctions
 }
