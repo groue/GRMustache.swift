@@ -22,7 +22,7 @@
 
 
 @available(*, unavailable, message:"Use nil instead.")
-public func Box() -> MustacheBox { return EmptyBox }
+public func Box() -> MustacheBox { return .empty }
 
 extension Template {
     @available(*, unavailable, renamed:"register(_:forKey:)")
@@ -31,16 +31,16 @@ extension Template {
 
 extension Context {
     @available(*, unavailable, renamed:"mustacheBox(forKey:)")
-    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
-    
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return .empty }
+
     @available(*, unavailable, renamed:"mustacheBox(forExpression:)")
-    public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox { return EmptyBox }
-    
+    public func mustacheBoxForExpression(_ string: String) throws -> MustacheBox { return .empty }
+
     @available(*, unavailable, renamed:"extendedContext(withRegisteredValue:forKey:)")
     func contextWithRegisteredKey(_ key: String, box: MustacheBox) -> Context { return self }
 }
 
 extension MustacheBox {
     @nonobjc @available(*, unavailable, renamed:"mustacheBox(forKey:)")
-    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return EmptyBox }
+    public func mustacheBoxForKey(_ key: String) -> MustacheBox { return .empty }
 }
