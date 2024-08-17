@@ -50,8 +50,10 @@ public struct StandardLibrary {
     /// 
     ///     let template = ...
     ///     template.register(StandardLibrary.HTMLEscape, forKey: "HTMLEscape")
-    public static let HTMLEscape: MustacheBoxable = HTMLEscapeHelper()
-    
+    public static var HTMLEscape: MustacheBoxable {
+        HTMLEscapeHelper()
+    }
+
     /// As a filter, `URLEscape` returns its argument, percent-escaped.
     /// 
     ///     <a href="http://google.com?q={{ URLEscape(query) }}">...</a>
@@ -74,8 +76,10 @@ public struct StandardLibrary {
     /// 
     ///     let template = ...
     ///     template.register(StandardLibrary.URLEscape, forKey: "URLEscape")
-    public static let URLEscape: MustacheBoxable = URLEscapeHelper()
-    
+    public static var URLEscape: MustacheBoxable {
+        URLEscapeHelper()
+    }
+
     /// As a filter, `javascriptEscape` outputs a Javascript and JSON-savvy string:
     /// 
     ///     <script type="text/javascript">
@@ -106,8 +110,10 @@ public struct StandardLibrary {
     /// 
     ///     let template = ...
     ///     template.register(StandardLibrary.javascriptEscape, forKey: "javascriptEscape")
-    public static let javascriptEscape: MustacheBoxable = JavascriptEscapeHelper()
-    
+    public static var javascriptEscape: MustacheBoxable {
+        JavascriptEscapeHelper()
+    }
+
     /// Iteration is natural to Mustache templates:
     /// `{{# users }}{{ name }}, {{/ users }}` renders "Alice, Bob, etc." when the
     /// `users` key is given a list of users.
