@@ -470,8 +470,9 @@ public typealias RenderFunction = (_ info: RenderingInfo) throws -> Rendering
 ///     let rendering = try! template.render(data)
 /// 
 /// - parameter lambda: A `String -> String` function.
+/// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
 /// - returns: A RenderFunction.
-public func Lambda(_ lambda: @escaping (String) -> String) -> RenderFunction {
+public func Lambda(_ lambda: @escaping (String) -> String, configuration: Configuration = .default) -> RenderFunction {
     return { (info: RenderingInfo) in
         switch info.tag.type {
         case .variable:
@@ -483,7 +484,7 @@ public func Lambda(_ lambda: @escaping (String) -> String) -> RenderFunction {
             // https://github.com/mustache/spec/blob/83b0721610a4e11832e83df19c73ace3289972b9/specs/%7Elambdas.yml#L117
             // > Lambdas used for sections should parse with the current delimiters
             
-            let templateRepository = TemplateRepository()
+            let templateRepository = TemplateRepository(configuration: configuration)
             templateRepository.configuration.tagDelimiterPair = info.tag.tagDelimiterPair
             
             let templateString = lambda(info.tag.innerTemplateString)
@@ -585,8 +586,9 @@ public func Lambda(_ lambda: @escaping (String) -> String) -> RenderFunction {
 ///     let rendering = try! template.render(data)
 /// 
 /// - parameter lambda: A `() -> String` function.
+/// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
 /// - returns: A RenderFunction.
-public func Lambda(_ lambda: @escaping () -> String) -> RenderFunction {
+public func Lambda(_ lambda: @escaping () -> String, configuration: Configuration = .default) -> RenderFunction {
     return { (info: RenderingInfo) in
         switch info.tag.type {
         case .variable:
@@ -597,7 +599,7 @@ public func Lambda(_ lambda: @escaping () -> String) -> RenderFunction {
             //
             // Let's render a text template:
             
-            let templateRepository = TemplateRepository()
+            let templateRepository = TemplateRepository(configuration: configuration)
             templateRepository.configuration.contentType = .text
             
             let templateString = lambda()
@@ -658,7 +660,7 @@ public func Lambda(_ lambda: @escaping () -> String) -> RenderFunction {
             // {{# lambda }}...{{/ lambda }}
             //
             // Behave as a true object, and render the section.
-            let context = info.context.extendedContext(Lambda(lambda))
+            let context = info.context.extendedContext(Lambda(lambda, configuration: configuration))
             return try info.tag.render(context)
         }
     }

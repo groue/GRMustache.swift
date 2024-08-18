@@ -41,7 +41,7 @@ final class TemplateGenerator {
     let configuration: Configuration
     
     init(configuration: Configuration? = nil) {
-        self.configuration = configuration ?? DefaultConfiguration
+        self.configuration = configuration ?? .default
     }
     
     func stringFromTemplateAST(_ templateAST: TemplateAST) -> String {

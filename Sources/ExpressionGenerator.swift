@@ -33,7 +33,7 @@ final class ExpressionGenerator {
     let configuration: Configuration
     
     init(configuration: Configuration? = nil) {
-        self.configuration = configuration ?? DefaultConfiguration
+        self.configuration = configuration ?? .default
     }
     
     func stringFromExpression(_ expression: Expression) -> String {

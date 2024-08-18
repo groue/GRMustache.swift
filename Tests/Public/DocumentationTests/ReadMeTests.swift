@@ -45,12 +45,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 
 
 class ReadMeTests: XCTestCase {
-    
-    override func tearDown() {
-        super.tearDown()
-        DefaultConfiguration = Configuration()
-    }
-    
+
     func testReadmeExample1() {
         let testBundle = Bundle.ofFileDirectory(filePath: #file)
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
@@ -82,14 +77,14 @@ class ReadMeTests: XCTestCase {
         
         
         // Register the pluralize filter for all Mustache renderings:
-        
-        Mustache.DefaultConfiguration.register(pluralizeFilter, forKey: "pluralize")
-        
+        var configuration = Configuration.default
+        configuration.register(pluralizeFilter, forKey: "pluralize")
+
         
         // I have 3 cats.
         
         let testBundle = Bundle.ofFileDirectory(filePath: #file)
-        let template = try! Template(named: "ReadMeExample2", bundle: testBundle)
+        let template = try! Template(named: "ReadMeExample2", bundle: testBundle, configuration: configuration)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = try! template.render(data)
         XCTAssertEqual(rendering, "I have 3 cats.")

@@ -106,8 +106,8 @@ final public class TemplateRepository {
     /// 
     ///     let repository = TemplateRepository()
     ///     let template = try! repository.template(string: "Hello {{name}}")
-    public init(dataSource: TemplateRepositoryDataSource? = nil) {
-        configuration = DefaultConfiguration
+    public init(dataSource: TemplateRepositoryDataSource? = nil, configuration: Configuration = .default) {
+        self.configuration = configuration
         templateASTCache = [:]
         self.dataSource = dataSource
     }
@@ -123,8 +123,9 @@ final public class TemplateRepository {
     /// 
     /// - parameter templates: A dictionary whose keys are template names and
     ///   values template strings.
-    convenience public init(templates: [String: String]) {
-        self.init(dataSource: DictionaryDataSource(templates: templates))
+    /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
+    convenience public init(templates: [String: String], configuration: Configuration = .default) {
+        self.init(dataSource: DictionaryDataSource(templates: templates), configuration: configuration)
     }
     
     /// Creates a TemplateRepository that loads templates from a directory.
@@ -160,8 +161,9 @@ final public class TemplateRepository {
     ///   extension is "mustache".
     /// - parameter encoding: The encoding of template files. Default encoding
     ///   is UTF-8.
-    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding))
+    /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
+    convenience public init(directoryPath: String, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8, configuration: Configuration = .default) {
+        self.init(dataSource: URLDataSource(baseURL: URL(fileURLWithPath: directoryPath, isDirectory: true), templateExtension: templateExtension, encoding: encoding), configuration: configuration)
     }
     
     /// Creates a TemplateRepository that loads templates from a URL.
@@ -197,8 +199,9 @@ final public class TemplateRepository {
     ///   Default extension is "mustache".
     /// - parameter encoding: The encoding of template resources. Default
     ///   encoding is UTF-8.
-    convenience public init(baseURL: URL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding))
+    /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
+    convenience public init(baseURL: URL, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8, configuration: Configuration = .default) {
+        self.init(dataSource: URLDataSource(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding), configuration: configuration)
     }
     
     /// Creates a TemplateRepository that loads templates stored as resources in
@@ -215,8 +218,9 @@ final public class TemplateRepository {
     ///   Default extension is "mustache".
     /// - parameter encoding: The encoding of template resources. Default
     ///   encoding is UTF-8.
-    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8) {
-        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main, templateExtension: templateExtension, encoding: encoding))
+    /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
+    convenience public init(bundle: Bundle?, templateExtension: String? = "mustache", encoding: String.Encoding = String.Encoding.utf8, configuration: Configuration = .default) {
+        self.init(dataSource: BundleDataSource(bundle: bundle ?? Bundle.main, templateExtension: templateExtension, encoding: encoding), configuration: configuration)
     }
     
     
