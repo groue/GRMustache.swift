@@ -3,16 +3,15 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-6-orange.svg?style
 
 ### Mustache templates for Swift
 
-**Latest release**: Augst 19, 2024 &bull; version 5.0.0 &bull; [CHANGELOG](https://github.com/groue/GRMustache.swift/releases)
+**Latest release**: August 19, 2024 &bull; version 5.0.0 &bull; [CHANGELOG](https://github.com/groue/GRMustache.swift/releases)
 
-**Requirements**: iOS 8.0+ / OSX 10.10+ / tvOS 9.0+ &bull; Xcode 16+ &bull; Swift 6
+**Requirements**: iOS 8.0+ / OSX 10.10+ / tvOS 9.0+ &bull; Xcode 16+ &bull; Swift 5
 
 - Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/1.0.1)
 - Swift 2.3: use the [version 1.1.0](https://github.com/groue/GRMustache.swift/tree/1.1.0)
-- Swift 4.0: use the [version 3.0.0](https://github.com/fumito-ito/GRMustache.swift/tree/3.0.0)
-- Swift 4.2: use the [version 3.1.0](https://github.com/fumito-ito/GRMustache.swift/tree/3.1.0)
-- Swift 5.0: use the [version 4.0.0](https://github.com/fumito-ito/GRMustache.swift/tree/4.0.0)
-- Swift 6.0: use the [version 5.0.0](https://github.com/fumito-ito/GRMustache.swift/tree/5.0.0)
+- Swift 4.0: use the [version 3.0.0](https://github.com/groue/GRMustache.swift/tree/3.0.0)
+- Swift 4.2: use the [version 3.1.0](https://github.com/groue/GRMustache.swift/tree/3.1.0)
+- Swift 5.0: use the [version 4.0.0](https://github.com/groue/GRMustache.swift/tree/4.0.0) or later
 
 Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 
