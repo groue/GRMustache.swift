@@ -48,7 +48,7 @@ public enum ContentType {
 public struct MustacheError : Error {
     
     /// MustacheError types
-    public enum Kind : Int {
+    public enum Kind : Int, Sendable {
         case templateNotFound
         case parseError
         case renderError

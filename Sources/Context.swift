@@ -111,7 +111,7 @@ final public class Context {
     public var topBox: MustacheBox {
         switch type {
         case .root:
-            return EmptyBox
+            return .empty
         case .box(box: let box, parent: _):
             return box
         case .partialOverride(partialOverride: _, parent: let parent):
@@ -151,7 +151,7 @@ final public class Context {
         
         switch type {
         case .root:
-            return EmptyBox
+            return .empty
         case .box(box: let box, parent: let parent):
             let innerBox = box.mustacheBox(forKey: key)
             if innerBox.isEmpty {

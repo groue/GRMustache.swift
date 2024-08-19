@@ -75,7 +75,13 @@
 /// Templates can also be configured individually. See the documentation of each
 /// Configuration method for more details.
 public struct Configuration {
-    
+
+    /// The default configuration that is used unless specified otherwise by a
+    /// TemplateRepository.
+    public static var `default`: Configuration {
+        Configuration()
+    }
+
     // =========================================================================
     // MARK: - Factory Configuration
     
@@ -296,11 +302,3 @@ public struct Configuration {
     /// Delimiter tag": `{{=[[ ]]=}}` changes delimiters to `[[` and `]]`.
     public var tagDelimiterPair: TagDelimiterPair
 }
-
-
-// =============================================================================
-// MARK: - Default Configuration
-
-/// The default configuration that is used unless specified otherwise by a
-/// TemplateRepository.
-public var DefaultConfiguration = Configuration()

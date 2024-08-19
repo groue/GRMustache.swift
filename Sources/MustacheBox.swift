@@ -123,7 +123,7 @@ final public class MustacheBox : NSObject {
     /// - returns: The MustacheBox for *key*.
     public func mustacheBox(forKey key: String) -> MustacheBox {
         guard let keyedSubscript = keyedSubscript else {
-            return EmptyBox
+            return MustacheBox.empty
         }
         return Box(keyedSubscript(key))
     }

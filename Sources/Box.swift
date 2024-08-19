@@ -202,7 +202,7 @@ public protocol MustacheBoxable {
 /// - returns: A MustacheBox.
 public func Box(_ value: Any?) -> MustacheBox {
     guard let value = value else {
-        return EmptyBox
+        return .empty
     }
     
     switch value {
@@ -226,7 +226,7 @@ public func Box(_ value: Any?) -> MustacheBox {
         return MustacheBox(keyedSubscript: f)
     default:
         NSLog("%@", "Mustache warning: \(String(reflecting: value)) of type \(type(of: value)) is not MustacheBoxable, Array, Set, Dictionary, and is discarded.")
-        return EmptyBox
+        return .empty
     }
 }
 
@@ -339,18 +339,18 @@ extension MustacheBox {
                     if let first = array.first {
                         return Box(first)
                     } else {
-                        return EmptyBox
+                        return MustacheBox.empty
                     }
                 case "last":    // C.Index: BidirectionalIndexType
                     if let last = array.last {
                         return Box(last)
                     } else {
-                        return EmptyBox
+                        return MustacheBox.empty
                     }
                 case "count":   // C.IndexDistance == Int
                     return Box(array.count)
                 default:
-                    return EmptyBox
+                    return MustacheBox.empty
                 }
             },
             render: { (info: RenderingInfo) in
@@ -376,12 +376,12 @@ extension MustacheBox {
                     if let first = set.first {
                         return Box(first)
                     } else {
-                        return EmptyBox
+                        return MustacheBox.empty
                     }
                 case "count":   // C.IndexDistance == Int
                     return Box(set.count)
                 default:
-                    return EmptyBox
+                    return MustacheBox.empty
                 }
             },
             render: { (info: RenderingInfo) in
@@ -415,10 +415,14 @@ extension MustacheBox {
                 if let value = dictionary[key] {
                     return Box(value)
                 } else {
-                    return EmptyBox
+                    return MustacheBox.empty
                 }
         })
     }
 }
 
-let EmptyBox = MustacheBox()
+extension MustacheBox {
+    static var empty: MustacheBox {
+        MustacheBox()
+    }
+}
