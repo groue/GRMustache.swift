@@ -7,6 +7,9 @@ jobs:
     runs-on: macos-latest
 
     steps:
+      - name: Select Xcode version
+        run: sudo xcode-select -s '/Applications/Xcode_16_beta_5.app/Contents/Developer'
+
       - uses: actions/checkout@v2
         with:
           submodules: true
