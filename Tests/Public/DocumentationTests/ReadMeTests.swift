@@ -47,7 +47,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 class ReadMeTests: XCTestCase {
 
     func testReadmeExample1() {
-        let testBundle = Bundle.ofFileDirectory(filePath: #file)
+        let testBundle = Bundle.ofFileDirectory(filePath: #filePath)
         let template = try! Template(named: "ReadMeExample1", bundle: testBundle)
         let data: [String: Any] = [
             "name": "Chris",
@@ -83,7 +83,7 @@ class ReadMeTests: XCTestCase {
         
         // I have 3 cats.
         
-        let testBundle = Bundle.ofFileDirectory(filePath: #file)
+        let testBundle = Bundle.ofFileDirectory(filePath: #filePath)
         let template = try! Template(named: "ReadMeExample2", bundle: testBundle, configuration: configuration)
         let data = ["cats": ["Kitty", "Pussy", "Melba"]]
         let rendering = try! template.render(data)
