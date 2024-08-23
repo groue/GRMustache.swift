@@ -274,3 +274,61 @@ class TemplateFromMethodsTests: XCTestCase {
         }
     }
 }
+
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
+extension TemplateFromMethodsTests {
+    func testTemplateFromURL() async {
+        let template = try! await Template(URL: templateURL)
+        let keyedSubscript = makeKeyedSubscriptFunction("foo")
+        let rendering = try! template.render(MustacheBox(keyedSubscript: keyedSubscript))
+        XCTAssertEqual(valueForStringPropertyInRendering(rendering)!, "foo")
+    }
+
+    func testParserErrorFromURL() async {
+        do {
+            let _ = try await Template(URL: parserErrorTemplateURL)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.parseError)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
+        } catch {
+            XCTFail("Expected MustacheError")
+        }
+
+        do {
+            let _ = try await Template(URL: parserErrorTemplateWrapperURL)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.parseError)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: parserErrorTemplatePath) != nil)
+        } catch {
+            XCTFail("Expected MustacheError")
+        }
+    }
+
+    func testCompilerErrorFromURL() async {
+        do {
+            let _ = try await Template(URL: compilerErrorTemplateURL)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.parseError)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
+        } catch {
+            XCTFail("Expected MustacheError")
+        }
+
+        do {
+            let _ = try await Template(URL: compilerErrorTemplateWrapperURL)
+            XCTFail("Expected MustacheError")
+        } catch let error as MustacheError {
+            XCTAssertEqual(error.kind, MustacheError.Kind.parseError)
+            XCTAssertTrue(error.description.range(of: "line 2") != nil)
+            XCTAssertTrue(error.description.range(of: compilerErrorTemplatePath) != nil)
+        } catch {
+            XCTFail("Expected MustacheError")
+        }
+    }
+}
