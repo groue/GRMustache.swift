@@ -82,7 +82,7 @@ public protocol TemplateRepositoryDataSource {
     /// - parameter templateID: The template ID of the template.
     /// - throws: MustacheError
     /// - returns: A Mustache template string.
-    @available(iOS 15.0, *)
+    @available(iOS 15.0, macOS 12.0, *)
     func templateStringForTemplateID(_ templaetID: TemplateID) async throws -> String
 }
 
@@ -353,7 +353,7 @@ final public class TemplateRepository {
         }
     }
 
-    @available(iOS 15.0, *)
+    @available(iOS 15.0, macOS 12.0, *)
     func templateAST(named name: String, relativeToTemplateID baseTemplateID: TemplateID? = nil) async throws -> TemplateAST {
         guard let dataSource = self.dataSource else {
             throw MustacheError(kind: .templateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
@@ -510,7 +510,7 @@ final public class TemplateRepository {
             return try NSString(contentsOf: URL(string: templateID)!, encoding: encoding.rawValue) as String
         }
 
-        @available(iOS 15.0, *)
+        @available(iOS 15.0, macOS 12.0, *)
         func templateStringForTemplateID(_ templateID: TemplateID) async throws -> String {
             let (data, _) = try await URLSession.shared.data(from: URL(string: templateID)!)
 
