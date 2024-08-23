@@ -76,14 +76,6 @@ public protocol TemplateRepositoryDataSource {
     /// - throws: MustacheError
     /// - returns: A Mustache template string.
     func templateStringForTemplateID(_ templateID: TemplateID) throws -> String
-
-    /// Returns the Mustache template string that matches the template ID.
-    ///
-    /// - parameter templateID: The template ID of the template.
-    /// - throws: MustacheError
-    /// - returns: A Mustache template string.
-    @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
-    func templateStringForTemplateID(_ templaetID: TemplateID) async throws -> String
 }
 
 /// A template repository represents a set of sibling templates and partials.
