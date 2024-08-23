@@ -95,7 +95,7 @@ final public class Template {
     /// - parameter encoding: The encoding of the template resource.
     /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
     /// - throws: MustacheError
-    @available(iOS 15.0, macOS 12.0, *)
+    @available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
     public convenience init(URL: Foundation.URL, encoding: String.Encoding = .utf8, configuration: Configuration = .default) async throws {
         let baseURL = URL.deletingLastPathComponent()
         let templateExtension = URL.pathExtension

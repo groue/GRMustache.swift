@@ -275,7 +275,7 @@ class TemplateFromMethodsTests: XCTestCase {
     }
 }
 
-@available(iOS 15.0, macOS 12.0, *)
+@available(iOS 15.0, macOS 12.0, tvOS 15.0, *)
 extension TemplateFromMethodsTests {
     func testTemplateFromURL() async {
         let template = try! await Template(URL: templateURL)
