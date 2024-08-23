@@ -76,6 +76,14 @@ public protocol TemplateRepositoryDataSource {
     /// - throws: MustacheError
     /// - returns: A Mustache template string.
     func templateStringForTemplateID(_ templateID: TemplateID) throws -> String
+
+    /// Returns the Mustache template string that matches the template ID.
+    ///
+    /// - parameter templateID: The template ID of the template.
+    /// - throws: MustacheError
+    /// - returns: A Mustache template string.
+    @available(iOS 15.0, *)
+    func templateStringForTemplateID(_ templaetID: TemplateID) async throws -> String
 }
 
 /// A template repository represents a set of sibling templates and partials.
@@ -344,7 +352,45 @@ final public class TemplateRepository {
             throw error
         }
     }
-    
+
+    @available(iOS 15.0, *)
+    func templateAST(named name: String, relativeToTemplateID baseTemplateID: TemplateID? = nil) async throws -> TemplateAST {
+        guard let dataSource = self.dataSource else {
+            throw MustacheError(kind: .templateNotFound, message: "Missing dataSource", templateID: baseTemplateID)
+        }
+
+        guard let templateID = dataSource.templateIDForName(name, relativeToTemplateID: baseTemplateID) else {
+            if let baseTemplateID = baseTemplateID {
+                throw MustacheError(kind: .templateNotFound, message: "Template not found: \"\(name)\" from \(baseTemplateID)", templateID: baseTemplateID)
+            } else {
+                throw MustacheError(kind: .templateNotFound, message: "Template not found: \"\(name)\"")
+            }
+        }
+
+        if let templateAST = templateASTCache[templateID] {
+            // Return cached AST
+            return templateAST
+        }
+
+        let templateString = try await dataSource.templateStringForTemplateID(templateID)
+
+        // Cache an empty AST for that name so that we support recursive
+        // partials.
+        let templateAST = TemplateAST()
+        templateASTCache[templateID] = templateAST
+
+        do {
+            let compiledAST = try self.templateAST(string: templateString, templateID: templateID)
+            // Success: update the empty AST
+            templateAST.updateFromTemplateAST(compiledAST)
+            return templateAST
+        } catch {
+            // Failure: remove the empty AST
+            templateASTCache.removeValue(forKey: templateID)
+            throw error
+        }
+    }
+
     func templateAST(string: String, templateID: TemplateID? = nil) throws -> TemplateAST {
         // A Compiler
         let compiler = TemplateCompiler(
@@ -462,6 +508,13 @@ final public class TemplateRepository {
         
         func templateStringForTemplateID(_ templateID: TemplateID) throws -> String {
             return try NSString(contentsOf: URL(string: templateID)!, encoding: encoding.rawValue) as String
+        }
+
+        @available(iOS 15.0, *)
+        func templateStringForTemplateID(_ templateID: TemplateID) async throws -> String {
+            let (data, _) = try await URLSession.shared.data(from: URL(string: templateID)!)
+
+            return (NSString(data: data, encoding: encoding.rawValue) ?? "") as String
         }
     }
     

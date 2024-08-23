@@ -82,7 +82,29 @@ final public class Template {
         let templateAST = try repository.templateAST(named: templateName)
         self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
     }
-    
+
+    /// Creates a template from the contents of a URL.
+    ///
+    /// Eventual partial tags in the template refer to sibling templates using
+    /// the same extension.
+    ///
+    ///     // `{{>partial}}` in `file://path/to/template.txt` loads `file://path/to/partial.txt`:
+    ///     let template = try! Template(URL: "file://path/to/template.txt")
+    ///
+    /// - parameter URL: The URL of the template.
+    /// - parameter encoding: The encoding of the template resource.
+    /// - parameter configuration: The configuration for rendering. If the configuration is not specified, `Configuration.default` is used.
+    /// - throws: MustacheError
+    @available(iOS 15.0, *)
+    public convenience init(URL: Foundation.URL, encoding: String.Encoding = .utf8, configuration: Configuration = .default) async throws {
+        let baseURL = URL.deletingLastPathComponent()
+        let templateExtension = URL.pathExtension
+        let templateName = (URL.lastPathComponent as NSString).deletingPathExtension
+        let repository = TemplateRepository(baseURL: baseURL, templateExtension: templateExtension, encoding: encoding, configuration: configuration)
+        let templateAST = try await repository.templateAST(named: templateName)
+        self.init(repository: repository, templateAST: templateAST, baseContext: repository.configuration.baseContext)
+    }
+
     /// Creates a template from a bundle resource.
     /// 
     /// Eventual partial tags in the template refer to template resources using
