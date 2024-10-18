@@ -21,7 +21,9 @@
 // THE SOFTWARE.
 
 import Foundation
+#if canImport(GRMustacheKeyAccess)
 import GRMustacheKeyAccess
+#endif
 
 /// GRMustache provides built-in support for rendering `NSObject`.
 extension NSObject : MustacheBoxable {
