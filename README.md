@@ -118,7 +118,7 @@ To use GRMustache.swift with the Swift Package Manager, add https://github.com/g
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/groue/GRMustache.swift", from: "5.0.0")
+    .package(url: "https://github.com/groue/GRMustache.swift", from: "5.0.1")
 ]
 ```
 
