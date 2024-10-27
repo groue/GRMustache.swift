@@ -1,9 +1,6 @@
-version = ENV["RELEASE_VERSION"]
-exit 1 if version.to_s.empty?
-
 Pod::Spec.new do |s|
 	s.name     = 'GRMustache.swift'
-	s.version  = version
+	s.version  = 5.0.1
 	s.license  = { :type => 'MIT', :file => 'LICENSE' }
 	s.summary  = 'Flexible Mustache templates for Swift.'
 	s.homepage = 'https://github.com/groue/GRMustache.swift'

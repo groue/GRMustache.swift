@@ -23,4 +23,3 @@ jobs:
           pod trunk push --allow-warnings
         env:
           COCOAPODS_TRUNK_TOKEN: ${{ secrets.COCOAPODS_TRUNK_TOKEN }}
-          RELEASE_VERSION: ${{ github.event.release.tag_name }}
