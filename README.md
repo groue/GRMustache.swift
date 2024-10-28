@@ -11,7 +11,8 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-6-orange.svg?style
 - Swift 2.3: use the [version 1.1.0](https://github.com/groue/GRMustache.swift/tree/1.1.0)
 - Swift 4.0: use the [version 3.0.0](https://github.com/groue/GRMustache.swift/tree/3.0.0)
 - Swift 4.2: use the [version 3.1.0](https://github.com/groue/GRMustache.swift/tree/3.1.0)
-- Swift 5.0: use the [version 4.0.0](https://github.com/groue/GRMustache.swift/tree/4.0.0) or later
+- Swift 5.0: use the [version 4.0.0](https://github.com/groue/GRMustache.swift/tree/4.0.0)
+- Swift 5.0: use the [version 6.0.0](https://github.com/groue/GRMustache.swift/tree/6.0.0) or later
 
 Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 
@@ -118,7 +119,7 @@ To use GRMustache.swift with the Swift Package Manager, add https://github.com/g
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/groue/GRMustache.swift", from: "5.0.1")
+    .package(url: "https://github.com/groue/GRMustache.swift", from: "6.0.0")
 ]
 ```
 
@@ -140,7 +141,7 @@ targets: [
     
     ```sh
     cd [GRMustache.swift directory]
-    git checkout 2.0.0
+    git checkout 6.0.0
     ````
     
 3. Embed the `Mustache.xcodeproj` project in your own project.
