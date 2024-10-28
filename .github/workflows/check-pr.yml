@@ -16,3 +16,6 @@ jobs:
 
       - name: Test
         run: swift test
+        
+      - name: Lint with cocoapods
+        run: pod lib lint
