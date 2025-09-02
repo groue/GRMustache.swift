@@ -5,14 +5,15 @@ GRMustache.swift [![Swift](https://img.shields.io/badge/swift-6-orange.svg?style
 
 **Latest release**: August 19, 2024 &bull; version 5.0.0 &bull; [CHANGELOG](https://github.com/groue/GRMustache.swift/releases)
 
-**Requirements**: iOS 8.0+ / OSX 10.10+ / tvOS 9.0+ &bull; Xcode 16+ &bull; Swift 5
+**Requirements**: iOS 12.0+ / OSX 10.13+ / tvOS 12.0+ &bull; Xcode 16+ &bull; Swift 6
 
 - Swift 2.2: use the [version 1.0.1](https://github.com/groue/GRMustache.swift/tree/1.0.1)
 - Swift 2.3: use the [version 1.1.0](https://github.com/groue/GRMustache.swift/tree/1.1.0)
 - Swift 4.0: use the [version 3.0.0](https://github.com/groue/GRMustache.swift/tree/3.0.0)
 - Swift 4.2: use the [version 3.1.0](https://github.com/groue/GRMustache.swift/tree/3.1.0)
 - Swift 5.0: use the [version 4.0.0](https://github.com/groue/GRMustache.swift/tree/4.0.0)
-- Swift 5.0: use the [version 6.0.0](https://github.com/groue/GRMustache.swift/tree/6.0.0) or later
+- Swift 5.9: use the [version 6.0.0](https://github.com/groue/GRMustache.swift/tree/6.0.0)
+- Swift 6.0: use the [version 7.0.0](https://github.com/groue/GRMustache.swift/tree/7.0.0) or later
 
 Follow [@groue](http://twitter.com/groue) on Twitter for release announcements and usage tips.
 

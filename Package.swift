@@ -1,13 +1,13 @@
-// swift-tools-version:5.9
+// swift-tools-version:6.0
 
 import PackageDescription
 
 let package = Package(
     name: "Mustache",
     platforms: [
-        .iOS(.v11),
-        .macOS(.v10_11),
-        .tvOS(.v9)
+        .iOS(.v12),
+        .macOS(.v10_13),
+        .tvOS(.v12)
     ],
     products: [
         .library(
