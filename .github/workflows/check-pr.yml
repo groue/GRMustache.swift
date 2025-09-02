@@ -1,6 +1,8 @@
 name: check-pr
 
-on: [push]
+on:
+  push:
+  workflow_dispatch:
 
 jobs:
   build:
